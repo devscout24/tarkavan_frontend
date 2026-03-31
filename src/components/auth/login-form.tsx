@@ -1,4 +1,6 @@
-import Input from "../common/input";
+import UiInput from "../common/input";
+
+ 
 
 export default function LoginForm() {
   return (
@@ -6,15 +8,12 @@ export default function LoginForm() {
       <div className="mb-7 space-y-2">
         <h2 className="text-[42px] leading-[1.05] font-semibold tracking-tight">
           Login
-        </h2>
-        <p className="text-lg text-[#A8ADB8]">
-          Let&apos;s login into your account first
-        </p>
+        </h2> 
       </div>
 
       <form className="space-y-4" onSubmit={(event) => event.preventDefault()}>
-         
-         <Input />
+          
+          <UiInput/>
 
         <div className="space-y-2">
           <label htmlFor="password" className="text-sm text-[#D2D5DC]">
@@ -97,13 +96,7 @@ export default function LoginForm() {
           <span className="text-[#EA4335]">G</span>
           <span>Login with Google</span>
         </button>
-
-        <p className="pt-1 text-center text-lg text-[#A8ADB8]">
-          Don&apos;t have an account?{" "}
-          <a href="#" className="font-semibold text-[#B8EC63] hover:underline">
-            Register Here
-          </a>
-        </p>
+ 
       </form>
     </div>
   )

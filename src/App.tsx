@@ -9,6 +9,7 @@ import { ClubRootLayout } from "@/layouts/club-root-layout"
 import { CoachRootLayout } from "@/layouts/coach-root-layout"
 import { ParentRootLayout } from "@/layouts/parent-root-layout"
 import { PlayerRootLayout } from "@/layouts/player-root-layout"
+import ProtectedRoute from "./components/common/protected-route"
 
 function NotFoundPage() {
   return (
@@ -29,22 +30,22 @@ const router = createBrowserRouter([
   {
     path: "/player",
     element: <PlayerRootLayout />,
-    children: [{ index: true, element: <PlayerDashboardPage /> }],
+    children: [{ index: true, element: <ProtectedRoute><PlayerDashboardPage /></ProtectedRoute> }],
   },
   {
     path: "/parent",
     element: <ParentRootLayout />,
-    children: [{ index: true, element: <ParentDashboardPage /> }],
+    children: [{ index: true, element: <ProtectedRoute><ParentDashboardPage /></ProtectedRoute> }],
   },
   {
     path: "/coach",
     element: <CoachRootLayout />,
-    children: [{ index: true, element: <CoachDashboardPage /> }],
+    children: [{ index: true, element: <ProtectedRoute><CoachDashboardPage /></ProtectedRoute> }],
   },
   {
     path: "/club",
     element: <ClubRootLayout />,
-    children: [{ index: true, element: <ClubDashboardPage /> }],
+    children: [{ index: true, element: <ProtectedRoute><ClubDashboardPage /></ProtectedRoute> }],
   },
   { path: "*", element: <NotFoundPage /> },
 ])

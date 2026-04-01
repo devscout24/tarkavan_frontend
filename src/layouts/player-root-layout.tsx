@@ -2,14 +2,7 @@
 
 import sidebarbg from "/images/sidebarbg.png"
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+
 // import { Separator } from "@/components/ui/separator"
 import {
   SidebarProvider,
@@ -71,6 +64,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import Logo from "@/components/common/logo"
 import MenuBtn from "@/components/custom/menu-btn"
+import ProfileDropdown from "@/components/custom/profile-dropdown"
+import Notification from "@/components/custom/notifications"
+import BreadcrumbCustom from "@/components/custom/breadcrumb"
+
 
 const DATA = {
   user: {
@@ -215,14 +212,14 @@ export const PlayerRootLayout = () => {
           alt="side-bar-bg"
           className="absolute top-1/2 left-0 w-full -translate-y-1/2"
         />
-        <SidebarHeader className="border-b">
+        <SidebarHeader className="border-b py-4.5 ">
           {/* Team Switcher */}
           <SidebarMenu>
             <SidebarMenuItem>
               <div className="flex justify-between">
                 <Logo className="w-21.25" />
                 <MenuBtn>
-                  <SidebarTrigger className="-ml-1 cursor-pointer" />
+                  <SidebarTrigger className="-ml-1 cursor-pointer   " />
                 </MenuBtn>
               </div>
             </SidebarMenuItem>
@@ -412,25 +409,15 @@ export const PlayerRootLayout = () => {
       </Sidebar>
 
       <SidebarInset>
-        <header className="flex h-12.25 shrink-0 items-center gap-2 border-b border-white transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
-            {/* <Separator orientation="vertical" className="mr-2 h-4" /> */}
-            <Breadcrumb>
-              <BreadcrumbList>
-                <MenuBtn className="block md:hidden">
-                  <SidebarTrigger className="-ml-1 cursor-pointer" />
-                </MenuBtn>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+        <header className="flex py-2.5 shrink-0 items-center gap-2 border-b border-white transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+          <div className="flex items-center justify-between gap-2 px-4 w-full "> 
+            
+            <BreadcrumbCustom/>
+            
+            <div className="flex items-center gap-4 ">
+              <Notification/>
+              <ProfileDropdown/>
+            </div>
             
           </div>
         </header>

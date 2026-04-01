@@ -32,21 +32,17 @@ const router = createBrowserRouter([
     path: "/player",
     element: (
       // <ProtectedRoute>
-        <PlayerRootLayout />
+      <PlayerRootLayout />
       // </ProtectedRoute>
     ),
     children: [
       {
         index: true,
-        element: ( 
-            <PlayerDashboardPage /> 
-        ),
+        element: <PlayerDashboardPage />,
       },
       {
         path: "profile",
-        element: ( 
-            <PlayerProfile /> 
-        ),
+        element: <PlayerProfile />,
       },
     ],
   },
@@ -54,32 +50,27 @@ const router = createBrowserRouter([
     path: "/parent",
     element: (
       // <ProtectedRoute>
-        <ParentRootLayout />
+      <ParentRootLayout />
       // </ProtectedRoute>
     ),
     children: [
       {
         index: true,
-        element: ( 
-            <ParentDashboardPage /> 
-        ),
+        element: <ParentDashboardPage />,
       },
     ],
   },
   {
     path: "/coach",
-    element: ( 
+    element: (
       // <ProtectedRoute>
-        <CoachRootLayout /> 
+      <CoachRootLayout />
       // </ProtectedRoute>
-        
     ),
     children: [
       {
         index: true,
-        element: ( 
-            <CoachDashboardPage /> 
-        ),
+        element: <CoachDashboardPage />,
       },
     ],
   },
@@ -87,15 +78,13 @@ const router = createBrowserRouter([
     path: "/club",
     element: (
       // <ProtectedRoute>
-        <ClubRootLayout />
+      <ClubRootLayout />
       // </ProtectedRoute>
     ),
     children: [
       {
         index: true,
-        element: ( 
-            <ClubDashboardPage /> 
-        ),
+        element: <ClubDashboardPage />,
       },
     ],
   },

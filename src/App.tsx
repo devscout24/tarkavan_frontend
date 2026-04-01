@@ -3,12 +3,13 @@ import { Navigate, RouterProvider, createBrowserRouter } from "react-router"
 import { ClubDashboardPage } from "@/pages/club-dashboard"
 import { CoachDashboardPage } from "@/pages/coach-dashboard"
 import { AuthPage } from "@/pages/auth.tsx"
-import { ParentDashboardPage } from "@/pages/parent-dashboard"
-import { PlayerDashboardPage } from "@/pages/player-dashboard"
+import { ParentDashboardPage } from "@/pages/parent-pages/parent-dashboard"
+import { PlayerDashboardPage } from "@/pages/player-pages/player-dashboard"
 import { ClubRootLayout } from "@/layouts/club-root-layout"
 import { CoachRootLayout } from "@/layouts/coach-root-layout"
 import { ParentRootLayout } from "@/layouts/parent-root-layout"
 import { PlayerRootLayout } from "@/layouts/player-root-layout"
+import PlayerProfile from "./pages/parent-pages/profile"
 // import ProtectedRoute from "./components/common/protected-route"
 
 function NotFoundPage() {
@@ -37,10 +38,14 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: (
-          // <ProtectedRoute>
-            <PlayerDashboardPage />
-          // </ProtectedRoute>
+        element: ( 
+            <PlayerDashboardPage /> 
+        ),
+      },
+      {
+        path: "profile",
+        element: ( 
+            <PlayerProfile /> 
         ),
       },
     ],
@@ -55,28 +60,25 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: (
-          // <ProtectedRoute>
-            <ParentDashboardPage />
-          // </ProtectedRoute>
+        element: ( 
+            <ParentDashboardPage /> 
         ),
       },
     ],
   },
   {
     path: "/coach",
-    element: (
+    element: ( 
       // <ProtectedRoute>
-        <CoachRootLayout />
+        <CoachRootLayout /> 
       // </ProtectedRoute>
+        
     ),
     children: [
       {
         index: true,
-        element: (
-          // <ProtectedRoute>
-            <CoachDashboardPage />
-          // </ProtectedRoute>
+        element: ( 
+            <CoachDashboardPage /> 
         ),
       },
     ],
@@ -91,10 +93,8 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: (
-          // <ProtectedRoute>
-            <ClubDashboardPage />
-          // </ProtectedRoute>
+        element: ( 
+            <ClubDashboardPage /> 
         ),
       },
     ],

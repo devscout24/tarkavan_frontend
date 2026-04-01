@@ -2,8 +2,7 @@
 
 import sidebarbg from "/images/sidebarbg.png"
 
-
-// import { Separator } from "@/components/ui/separator"
+ 
 import {
   SidebarProvider,
   SidebarInset,
@@ -13,21 +12,11 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarRail,
-  SidebarGroup,
-  SidebarGroupLabel,
+  SidebarGroup, 
   SidebarMenu,
   SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
-  SidebarMenuAction,
-} from "@/components/animate-ui/components/radix/sidebar"
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/animate-ui/primitives/radix/collapsible"
+  SidebarMenuButton, 
+} from '@/components/animate-ui/components/radix/sidebar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,29 +26,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/animate-ui/components/radix/dropdown-menu"
-import {
-  AudioWaveform,
+import { 
   BadgeCheck,
-  Bell,
-  BookOpen,
-  Bot,
-  ChevronRight,
-  ChevronsUpDown,
-  Command,
-  CreditCard,
-  Folder,
-  Forward,
-  Frame,
-  GalleryVerticalEnd,
-  LogOut,
-  Map,
-  MoreHorizontal,
-  PieChart,
-  Settings2,
-  Sparkles,
-  SquareTerminal,
-  Trash2,
+  Bell, 
+  Calendars, 
+  ChevronsUpDown, 
+  CreditCard,  
+  LogOut, 
+  Settings,  
+  Sparkles, 
 } from "lucide-react"
+import {
+  Collapsible, 
+  CollapsibleTrigger,
+} from '@/components/animate-ui/primitives/radix/collapsible';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import Logo from "@/components/common/logo"
@@ -67,6 +47,13 @@ import MenuBtn from "@/components/custom/menu-btn"
 import ProfileDropdown from "@/components/custom/profile-dropdown"
 import Notification from "@/components/custom/notifications"
 import BreadcrumbCustom from "@/components/custom/breadcrumb"
+import SidebarSearch from "@/components/custom/sidebar-search"
+import { Link, Outlet, useLocation } from "react-router"
+import { RiDashboardFill } from "react-icons/ri";
+import { FaRegUser } from "react-icons/fa6";
+import { RiMenuSearchLine } from "react-icons/ri";
+import { BiMessageSquareDetail } from "react-icons/bi";
+import React, { useState } from "react" 
 
 
 const DATA = {
@@ -74,145 +61,65 @@ const DATA = {
     name: "Skyleen",
     email: "skyleen@example.com",
     avatar: "https://avatars.githubusercontent.com/u/124599?v=4",
-  },
-  teams: [
+  }, 
+    navMain: [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      title: 'Dashboard',
+      url: '/player',
+      icon: RiDashboardFill,
+      isActive: true, 
     },
     {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
+      title: 'My Profile',
+      url: '/player/profile',
+      icon: FaRegUser, 
     },
     {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
+      title: 'Programs',
+      url: '/player/programs',
+      icon: RiMenuSearchLine, 
     },
     {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
+      title: 'Upcomming events',
+      url: '/player/upcomming-events',
+      icon: Calendars, 
     },
     {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
+      title: 'Search & Explore',
+      url: '/player/upcomming-events',
+      icon: RiMenuSearchLine, 
     },
     {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
+      title: 'Payments',
+      url: '/player/upcomming-events',
+      icon: Calendars, 
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
+      title: 'Messages',
+      url: '/player/upcomming-events',
+      icon: BiMessageSquareDetail, 
     },
     {
-      name: "Travel",
-      url: "#",
-      icon: Map,
+      title: 'Profile Settings',
+      url: '/player/upcomming-events',
+      icon: Settings, 
     },
-  ],
+  ], 
 }
 
 export const PlayerRootLayout = () => {
-  const isMobile = useIsMobile()
-  // const [activeTeam, setActiveTeam] = React.useState(DATA.teams[0]);
-
-  // if (!activeTeam) return null;
+  const isMobile = useIsMobile() 
+  const pathname = useLocation().pathname
 
   return (
-    <SidebarProvider className={` `}>
-      <Sidebar collapsible="icon" className="relative">
+    <SidebarProvider className={` `}> 
+      <Sidebar collapsible="icon" className="relative border-secondary ">
         <img
           src={sidebarbg}
           alt="side-bar-bg"
           className="absolute top-1/2 left-0 w-full -translate-y-1/2"
         />
-        <SidebarHeader className="border-b py-4.5 ">
+        <SidebarHeader className="border-b border-secondary py-4.5 ">
           {/* Team Switcher */}
           <SidebarMenu>
             <SidebarMenuItem>
@@ -225,11 +132,16 @@ export const PlayerRootLayout = () => {
             </SidebarMenuItem>
           </SidebarMenu>
           {/* Team Switcher */}
-        </SidebarHeader>
+        </SidebarHeader> 
 
-        <SidebarContent>
-          {/* Nav Main */}
-          <SidebarGroup>
+        <SidebarContent className="  ">
+
+          {/* Sidebar Search */}
+          <SidebarSearch/>
+          {/* Sidebar Search */}
+          
+          {/* navs */}
+          <SidebarGroup> 
             <SidebarMenu>
               {DATA.navMain.map((item) => (
                 <Collapsible
@@ -240,82 +152,19 @@ export const PlayerRootLayout = () => {
                 >
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
-                      <SidebarMenuButton tooltip={item.title}>
+                    <Link to={item.url} className=""> 
+                      <SidebarMenuButton tooltip={item.title} className={` py-4.5 border-2  ${pathname == item.url ? "bg-brand/20 border-brand rounded-[12px]  " : "border-transparent"}`} > 
                         {item.icon && <item.icon />}
-                        <span>{item.title}</span>
-                        <ChevronRight className="ml-auto transition-transform duration-300 group-data-[state=open]/collapsible:rotate-90" />
+                        <span className={`${pathname == item.url ? "text-white text-bold " : ""}`}>{item.title}</span> 
                       </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        {item.items?.map((subItem) => (
-                          <SidebarMenuSubItem key={subItem.title}>
-                            <SidebarMenuSubButton asChild>
-                              <a href={subItem.url}>
-                                <span>{subItem.title}</span>
-                              </a>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
+                    </Link>
+                    </CollapsibleTrigger> 
                   </SidebarMenuItem>
                 </Collapsible>
               ))}
             </SidebarMenu>
           </SidebarGroup>
-          {/* Nav Main */}
-
-          {/* Nav Project */}
-          <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-            <SidebarGroupLabel>Projects</SidebarGroupLabel>
-            <SidebarMenu>
-              {DATA.projects.map((item) => (
-                <SidebarMenuItem key={item.name}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.name}</span>
-                    </a>
-                  </SidebarMenuButton>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <SidebarMenuAction showOnHover>
-                        <MoreHorizontal />
-                        <span className="sr-only">More</span>
-                      </SidebarMenuAction>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      className="w-48 rounded-lg"
-                      side={isMobile ? "bottom" : "right"}
-                      align={isMobile ? "end" : "start"}
-                    >
-                      <DropdownMenuItem>
-                        <Folder className="text-muted-foreground" />
-                        <span>View Project</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Forward className="text-muted-foreground" />
-                        <span>Share Project</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <Trash2 className="text-muted-foreground" />
-                        <span>Delete Project</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </SidebarMenuItem>
-              ))}
-              <SidebarMenuItem>
-                <SidebarMenuButton className="text-sidebar-foreground/70">
-                  <MoreHorizontal className="text-sidebar-foreground/70" />
-                  <span>More</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
-          {/* Nav Project */}
+   
         </SidebarContent>
         <SidebarFooter>
           {/* Nav User */}
@@ -409,7 +258,7 @@ export const PlayerRootLayout = () => {
       </Sidebar>
 
       <SidebarInset>
-        <header className="flex py-2.5 shrink-0 items-center gap-2 border-b border-white transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+        <header className="flex py-2.5 shrink-0 items-center gap-2 border-b border-secondary transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center justify-between gap-2 px-4 w-full "> 
             
             <BreadcrumbCustom/>
@@ -421,8 +270,17 @@ export const PlayerRootLayout = () => {
             
           </div>
         </header>
-        oi kire
+        <Outlet/>
       </SidebarInset>
     </SidebarProvider>
   )
 }
+
+
+
+
+
+
+
+
+ 

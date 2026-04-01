@@ -108,7 +108,7 @@ const DATA = {
 
 export const PlayerRootLayout = () => {
   const isMobile = useIsMobile() 
-  const pathname = useLocation().pathname
+  const pathname = useLocation().pathname 
 
   return (
     <SidebarProvider className={` `}> 
@@ -118,8 +118,7 @@ export const PlayerRootLayout = () => {
           alt="side-bar-bg"
           className="absolute top-1/2 left-0 w-full -translate-y-1/2"
         />
-        <SidebarHeader className="border-b border-secondary py-4.5 ">
-          {/* Team Switcher */}
+        <SidebarHeader className="border-b border-secondary py-4.5 "> 
           <SidebarMenu>
             <SidebarMenuItem>
               <div className="flex justify-between">
@@ -129,17 +128,13 @@ export const PlayerRootLayout = () => {
                 </MenuBtn>
               </div>
             </SidebarMenuItem>
-          </SidebarMenu>
-          {/* Team Switcher */}
+          </SidebarMenu> 
         </SidebarHeader> 
 
         <SidebarContent className="  ">
-
-          {/* Sidebar Search */}
-          <SidebarSearch/>
-          {/* Sidebar Search */}
-          
-          {/* navs */}
+ 
+          <SidebarSearch/> 
+           
           <SidebarGroup> 
             <SidebarMenu>
               {DATA.navMain.map((item) => (
@@ -165,8 +160,7 @@ export const PlayerRootLayout = () => {
           </SidebarGroup>
    
         </SidebarContent>
-        <SidebarFooter>
-          {/* Nav User */}
+        <SidebarFooter> 
           <SidebarMenu>
             <SidebarMenuItem>
               <DropdownMenu>
@@ -250,8 +244,7 @@ export const PlayerRootLayout = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             </SidebarMenuItem>
-          </SidebarMenu>
-          {/* Nav User */}
+          </SidebarMenu> 
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>
@@ -269,7 +262,7 @@ export const PlayerRootLayout = () => {
             
           </div>
         </header>
-        <Outlet/>
+        <div className="px-8 pt-6 "><Outlet/></div> 
       </SidebarInset>
     </SidebarProvider>
   )

@@ -9,7 +9,7 @@ import { ClubRootLayout } from "@/layouts/club-root-layout"
 import { CoachRootLayout } from "@/layouts/coach-root-layout"
 import { ParentRootLayout } from "@/layouts/parent-root-layout"
 import { PlayerRootLayout } from "@/layouts/player-root-layout"
-import ProtectedRoute from "./components/common/protected-route"
+// import ProtectedRoute from "./components/common/protected-route"
 
 function NotFoundPage() {
   return (
@@ -25,27 +25,79 @@ function NotFoundPage() {
 }
 
 const router = createBrowserRouter([
-  { path: "/", element: <Navigate to="/player" replace /> },
+  { path: "/", element: <Navigate to="/auth" replace /> },
   { path: "/auth", element: <AuthPage /> },
   {
     path: "/player",
-    element: <PlayerRootLayout />,
-    children: [{ index: true, element: <ProtectedRoute><PlayerDashboardPage /></ProtectedRoute> }],
+    element: (
+      // <ProtectedRoute>
+        <PlayerRootLayout />
+      // </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: (
+          // <ProtectedRoute>
+            <PlayerDashboardPage />
+          // </ProtectedRoute>
+        ),
+      },
+    ],
   },
   {
     path: "/parent",
-    element: <ParentRootLayout />,
-    children: [{ index: true, element: <ProtectedRoute><ParentDashboardPage /></ProtectedRoute> }],
+    element: (
+      // <ProtectedRoute>
+        <ParentRootLayout />
+      // </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: (
+          // <ProtectedRoute>
+            <ParentDashboardPage />
+          // </ProtectedRoute>
+        ),
+      },
+    ],
   },
   {
     path: "/coach",
-    element: <CoachRootLayout />,
-    children: [{ index: true, element: <ProtectedRoute><CoachDashboardPage /></ProtectedRoute> }],
+    element: (
+      // <ProtectedRoute>
+        <CoachRootLayout />
+      // </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: (
+          // <ProtectedRoute>
+            <CoachDashboardPage />
+          // </ProtectedRoute>
+        ),
+      },
+    ],
   },
   {
     path: "/club",
-    element: <ClubRootLayout />,
-    children: [{ index: true, element: <ProtectedRoute><ClubDashboardPage /></ProtectedRoute> }],
+    element: (
+      // <ProtectedRoute>
+        <ClubRootLayout />
+      // </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: (
+          // <ProtectedRoute>
+            <ClubDashboardPage />
+          // </ProtectedRoute>
+        ),
+      },
+    ],
   },
   { path: "*", element: <NotFoundPage /> },
 ])

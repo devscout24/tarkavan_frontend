@@ -634,7 +634,7 @@ function HighlightItem<T extends React.ElementType>({
 export {
   Highlight,
   HighlightItem,
-  useHighlight,
+  // useHighlight,
   type HighlightProps,
   type HighlightItemProps,
 };

@@ -1,17 +1,29 @@
-import StatCard from "@/components/common/stat-card"
+import PlayerStats from "./components/player-stats";
 
-const playerStats = [
-  { label: "Training sessions", value: "5 this week" },
-  { label: "Match fitness", value: "87%" },
-  { label: "Goals this month", value: "6" },
-]
-
+ 
 export function PlayerDashboardPage() {
   return (
-    <section className="grid gap-4 md:grid-cols-3">
-      {playerStats.map(() => (
-        <StatCard/>
-      ))}
+    <section className="       " >
+
+      <h2 className="font-bold text-base ">Welcome, Daniel</h2>
+      <p className="mt-1 text-base   ">Here is a summary of your children recent activity and upcoming sessions. </p>
+
+
+      {/* stats */}
+      <PlayerStats/>
+
+      {/* activity and action  */}
+      <div className="flex w-full">
+
+        {/* recent activity */}
+        <div className="flex-8 bg-red-100 ">s</div>
+
+        {/* quick actions */}
+        <div className="flex-2 bg-red-300 ">g</div>
+
+      </div>
+ 
+
     </section>
   )
 }

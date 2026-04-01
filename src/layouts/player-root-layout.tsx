@@ -52,8 +52,7 @@ import { Link, Outlet, useLocation } from "react-router"
 import { RiDashboardFill } from "react-icons/ri";
 import { FaRegUser } from "react-icons/fa6";
 import { RiMenuSearchLine } from "react-icons/ri";
-import { BiMessageSquareDetail } from "react-icons/bi";
-import React, { useState } from "react" 
+import { BiMessageSquareDetail } from "react-icons/bi"; 
 
 
 const DATA = {

@@ -9,7 +9,7 @@ const playerStats = [
 export function PlayerDashboardPage() {
   return (
     <section className="grid gap-4 md:grid-cols-3">
-      {playerStats.map((item) => (
+      {playerStats.map(() => (
         <StatCard/>
       ))}
     </section>

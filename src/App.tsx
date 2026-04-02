@@ -3,17 +3,16 @@ import { Navigate, RouterProvider, createBrowserRouter } from "react-router"
 import { ClubDashboardPage } from "@/pages/club-dashboard"
 import { CoachDashboardPage } from "@/pages/coach-dashboard"
 import { AuthPage } from "@/pages/auth.tsx"
-import { ParentDashboardPage } from "@/pages/parent-pages/parent-dashboard" 
+import { ParentDashboardPage } from "@/pages/parent-pages/parent-dashboard"
 import { ClubRootLayout } from "@/layouts/club-root-layout"
 import { CoachRootLayout } from "@/layouts/coach-root-layout"
 import { ParentRootLayout } from "@/layouts/parent-root-layout"
-import { PlayerRootLayout } from "@/layouts/player-root-layout" 
-import { PlayerDashboardPage } from "./pages/player-pages" 
+import { PlayerRootLayout } from "@/layouts/player-root-layout"
+import { PlayerDashboardPage } from "./pages/player-pages"
 import PlayerProfile from "./pages/player-pages/profile"
 import NotFoundPage from "./components/common/not-found"
 // import ProtectedRoute from "./components/common/protected-route"
-
- 
+import MyChildren from "./pages/parent-pages/myChildren"
 
 const router = createBrowserRouter([
   { path: "/", element: <Navigate to="/auth" replace /> },
@@ -47,6 +46,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <ParentDashboardPage />,
+      },
+      {
+        path: "children",
+        element: <MyChildren />,
       },
     ],
   },

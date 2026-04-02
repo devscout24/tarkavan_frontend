@@ -52,6 +52,7 @@ import { RiDashboardFill } from "react-icons/ri"
 import { FaRegUser } from "react-icons/fa6"
 import { RiMenuSearchLine } from "react-icons/ri"
 import { BiMessageSquareDetail } from "react-icons/bi"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 const DATA = {
   user: {
@@ -270,9 +271,9 @@ export const ParentRootLayout = () => {
             </div>
           </div>
         </header>
-        <div className="px-8 py-6">
+        <ScrollArea className="h-[92vh] border px-8 py-6">
           <Outlet />
-        </div>
+        </ScrollArea>
       </SidebarInset>
     </SidebarProvider>
   )

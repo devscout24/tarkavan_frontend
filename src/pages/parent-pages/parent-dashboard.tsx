@@ -1,6 +1,9 @@
 import StatCard from "@/components/common/stat-card"
-import { Icon } from "./Icon"
+import { Icon } from "../../components/custom/Icon"
+import advertisementImage from "../../../public/images/advertisementImage.png"
 import RecentActivityRow from "../../components/custom/recent-activity-row"
+import ProgramReminder from "../../components/custom/program-reminder"
+import Advertisement from "../../components/custom/advertisement"
 
 const ChildrenIcon = () => (
   <Icon>
@@ -338,49 +341,24 @@ export function ParentDashboardPage() {
           </section>
 
           {/* Program Reminder */}
-          <section className="relative flex flex-col items-start gap-0 overflow-hidden rounded-[24px] bg-secondary/25 p-6">
-            <h5 className="mb-4 text-base font-semibold text-white">
-              Program Reminder
-            </h5>
+          <ProgramReminder
+            title="Elite Technical Clinic"
+            date={{ month: "MAR", day: 15 }}
+            time="Friday, 4:30 PM - 6:00 PM"
+            location="West Side Sports Complex, Field 4"
+            onClick={() => console.log("View location clicked")}
+          />
 
-            <div className="w-full space-y-4">
-              {/* Date and Program Info */}
-              <div className="flex items-center gap-4 rounded-[12px] p-2">
-                <div className="flex flex-col items-center justify-center rounded bg-secondary/80 px-2 py-1.5">
-                  <p className="text-xs font-normal text-white">MAR</p>
-                  <p className="text-sm font-bold text-white">15</p>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-base font-semibold text-white">
-                    Elite Technical Clinic
-                  </p>
-                  <p className="text-base text-secondary">
-                    Friday, 4:30 PM - 6:00 PM
-                  </p>
-                </div>
-              </div>
-
-              {/* Location */}
-              <div className="flex items-start gap-2">
-                <div className="h-3 w-3 shrink-0 pt-0.5 text-white">
-                  <LocationIcon />
-                </div>
-                <p className="text-sm text-secondary">
-                  West Side Sports Complex, Field 4
-                </p>
-              </div>
-
-              {/* View Location Button */}
-              <button className="w-full cursor-pointer rounded-[12px] border border-primary bg-white px-4 py-2.5 text-center text-base font-medium text-primary transition-colors duration-200 hover:bg-primary hover:text-white">
-                View Location
-              </button>
-            </div>
-
-            {/* Football Icon - Bottom Right */}
-            <div className="absolute right-0 bottom-0 -m-4 text-white opacity-30">
-              <FootballIcon />
-            </div>
-          </section>
+          {/* Advertisement */}
+          <Advertisement
+            imageUrl={advertisementImage}
+            positions="Defender, Winger"
+            teamName="Elite U16"
+            ageGroup="U16"
+            tryoutDate="March 15-18, 2026"
+            description="Looking for skilled defenders for upcoming season."
+            onApply={() => console.log("Apply clicked")}
+          />
         </aside>
       </div>
     </section>

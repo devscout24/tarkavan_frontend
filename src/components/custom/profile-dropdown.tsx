@@ -9,7 +9,7 @@ import {
 } from "@/components/animate-ui/components/radix/dropdown-menu"
 import { useLocation } from "react-router"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ChevronDown, Mail, Power, UserRound } from "lucide-react"
+import { ChevronDown, Power, Settings, Sparkles } from "lucide-react"
 import { TbPlayFootball } from "react-icons/tb"
 
 export default function ProfileDropdown() {
@@ -34,32 +34,50 @@ export default function ProfileDropdown() {
         </Avatar>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="bg-secondary border-2 border-white/20 ">
+      <DropdownMenuContent className="border-2 border-white/20 bg-secondary text-white hover:text-white">
         <DropdownMenuGroup>
           <DropdownMenuItem className="">
-            <span>Canada Strikers FC</span>
+            <div className="text-white flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+              <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarImage
+                  src={"https://avatars.githubusercontent.com/u/124599?v=4"}
+                  alt={"https://avatars.githubusercontent.com/u/124599?v=4"}
+                />
+                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+              </Avatar>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-semibold">
+                  {"Canada Strikers FC"}
+                </span>
+                <span className="truncate text-xs">{"demo@demo.com"}</span>
+              </div>
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator /> 
+          <DropdownMenuItem>
+            <span className="text-white">Upgrade role</span>
             <DropdownMenuShortcut>
-              <UserRound />
+              <Sparkles className="text-white" /> 
             </DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <span>demo@demo.com</span>
+            <span className="text-white">role</span>
             <DropdownMenuShortcut>
-              <Mail />
+              <TbPlayFootball className="text-white" />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <span>role</span>
+            <span className="text-white">Edit Profile</span>
             <DropdownMenuShortcut>
-              <TbPlayFootball />
+              <Settings className="text-white" />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className="bg-primary">
-          <span>Log out</span>
+        <DropdownMenuItem className="bg-primary/60">
+          <span className="text-white">Log out</span>
           <DropdownMenuShortcut>
             <Power className="text-[#ff0000]!" />
           </DropdownMenuShortcut>

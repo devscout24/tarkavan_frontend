@@ -142,10 +142,6 @@
 }
 
 @layer base {
- 
-  *{
-    @apply text-white
-  }
   html {
     @apply font-sans;
     }

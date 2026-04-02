@@ -271,7 +271,7 @@ export const ParentRootLayout = () => {
             </div>
           </div>
         </header>
-        <ScrollArea className="h-[92vh] border px-8 py-6">
+        <ScrollArea className="h-[92vh] border px-1 py-6 md:px-8">
           <Outlet />
         </ScrollArea>
       </SidebarInset>

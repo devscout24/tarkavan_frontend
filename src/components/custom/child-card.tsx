@@ -6,6 +6,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/animate-ui/primitives/radix/dropdown-menu"
+import VisibilityBadge from "./visibility-badge"
 
 interface ChildCardProps {
   imageUrl: string
@@ -27,9 +28,22 @@ interface ChildCardProps {
 }
 
 const FootballIcon = () => (
-  <Icon width="18" height="17" viewBox="0 0 18 17">
+  <Icon width="20" height="20" viewBox="0 0 20 20" fill="none">
     <path
-      d="M6.13021 0.408936L8.64396 2.17761L11.1302 0.408936M0.296875 8.9921L2.96067 7.0246L1.59311 3.92598M14.8555 14.0365L11.6434 13.4552L10.5181 16.6589M15.3217 3.48882L14.2998 6.15042L16.9635 8.11785M5.30514 16.1639L5.33973 12.631L1.9663 12.6673"
+      d="M18.3327 9.99996C18.3327 14.6023 14.6017 18.3333 9.99935 18.3333C5.39697 18.3333 1.66602 14.6023 1.66602 9.99996C1.66602 5.39758 5.39697 1.66663 9.99935 1.66663C14.6017 1.66663 18.3327 5.39758 18.3327 9.99996Z"
+      stroke="white"
+    />
+    <path
+      d="M9.75707 7.79082C9.90232 7.68089 10.099 7.68089 10.2442 7.79082L12.1215 9.21171C12.2667 9.32163 12.3275 9.51646 12.272 9.69438L11.555 11.9935C11.4995 12.1713 11.3404 12.2917 11.1609 12.2917H8.8404C8.6609 12.2917 8.50182 12.1713 8.44632 11.9935L7.72929 9.69438C7.67382 9.51646 7.73459 9.32163 7.87981 9.21171L9.75707 7.79082Z"
+      stroke="white"
+    />
+    <path
+      d="M9.99935 7.49996V4.16663M12.4993 9.16663L15.8327 7.91663M11.666 12.5L13.3327 15M8.33268 12.0833L6.66602 14.1666M7.49935 9.58329L4.16602 8.74996"
+      stroke="white"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M7.49935 2.08337L10.0131 3.85205L12.4993 2.08337M1.66602 10.6665L4.32981 8.69904L2.96225 5.60042M16.2246 15.711L13.0125 15.1296L11.8873 18.3334M16.6909 5.16326L15.6689 7.82486L18.3327 9.79229M6.67428 17.8383L6.70887 14.3055L3.33544 14.3417"
       stroke="white"
       strokeLinejoin="round"
     />
@@ -103,13 +117,10 @@ export default function ChildCard({
           className="block h-full max-h-[180px] w-full object-contain"
         />
         {/* Badge */}
-        <div
-          className={`absolute top-4 right-4 flex items-center justify-center rounded-full px-3 py-2 text-base leading-[120%] font-normal text-white ${
-            isPublic ? "bg-[#00A63E]" : "bg-[#475969]"
-          }`}
-        >
-          {isPublic ? "PUBLIC" : "PRIVATE"}
-        </div>
+        <VisibilityBadge
+          isPublic={isPublic}
+          className="absolute top-4 right-4"
+        />
       </div>
 
       {/* Content Section */}

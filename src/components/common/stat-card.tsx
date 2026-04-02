@@ -10,7 +10,7 @@ export default function StatCard({
   text?: string
 }) {
   return (
-    <div className="w-full rounded-[16px] border border-secondary p-4">
+    <div className="w-full rounded-[16px] border border-secondary/40 p-4">
       <div className="flex">
         {/* icon box */}
         <div className="grid min-h-10 min-w-10 place-items-center rounded-[10px] bg-brand text-primary">

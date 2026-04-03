@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { useSearchParams } from "react-router"
 
 import footballField from "../../../../public/images/soccer_Field.png"
 import StepActions from "@/pages/parent-pages/modal_common/step-actions"
@@ -16,6 +17,11 @@ type Position = {
   name: string
   x: number
   y: number
+}
+
+interface PositionMapFormData {
+  primaryPosition: string
+  secondaryPosition: string
 }
 
 const positions: Position[] = [
@@ -42,22 +48,46 @@ const sectionSubtitleClassName =
   "text-[14px] font-normal leading-[150%] text-white/70"
 
 export default function PositionMap() {
-  const [primaryPosition, setPrimaryPosition] = useState("LW")
-  const [secondaryPosition, setSecondaryPosition] = useState("RCB")
+  const [searchParams, setSearchParams] = useSearchParams()
+  const {
+    register,
+    watch,
+    setValue,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<PositionMapFormData>({
+    mode: "onBlur",
+    defaultValues: {
+      primaryPosition: "LW",
+      secondaryPosition: "RCB",
+    },
+  })
+
+  // Register fields with validation
+  register("primaryPosition", { required: "Primary position is required" })
+  register("secondaryPosition", { required: "Secondary position is required" })
+
+  const primaryPosition = watch("primaryPosition")
+  const secondaryPosition = watch("secondaryPosition")
 
   const onPrimarySelect = (value: string) => {
-    setPrimaryPosition(value)
+    setValue("primaryPosition", value, { shouldValidate: true })
     if (secondaryPosition === value) {
-      setSecondaryPosition("")
+      setValue("secondaryPosition", "")
     }
   }
 
   const onSecondarySelect = (value: string) => {
-    setSecondaryPosition(value)
+    setValue("secondaryPosition", value, { shouldValidate: true })
     if (primaryPosition === value) {
-      setPrimaryPosition("")
+      setValue("primaryPosition", "")
     }
   }
+
+  const goToNextStep = handleSubmit(() => {
+    searchParams.set("addNewChildren", "seasonStats")
+    setSearchParams(searchParams)
+  })
 
   const isPositionVisible = (positionId: string) => {
     return (
@@ -100,6 +130,7 @@ export default function PositionMap() {
           Select the player&apos;s primary and secondary positions. Tap the
           positions on the field or use the menus below.
         </p>
+        <div className="mt-4 h-px w-full bg-[repeating-linear-gradient(to_right,rgba(255,255,255,0.2)_0_10px,transparent_10px_20px)]" />
 
         <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
           <div className="rounded-xl">
@@ -173,6 +204,11 @@ export default function PositionMap() {
                   ))}
                 </SelectContent>
               </Select>
+              {errors.primaryPosition && (
+                <p className="mt-2 text-xs text-red-500">
+                  {errors.primaryPosition.message}
+                </p>
+              )}
               <p className="mt-2.5 text-[14px] leading-[150%] font-normal text-white/70 lg:mt-2 lg:text-[13px] xl:mt-2.5 xl:text-[14px]">
                 Most active position on the field.
               </p>
@@ -207,6 +243,11 @@ export default function PositionMap() {
                   ))}
                 </SelectContent>
               </Select>
+              {errors.secondaryPosition && (
+                <p className="mt-2 text-xs text-red-500">
+                  {errors.secondaryPosition.message}
+                </p>
+              )}
               <p className="mt-2.5 text-[14px] leading-[150%] font-normal text-white/70 lg:mt-2 lg:text-[13px] xl:mt-2.5 xl:text-[14px]">
                 Backup or alternative role.
               </p>
@@ -215,7 +256,7 @@ export default function PositionMap() {
         </div>
       </div>
 
-      <StepActions />
+      <StepActions onNext={() => goToNextStep()} />
     </div>
   )
 }

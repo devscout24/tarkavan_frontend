@@ -1,6 +1,7 @@
 import { CalendarDays } from "lucide-react"
 import { format } from "date-fns"
 import { Calendar } from "@/components/ui/calendar"
+import { cn } from "@/lib/utils"
 
 interface DatepickerFieldProps {
   label: string
@@ -13,6 +14,8 @@ interface DatepickerFieldProps {
   triggerClassName?: string
   calendarClassName?: string
   placeholder?: string
+  error?: string
+  required?: boolean
 }
 
 export default function DatepickerField({
@@ -26,17 +29,22 @@ export default function DatepickerField({
   triggerClassName = "",
   calendarClassName = "",
   placeholder = "mm/dd/yyyy",
+  error,
 }: DatepickerFieldProps) {
   return (
     <div className={`space-y-2 ${className}`}>
-      <label className={`text-sm font-medium text-white ${labelClassName}`}>
+      <label className={cn("text-sm font-medium text-white", labelClassName)}>
         {label}
       </label>
       <div className="relative">
         <button
           type="button"
           onClick={() => onOpenChange(!open)}
-          className={`flex h-11 w-full items-center rounded-xl border border-white/10 bg-[#0F1117] px-3 text-left ${triggerClassName}`}
+          className={cn(
+            "flex h-11 w-full items-center rounded-xl border border-white/10 bg-[#0F1117] px-3 text-left",
+            error && "border-red-500",
+            triggerClassName
+          )}
         >
           <span
             className={
@@ -62,6 +70,7 @@ export default function DatepickerField({
           </div>
         )}
       </div>
+      {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   )
 }

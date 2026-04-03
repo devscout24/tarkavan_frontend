@@ -6,6 +6,7 @@ interface UploadPhotoProps {
   subtitle?: string
   className?: string
   onFileSelect?: (file: File) => void
+  onFilesSelect?: (files: File[]) => void
   onClick?: () => void
 }
 
@@ -14,6 +15,7 @@ export default function UploadPhoto({
   subtitle = "JPG or PNG, max 5MB. Headshots preferred.",
   className = "",
   onFileSelect,
+  onFilesSelect,
   onClick,
 }: UploadPhotoProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -24,9 +26,10 @@ export default function UploadPhoto({
   }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      onFileSelect?.(file)
+    const files = Array.from(e.target.files ?? [])
+    if (files.length > 0) {
+      onFilesSelect?.(files)
+      onFileSelect?.(files[0])
     }
     // Reset the input so the same file can be selected again if needed
     if (fileInputRef.current) {
@@ -40,6 +43,7 @@ export default function UploadPhoto({
         ref={fileInputRef}
         type="file"
         accept="image/jpeg,image/png"
+        multiple
         onChange={handleFileSelect}
         className="hidden"
         aria-hidden="true"

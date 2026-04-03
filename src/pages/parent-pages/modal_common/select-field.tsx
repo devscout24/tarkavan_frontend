@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils"
 import {
   Select,
   SelectContent,
@@ -21,6 +22,8 @@ interface SelectFieldProps {
   itemClassName?: string
   value?: string
   onValueChange?: (value: string) => void
+  error?: string
+  required?: boolean
 }
 
 const defaultItemClassName =
@@ -36,14 +39,17 @@ export default function SelectField({
   itemClassName = defaultItemClassName,
   value,
   onValueChange,
+  error,
 }: SelectFieldProps) {
   return (
     <div className={`space-y-2 ${className}`}>
-      <label className={`text-sm font-medium text-white ${labelClassName}`}>
+      <label className={cn("text-sm font-medium text-white", labelClassName)}>
         {label}
       </label>
       <Select value={value} onValueChange={onValueChange}>
-        <SelectTrigger className={triggerClassName}>
+        <SelectTrigger
+          className={cn(error && "border-red-500", triggerClassName)}
+        >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
@@ -58,6 +64,7 @@ export default function SelectField({
           ))}
         </SelectContent>
       </Select>
+      {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   )
 }

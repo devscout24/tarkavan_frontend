@@ -50,6 +50,21 @@ const sectionSubtitleClassName =
 
 export default function PositionMap() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const isValidPosition = (value: string | null) =>
+    Boolean(value && positions.some((position) => position.id === value))
+
+  const initialPrimaryPosition = isValidPosition(
+    searchParams.get("primaryPosition")
+  )
+    ? (searchParams.get("primaryPosition") as string)
+    : "LW"
+
+  const initialSecondaryPosition = isValidPosition(
+    searchParams.get("secondaryPosition")
+  )
+    ? (searchParams.get("secondaryPosition") as string)
+    : "RCB"
+
   const {
     register,
     watch,
@@ -59,8 +74,8 @@ export default function PositionMap() {
   } = useForm<PositionMapFormData>({
     mode: "onBlur",
     defaultValues: {
-      primaryPosition: "LW",
-      secondaryPosition: "RCB",
+      primaryPosition: initialPrimaryPosition,
+      secondaryPosition: initialSecondaryPosition,
     },
   })
 
@@ -74,18 +89,45 @@ export default function PositionMap() {
   const primaryPosition = watch("primaryPosition")
   const secondaryPosition = watch("secondaryPosition")
 
+  const setPositionsInParams = (nextPrimary: string, nextSecondary: string) => {
+    const nextParams = new URLSearchParams(searchParams)
+
+    if (nextPrimary) {
+      nextParams.set("primaryPosition", nextPrimary)
+    } else {
+      nextParams.delete("primaryPosition")
+    }
+
+    if (nextSecondary) {
+      nextParams.set("secondaryPosition", nextSecondary)
+    } else {
+      nextParams.delete("secondaryPosition")
+    }
+
+    setSearchParams(nextParams)
+  }
+
   const onPrimarySelect = (value: string) => {
+    const nextSecondaryPosition =
+      secondaryPosition === value ? "" : secondaryPosition
+
     setValue("primaryPosition", value, { shouldValidate: true })
-    if (secondaryPosition === value) {
+    if (nextSecondaryPosition !== secondaryPosition) {
       setValue("secondaryPosition", "")
     }
+
+    setPositionsInParams(value, nextSecondaryPosition)
   }
 
   const onSecondarySelect = (value: string) => {
+    const nextPrimaryPosition = primaryPosition === value ? "" : primaryPosition
+
     setValue("secondaryPosition", value, { shouldValidate: true })
-    if (primaryPosition === value) {
+    if (nextPrimaryPosition !== primaryPosition) {
       setValue("primaryPosition", "")
     }
+
+    setPositionsInParams(nextPrimaryPosition, value)
   }
 
   const setModalStep = (step: string) => {

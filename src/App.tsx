@@ -13,10 +13,15 @@ import PlayerProfile from "./pages/player-pages/profile"
 import NotFoundPage from "./components/common/not-found"
 // import ProtectedRoute from "./components/common/protected-route"
 import MyChildren from "./pages/parent-pages/myChildren"
+import Agreement from "./pages/parent-pages/Agreement"
 
 const router = createBrowserRouter([
   { path: "/", element: <Navigate to="/auth" replace /> },
   { path: "/auth", element: <AuthPage /> },
+  {
+    path: "/agreement",
+    element: <Agreement />,
+  },
   {
     path: "/player",
     element: (

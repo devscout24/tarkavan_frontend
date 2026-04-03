@@ -1,0 +1,221 @@
+import { useState } from "react"
+
+import footballField from "../../../../public/images/soccer_Field.png"
+import StepActions from "@/pages/parent-pages/modal_common/step-actions"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+type Position = {
+  id: string
+  short: string
+  name: string
+  x: number
+  y: number
+}
+
+const positions: Position[] = [
+  { id: "GK", short: "GK", name: "Goalkeeper", x: 92, y: 50 },
+  { id: "RB", short: "RB", name: "Right Back", x: 80, y: 75 },
+  { id: "RCB", short: "RCB", name: "Right Center Back", x: 82, y: 60 },
+  { id: "LCB", short: "LCB", name: "Left Center Back", x: 82, y: 40 },
+  { id: "LB", short: "LB", name: "Left Back", x: 80, y: 25 },
+  { id: "CDM", short: "CDM", name: "Defensive Midfielder", x: 65, y: 50 },
+  { id: "CM", short: "CM", name: "Central Midfielder", x: 50, y: 50 },
+  { id: "CAM", short: "CAM", name: "Attacking Midfielder", x: 35, y: 50 },
+  { id: "RW", short: "RW", name: "Right Wing", x: 30, y: 75 },
+  { id: "ST", short: "ST", name: "Striker", x: 15, y: 50 },
+  { id: "LW", short: "LW", name: "Left Wing", x: 30, y: 25 },
+]
+
+// Initial positions visible on field load
+const initialPositions = ["LW", "ST", "GK", "CB", "RW"]
+
+const titleClassName = "text-[20px] font-bold leading-[150%] text-white"
+const subtitleClassName = "text-[14px] font-normal leading-[150%] text-white/80"
+const sectionTitleClassName = "text-[20px] font-bold leading-[150%] text-white"
+const sectionSubtitleClassName =
+  "text-[14px] font-normal leading-[150%] text-white/70"
+
+export default function PositionMap() {
+  const [primaryPosition, setPrimaryPosition] = useState("LW")
+  const [secondaryPosition, setSecondaryPosition] = useState("RCB")
+
+  const onPrimarySelect = (value: string) => {
+    setPrimaryPosition(value)
+    if (secondaryPosition === value) {
+      setSecondaryPosition("")
+    }
+  }
+
+  const onSecondarySelect = (value: string) => {
+    setSecondaryPosition(value)
+    if (primaryPosition === value) {
+      setPrimaryPosition("")
+    }
+  }
+
+  const isPositionVisible = (positionId: string) => {
+    return (
+      initialPositions.includes(positionId) ||
+      primaryPosition === positionId ||
+      secondaryPosition === positionId
+    )
+  }
+
+  return (
+    <div className="w-full rounded-2xl bg-[#090B10] p-4 text-white sm:p-6 md:p-8">
+      <div className="flex flex-col gap-4 border-b border-white/8 pt-4 pb-5 md:flex-row md:items-start md:justify-between">
+        <div className="space-y-1.5">
+          <h2 className={titleClassName}>Add New Children</h2>
+          <p className={subtitleClassName}>
+            Start by defining the athlete&apos;s core identity profile.
+          </p>
+        </div>
+
+        <div className="min-w-47.5 space-y-2">
+          <p className="text-right text-[12px] leading-[150%] font-medium text-white">
+            Step <span className="text-brand">2</span> of 8
+          </p>
+          <div className="flex items-center gap-1.5">
+            <span className="h-1.25 flex-1 rounded-full bg-white" />
+            <span className="h-1.25 flex-1 rounded-full bg-brand" />
+            <span className="h-1.25 flex-1 rounded-full bg-white" />
+            <span className="h-1.25 flex-1 rounded-full bg-white" />
+            <span className="h-1.25 flex-1 rounded-full bg-white" />
+            <span className="h-1.25 flex-1 rounded-full bg-white" />
+            <span className="h-1.25 flex-1 rounded-full bg-white" />
+            <span className="h-1.25 flex-1 rounded-full bg-white" />
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5 pb-6">
+        <h3 className={sectionTitleClassName}>Position Map</h3>
+        <p className={`${sectionSubtitleClassName} mt-1`}>
+          Select the player&apos;s primary and secondary positions. Tap the
+          positions on the field or use the menus below.
+        </p>
+
+        <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
+          <div className="rounded-xl">
+            <div className="relative max-h-79.5 w-full max-w-111.25 overflow-hidden rounded-md border border-white/20 lg:max-h-none lg:max-w-full xl:max-h-79.5 xl:max-w-111.25">
+              <img
+                src={footballField}
+                alt="Football field"
+                className="h-full w-full object-contain"
+              />
+
+              {positions.map((position) => {
+                const isPrimary = primaryPosition === position.id
+                const isSecondary = secondaryPosition === position.id
+                const isVisible = isPositionVisible(position.id)
+
+                return (
+                  <div
+                    key={position.id}
+                    className="absolute -translate-x-1/2 -translate-y-1/2 transition-all duration-300"
+                    style={{
+                      left: `${position.x}%`,
+                      top: `${position.y}%`,
+                      opacity: isVisible ? 1 : 0,
+                      pointerEvents: "none",
+                    }}
+                  >
+                    <span
+                      className={`flex h-6 w-6 items-center justify-center rounded-full border text-[7px] leading-none font-semibold transition-all sm:h-7 sm:w-7 sm:text-[8px] md:h-8 md:w-8 md:text-[10px] lg:h-9 lg:w-9 lg:text-[11px] ${
+                        isPrimary
+                          ? "border-white bg-[#DB0000] text-white"
+                          : isSecondary
+                            ? "border-[#DB0000] bg-[#DB0000]/30 text-white"
+                            : "border-white/60 bg-white/12 text-white"
+                      }`}
+                    >
+                      {position.short}
+                    </span>
+                    <span className="mt-0.5 block text-center text-[6px] leading-none text-white sm:mt-1 sm:text-[7px] md:text-[8px] lg:text-[9px]">
+                      {position.name}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          <div className="space-y-4 lg:space-y-3 xl:space-y-4">
+            <div className="rounded-xl border border-secondary bg-primary p-5 transition-colors hover:bg-secondary/80 lg:p-4 xl:p-5">
+              <p className="text-[14px] leading-[150%] font-semibold text-white lg:text-[13px] xl:text-[14px]">
+                Primary Position
+              </p>
+              <Select value={primaryPosition} onValueChange={onPrimarySelect}>
+                <SelectTrigger
+                  className={`mt-2.5 h-12 w-full rounded-xl border border-secondary px-4 text-[14px] leading-[150%] lg:mt-2 lg:h-10 lg:px-3 lg:text-[13px] xl:mt-2.5 xl:h-12 xl:px-4 xl:text-[14px] ${
+                    primaryPosition
+                      ? "bg-white text-[#111308]"
+                      : "bg-secondary text-white"
+                  }`}
+                >
+                  <SelectValue placeholder="Select primary position" />
+                </SelectTrigger>
+                <SelectContent>
+                  {positions.map((position) => (
+                    <SelectItem
+                      key={position.id}
+                      value={position.id}
+                      className="text-primary hover:bg-brand hover:text-primary focus:bg-brand focus:text-primary"
+                    >
+                      {position.name} ({position.short})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="mt-2.5 text-[14px] leading-[150%] font-normal text-white/70 lg:mt-2 lg:text-[13px] xl:mt-2.5 xl:text-[14px]">
+                Most active position on the field.
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-secondary bg-primary p-5 transition-colors hover:bg-secondary/80 lg:p-4 xl:p-5">
+              <p className="text-[14px] leading-[150%] font-bold text-white lg:text-[13px] xl:text-[14px]">
+                Secondary Position
+              </p>
+              <Select
+                value={secondaryPosition}
+                onValueChange={onSecondarySelect}
+              >
+                <SelectTrigger
+                  className={`mt-2.5 h-12 w-full rounded-xl border border-secondary px-4 text-[14px] leading-[150%] lg:mt-2 lg:h-10 lg:px-3 lg:text-[13px] xl:mt-2.5 xl:h-12 xl:px-4 xl:text-[14px] ${
+                    secondaryPosition
+                      ? "bg-white text-[#111308]"
+                      : "bg-secondary text-white"
+                  }`}
+                >
+                  <SelectValue placeholder="Select secondary position" />
+                </SelectTrigger>
+                <SelectContent>
+                  {positions.map((position) => (
+                    <SelectItem
+                      key={position.id}
+                      value={position.id}
+                      className="text-primary hover:bg-brand hover:text-primary focus:bg-brand focus:text-primary"
+                    >
+                      {position.name} ({position.short})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="mt-2.5 text-[14px] leading-[150%] font-normal text-white/70 lg:mt-2 lg:text-[13px] xl:mt-2.5 xl:text-[14px]">
+                Backup or alternative role.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <StepActions />
+    </div>
+  )
+}

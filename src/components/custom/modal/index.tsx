@@ -1,7 +1,9 @@
 import Agreement from "@/pages/parent-pages/Agreement"
-import AddNewChildren from "@/pages/parent-pages/modals/AddNewChildren"
+
 import useModal from "./useModal"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import CoreIdentity from "@/pages/parent-pages/modals/CoreIdentity"
+import PositionMap from "@/pages/parent-pages/modals/PositionMap"
 // import ImageCropModal from "../Cropper/CropImage";
 
 export default function Modals() {
@@ -20,12 +22,22 @@ export default function Modals() {
       </Modal>
 
       <Modal
-        modalId="parentModal"
-        openId="addNewChildren"
+        modalId="addNewChildren"
+        openId="coreIdentity"
         className="max-w-full overflow-hidden! border-0! p-0! lg:max-w-[62%]! 2xl:max-w-[56%]!"
       >
         <ScrollArea className="max-h-[90vh]">
-          <AddNewChildren />
+          <CoreIdentity />
+        </ScrollArea>
+      </Modal>
+
+      <Modal
+        modalId="addNewChildren"
+        openId="positionMap"
+        className="max-w-full overflow-hidden! border-0! p-0! lg:max-w-[62%]! 2xl:max-w-[56%]!"
+      >
+        <ScrollArea className="max-h-[90vh]">
+          <PositionMap />
         </ScrollArea>
       </Modal>
     </div>

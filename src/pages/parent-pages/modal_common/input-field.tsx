@@ -1,5 +1,6 @@
 import type { ChangeEventHandler, HTMLInputTypeAttribute } from "react"
 import { Input } from "@/components/ui/input"
+import { cn } from "@/lib/utils"
 
 interface InputFieldProps {
   label: string
@@ -22,7 +23,12 @@ export default function InputField({
 }: InputFieldProps) {
   return (
     <div className="space-y-2">
-      <label className={`text-sm font-medium text-white ${labelClassName}`}>
+      <label
+        className={cn(
+          "overflow-hidden text-[16px] leading-[150%] font-medium text-ellipsis whitespace-nowrap text-white",
+          labelClassName
+        )}
+      >
         {label}
       </label>
       <Input
@@ -30,7 +36,10 @@ export default function InputField({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className={className}
+        className={cn(
+          "placeholder:text-4 overflow-hidden text-ellipsis whitespace-nowrap placeholder:leading-[150%] placeholder:font-normal placeholder:text-white/30",
+          className
+        )}
       />
     </div>
   )

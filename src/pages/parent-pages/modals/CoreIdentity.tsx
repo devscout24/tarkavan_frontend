@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useSearchParams } from "react-router"
 import {
   DatepickerField,
   InputField,
@@ -7,9 +8,10 @@ import {
   UploadPhoto,
 } from "@/pages/parent-pages/modal_common"
 
-const titleClassName = "text-white  text-[35px] font-bold leading-[150%]"
+const titleClassName = "text-white  text-[20px] font-bold leading-[150%]"
 
-const subtitleClassName = "text-white/80  text-3.5 font-normal leading-[150%]"
+const subtitleClassName =
+  "text-white/80  text-[14px] font-normal leading-[150%]"
 
 const controlClassName =
   "h-11 rounded-xl border border-white/10 bg-[#0F1117] px-3 text-sm text-white placeholder:text-secondary/40 focus-visible:border-brand focus-visible:ring-0"
@@ -17,9 +19,15 @@ const controlClassName =
 const triggerClassName =
   "h-11 w-full rounded-xl border-white/10 bg-[#0F1117] px-3 text-sm text-white data-placeholder:text-secondary/40"
 
-export default function AddNewChildren() {
+export default function CoreIdentity() {
   const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>()
   const [openDatePicker, setOpenDatePicker] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const goToPositionMapStep = () => {
+    searchParams.set("addNewChildren", "positionMap")
+    setSearchParams(searchParams)
+  }
 
   return (
     <div className="w-full rounded-2xl bg-[#090B10] p-4 text-white sm:p-6 md:p-8">
@@ -54,7 +62,7 @@ export default function AddNewChildren() {
 
       <div className="mt-6">
         <div className="flex items-center gap-3 pb-3">
-          <h3 className="text-[26px] leading-[120%] font-semibold text-white">
+          <h3 className="text-[20px] leading-[120%] font-semibold text-white">
             Core Identity
           </h3>
           {/* <div className="h-px flex-1 border-b border-dashed border-white/15" /> */}
@@ -135,7 +143,7 @@ export default function AddNewChildren() {
         </div>
       </div>
 
-      <StepActions />
+      <StepActions onNext={goToPositionMapStep} />
     </div>
   )
 }

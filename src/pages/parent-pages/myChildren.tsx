@@ -32,7 +32,7 @@ export default function MyChildren() {
   const [searchParams, setSearchParams] = useSearchParams()
 
   const openAddNewChildrenModal = () => {
-    searchParams.set("parentModal", "addNewChildren")
+    searchParams.set("addNewChildren", "coreIdentity")
     setSearchParams(searchParams)
   }
 

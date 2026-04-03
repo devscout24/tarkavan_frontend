@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useSearchParams } from "react-router"
 
@@ -63,9 +64,12 @@ export default function PositionMap() {
     },
   })
 
-  // Register fields with validation
-  register("primaryPosition", { required: "Primary position is required" })
-  register("secondaryPosition", { required: "Secondary position is required" })
+  useEffect(() => {
+    register("primaryPosition", { required: "Primary position is required" })
+    register("secondaryPosition", {
+      required: "Secondary position is required",
+    })
+  }, [register])
 
   const primaryPosition = watch("primaryPosition")
   const secondaryPosition = watch("secondaryPosition")
@@ -84,9 +88,14 @@ export default function PositionMap() {
     }
   }
 
+  const setModalStep = (step: string) => {
+    const nextParams = new URLSearchParams(searchParams)
+    nextParams.set("addNewChildren", step)
+    setSearchParams(nextParams)
+  }
+
   const goToNextStep = handleSubmit(() => {
-    searchParams.set("addNewChildren", "seasonStats")
-    setSearchParams(searchParams)
+    setModalStep("seasonStats")
   })
 
   const isPositionVisible = (positionId: string) => {

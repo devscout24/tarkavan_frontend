@@ -78,8 +78,9 @@ export default function SeasonStats() {
     errors[name]?.message ? String(errors[name]?.message) : undefined
 
   const goBackToPositionMap = () => {
-    searchParams.set("addNewChildren", "positionMap")
-    setSearchParams(searchParams)
+    const nextParams = new URLSearchParams(searchParams)
+    nextParams.set("addNewChildren", "positionMap")
+    setSearchParams(nextParams)
   }
 
   const goToNextStep = handleSubmit(() => {

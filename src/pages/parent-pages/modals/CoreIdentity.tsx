@@ -68,14 +68,16 @@ export default function CoreIdentity() {
     },
   })
 
-  // Register fields that use setValue for validation
-  register("profilePhotos", {
-    validate: (files) => files.length > 0 || "Photo is required",
-  })
-  register("dateOfBirth", { required: "Date of birth is required" })
-  register("gender", { required: "Gender is required" })
-  register("sport", { required: "Sport is required" })
-  register("dominantFoot", { required: "Dominant foot is required" })
+  // Register fields controlled through setValue handlers.
+  useEffect(() => {
+    register("profilePhotos", {
+      validate: (files) => files.length > 0 || "Photo is required",
+    })
+    register("dateOfBirth", { required: "Date of birth is required" })
+    register("gender", { required: "Gender is required" })
+    register("sport", { required: "Sport is required" })
+    register("dominantFoot", { required: "Dominant foot is required" })
+  }, [register])
 
   const dateOfBirth = watch("dateOfBirth")
   const gender = watch("gender")
@@ -127,9 +129,14 @@ export default function CoreIdentity() {
     }
   }, [])
 
+  const setModalStep = (step: string) => {
+    const nextParams = new URLSearchParams(searchParams)
+    nextParams.set("addNewChildren", step)
+    setSearchParams(nextParams)
+  }
+
   const goToPositionMapStep = handleSubmit(() => {
-    searchParams.set("addNewChildren", "positionMap")
-    setSearchParams(searchParams)
+    setModalStep("positionMap")
   })
 
   return (

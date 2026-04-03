@@ -1,4 +1,5 @@
 import ChildrenSection from "@/components/custom/children-section"
+import { useSearchParams } from "react-router"
 import danielImage from "../../../public/images/Dainel.png"
 import shaunImage from "../../../public/images/Shaun.png"
 
@@ -28,15 +29,22 @@ const childrenData = [
 ]
 
 export default function MyChildren() {
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const openAddNewChildrenModal = () => {
+    searchParams.set("parentModal", "addNewChildren")
+    setSearchParams(searchParams)
+  }
+
   return (
     <ChildrenSection
       children={childrenData}
-      onAddChild={() => console.log("Add child clicked")}
+      onAddChild={openAddNewChildrenModal}
       onViewProfile={(id) => console.log("View profile:", id)}
       onInvite={(id) => console.log("Invite:", id)}
       onBlock={(id) => console.log("Block:", id)}
       onRemove={(id) => console.log("Remove:", id)}
-      onGetStarted={() => console.log("Get started clicked")}
+      onGetStarted={openAddNewChildrenModal}
     />
   )
 }

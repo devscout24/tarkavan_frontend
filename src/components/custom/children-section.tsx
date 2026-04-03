@@ -58,13 +58,13 @@ export default function ChildrenSection({
           size="default"
           icon={<AddChildIcon />}
           text="Add Child"
-          className="w-fit cursor-pointer bg-brand px-2 py-1.5 text-sm font-medium text-primary hover:border-brand hover:bg-transparent hover:text-[#ffffff]"
+          className="w-fit cursor-pointer bg-brand px-2 py-1.5 text-sm font-medium text-primary hover:border-brand hover:bg-transparent hover:text-[#ffffff] lg:py-1 lg:text-xs xl:py-1.5 xl:text-sm"
           onClick={onAddChild}
         />
       </div>
 
       {/* Cards Grid */}
-      <div className="flex flex-col gap-6 md:flex-row">
+      <div className="flex flex-col items-center gap-6 lg:flex-row lg:flex-wrap lg:items-stretch lg:justify-center xl:flex-nowrap xl:justify-start">
         {children.map((child) => (
           <ChildCard
             key={child.id}

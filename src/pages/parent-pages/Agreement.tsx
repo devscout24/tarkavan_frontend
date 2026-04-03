@@ -283,25 +283,25 @@ const rightCards: AgreementCard[] = [
           own profile is accurate and appropriate. I understand that I am
           responsible for any content uploaded to the platform, including:
         </p>
-        <ul className="mt-2 space-y-1">
-          <li className="flex items-start gap-2">
-            <div className="mt-2 size-1.5 shrink-0 rounded-full bg-[#ADAAAA]" />
+        <ul className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+          <li className="inline-flex items-center gap-1.5 whitespace-nowrap">
+            <div className="size-1.5 shrink-0 rounded-full bg-[#ADAAAA]" />
             <span>Photos</span>
           </li>
-          <li className="flex items-start gap-2">
-            <div className="mt-2 size-1.5 shrink-0 rounded-full bg-[#ADAAAA]" />
+          <li className="inline-flex items-center gap-1.5 whitespace-nowrap">
+            <div className="size-1.5 shrink-0 rounded-full bg-[#ADAAAA]" />
             <span>Videos</span>
           </li>
-          <li className="flex items-start gap-2">
-            <div className="mt-2 size-1.5 shrink-0 rounded-full bg-[#ADAAAA]" />
+          <li className="inline-flex items-center gap-1.5 whitespace-nowrap">
+            <div className="size-1.5 shrink-0 rounded-full bg-[#ADAAAA]" />
             <span>Statistics</span>
           </li>
-          <li className="flex items-start gap-2">
-            <div className="mt-2 size-1.5 shrink-0 rounded-full bg-[#ADAAAA]" />
+          <li className="inline-flex items-center gap-1.5 whitespace-nowrap">
+            <div className="size-1.5 shrink-0 rounded-full bg-[#ADAAAA]" />
             <span>Personal information</span>
           </li>
-          <li className="flex items-start gap-2">
-            <div className="mt-2 size-1.5 shrink-0 rounded-full bg-[#ADAAAA]" />
+          <li className="inline-flex items-center gap-1.5 whitespace-nowrap">
+            <div className="size-1.5 shrink-0 rounded-full bg-[#ADAAAA]" />
             <span>Communications</span>
           </li>
         </ul>
@@ -403,9 +403,9 @@ function AgreementCardView({ card }: { card: AgreementCard }) {
           {card.number} {card.title}
         </h3>
       </div>
-      <p className="text-[14px] leading-[162.5%] font-normal text-[#ADAAAA]">
+      <div className="text-[14px] leading-[162.5%] font-normal text-[#ADAAAA]">
         {card.description}
-      </p>
+      </div>
     </article>
   )
 }
@@ -417,16 +417,17 @@ export default function Agreement() {
 
       <div className="relative mx-auto w-full max-w-310 px-6 sm:px-8 lg:px-10">
         <div>
-          <p className="text-[12px] leading-[150%] font-normal tracking-[0.35em] text-secondary uppercase">
+          <p className="text-[12px] leading-[150%] font-normal tracking-[0.35em] text-brand uppercase">
             Legal Framework
           </p>
-          <h1 className="mt-4 max-w-4xl text-[40px] leading-[100%] font-bold tracking-[-0.04em] text-white uppercase lg:text-[48px]">
-            Parental Consent &amp; User Responsibility Agreement
+          <h1 className="mt-4 text-[40px] leading-[100%] font-bold tracking-[-0.04em] text-white uppercase lg:text-[48px]">
+            Parental Consent & User Responsibility Agreement
           </h1>
           <p className="mt-6 mb-6 max-w-4xl text-[16px] leading-[162%] font-normal text-secondary sm:text-[18px]">
-            By creating an account on GoElite, I acknowledge and agree to the
-            following terms on behalf of myself and any minor child whose
-            profile I create, manage, or supervise.
+            By creating an account on{" "}
+            <span className="font-medium">GoElite</span>, I acknowledge and
+            agree to the following terms on behalf of myself and any minor child
+            whose profile I create, manage, or supervise.
           </p>
         </div>
 
@@ -487,7 +488,7 @@ export default function Agreement() {
         <div className="mt-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <button
             type="button"
-            className="inline-flex items-center gap-2 text-[12px] leading-[150%] font-normal tracking-[0.32em] text-secondary uppercase transition-colors hover:text-white"
+            className="inline-flex cursor-pointer items-center gap-2 text-[12px] leading-[150%] font-normal tracking-[0.32em] text-secondary uppercase transition-colors hover:text-white"
           >
             <DownloadIcon />
             Download PDF Version
@@ -496,7 +497,7 @@ export default function Agreement() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <button
               type="button"
-              className="h-12 border border-white/15 px-8 text-[12px] font-bold tracking-[0.18em] text-secondary uppercase transition-colors hover:border-white/30 hover:text-white"
+              className="h-12 cursor-pointer border border-white/15 px-8 text-[12px] font-bold tracking-[0.18em] text-secondary uppercase transition-colors hover:border-white/30 hover:text-white"
             >
               Exit Flow
             </button>
@@ -504,7 +505,7 @@ export default function Agreement() {
               variant="default"
               size="lg"
               text="Agree and Continue"
-              className="h-12 w-72 border border-brand/40 bg-brand px-12 py-4 text-[12px] font-bold tracking-[0.18em] text-[#111111] uppercase shadow-[0_0_28px_rgba(198,245,122,0.28)] hover:bg-brand/90"
+              className="h-12 w-72 cursor-pointer border border-brand/40 bg-brand px-12 py-4 text-[12px] font-bold tracking-[0.18em] text-[#111111] uppercase shadow-[0_0_28px_rgba(198,245,122,0.28)] hover:bg-brand/90"
             />
           </div>
         </div>

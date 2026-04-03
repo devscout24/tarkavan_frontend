@@ -53,6 +53,7 @@ import { FaRegUser } from "react-icons/fa6"
 import { RiMenuSearchLine } from "react-icons/ri"
 import { BiMessageSquareDetail } from "react-icons/bi"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import Modals from "@/components/custom/modal"
 
 const DATA = {
   user: {
@@ -111,6 +112,7 @@ export const ParentRootLayout = () => {
 
   return (
     <SidebarProvider className={` `}>
+      <Modals />
       <Sidebar collapsible="icon" className="relative border-secondary">
         <img
           src={sidebarbg}

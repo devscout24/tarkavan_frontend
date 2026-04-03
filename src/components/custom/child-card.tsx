@@ -108,35 +108,35 @@ export default function ChildCard({
   onRemove,
 }: ChildCardProps) {
   return (
-    <div className="max-h-[452px] max-w-[349px] overflow-hidden rounded-[8px] border border-secondary/50">
+    <div className="max-h-113 max-w-87.25 overflow-hidden rounded-[8px] border border-secondary/50 lg:max-w-75 xl:max-w-87.25">
       {/* Image Section */}
-      <div className="relative max-h-[180px] w-full">
+      <div className="relative max-h-45 w-full lg:max-h-40 xl:max-h-45">
         <img
           src={imageUrl}
           alt={name}
-          className="block h-full max-h-[180px] w-full object-contain"
+          className="block h-full max-h-45 w-full object-contain lg:max-h-40 xl:max-h-45"
         />
         {/* Badge */}
         <VisibilityBadge
           isPublic={isPublic}
-          className="absolute top-4 right-4"
+          className="absolute top-4 right-4 lg:top-3 lg:right-3 lg:scale-90 xl:top-4 xl:right-4 xl:scale-100"
         />
       </div>
 
       {/* Content Section */}
-      <div className="space-y-4 bg-primary p-6">
+      <div className="space-y-4 bg-primary p-6 lg:space-y-3 lg:p-5 xl:space-y-4 xl:p-6">
         {/* Name and Football Icon */}
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-xl leading-[120%] font-medium text-white">
+            <p className="text-xl leading-[120%] font-medium text-white lg:text-lg xl:text-xl">
               {name}
             </p>
-            <p className="text-sm leading-[150%] font-normal text-white">
+            <p className="text-sm leading-[150%] font-normal text-white lg:text-xs xl:text-sm">
               Age: {age} | {position} | Jersey:{" "}
               <span className="font-medium">{jerseyNumber}</span>
             </p>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 lg:h-9 lg:w-9 xl:h-10 xl:w-10">
             <FootballIcon />
           </div>
         </div>
@@ -187,12 +187,12 @@ export default function ChildCard({
             variant="outline"
             size="lg"
             text="View Profile"
-            className="h-10 flex-1 cursor-pointer border-brand bg-transparent text-sm font-medium text-white transition-all hover:bg-brand hover:text-primary"
+            className="h-10 flex-1 cursor-pointer border-brand bg-transparent text-sm font-medium text-white transition-all hover:bg-brand hover:text-primary lg:h-9 lg:text-xs xl:h-10 xl:text-sm"
             onClick={onViewProfile}
           />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border border-brand bg-primary">
+              <button className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border border-brand bg-primary lg:h-9 lg:w-9 xl:h-10 xl:w-10">
                 <ThreeDotsIcon />
               </button>
             </DropdownMenuTrigger>

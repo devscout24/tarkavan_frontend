@@ -1,0 +1,65 @@
+import { useRef } from "react"
+import { Icon } from "@/components/custom/Icon"
+
+interface UploadPhotoProps {
+  title?: string
+  subtitle?: string
+  className?: string
+  onFileSelect?: (file: File) => void
+  onClick?: () => void
+}
+
+export default function UploadPhoto({
+  title = "UPLOAD PHOTO",
+  subtitle = "JPG or PNG, max 5MB. Headshots preferred.",
+  className = "",
+  onFileSelect,
+  onClick,
+}: UploadPhotoProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleButtonClick = () => {
+    onClick?.()
+    fileInputRef.current?.click()
+  }
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      onFileSelect?.(file)
+    }
+    // Reset the input so the same file can be selected again if needed
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
+    }
+  }
+
+  return (
+    <>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png"
+        onChange={handleFileSelect}
+        className="hidden"
+        aria-hidden="true"
+      />
+      <button
+        type="button"
+        onClick={handleButtonClick}
+        className={`flex h-28 w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/25 bg-white/5 text-center hover:bg-white/[0.07] ${className}`}
+      >
+        <Icon width="28" height="25" viewBox="0 0 28 25" className="mb-2">
+          <path
+            d="M2.5 25C1.8125 25 1.22396 24.7552 0.734375 24.2656C0.244792 23.776 0 23.1875 0 22.5V7.5C0 6.8125 0.244792 6.22396 0.734375 5.73438C1.22396 5.24479 1.8125 5 2.5 5H6.4375L8.75 2.5H16.25V5H9.84375L7.5625 7.5H2.5V22.5H22.5V11.25H25V22.5C25 23.1875 24.7552 23.776 24.2656 24.2656C23.776 24.7552 23.1875 25 22.5 25H2.5ZM22.5 7.5V5H20V2.5H22.5V0H25V2.5H27.5V5H25V7.5H22.5ZM12.5 20.625C14.0625 20.625 15.3906 20.0781 16.4844 18.9844C17.5781 17.8906 18.125 16.5625 18.125 15C18.125 13.4375 17.5781 12.1094 16.4844 11.0156C15.3906 9.92188 14.0625 9.375 12.5 9.375C10.9375 9.375 9.60938 9.92188 8.51562 11.0156C7.42188 12.1094 6.875 13.4375 6.875 15C6.875 16.5625 7.42188 17.8906 8.51562 18.9844C9.60938 20.0781 10.9375 20.625 12.5 20.625ZM12.5 18.125C11.625 18.125 10.8854 17.8229 10.2812 17.2188C9.67708 16.6146 9.375 15.875 9.375 15C9.375 14.125 9.67708 13.3854 10.2812 12.7812C10.8854 12.1771 11.625 11.875 12.5 11.875C13.375 11.875 14.1146 12.1771 14.7188 12.7812C15.3229 13.3854 15.625 14.125 15.625 15C15.625 15.875 15.3229 16.6146 14.7188 17.2188C14.1146 17.8229 13.375 18.125 12.5 18.125Z"
+            fill="white"
+          />
+        </Icon>
+        <span className="text-sm font-semibold tracking-wide text-white">
+          {title}
+        </span>
+        <span className="mt-1 text-xs text-secondary/40">{subtitle}</span>
+      </button>
+    </>
+  )
+}

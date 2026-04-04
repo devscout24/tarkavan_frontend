@@ -14,6 +14,8 @@ import NotFoundPage from "./components/common/not-found"
 // import ProtectedRoute from "./components/common/protected-route"
 import MyChildren from "./pages/parent-pages/myChildren"
 import Agreement from "./pages/parent-pages/Agreement"
+import ProgramPage from "./pages/player-pages/program-page"
+import ProgramDetails from "./pages/player-pages/program-details"
 
 const router = createBrowserRouter([
   { path: "/", element: <Navigate to="/auth" replace /> },
@@ -37,6 +39,14 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <PlayerProfile />,
+      },
+      {
+        path: "programs",
+        element: <ProgramPage />,
+      },
+      {
+        path: "programs/details/:id",
+        element: <ProgramDetails />,
       },
     ],
   },

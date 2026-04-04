@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -128,6 +130,7 @@
 
 
 @layer base {
+
   html {
     @apply font-sans;
   }
@@ -146,4 +149,9 @@
   [data-slot="scroll-area-thumb"] {
     background-color: var(--brand) !important;
   }
+}
+
+/* custom common css */
+* {
+  font-family: "Plus Jakarta Sans", sans-serif;
 }

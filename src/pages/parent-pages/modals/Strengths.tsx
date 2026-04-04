@@ -74,7 +74,7 @@ const strengthCategories: StrengthCategory[] = [
   {
     id: "aerial",
     label: "Aerial",
-    strengths: ["Heading", "Aerial Reach", "Jumping Ability"],
+    strengths: ["Heading", "Aerial Duels", "Jumping Ability"],
   },
 ]
 
@@ -151,7 +151,9 @@ export default function Strengths() {
       return
     }
 
-    // Intentionally no navigation until the next modal step is implemented.
+    const nextParams = new URLSearchParams(searchParams)
+    nextParams.set("addNewChildren", "biography")
+    setSearchParams(nextParams)
   }
 
   return (

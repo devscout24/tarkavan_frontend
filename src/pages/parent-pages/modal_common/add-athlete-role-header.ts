@@ -14,6 +14,7 @@ export type AddAthleteModalStep =
   | "positionMap"
   | "seasonStats"
   | "strengths"
+  | "biography"
 
 type RoleHeaderCopy = {
   title: string

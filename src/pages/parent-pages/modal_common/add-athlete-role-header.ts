@@ -15,6 +15,7 @@ export type AddAthleteModalStep =
   | "seasonStats"
   | "strengths"
   | "biography"
+  | "highlights"
 
 type RoleHeaderCopy = {
   title: string
@@ -23,7 +24,7 @@ type RoleHeaderCopy = {
 
 const ROLE_HEADER_COPY: Record<AddAthleteRole, RoleHeaderCopy> = {
   parent: {
-    title: "Add New Parent",
+    title: "Add New Children",
     subtitle: "Start by defining the athlete's core identity profile.",
   },
   player: {

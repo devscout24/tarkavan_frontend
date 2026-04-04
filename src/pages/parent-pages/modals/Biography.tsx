@@ -46,7 +46,7 @@ export default function Biography() {
   }
 
   const goToNextStep = handleSubmit(() => {
-    // Intentionally no navigation until the next modal step is implemented.
+    setModalStep("highlights")
   })
 
   const biographyRules = {

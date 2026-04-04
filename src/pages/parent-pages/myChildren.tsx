@@ -1,4 +1,5 @@
 import ChildrenSection from "@/components/custom/children-section"
+import { buildAddAthleteModalParams } from "@/pages/parent-pages/modal_common"
 import { useSearchParams } from "react-router"
 import danielImage from "../../../public/images/Dainel.png"
 import shaunImage from "../../../public/images/Shaun.png"
@@ -32,8 +33,8 @@ export default function MyChildren() {
   const [searchParams, setSearchParams] = useSearchParams()
 
   const openAddNewChildrenModal = () => {
-    searchParams.set("addNewChildren", "coreIdentity")
-    setSearchParams(searchParams)
+    const nextParams = buildAddAthleteModalParams(searchParams, "parent")
+    setSearchParams(nextParams)
   }
 
   return (

@@ -12,6 +12,7 @@ interface ModalProps {
   className?: string
   title?: string
   autoFocus?: boolean
+  cleanupQueryKeys?: string[]
 }
 
 export default function Modal({
@@ -19,6 +20,7 @@ export default function Modal({
   modalId,
   className = "",
   title = "",
+  cleanupQueryKeys = [],
   children,
 }: PropsWithChildren<ModalProps>) {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -26,13 +28,16 @@ export default function Modal({
   const isMobile = useIsMobile()
 
   const handleOpenChange = (open: boolean) => {
+    const nextParams = new URLSearchParams(searchParams)
+
     if (open) {
-      searchParams.set(modalId, openId)
+      nextParams.set(modalId, openId)
     } else {
-      searchParams.delete(modalId)
+      nextParams.delete(modalId)
+      cleanupQueryKeys.forEach((key) => nextParams.delete(key))
     }
 
-    setSearchParams(searchParams)
+    setSearchParams(nextParams)
   }
 
   if (isMobile) {

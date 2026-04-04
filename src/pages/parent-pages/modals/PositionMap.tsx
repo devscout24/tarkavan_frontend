@@ -3,7 +3,12 @@ import { useForm } from "react-hook-form"
 import { useSearchParams } from "react-router"
 
 import footballField from "../../../../public/images/soccer_Field.png"
-import StepActions from "@/pages/parent-pages/modal_common/step-actions"
+import {
+  getAddAthleteRoleHeaderCopy,
+  ModalStepHeader,
+  MODAL_ROLE_QUERY_KEY,
+  StepActions,
+} from "@/pages/parent-pages/modal_common"
 import {
   Select,
   SelectContent,
@@ -42,14 +47,15 @@ const positions: Position[] = [
 // Initial positions visible on field load
 const initialPositions = ["LW", "ST", "GK", "CB", "RW"]
 
-const titleClassName = "text-[20px] font-bold leading-[150%] text-white"
-const subtitleClassName = "text-[14px] font-normal leading-[150%] text-white/80"
 const sectionTitleClassName = "text-[20px] font-bold leading-[150%] text-white"
 const sectionSubtitleClassName =
   "text-[14px] font-normal leading-[150%] text-white/70"
 
 export default function PositionMap() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const roleHeaderCopy = getAddAthleteRoleHeaderCopy(
+    searchParams.get(MODAL_ROLE_QUERY_KEY)
+  )
   const isValidPosition = (value: string | null) =>
     Boolean(value && positions.some((position) => position.id === value))
 
@@ -136,6 +142,10 @@ export default function PositionMap() {
     setSearchParams(nextParams)
   }
 
+  const goBackToCoreIdentity = () => {
+    setModalStep("coreIdentity")
+  }
+
   const goToNextStep = handleSubmit(() => {
     setModalStep("seasonStats")
   })
@@ -150,36 +160,17 @@ export default function PositionMap() {
 
   return (
     <div className="w-full rounded-2xl bg-[#090B10] p-4 text-white sm:p-6 md:p-8">
-      <div className="flex flex-col gap-4 border-b border-white/8 pt-4 pb-5 md:flex-row md:items-start md:justify-between">
-        <div className="space-y-1.5">
-          <h2 className={titleClassName}>Add New Children</h2>
-          <p className={subtitleClassName}>
-            Start by defining the athlete&apos;s core identity profile.
-          </p>
-        </div>
-
-        <div className="min-w-47.5 space-y-2">
-          <p className="text-right text-[12px] leading-[150%] font-medium text-white">
-            Step <span className="text-brand">2</span> of 8
-          </p>
-          <div className="flex items-center gap-1.5">
-            <span className="h-1.25 flex-1 rounded-full bg-white" />
-            <span className="h-1.25 flex-1 rounded-full bg-brand" />
-            <span className="h-1.25 flex-1 rounded-full bg-white" />
-            <span className="h-1.25 flex-1 rounded-full bg-white" />
-            <span className="h-1.25 flex-1 rounded-full bg-white" />
-            <span className="h-1.25 flex-1 rounded-full bg-white" />
-            <span className="h-1.25 flex-1 rounded-full bg-white" />
-            <span className="h-1.25 flex-1 rounded-full bg-white" />
-          </div>
-        </div>
-      </div>
+      <ModalStepHeader
+        title={roleHeaderCopy.title}
+        subtitle={roleHeaderCopy.subtitle}
+        currentStep={2}
+      />
 
       <div className="mt-5 pb-6">
         <h3 className={sectionTitleClassName}>Position Map</h3>
         <p className={`${sectionSubtitleClassName} mt-1`}>
-          Select the player&apos;s primary and secondary positions. Tap the
-          positions on the field or use the menus below.
+          Select the player's primary and secondary positions. Tap the positions
+          on the field or use the menus below.
         </p>
         <div className="mt-4 h-px w-full bg-[repeating-linear-gradient(to_right,rgba(255,255,255,0.2)_0_10px,transparent_10px_20px)]" />
 
@@ -307,7 +298,10 @@ export default function PositionMap() {
         </div>
       </div>
 
-      <StepActions onNext={() => goToNextStep()} />
+      <StepActions
+        onBack={goBackToCoreIdentity}
+        onNext={() => goToNextStep()}
+      />
     </div>
   )
 }

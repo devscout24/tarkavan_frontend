@@ -8,6 +8,7 @@ interface StepActionsProps {
   backLabel?: string
   nextLabel?: string
   nextUrl?: string
+  isNextDisabled?: boolean
 }
 
 export default function StepActions({
@@ -16,6 +17,7 @@ export default function StepActions({
   backLabel = "Back",
   nextLabel = "Next Step",
   nextUrl,
+  isNextDisabled = false,
 }: StepActionsProps) {
   const navigate = useNavigate()
 
@@ -47,6 +49,7 @@ export default function StepActions({
 
       <CommonBtn
         onClick={handleNext}
+        disabled={isNextDisabled}
         variant="default"
         size="sm"
         text={nextLabel}
@@ -70,7 +73,11 @@ export default function StepActions({
             />
           </Icon>
         }
-        className="inline-flex h-11 w-40 cursor-pointer items-center gap-2 rounded-xl bg-brand px-5 text-sm font-semibold text-[#111308] transition-all hover:border hover:border-brand hover:bg-transparent hover:text-[#ffffff]"
+        className={`inline-flex h-11 w-40 items-center gap-2 rounded-xl px-5 text-sm font-semibold transition-all ${
+          isNextDisabled
+            ? "cursor-not-allowed bg-brand/50 text-[#111308]/70"
+            : "cursor-pointer bg-brand text-[#111308] hover:border hover:border-brand hover:bg-transparent hover:text-[#ffffff]"
+        }`}
       />
     </div>
   )

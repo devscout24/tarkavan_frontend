@@ -11,6 +11,7 @@ interface IconButtonDemoProps {
   text?: string
   onClick?: () => void
   isLoading?: boolean
+  disabled?: boolean
 }
 
 export default function CommonBtn({

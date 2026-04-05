@@ -19,6 +19,7 @@ import ProgramDetails from "./pages/player-pages/program-details"
 import UpcomingEventPage from "./pages/player-pages/upcoming-event-page"
 import SearchExplorePage from "./pages/player-pages/search-explore-page"
 import PaymentPage from "./pages/player-pages/payment-page"
+import MessagePage from "./pages/player-pages/message-page"
 
 const router = createBrowserRouter([
   { path: "/", element: <Navigate to="/auth" replace /> },
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
       {
         path: "payments",
         element: <PaymentPage />,
+      },
+      {
+        path: "messages",
+        element: <MessagePage />,
       },
     ],
   },

@@ -163,9 +163,11 @@ export const PlayerRootLayout = () => {
             </div>
           </div>
         </header>
+        {pathname.includes("/player/messages") ? <Outlet /> : 
         <ScrollArea className="h-[92vh] border px-8 py-6">
           <Outlet />
         </ScrollArea>
+        }
       </SidebarInset>
     </SidebarProvider>
   )

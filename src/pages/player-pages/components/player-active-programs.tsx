@@ -27,7 +27,7 @@ export default function PlayerActivePrograms({
   onViewDetails,
 }: PlayerActiveProgramsProps) {
   return (
-    <section className="w-full">
+    <section className="w-full  ">
       <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
         <h2 className="text-xl font-bold text-white sm:text-2xl">{title}</h2>
         <button
@@ -38,13 +38,13 @@ export default function PlayerActivePrograms({
         </button>
       </div>
 
-      <article className="overflow-hidden rounded-2xl border border-white/10 bg-[#B9E56C] shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
+      <article className="overflow-hidden rounded-2xl border border-white/10 bg-brand">
         <div className="lg:flex">
-          <div className="flex-3 relative min-h-44 md:min-h-full">
+          <div className=" relative min-h-44 md:min-h-full">
             <img
               src={player1}
               alt={programName}
-              className="h-full w-full object-cover"
+              className="max-h-55 h-full w-full lg:max-w-[288px] object-fill"
             />
 
             <span className="absolute bottom-3 left-3 rounded-full bg-[#16A34A] px-3 py-1 text-[10px] font-bold tracking-[0.08em] text-white uppercase">
@@ -52,7 +52,7 @@ export default function PlayerActivePrograms({
             </span>
           </div>
 
-          <div className="flex-5 px-4 py-5 text-primary sm:px-6 md:py-6 lg:py-7">
+          <div className="flex-1 px-4 py-5 text-primary sm:px-6 md:py-6 lg:py-7">
             <h3 className="text-[22px] leading-tight font-bold sm:text-[24px] lg:text-[28px]">
               {programName}
             </h3>
@@ -62,7 +62,7 @@ export default function PlayerActivePrograms({
               Coach: {coachName}
             </p>
 
-            <div className="mt-4 grid gap-3 text-primary sm:grid-cols-2 md:mt-5 md:gap-8">
+            <div className="mt-4 flex  gap-3 text-primary   md:mt-5 md:gap-8">
               <div>
                 <p className="text-sm font-normal text-primary/50 sm:text-base">
                   Schedule

@@ -17,6 +17,7 @@ import Agreement from "./pages/parent-pages/Agreement"
 import ProgramPage from "./pages/player-pages/program-page"
 import ProgramDetails from "./pages/player-pages/program-details"
 import UpcomingEventPage from "./pages/player-pages/upcoming-event-page"
+import SearchExplorePage from "./pages/player-pages/search-explore-page"
 
 const router = createBrowserRouter([
   { path: "/", element: <Navigate to="/auth" replace /> },
@@ -52,6 +53,10 @@ const router = createBrowserRouter([
       {
         path: "upcoming-events",
         element: <UpcomingEventPage />,
+      },
+      {
+        path: "search-explore",
+        element: <SearchExplorePage />,
       },
     ],
   },

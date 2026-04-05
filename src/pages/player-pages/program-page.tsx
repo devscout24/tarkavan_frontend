@@ -3,6 +3,7 @@ import ProgramHead from "./components/program-head"
 import player1 from "@/assets/images/player1.png"
 import player2 from "@/assets/images/player2.png"
 import player3 from "@/assets/images/player3.png" 
+import { useNavigate } from "react-router"
 
 
 export default function ProgramPage() {
@@ -45,6 +46,8 @@ const programs = [
 
 ];
 
+const navigate = useNavigate()
+
   return (
     <section>
       <ProgramHead title="Available Programs" options={[{value: "all", label: "All"}, {value: "football", label: "Football"}, {value: "basketball", label: "Basketball"}]} placeholder="All Sports" />
@@ -52,7 +55,7 @@ const programs = [
       {/* programs cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 ">
         {programs.map((program, index) => 
-          <ProgramCard key={index} {...program} />
+          <ProgramCard key={index} {...program} onClick={() => navigate(`/player/programs/details/${program.id}`)} />
         )}
       </div> 
     </section>

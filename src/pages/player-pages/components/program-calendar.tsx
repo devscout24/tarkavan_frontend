@@ -6,6 +6,7 @@ import { format, isAfter, isWithinInterval, parseISO } from "date-fns"
 import { Calendar, CalendarDayButton } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import CommonBtn from "@/components/common/common-btn"
 
 type ProgramCalendarProps = {
   startDate: Date
@@ -180,6 +181,13 @@ export function ProgramCalendar({
           ) : null}
         </div>
       </CardContent>
+
+      <div className="px-5 pb-5 "> 
+        <CommonBtn  text="Continue to Payment" size={"lg"} variant={"default"} className="w-full bg-brand text-primary text-[14px] font-semibold hover:bg-brand/90 cursor-pointer   "  />
+      </div>
+
+
+
     </Card>
   )
 }

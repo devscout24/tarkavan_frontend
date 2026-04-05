@@ -3,8 +3,7 @@ import { Calendar, Clock3, UserRound } from "lucide-react"
 import { Badge } from "@/components/ui/badge" 
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import CommonBtn from "./common-btn"
-import { useNavigate } from "react-router"
+import CommonBtn from "./common-btn" 
 
 type ProgramCardProps = {
   id?: string | number
@@ -19,11 +18,10 @@ type ProgramCardProps = {
   imageAlt?: string
   buttonLabel?: string
   className?: string
-  onViewDetails?: () => void
+  onClick?: () => void
 }
 
-export default function ProgramCard({
-  id,
+export default function ProgramCard({ 
   title,
   coachName,
   schedule,
@@ -35,9 +33,9 @@ export default function ProgramCard({
   imageAlt,
   buttonLabel,
   className, 
+  onClick
 }: ProgramCardProps) {
-
-    const navigate = useNavigate()
+ 
 
   return (
     <Card
@@ -77,7 +75,7 @@ export default function ProgramCard({
           </div>
         </div>
 
-        <div className="space-y-2 text-lg font-light text-white/80">
+        <div className="space-y-2 text-[14px] font-light text-white/80">
           <div className="flex items-center gap-2">
             <UserRound className="size-4" />
             <span>Coach: {coachName}</span>
@@ -91,7 +89,7 @@ export default function ProgramCard({
             <span>{duration}</span>
           </div>
         </div> 
-        <CommonBtn text={buttonLabel}  className=" mt-2 h-11 w-full rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90   " size={"lg"} variant={"default"} onClick={() => navigate(`/player/programs/details/${id}`)} />
+        <CommonBtn text={buttonLabel}  className=" mt-2 h-11 w-full rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90   " size={"lg"} variant={"default"} onClick={onClick} />
       </CardContent>
     </Card>
   )

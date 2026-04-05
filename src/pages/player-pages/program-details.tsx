@@ -50,7 +50,7 @@ export default function ProgramDetails() {
       />
 
       {/* layout */}
-      <div className="mt-5 flex gap-6">
+      <div className="mt-5 flex flex-col-reverse lg:flex-row    gap-6">
         {/* left side */}
         <div className="flex-2">
           {/* about program */}

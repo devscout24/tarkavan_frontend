@@ -16,6 +16,7 @@ import MyChildren from "./pages/parent-pages/myChildren"
 import Agreement from "./pages/parent-pages/Agreement"
 import ProgramPage from "./pages/player-pages/program-page"
 import ProgramDetails from "./pages/player-pages/program-details"
+import UpcomingEventPage from "./pages/player-pages/upcoming-event-page"
 
 const router = createBrowserRouter([
   { path: "/", element: <Navigate to="/auth" replace /> },
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       {
         path: "programs/details/:id",
         element: <ProgramDetails />,
+      },
+      {
+        path: "upcoming-events",
+        element: <UpcomingEventPage />,
       },
     ],
   },

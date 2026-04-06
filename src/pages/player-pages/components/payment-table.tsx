@@ -97,19 +97,19 @@ export default function PaymentTable() {
       <div className="mx-auto mt-4 max-w-[95vw] [&>div]:rounded-lg [&>div]:border">
         <Table>
           <TableHeader>
-            <TableRow className="bg-brand hover:bg-brand">
+            <TableRow className="bg-brand  hover:bg-brand">
               <TableHead
-                className={`sticky left-0 z-10 bg-brand ${columnBorderClass}`}
+                className={`sticky left-0 z-10 bg-brand  ${columnBorderClass} text-primary! `}
               >
                 Program Name
               </TableHead>
-              <TableHead className={columnBorderClass}>Child</TableHead>
-              <TableHead className={columnBorderClass}>Amount</TableHead>
-              <TableHead className={columnBorderClass}>HST</TableHead>
-              <TableHead className={columnBorderClass}>Discount</TableHead>
-              <TableHead className={columnBorderClass}>Total</TableHead>
-              <TableHead className={columnBorderClass}>Date</TableHead>
-              <TableHead className={columnBorderClass}>Status</TableHead>
+              <TableHead className={"text-primary!"}>Child</TableHead>
+              <TableHead className={"text-primary!"}>Amount</TableHead>
+              <TableHead className={"text-primary!"}>HST</TableHead>
+              <TableHead className={"text-primary!"}>Discount</TableHead>
+              <TableHead className={"text-primary!"}>Total</TableHead>
+              <TableHead className={"text-primary!"}>Date</TableHead>
+              <TableHead className={"text-primary!"}>Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

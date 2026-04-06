@@ -32,7 +32,7 @@ import { RiDashboardFill } from "react-icons/ri"
 import { FaRegUser } from "react-icons/fa6"
 import { RiMenuSearchLine } from "react-icons/ri"
 import { BiMessageSquareDetail } from "react-icons/bi"
-import { ScrollArea } from "@/components/ui/scroll-area" 
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 const DATA = {
   user: {
@@ -144,15 +144,15 @@ export const PlayerRootLayout = () => {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter>
-          <SidebarMenu className="flex-row gap-2 py-2 pl-2 text-red-500 text-base cursor-pointer    "> 
-             <LogOut />
-             <span>Logout</span>
+          <SidebarMenu className="cursor-pointer flex-row gap-2 py-2 pl-2 text-base text-red-500">
+            <LogOut />
+            <span>Logout</span>
           </SidebarMenu>
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>
 
-      <SidebarInset>
+      <SidebarInset className="">
         <header className="flex shrink-0 items-center gap-2 border-b border-secondary py-2.5 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex w-full items-center justify-between gap-2 px-4">
             <BreadcrumbCustom />
@@ -163,11 +163,16 @@ export const PlayerRootLayout = () => {
             </div>
           </div>
         </header>
-        {pathname.includes("/player/messages") ? <Outlet /> : 
-        <ScrollArea className="h-[92vh] border px-8 py-6">
+        {pathname.includes("/player/messages") ? (
           <Outlet />
-        </ScrollArea>
-        }
+        ) : (
+          <ScrollArea className="h-[92vh] border px-8 py-6">
+            <Outlet />
+          </ScrollArea>
+        )}
+        {/* <ScrollArea className="h-[92vh] border px-8 py-6">
+          <Outlet />
+        </ScrollArea> */}
       </SidebarInset>
     </SidebarProvider>
   )

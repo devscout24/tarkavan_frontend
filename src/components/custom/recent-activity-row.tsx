@@ -16,7 +16,7 @@ export default function RecentActivityRow({
   return (
     <div
       className={`flex items-start gap-3 px-4 py-4 sm:px-5 ${
-        showDivider ? "border-b border-secondary/60" : ""
+        showDivider ? "border-b border-secondary" : ""
       }`}
     >
       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand text-primary">

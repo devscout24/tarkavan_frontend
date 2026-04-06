@@ -15,7 +15,7 @@ export default function Bio({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-sm leading-relaxed text-secondary">{description}</p>
+        <p className="text-sm leading-relaxed text-white">{description}</p>
       </CardContent>
     </Card>
   )

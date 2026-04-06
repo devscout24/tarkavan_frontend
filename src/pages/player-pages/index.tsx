@@ -48,7 +48,7 @@ export function PlayerDashboardPage() {
         <div className="xl:flex-8 md:flex-3">
           <h3 className="mb-2 text-base font-semibold">Recent Activity</h3>
 
-          <div className="rounded-[16px] border border-secondary/40">
+          <div className="rounded-[16px] border border-secondary">
             {activities.map((activity, index) => (
               <RecentActivityRow
                 key={index}
@@ -71,7 +71,7 @@ export function PlayerDashboardPage() {
               variant={"default"}
               size={"sm"}
               icon={<SquarePen />}
-              className="w-full cursor-pointer bg-secondary py-6! hover:bg-brand hover:text-primary"
+              className="w-full cursor-pointer text-white bg-secondary py-6! hover:bg-brand hover:text-primary"
               text={"Edit My Profile"}
             />
             <CommonBtn

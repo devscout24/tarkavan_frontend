@@ -1,6 +1,6 @@
 "use client"
 import ProgramCard from "@/components/common/program-card"
-import PlayerActivePrograms from "../components/player-active-programs"
+import PlayerActivePrograms from "../../../../components/common/player-active-programs"
 // import { useNavigate } from "react-router"
 
 export default function UpcomingEventPage() {

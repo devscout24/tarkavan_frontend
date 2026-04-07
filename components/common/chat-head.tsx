@@ -1,8 +1,7 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 import { cn } from "@/lib/utils"
-import { ChatItem } from "../messages/page"
- 
+import { ChatItem } from "../../app/(dashboards)/player/messages/page"
 
 type ChatHeadProps = {
   chats: ChatItem[]

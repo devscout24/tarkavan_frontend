@@ -1,10 +1,8 @@
 "use client"
 
 import * as React from "react"
-import ChatHead from "../components/chat-head"
-import ChatInbox from "../components/chat-inbox"
- 
- 
+import ChatHead from "../../../../components/common/chat-head"
+import ChatInbox from "../../../../components/common/chat-inbox"
 
 export type ChatItem = {
   id: string

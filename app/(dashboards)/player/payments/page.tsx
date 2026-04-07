@@ -2,7 +2,7 @@ import StatCard from "@/components/common/stat-card"
 import { FaRegCreditCard } from "react-icons/fa";
 import { MdOutlinePending } from "react-icons/md";
 import { CiWallet } from "react-icons/ci"; 
-import PaymentTable from "../components/payment-table";
+import PaymentTable from "../../../../components/common/payment-table";
 
 
 

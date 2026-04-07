@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
-import { ChatItem, ChatMessage } from "../messages/page"
+import {
+  ChatItem,
+  ChatMessage,
+} from "../../app/(dashboards)/player/messages/page"
 import Image from "next/image"
- 
 
 type ChatInboxProps = {
   chat: ChatItem
@@ -84,7 +86,7 @@ export default function ChatInbox({
       </header>
 
       <div ref={messagesViewportRef} className="min-h-0 flex-1">
-        <ScrollArea className=" h-[40vh] xl:h-[70vh] px-3 py-4 md:px-5 md:py-5">
+        <ScrollArea className="h-[40vh] px-3 py-4 md:px-5 md:py-5 xl:h-[70vh]">
           <div className="space-y-6 pb-3">
             {messages.map((message) => {
               const isCoach = message.sender === "coach"
@@ -196,7 +198,7 @@ export default function ChatInbox({
         </ScrollArea>
       </div>
 
-      <div className="border-t border-white/10 bg-secondary/8 p-3 md:p-4   ">
+      <div className="border-t border-white/10 bg-secondary/8 p-3 md:p-4">
         <div className="flex items-center gap-2 rounded-xl border border-secondary/50 bg-transparent p-2">
           <div className="relative flex-1">
             <Input

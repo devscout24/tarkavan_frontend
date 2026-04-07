@@ -1,7 +1,7 @@
 "use client"
 import ProgramCard from "@/components/common/program-card"
 import { useRouter } from "next/navigation"
-import ExploreFilter from "../components/explore-filter"
+import ExploreFilter from "../../../../components/common/explore-filter"
 
 export default function SearchExplorePage() {
   const router = useRouter()

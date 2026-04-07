@@ -4,12 +4,13 @@ import Image, { StaticImageData } from "next/image"
 
 interface AdvertisementProps {
   imageUrl: string | StaticImageData
-  positions: string
-  teamName: string
-  ageGroup: string
-  tryoutDate: string
-  description: string
+  positions?: string
+  teamName?: string
+  ageGroup?: string
+  tryoutDate?: string
+  description?: string
   onApply?: () => void
+  hideDetails?: boolean
 }
 
 const TimerIcon = () => (
@@ -42,6 +43,7 @@ export default function Advertisement({
   tryoutDate,
   description,
   onApply,
+  hideDetails = false,
 }: AdvertisementProps) {
   return (
     <section className="flex flex-col overflow-hidden rounded-[24px] bg-primary">
@@ -57,7 +59,7 @@ export default function Advertisement({
       </div>
 
       {/* Content Section */}
-      <div className="space-y-3 p-5">
+      <div className={`space-y-3 p-5 ${hideDetails ? "hidden" : "block"}`}>
         {/* Positions */}
         <p className="font-weight-500 text-[18px] leading-[120%] font-normal text-white">
           {positions}

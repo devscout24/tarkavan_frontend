@@ -35,9 +35,10 @@ import {
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { BiMessageSquareDetail } from "react-icons/bi"
 import { RiDashboardFill, RiMenuSearchLine } from "react-icons/ri"
-import { FaRegUser } from "react-icons/fa"
+import { FaGraduationCap, FaRegUser } from "react-icons/fa"
+import paymentsIcon from "../../../public/images/paymentIcon.svg"
+import messagesIcon from "../../../public/images/messagesIcon.svg"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import Notification from "@/components/custom/notifications"
 import BreadcrumbCustom from "@/components/custom/breadcrumb"
@@ -49,6 +50,26 @@ import Logo from "@/components/common/logo"
 import MenuBtn from "@/components/custom/menu-btn"
 import SidebarSearch from "@/components/custom/sidebar-search"
 import Link from "next/link"
+
+const PaymentsNavIcon = ({ className }: { className?: string }) => (
+  <Image
+    width={20}
+    height={20}
+    src={paymentsIcon}
+    alt="Payments"
+    className={`h-5 w-5 brightness-0 invert ${className ?? ""}`}
+  />
+)
+
+const MessagesNavIcon = ({ className }: { className?: string }) => (
+  <Image
+    width={20}
+    height={20}
+    src={messagesIcon}
+    alt="Messages"
+    className={`h-5 w-5 brightness-0 invert ${className ?? ""}`}
+  />
+)
 
 export default function ParentDashboardLayout({
   children,
@@ -74,7 +95,7 @@ export default function ParentDashboardLayout({
       {
         title: "Programs",
         url: "/parent/programs",
-        icon: RiMenuSearchLine,
+        icon: FaGraduationCap,
       },
       {
         title: "Upcoming events",
@@ -89,12 +110,12 @@ export default function ParentDashboardLayout({
       {
         title: "Payments",
         url: "/parent/payments",
-        icon: Calendars,
+        icon: PaymentsNavIcon,
       },
       {
         title: "Messages",
         url: "/parent/messages",
-        icon: BiMessageSquareDetail,
+        icon: MessagesNavIcon,
       },
       {
         title: "Profile Settings",
@@ -148,7 +169,17 @@ export default function ParentDashboardLayout({
                       tooltip={item.title}
                       className={`border-2 py-4.5 ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
                     >
-                      {item.icon && <item.icon />}
+                      {item.icon && (
+                        <item.icon
+                          className={
+                            item.title === "Programs" ||
+                            item.title === "Payments" ||
+                            item.title === "Messages"
+                              ? "text-white"
+                              : undefined
+                          }
+                        />
+                      )}
                       <span
                         className={`${pathname == item.url ? "text-bold text-white" : ""}`}
                       >

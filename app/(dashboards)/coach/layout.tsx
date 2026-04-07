@@ -26,7 +26,6 @@ import {
 import {
   BadgeCheck,
   Bell,
-  Calendars,
   ChevronsUpDown,
   CreditCard,
   LogOut,
@@ -35,9 +34,10 @@ import {
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { BiMessageSquareDetail } from "react-icons/bi"
 import { RiDashboardFill, RiMenuSearchLine } from "react-icons/ri"
-import { FaRegUser } from "react-icons/fa"
+import { FaGraduationCap, FaRegCalendarCheck, FaRegUser } from "react-icons/fa"
+import earningsIcon from "../../../public/images/earningsIcon.svg"
+import messagesIcon from "../../../public/images/messagesIcon.svg"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import Notification from "@/components/custom/notifications"
 import BreadcrumbCustom from "@/components/custom/breadcrumb"
@@ -49,6 +49,26 @@ import Logo from "@/components/common/logo"
 import MenuBtn from "@/components/custom/menu-btn"
 import SidebarSearch from "@/components/custom/sidebar-search"
 import Link from "next/link"
+
+const EarningsNavIcon = ({ className }: { className?: string }) => (
+  <Image
+    width={20}
+    height={20}
+    src={earningsIcon}
+    alt="Earnings"
+    className={`h-5 w-5 brightness-0 invert ${className ?? ""}`}
+  />
+)
+
+const MessagesNavIcon = ({ className }: { className?: string }) => (
+  <Image
+    width={20}
+    height={20}
+    src={messagesIcon}
+    alt="Messages"
+    className={`h-5 w-5 brightness-0 invert ${className ?? ""}`}
+  />
+)
 
 export default function ParentDashboardLayout({
   children,
@@ -74,17 +94,17 @@ export default function ParentDashboardLayout({
       {
         title: "My Programs",
         url: "/coach/my-programs",
-        icon: RiMenuSearchLine,
+        icon: FaGraduationCap,
       },
       {
         title: "Bookings",
         url: "/coach/bookings",
-        icon: Calendars,
+        icon: FaRegCalendarCheck,
       },
       {
         title: "Earnings",
         url: "/coach/earnings",
-        icon: RiMenuSearchLine,
+        icon: EarningsNavIcon,
       },
       {
         title: "Search & Explore",
@@ -94,7 +114,7 @@ export default function ParentDashboardLayout({
       {
         title: "Messages",
         url: "/coach/messages",
-        icon: BiMessageSquareDetail,
+        icon: MessagesNavIcon,
       },
       {
         title: "Profile Settings",
@@ -148,7 +168,18 @@ export default function ParentDashboardLayout({
                       tooltip={item.title}
                       className={`border-2 py-4.5 ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
                     >
-                      {item.icon && <item.icon />}
+                      {item.icon && (
+                        <item.icon
+                          className={
+                            item.title === "My Programs" ||
+                            item.title === "Bookings" ||
+                            item.title === "Earnings" ||
+                            item.title === "Messages"
+                              ? "text-white"
+                              : undefined
+                          }
+                        />
+                      )}
                       <span
                         className={`${pathname == item.url ? "text-bold text-white" : ""}`}
                       >

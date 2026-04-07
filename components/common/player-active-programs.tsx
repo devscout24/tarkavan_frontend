@@ -12,6 +12,7 @@ type PlayerActiveProgramsProps = {
   focusValue?: string
   imageUrl?: string
   status?: string
+  btnText?: string
   onViewDetails?: () => void
 }
 
@@ -24,6 +25,7 @@ export default function PlayerActivePrograms({
   focusLabel = "Current Focus",
   focusValue = "Speed & Agility",
   status = "In Progress",
+  btnText = "View Details",
   onViewDetails,
 }: PlayerActiveProgramsProps) {
   return (
@@ -100,7 +102,7 @@ export default function PlayerActivePrograms({
               onClick={onViewDetails}
               className="h-11 w-full rounded-xl bg-primary px-5 text-sm font-medium text-white hover:bg-primary/90 sm:w-auto md:w-full"
             >
-              View Details
+              {btnText}
             </Button>
           </div>
         </div>

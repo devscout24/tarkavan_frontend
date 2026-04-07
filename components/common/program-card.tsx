@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import CommonBtn from "./common-btn"
+import ThreeDotsMenu, { type ThreeDotsMenuItem } from "./three-dots-menu"
 import Image, { StaticImageData } from "next/image"
 
 type ProgramCardProps = {
@@ -20,6 +21,8 @@ type ProgramCardProps = {
   buttonLabel?: string
   className?: string
   onClick?: () => void
+  showThreeDotsMenu?: boolean
+  threeDotsItems?: ThreeDotsMenuItem[]
 }
 
 export default function ProgramCard({
@@ -35,7 +38,11 @@ export default function ProgramCard({
   buttonLabel,
   className,
   onClick,
+  showThreeDotsMenu,
+  threeDotsItems = [],
 }: ProgramCardProps) {
+  const shouldShowThreeDotsMenu = showThreeDotsMenu ?? threeDotsItems.length > 0
+
   return (
     <Card
       className={cn(
@@ -89,13 +96,21 @@ export default function ProgramCard({
             <span>{duration}</span>
           </div>
         </div>
-        <CommonBtn
-          text={buttonLabel}
-          className="mt-2 h-11 w-full rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90"
-          size={"lg"}
-          variant={"default"}
-          onClick={onClick}
-        />
+        <div className="mt-2 flex items-center gap-4">
+          <CommonBtn
+            text={buttonLabel}
+            className="h-11 flex-1 rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90"
+            size={"lg"}
+            variant={"default"}
+            onClick={onClick}
+          />
+          <ThreeDotsMenu
+            isVisible={shouldShowThreeDotsMenu}
+            items={threeDotsItems}
+            triggerClassName="h-11 w-11 rounded-xl"
+            menuClassName="w-44"
+          />
+        </div>
       </CardContent>
     </Card>
   )

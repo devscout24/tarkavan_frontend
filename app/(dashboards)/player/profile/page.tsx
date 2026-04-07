@@ -87,8 +87,6 @@ export default function PlayerProfile(){
 
                </div>
 
-
-
             </div>
 
 

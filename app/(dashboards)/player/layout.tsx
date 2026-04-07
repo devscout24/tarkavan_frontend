@@ -1,5 +1,4 @@
 "use client"
- 
 
 import {
   SidebarProvider,
@@ -91,7 +90,7 @@ export default function PlayerDashboardLayout({
   const pathname = usePathname()
 
   return (
-    <SidebarProvider className={` `}>
+    <SidebarProvider className="h-screen overflow-hidden">
       <Sidebar collapsible="icon" className="relative border-secondary">
         <Image
           src={"/images/sidebarbg.png"}
@@ -130,7 +129,7 @@ export default function PlayerDashboardLayout({
                       <Link href={item.url} className="">
                         <SidebarMenuButton
                           tooltip={item.title}
-                          className={`border-2 py-4.5 ${pathname == item.url ? "border-brand bg-brand/20 rounded-[12px]" : "border-transparent"}`}
+                          className={`border-2 py-4.5 ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
                         >
                           {item.icon && <item.icon />}
                           <span
@@ -156,7 +155,7 @@ export default function PlayerDashboardLayout({
         <SidebarRail />
       </Sidebar>
 
-      <SidebarInset className="">
+      <SidebarInset className="flex h-screen min-h-0 flex-col">
         <header className="flex shrink-0 items-center gap-2 border-b border-secondary py-2.5 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex w-full items-center justify-between gap-2 px-4">
             <BreadcrumbCustom />
@@ -170,7 +169,7 @@ export default function PlayerDashboardLayout({
         {pathname.includes("/player/messages") ? (
           children
         ) : (
-          <ScrollArea className="h-[92vh] border px-8 py-6">
+          <ScrollArea className="min-h-0 flex-1 border px-8 py-6">
             {children}
           </ScrollArea>
         )}

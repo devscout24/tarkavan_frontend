@@ -1,4 +1,3 @@
-import { useForm } from "react-hook-form"
 import { Icon } from "@/components/custom/Icon"
 
 import {
@@ -8,61 +7,45 @@ import {
 } from "@/components/animate-ui/primitives/animate/tabs"
 import ModalStepHeader from "@/components/common/modal-header"
 import OutfieldStatsTab from "./outfield-stats-tab"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import GoalkeeperStatsTab from "./goalkeeper-stats-tab"
-
-interface SeasonStatsFormData {
-  outfieldGamesPlayed: string
-  outfieldGoals: string
-  outfieldAssists: string
-  outfieldYellowCards: string
-  outfieldRedCards: string
-  goalkeeperGamesPlayed: string
-  goalkeeperGoals: string
-  goalkeeperAssists: string
-  goalkeeperYellowCards: string
-  goalkeeperRedCards: string
-  goalkeeperCleanSheets: string
-  goalkeeperTotalSaves: string
-}
+import type { WizardState } from "../types"
 
 export default function SeasonStats({
   currentStep,
   totalSteps,
+  draft,
+  onDraftChange,
 }: {
   currentStep: number
   totalSteps: number
+  draft: WizardState["forms"]["seasonStats"]
+  onDraftChange: (value: WizardState["forms"]["seasonStats"]) => void
 }) {
-  const {
-    formState: { errors },
-  } = useForm<SeasonStatsFormData>({
-    mode: "onBlur",
-    shouldUnregister: true,
-    defaultValues: {
-      outfieldGamesPlayed: "0",
-      outfieldGoals: "0",
-      outfieldAssists: "0",
-      outfieldYellowCards: "0",
-      outfieldRedCards: "0",
-      goalkeeperGamesPlayed: "0",
-      goalkeeperGoals: "0",
-      goalkeeperAssists: "0",
-      goalkeeperYellowCards: "0",
-      goalkeeperRedCards: "0",
-      goalkeeperCleanSheets: "0",
-      goalkeeperTotalSaves: "0",
-    },
-  })
+  const [activeTab, setActiveTab] = useState<"outfield" | "goalkeeper">(
+    draft.activeTab
+  )
+  const [values, setValues] = useState(draft.values)
 
-  const [activeTab, setActiveTab] = useState<string>("outfield")
+  useEffect(() => {
+    onDraftChange({
+      activeTab,
+      values,
+    })
+  }, [activeTab, values, onDraftChange])
 
-
+  const handleValueChange = (key: keyof typeof values, value: string) => {
+    setValues((prev) => ({
+      ...prev,
+      [key]: value,
+    }))
+  }
 
   return (
     <div className="w-full rounded-2xl bg-[#090B10] p-4 text-white">
       <ModalStepHeader
-        title={"roleHeaderCopy.title"}
-        subtitle={"roleHeaderCopy.subtitle"}
+        title={"Add New Children"}
+        subtitle={"Start by defining the athlete's core identity profile."}
         currentStep={currentStep}
         totalSteps={totalSteps}
       />
@@ -88,7 +71,9 @@ export default function SeasonStats({
 
           <Tabs
             value={activeTab}
-            onValueChange={(value: string) => setActiveTab(value)}
+            onValueChange={(value: string) =>
+              setActiveTab(value as "outfield" | "goalkeeper")
+            }
             className="w-full"
           >
             <TabsList className="grid h-auto w-full grid-cols-2 rounded-xl bg-white/95 p-1.5">
@@ -156,19 +141,12 @@ export default function SeasonStats({
         </div>
 
         {activeTab === "outfield" && (
-           <OutfieldStatsTab
-            // registerStat={}
-            // getFieldError={ }
-          />
+          <OutfieldStatsTab values={values} onChange={handleValueChange} />
         )}
 
-          {activeTab === "goalkeeper" && (
-           <GoalkeeperStatsTab
-            // registerStat={}
-            // getFieldError={ }
-          />
+        {activeTab === "goalkeeper" && (
+          <GoalkeeperStatsTab values={values} onChange={handleValueChange} />
         )}
- 
       </div>
     </div>
   )

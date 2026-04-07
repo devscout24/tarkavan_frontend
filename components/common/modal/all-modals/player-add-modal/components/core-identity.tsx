@@ -5,8 +5,8 @@ import SelectField from "@/components/common/select-field"
 import UploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
-import { useForm } from "react-hook-form" 
- 
+import { useForm } from "react-hook-form"
+import type { WizardState } from "../types"
 
 const controlClassName =
   "h-11 rounded-xl border border-white/10 bg-[#0F1117] px-3 text-sm text-white placeholder:text-secondary/40 focus-visible:border-brand focus-visible:ring-0"
@@ -34,13 +34,23 @@ type PhotoPreview = {
   url: string
 }
 
-export default function CoreIdentity({ currentStep, totalSteps }: { currentStep: number; totalSteps: number }) {
+export default function CoreIdentity({
+  currentStep,
+  totalSteps,
+  draft,
+  onDraftChange,
+}: {
+  currentStep: number
+  totalSteps: number
+  draft: WizardState["forms"]["coreIdentity"]
+  onDraftChange: (value: WizardState["forms"]["coreIdentity"]) => void
+}) {
   const [openDatePicker, setOpenDatePicker] = useState(false)
   const [photoPreviews, setPhotoPreviews] = useState<PhotoPreview[]>([])
-  const previewUrlsRef = useRef<string[]>([]) 
- 
+  const previewUrlsRef = useRef<string[]>([])
+
   const {
-    register, 
+    register,
     watch,
     setValue,
     formState: { errors },
@@ -48,16 +58,16 @@ export default function CoreIdentity({ currentStep, totalSteps }: { currentStep:
     mode: "onBlur",
     defaultValues: {
       profilePhotos: [],
-      firstName: "",
-      lastName: "",
-      dateOfBirth: undefined,
-      gender: "",
-      nationality: "",
-      email: "",
-      sport: "soccer",
-      jerseyNumber: "",
-      dominantFoot: "",
-      clubTeam: "",
+      firstName: draft.firstName,
+      lastName: draft.lastName,
+      dateOfBirth: draft.dateOfBirth ? new Date(draft.dateOfBirth) : undefined,
+      gender: draft.gender,
+      nationality: draft.nationality,
+      email: draft.email,
+      sport: draft.sport,
+      jerseyNumber: draft.jerseyNumber,
+      dominantFoot: draft.dominantFoot,
+      clubTeam: draft.clubTeam,
     },
   })
 
@@ -76,6 +86,28 @@ export default function CoreIdentity({ currentStep, totalSteps }: { currentStep:
   const gender = watch("gender")
   const sport = watch("sport")
   const dominantFoot = watch("dominantFoot")
+
+  useEffect(() => {
+    const subscription = watch((values) => {
+      onDraftChange({
+        profilePhotoNames: photoPreviews.map((item) => item.file.name),
+        firstName: values.firstName ?? "",
+        lastName: values.lastName ?? "",
+        dateOfBirth: values.dateOfBirth
+          ? new Date(values.dateOfBirth).toISOString()
+          : undefined,
+        gender: values.gender ?? "",
+        nationality: values.nationality ?? "",
+        email: values.email ?? "",
+        sport: values.sport ?? "soccer",
+        jerseyNumber: values.jerseyNumber ?? "",
+        dominantFoot: values.dominantFoot ?? "",
+        clubTeam: values.clubTeam ?? "",
+      })
+    })
+
+    return () => subscription.unsubscribe()
+  }, [watch, onDraftChange, photoPreviews])
 
   const handlePhotoSelect = (files: File[]) => {
     const nextPreviews = files.map((file, index) => ({
@@ -122,15 +154,11 @@ export default function CoreIdentity({ currentStep, totalSteps }: { currentStep:
     }
   }, [])
 
- 
- 
- 
-
   return (
-    <div className="w-full rounded-2xl bg-[#090B10] p-4 text-white ">
-      <ModalStepHeader 
+    <div className="w-full rounded-2xl bg-[#090B10] p-4 text-white">
+      <ModalStepHeader
         title={"Add New Children"}
-        subtitle={"Start by defining the athlete's core identity profile."} 
+        subtitle={"Start by defining the athlete's core identity profile."}
         currentStep={currentStep}
         totalSteps={totalSteps}
       />
@@ -299,7 +327,7 @@ export default function CoreIdentity({ currentStep, totalSteps }: { currentStep:
             error={errors.clubTeam?.message}
           />
         </div>
-      </div> 
+      </div>
     </div>
   )
 }

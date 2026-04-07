@@ -7,6 +7,8 @@ interface SeasonStatFieldProps {
   subtitle: string
   registerProps?: UseFormRegisterReturn
   error?: string
+  value?: string
+  onChange?: (value: string) => void
 }
 
 export default function SeasonStatField({
@@ -14,6 +16,8 @@ export default function SeasonStatField({
   subtitle,
   registerProps,
   error,
+  value,
+  onChange,
 }: SeasonStatFieldProps) {
   return (
     <div className="grid grid-cols-[1fr_auto] items-start gap-4 border-t border-white/10 px-6 py-4">
@@ -31,6 +35,8 @@ export default function SeasonStatField({
           type="number"
           inputMode="numeric"
           min={0}
+          value={value ?? "0"}
+          onChange={(event) => onChange?.(event.target.value)}
           aria-invalid={Boolean(error)}
           className={cn(
             "h-9 w-14 rounded-md border border-white/10 bg-secondary px-2 text-center text-[14px] font-medium text-white placeholder:text-primary/40 focus-visible:border-brand focus-visible:ring-0",

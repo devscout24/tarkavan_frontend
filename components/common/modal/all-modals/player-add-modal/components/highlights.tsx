@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react" 
+import { useEffect, useState } from "react"
 import CommonBtn from "@/components/common/common-btn"
-import { Icon } from "@/components/custom/Icon" 
+import { Icon } from "@/components/custom/Icon"
 import UploadReel from "./upload-reel"
 import { Badge } from "@/components/ui/badge"
 import ModalStepHeader from "@/components/common/modal-header"
- 
+import type { WizardState } from "../types"
 
 const MAX_FILE_SIZE_BYTES = 500 * 1024 * 1024
 
@@ -36,77 +36,35 @@ const sourceBadgeLabel: Record<ShowcaseSource["source"], string> = {
   hudl: "Hudl",
 }
 
-const HIGHLIGHTS_STORAGE_KEY = "add-new-children:highlights:uploaded-content"
-
-const isUploadedItem = (value: unknown): value is UploadedItem => {
-  if (!value || typeof value !== "object") {
-    return false
-  }
-
-  const candidate = value as Partial<UploadedItem>
-  const validType = candidate.type === "video" || candidate.type === "link"
-  const validSource =
-    candidate.source === undefined ||
-    candidate.source === "youtube" ||
-    candidate.source === "hudl" ||
-    candidate.source === "vimeo"
-
-  return (
-    typeof candidate.id === "string" &&
-    typeof candidate.title === "string" &&
-    validType &&
-    validSource
-  )
-}
-
-const getInitialUploadedItems = (): UploadedItem[] => {
-  if (typeof window === "undefined") {
-    return []
-  }
-
-  try {
-    const rawValue = window.localStorage.getItem(HIGHLIGHTS_STORAGE_KEY)
-    if (!rawValue) {
-      return []
-    }
-
-    const parsed = JSON.parse(rawValue)
-    if (!Array.isArray(parsed)) {
-      return []
-    }
-
-    return parsed.filter(isUploadedItem)
-  } catch {
-    return []
-  }
-}
-
-const persistUploadedItems = (items: UploadedItem[]) => {
-  try {
-    window.localStorage.setItem(HIGHLIGHTS_STORAGE_KEY, JSON.stringify(items))
-  } catch {
-    // Ignore localStorage write failures (private mode/quota exceeded).
-  }
-}
-
-export default function Highlights({ currentStep, totalSteps }: { currentStep: number; totalSteps: number }) {
- 
-  const [showcaseValue, setShowcaseValue] = useState("")
+export default function Highlights({
+  currentStep,
+  totalSteps,
+  draft,
+  onDraftChange,
+}: {
+  currentStep: number
+  totalSteps: number
+  draft: WizardState["forms"]["highlights"]
+  onDraftChange: (value: WizardState["forms"]["highlights"]) => void
+}) {
+  const [showcaseValue, setShowcaseValue] = useState(draft.showcaseValue)
   const [uploadError, setUploadError] = useState("")
   const [showcaseError, setShowcaseError] = useState("")
   const [submitError, setSubmitError] = useState("")
   const [selectedShowcaseSource, setSelectedShowcaseSource] = useState<
     ShowcaseSource["source"] | null
-  >(null)
+  >(draft.selectedShowcaseSource)
   const [uploadedItems, setUploadedItems] = useState<UploadedItem[]>(
-    getInitialUploadedItems
+    draft.uploadedItems
   )
 
   useEffect(() => {
-    persistUploadedItems(uploadedItems)
-  }, [uploadedItems])
-
- 
+    onDraftChange({
+      showcaseValue,
+      selectedShowcaseSource,
+      uploadedItems,
+    })
+  }, [showcaseValue, selectedShowcaseSource, uploadedItems, onDraftChange])
 
   const handleFileUpload = (files: File[]) => {
     if (files.length === 0) {
@@ -151,21 +109,18 @@ export default function Highlights({ currentStep, totalSteps }: { currentStep: n
     setShowcaseValue("")
   }
 
- 
   const handleRemoveUploadedItem = (itemId: string) => {
     setUploadedItems((prev) => prev.filter((item) => item.id !== itemId))
     setSubmitError("")
   }
 
- 
-
   return (
     <div className="w-full rounded-2xl bg-[#090B10] p-4 text-white sm:p-6 md:p-8">
       <ModalStepHeader
-        title={"roleHeaderCopy.title"}
-        subtitle={"roleHeaderCopy.subtitle"} 
+        title={"Add New Children"}
+        subtitle={"Start by defining the athlete's core identity profile."}
         currentStep={currentStep}
-        totalSteps={totalSteps} 
+        totalSteps={totalSteps}
       />
 
       <div className="mt-5 pb-6">
@@ -332,7 +287,6 @@ click to browse. Max size 500MB."
           </p>
         )}
       </div>
- 
     </div>
   )
 }

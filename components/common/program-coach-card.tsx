@@ -1,9 +1,10 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { cn } from "@/lib/utils"  
-import Image from "next/image";
-import { BiMessageSquareDetail } from "react-icons/bi";
+import { cn } from "@/lib/utils"
+import { MapPin } from "lucide-react"
+import Image from "next/image"
+import { BiMessageSquareDetail } from "react-icons/bi"
 
 type ProgramCoachCardProps = {
   name?: string
@@ -17,6 +18,8 @@ type ProgramCoachCardProps = {
   verifiedLabel?: string
   messageLabel?: string
   onMessageCoach?: () => void
+  location?: string
+  showMessageButton?: boolean
   className?: string
 }
 
@@ -34,6 +37,8 @@ export default function ProgramCoachCard({
   verifiedLabel = "VERIFIED",
   messageLabel = "Message Coach",
   onMessageCoach,
+  location,
+  showMessageButton = true,
   className,
 }: ProgramCoachCardProps) {
   return (
@@ -49,13 +54,13 @@ export default function ProgramCoachCard({
           height={1000}
           src={imageUrl}
           alt={imageAlt}
-          className="  w-full object-cover object-center"
+          className="w-full object-cover object-center"
         />
 
         <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/95 via-black/40 to-black/20" />
 
         {verified && (
-          <Badge className="absolute top-4 left-4 h-auto rounded-[5px] bg-brand px-3 py-1 text-xs font-bold tracking-wide text-black italic -skew-2 rotate-[2deg]  ">
+          <Badge className="absolute top-4 left-4 h-auto rotate-2 -skew-2 rounded-[5px] bg-brand px-3 py-1 text-xs font-bold tracking-wide text-black italic">
             {verifiedLabel}
           </Badge>
         )}
@@ -67,7 +72,15 @@ export default function ProgramCoachCard({
           </h3>
 
           <p className="mt-1 text-base font-medium text-white">{role}</p>
-          <p className="mt-1 text-base leading-7 text-secondary">{bio}</p>
+
+          {location ? (
+            <div className="mt-1 flex items-center gap-1.5 text-base text-secondary">
+              <MapPin className="h-4 w-4" />
+              <p>{location}</p>
+            </div>
+          ) : (
+            <p className="mt-1 text-base leading-7 text-secondary">{bio}</p>
+          )}
 
           <div className="mt-3 flex flex-wrap gap-2">
             {tags.map((tag) => (
@@ -83,17 +96,18 @@ export default function ProgramCoachCard({
         </div>
       </div>
 
-      <div className="p-4 pt-3">
-        <Button
-          type="button"
-          onClick={onMessageCoach}
-          className="h-12 w-full rounded-lg bg-brand text-base font-semibold text-black hover:bg-brand"
-        >
-          {/* <MessageCircle className="size-4" /> */}
-          <BiMessageSquareDetail />
-          {messageLabel}
-        </Button>
-      </div>
+      {showMessageButton && (
+        <div className="p-4 pt-3">
+          <Button
+            type="button"
+            onClick={onMessageCoach}
+            className="h-12 w-full rounded-lg bg-brand text-base font-semibold text-black hover:bg-brand"
+          >
+            <BiMessageSquareDetail />
+            {messageLabel}
+          </Button>
+        </div>
+      )}
     </Card>
   )
 }

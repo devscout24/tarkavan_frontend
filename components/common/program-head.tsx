@@ -21,7 +21,7 @@ export default function ProgramHead({title , options , placeholder}: {title: str
         <SelectContent position="popper">
           <SelectGroup>
             {options.map((option) => (
-              <SelectItem className={selectItemClassName} value={option.value}>
+              <SelectItem key={option.value} className={selectItemClassName} value={option.value}>
                 {option.label}
               </SelectItem>
             ))} 

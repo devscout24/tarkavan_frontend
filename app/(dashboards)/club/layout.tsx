@@ -32,6 +32,10 @@ import BreadcrumbCustom from "@/components/custom/breadcrumb"
 import Notification from "@/components/custom/notifications"
 import ProfileDropdown from "@/components/custom/profile-dropdown"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { GrGroup } from "react-icons/gr";
+import { AiOutlineUsergroupAdd } from "react-icons/ai";
+import { IoIosFootball } from "react-icons/io";
+import { CiCreditCard2 } from "react-icons/ci";
 
 export default function PlayerDashboardLayout({
   children,
@@ -57,17 +61,17 @@ export default function PlayerDashboardLayout({
       {
         title: "My Teams",
         url: "/club/teams",
-        icon: RiMenuSearchLine,
+        icon: GrGroup,
       },
       {
         title: "Recruitment",
         url: "/club/recruitment",
-        icon: Calendars,
+        icon: AiOutlineUsergroupAdd,
       },
       {
         title: "Matches",
         url: "/club/matches",
-        icon: Calendars,
+        icon: IoIosFootball,
       },
       {
         title: "Search & Explore",
@@ -77,7 +81,7 @@ export default function PlayerDashboardLayout({
       {
         title: "Subscription",
         url: "/club/subscription",
-        icon: Calendars,
+        icon: CiCreditCard2,
       },
       {
         title: "Messages",
@@ -134,9 +138,9 @@ export default function PlayerDashboardLayout({
                       <Link href={item.url} className="">
                         <SidebarMenuButton
                           tooltip={item.title}
-                          className={`border-2 py-4.5 ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
+                          className={`border-2 py-4.5 text-[#999999] ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
                         >
-                          {item.icon && <item.icon />}
+                          {item.icon && <item.icon className={`text-[#999999] ${pathname == item.url ? "text-brand" : ""}`} />}
                           <span
                             className={`${pathname == item.url ? "text-bold text-white" : ""}`}
                           >

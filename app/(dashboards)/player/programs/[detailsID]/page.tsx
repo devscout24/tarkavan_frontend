@@ -2,15 +2,15 @@
 
 import { Button } from "@/components/ui/button"
 import { eachDayOfInterval, format } from "date-fns"
-import { ArrowLeftIcon } from "lucide-react" 
+import { ArrowLeftIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
-import ProgramDetailsBanner from "../../components/program-details-banner"
-import AboutProgram from "../../components/about-program"
-import ProgramReview from "../../components/program-review"
-import ProgramHead from "../../components/program-head"
-import ProgramFeedbackCard from "../../components/program-feedback-card"
-import ProgramCoachCard from "../../components/program-coach-card"
-import { ProgramCalendar } from "../../components/program-calendar"
+import ProgramDetailsBanner from "../../../../../components/common/program-details-banner"
+import AboutProgram from "../../../../../components/common/about-program"
+import ProgramReview from "../../../../../components/common/program-review"
+import ProgramHead from "../../../../../components/common/program-head"
+import ProgramFeedbackCard from "../../../../../components/common/program-feedback-card"
+import ProgramCoachCard from "../../../../../components/common/program-coach-card"
+import { ProgramCalendar } from "../../../../../components/common/program-calendar"
 
 export default function ProgramDetails() {
   const router = useRouter()
@@ -32,7 +32,6 @@ export default function ProgramDetails() {
 
   return (
     <section className="text-white">
-      
       {/* BACK BUTTON */}
       <Button
         className="cursor-pointer bg-transparent hover:underline"
@@ -53,7 +52,7 @@ export default function ProgramDetails() {
       />
 
       {/* layout */}
-      <div className="mt-5 flex flex-col-reverse lg:flex-row    gap-6">
+      <div className="mt-5 flex flex-col-reverse gap-6 lg:flex-row">
         {/* left side */}
         <div className="flex-2">
           {/* about program */}

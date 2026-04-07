@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button" 
+import { Button } from "@/components/ui/button"
 import { UserRound } from "lucide-react"
 import Image from "next/image"
 
@@ -27,7 +27,7 @@ export default function PlayerActivePrograms({
   onViewDetails,
 }: PlayerActiveProgramsProps) {
   return (
-    <section className="w-full  ">
+    <section className="w-full">
       <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
         <h2 className="text-xl font-bold text-white sm:text-2xl">{title}</h2>
         <button
@@ -40,13 +40,13 @@ export default function PlayerActivePrograms({
 
       <article className="overflow-hidden rounded-2xl border border-white/10 bg-brand">
         <div className="lg:flex">
-          <div className=" relative min-h-44 md:min-h-full">
+          <div className="relative min-h-44 md:min-h-full">
             <Image
               width={1000}
               height={1000}
               src={"/images/player1.png"}
               alt={programName}
-              className="max-h-55 h-full w-full lg:max-w-[288px] object-fill"
+              className="h-full max-h-55 w-full object-fill lg:max-w-[288px]"
             />
 
             <span className="absolute bottom-3 left-3 rounded-full bg-[#16A34A] px-3 py-1 text-[10px] font-bold tracking-[0.08em] text-white uppercase">
@@ -64,7 +64,7 @@ export default function PlayerActivePrograms({
               Coach: {coachName}
             </p>
 
-            <div className="mt-4 flex  gap-3 text-primary   md:mt-5 md:gap-8">
+            <div className="mt-4 flex gap-3 text-primary md:mt-5 md:gap-8">
               <div>
                 <p className="text-sm font-normal text-primary/50 sm:text-base">
                   Schedule

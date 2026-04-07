@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { CalendarDays, Clock3, MapPin, Users } from "lucide-react" 
+import { CalendarDays, Clock3, MapPin, Users } from "lucide-react"
 import Image from "next/image"
 
 type ProgramDetailsBannerProps = {
@@ -21,7 +21,7 @@ export default function ProgramDetailsBanner({
   dateRange = "01-03-2026 to 15-05-2026",
   location = "GoElite Sports Complex, Toronto",
   ageRange = "Ages 8-14",
-  imageUrl = "/images/program-banner.png",
+  imageUrl = "/images/programsBannerImg.png",
   className,
 }: ProgramDetailsBannerProps) {
   return (
@@ -37,7 +37,7 @@ export default function ProgramDetailsBanner({
         alt={title}
         width={1000}
         height={1000}
-        className="max-h-80 h-full w-full object-cover   "
+        className="h-full max-h-80 w-full object-cover"
       />
 
       <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/85 via-black/35 to-black/5" />

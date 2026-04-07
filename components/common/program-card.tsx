@@ -1,9 +1,9 @@
 "use client"
 import { Calendar, Clock3, UserRound } from "lucide-react"
-import { Badge } from "@/components/ui/badge" 
+import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import CommonBtn from "./common-btn" 
+import CommonBtn from "./common-btn"
 import Image, { StaticImageData } from "next/image"
 
 type ProgramCardProps = {
@@ -22,7 +22,7 @@ type ProgramCardProps = {
   onClick?: () => void
 }
 
-export default function ProgramCard({ 
+export default function ProgramCard({
   title,
   coachName,
   schedule,
@@ -33,38 +33,35 @@ export default function ProgramCard({
   imageSrc,
   imageAlt,
   buttonLabel,
-  className, 
-  onClick
+  className,
+  onClick,
 }: ProgramCardProps) {
- 
-
   return (
     <Card
-      
       className={cn(
         "w-full overflow-hidden rounded-2xl border border-secondary/40 bg-primary py-0 text-white",
         className
       )}
     >
-      <div className="relative  w-full overflow-hidden max-h-48 ">
+      <div className="relative max-h-48 w-full overflow-hidden">
         <Image
-          width={1000}  
+          width={1000}
           height={1000}
           src={imageSrc}
           alt={imageAlt}
-          className=" w-full object-cover"
+          className="w-full object-cover"
         />
- 
-        {discountLabel && 
-            <Badge className="absolute top-3 right-3 h-8 rounded-full bg-emerald-500 px-3 text-sm font-semibold text-white hover:bg-emerald-500">
+
+        {discountLabel && (
+          <Badge className="absolute top-3 right-3 h-8 rounded-full bg-emerald-500 px-3 text-sm font-semibold text-white hover:bg-emerald-500">
             {discountLabel}
-            </Badge>
-        }
+          </Badge>
+        )}
       </div>
 
-      <CardContent className="   p-4">
-        <div className="flex items-start justify-between gap-4 h-15.5 ">
-          <h3 className="max-w-[70%] text-lg leading-tight font-semibold line-clamp-2 overflow-hidden text-ellipsis ">
+      <CardContent className="p-4">
+        <div className="flex h-15.5 items-start justify-between gap-4">
+          <h3 className="line-clamp-2 max-w-[70%] overflow-hidden text-lg leading-tight font-semibold text-ellipsis">
             {title}
           </h3>
 
@@ -91,8 +88,14 @@ export default function ProgramCard({
             <Clock3 className="size-4" />
             <span>{duration}</span>
           </div>
-        </div> 
-        <CommonBtn text={buttonLabel}  className=" mt-2 h-11 w-full rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90   " size={"lg"} variant={"default"} onClick={onClick} />
+        </div>
+        <CommonBtn
+          text={buttonLabel}
+          className="mt-2 h-11 w-full rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90"
+          size={"lg"}
+          variant={"default"}
+          onClick={onClick}
+        />
       </CardContent>
     </Card>
   )

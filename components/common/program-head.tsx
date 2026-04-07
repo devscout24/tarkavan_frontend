@@ -7,7 +7,15 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-export default function ProgramHead({title , options , placeholder}: {title: string, options: {value: string, label: string}[], placeholder: string}) {
+export default function ProgramHead({
+  title,
+  options,
+  placeholder,
+}: {
+  title: string
+  options: { value: string; label: string }[]
+  placeholder: string
+}) {
   const selectItemClassName =
     "text-white data-[highlighted]:bg-brand data-[highlighted]:text-primary focus:bg-brand focus:text-primary text-primary"
 
@@ -21,10 +29,14 @@ export default function ProgramHead({title , options , placeholder}: {title: str
         <SelectContent position="popper">
           <SelectGroup>
             {options.map((option) => (
-              <SelectItem key={option.value} className={selectItemClassName} value={option.value}>
+              <SelectItem
+                key={option.value}
+                className={selectItemClassName}
+                value={option.value}
+              >
                 {option.label}
               </SelectItem>
-            ))} 
+            ))}
           </SelectGroup>
         </SelectContent>
       </Select>

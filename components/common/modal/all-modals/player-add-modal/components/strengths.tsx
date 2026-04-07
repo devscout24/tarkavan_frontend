@@ -1,9 +1,9 @@
 import ModalStepHeader from "@/components/common/modal-header"
-import { useMemo, useState } from "react" 
+import { useMemo, useState } from "react"
 import StrengthsSelectedSlot from "./strengths-selected-slot"
 import StrengthCategorySidebar from "./strength-category-sidebar"
 import StrengthItemCheckbox from "./strength-item-checkbox"
- 
+import type { WizardState } from "../types"
 
 export interface StrengthCategory {
   id: string
@@ -79,14 +79,23 @@ const strengthCategories: StrengthCategory[] = [
 
 const MAX_STRENGTHS = 5
 
-export default function Strengths({ currentStep, totalSteps }: { currentStep: number; totalSteps: number }) {
- 
+export default function Strengths({
+  currentStep,
+  totalSteps,
+  draft,
+  onDraftChange,
+}: {
+  currentStep: number
+  totalSteps: number
+  draft: WizardState["forms"]["strengths"]
+  onDraftChange: (value: WizardState["forms"]["strengths"]) => void
+}) {
   const [activeCategoryId, setActiveCategoryId] = useState(
-    strengthCategories[0].id
+    draft.activeCategoryId || strengthCategories[0].id
   )
   const [selectedByCategory, setSelectedByCategory] = useState<
     Record<string, string>
-  >({})
+  >(draft.selectedByCategory)
   const [validationMessage, setValidationMessage] = useState("")
 
   const selectedStrengths = useMemo(
@@ -99,7 +108,20 @@ export default function Strengths({ currentStep, totalSteps }: { currentStep: nu
     strengthCategories.find((category) => category.id === activeCategoryId) ??
     strengthCategories[0]
 
- 
+  const persistDraft = (
+    nextActiveCategoryId: string,
+    nextSelectedByCategory: Record<string, string>
+  ) => {
+    onDraftChange({
+      activeCategoryId: nextActiveCategoryId,
+      selectedByCategory: nextSelectedByCategory,
+    })
+  }
+
+  const onCategorySelect = (categoryId: string) => {
+    setActiveCategoryId(categoryId)
+    persistDraft(categoryId, selectedByCategory)
+  }
 
   const onToggleStrength = (strength: string) => {
     setValidationMessage("")
@@ -111,6 +133,7 @@ export default function Strengths({ currentStep, totalSteps }: { currentStep: nu
       if (currentValue === strength) {
         const next = { ...prev }
         delete next[activeCategory.id]
+        persistDraft(activeCategoryId, next)
         return next
       }
 
@@ -126,18 +149,20 @@ export default function Strengths({ currentStep, totalSteps }: { currentStep: nu
         return prev
       }
 
-      return {
+      const next = {
         ...prev,
         [activeCategory.id]: strength,
       }
+      persistDraft(activeCategoryId, next)
+      return next
     })
   }
- 
+
   return (
     <div className="w-full rounded-2xl bg-[#090B10] p-4 text-white sm:p-6 md:p-8">
       <ModalStepHeader
-        title={"roleHeaderCopy.title"}
-        subtitle={"roleHeaderCopy.subtitle"} 
+        title={"Player Profile Setup"}
+        subtitle={"Start by defining the athlete's core identity profile."}
         currentStep={currentStep}
         totalSteps={totalSteps}
       />
@@ -177,7 +202,7 @@ export default function Strengths({ currentStep, totalSteps }: { currentStep: nu
           <StrengthCategorySidebar
             categories={strengthCategories}
             activeCategoryId={activeCategory.id}
-            onCategorySelect={setActiveCategoryId}
+            onCategorySelect={onCategorySelect}
           />
 
           <div className="rounded-xl border border-white/10 p-4">
@@ -211,7 +236,6 @@ export default function Strengths({ currentStep, totalSteps }: { currentStep: nu
           </p>
         )}
       </div>
- 
     </div>
   )
 }

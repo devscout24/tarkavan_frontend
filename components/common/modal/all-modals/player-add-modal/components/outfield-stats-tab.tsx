@@ -1,5 +1,5 @@
-import type { UseFormRegisterReturn } from "react-hook-form" 
 import SeasonStatField from "./season-stat-field"
+import type { SeasonStatsValues } from "../types"
 
 type OutfieldStatKey =
   | "outfieldGamesPlayed"
@@ -9,21 +9,21 @@ type OutfieldStatKey =
   | "outfieldRedCards"
 
 interface OutfieldStatsTabProps {
-  registerStat?: (name: OutfieldStatKey) => UseFormRegisterReturn
-  getFieldError?: (name: OutfieldStatKey) => string | undefined
+  values: SeasonStatsValues
+  onChange: (name: OutfieldStatKey, value: string) => void
 }
 
 export default function OutfieldStatsTab({
-  registerStat,
-  getFieldError,
+  values,
+  onChange,
 }: OutfieldStatsTabProps) {
   return (
     <>
       <SeasonStatField
         title="Games Played"
         subtitle="Total appearances this season"
-        registerProps={registerStat?.("outfieldGamesPlayed")}
-        error={getFieldError?.("outfieldGamesPlayed")}
+        value={values.outfieldGamesPlayed}
+        onChange={(value) => onChange("outfieldGamesPlayed", value)}
       />
 
       <div className="border-t border-white/10 bg-secondary/40 px-6 py-3">
@@ -35,29 +35,29 @@ export default function OutfieldStatsTab({
       <SeasonStatField
         title="Goals"
         subtitle="Competitive match goals"
-        registerProps={registerStat?.("outfieldGoals")}
-        error={getFieldError?.("outfieldGoals")}
+        value={values.outfieldGoals}
+        onChange={(value) => onChange("outfieldGoals", value)}
       />
 
       <SeasonStatField
         title="Assists"
         subtitle="Key passes leading to goals"
-        registerProps={registerStat?.("outfieldAssists")}
-        error={getFieldError?.("outfieldAssists")}
+        value={values.outfieldAssists}
+        onChange={(value) => onChange("outfieldAssists", value)}
       />
 
       <SeasonStatField
         title="Yellow Cards"
         subtitle="Cautions received"
-        registerProps={registerStat?.("outfieldYellowCards")}
-        error={getFieldError?.("outfieldYellowCards")}
+        value={values.outfieldYellowCards}
+        onChange={(value) => onChange("outfieldYellowCards", value)}
       />
 
       <SeasonStatField
         title="Red Cards"
         subtitle="Cautions received"
-        registerProps={registerStat?.("outfieldRedCards")}
-        error={getFieldError?.("outfieldRedCards")}
+        value={values.outfieldRedCards}
+        onChange={(value) => onChange("outfieldRedCards", value)}
       />
     </>
   )

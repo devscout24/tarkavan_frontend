@@ -1,7 +1,8 @@
-import { Controller, useForm } from "react-hook-form" 
+import { Controller, useForm } from "react-hook-form"
 import { Icon } from "@/components/custom/Icon"
-import ModalStepHeader from "@/components/common/modal-header";
- 
+import ModalStepHeader from "@/components/common/modal-header"
+import { useEffect } from "react"
+import type { WizardState } from "../types"
 
 const MAX_BIO_LENGTH = 300
 
@@ -9,10 +10,19 @@ interface BiographyFormData {
   biography: string
 }
 
-export default function Biography({ currentStep, totalSteps }: { currentStep: number; totalSteps: number }) {
-   
+export default function Biography({
+  currentStep,
+  totalSteps,
+  draft,
+  onDraftChange,
+}: {
+  currentStep: number
+  totalSteps: number
+  draft: WizardState["forms"]["biography"]
+  onDraftChange: (value: WizardState["forms"]["biography"]) => void
+}) {
   const {
-    control, 
+    control,
     watch,
     setError,
     clearErrors,
@@ -21,15 +31,15 @@ export default function Biography({ currentStep, totalSteps }: { currentStep: nu
     mode: "onSubmit",
     reValidateMode: "onChange",
     defaultValues: {
-      biography: "",
+      biography: draft.biography,
     },
   })
   const biography = watch("biography")
 
- 
+  useEffect(() => {
+    onDraftChange({ biography })
+  }, [biography, onDraftChange])
 
- 
- 
   const biographyRules = {
     required: "Biography is required",
     validate: (value: string) =>
@@ -41,10 +51,10 @@ export default function Biography({ currentStep, totalSteps }: { currentStep: nu
   return (
     <div className="w-full rounded-2xl bg-[#090B10] p-4 text-white sm:p-6 md:p-8">
       <ModalStepHeader
-        title={"roleHeaderCopy.title"}
-        subtitle={"roleHeaderCopy.subtitle"} 
+        title={"Add New Children"}
+        subtitle={"Start by defining the athlete's core identity profile."}
         currentStep={currentStep}
-        totalSteps={totalSteps} 
+        totalSteps={totalSteps}
       />
 
       <div className="mt-5 pb-6">
@@ -138,7 +148,6 @@ export default function Biography({ currentStep, totalSteps }: { currentStep: nu
           </div>
         </div>
       </div>
- 
     </div>
   )
 }

@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import Image from "next/image"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useForm, useWatch } from "react-hook-form"
- 
+import type { WizardState } from "../types"
 
 import {
   Select,
@@ -71,7 +71,17 @@ const sectionTitleClassName = "text-[20px] font-bold leading-[150%] text-white"
 const sectionSubtitleClassName =
   "text-[14px] font-normal leading-[150%] text-white/70"
 
-export default function PositionMap({ currentStep, totalSteps }: { currentStep: number; totalSteps: number }) {
+export default function PositionMap({
+  currentStep,
+  totalSteps,
+  draft,
+  onDraftChange,
+}: {
+  currentStep: number
+  totalSteps: number
+  draft: WizardState["forms"]["positionMap"]
+  onDraftChange: (value: WizardState["forms"]["positionMap"]) => void
+}) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
@@ -82,15 +92,16 @@ export default function PositionMap({ currentStep, totalSteps }: { currentStep: 
     Boolean(value && positions.some((position) => position.id === value))
 
   const initialPrimaryPosition = isValidPosition(
-    searchParams.get("primaryPosition")
+    draft.primaryPosition || searchParams.get("primaryPosition")
   )
-    ? (searchParams.get("primaryPosition") as string)
+    ? ((draft.primaryPosition || searchParams.get("primaryPosition")) as string)
     : "LW"
 
   const initialSecondaryPosition = isValidPosition(
-    searchParams.get("secondaryPosition")
+    draft.secondaryPosition || searchParams.get("secondaryPosition")
   )
-    ? (searchParams.get("secondaryPosition") as string)
+    ? ((draft.secondaryPosition ||
+        searchParams.get("secondaryPosition")) as string)
     : "RCB"
 
   const {
@@ -146,6 +157,10 @@ export default function PositionMap({ currentStep, totalSteps }: { currentStep: 
     }
 
     setPositionsInParams(value, nextSecondaryPosition)
+    onDraftChange({
+      primaryPosition: value,
+      secondaryPosition: nextSecondaryPosition,
+    })
   }
 
   const onSecondarySelect = (value: string) => {
@@ -157,7 +172,18 @@ export default function PositionMap({ currentStep, totalSteps }: { currentStep: 
     }
 
     setPositionsInParams(nextPrimaryPosition, value)
+    onDraftChange({
+      primaryPosition: nextPrimaryPosition,
+      secondaryPosition: value,
+    })
   }
+
+  useEffect(() => {
+    onDraftChange({
+      primaryPosition: primaryPosition || "",
+      secondaryPosition: secondaryPosition || "",
+    })
+  }, [primaryPosition, secondaryPosition, onDraftChange])
 
   const isPositionVisible = (positionId: string) => {
     return (
@@ -168,7 +194,7 @@ export default function PositionMap({ currentStep, totalSteps }: { currentStep: 
   }
 
   return (
-    <div className="w-full rounded-2xl bg-[#090B10] p-4 text-white ">
+    <div className="w-full rounded-2xl bg-[#090B10] p-4 text-white">
       <ModalStepHeader
         title={roleHeaderCopy.title}
         subtitle={roleHeaderCopy.subtitle}

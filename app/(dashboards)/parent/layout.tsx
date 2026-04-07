@@ -33,10 +33,6 @@ import {
   Settings,
   Sparkles,
 } from "lucide-react"
-import {
-  Collapsible,
-  CollapsibleTrigger,
-} from "@/components/animate-ui/primitives/radix/collapsible"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { BiMessageSquareDetail } from "react-icons/bi"
@@ -146,30 +142,21 @@ export default function ParentDashboardLayout({
           <SidebarGroup>
             <SidebarMenu>
               {DATA.navMain.map((item) => (
-                <Collapsible
-                  key={item.title}
-                  asChild
-                  defaultOpen={item.isActive}
-                  className="group/collapsible"
-                >
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <Link href={item.url} className="">
-                        <SidebarMenuButton
-                          tooltip={item.title}
-                          className={`border-2 py-4.5 ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
-                        >
-                          {item.icon && <item.icon />}
-                          <span
-                            className={`${pathname == item.url ? "text-bold text-white" : ""}`}
-                          >
-                            {item.title}
-                          </span>
-                        </SidebarMenuButton>
-                      </Link>
-                    </CollapsibleTrigger>
-                  </SidebarMenuItem>
-                </Collapsible>
+                <SidebarMenuItem key={item.title}>
+                  <Link href={item.url} className="">
+                    <SidebarMenuButton
+                      tooltip={item.title}
+                      className={`border-2 py-4.5 ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
+                    >
+                      {item.icon && <item.icon />}
+                      <span
+                        className={`${pathname == item.url ? "text-bold text-white" : ""}`}
+                      >
+                        {item.title}
+                      </span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroup>
@@ -266,7 +253,7 @@ export default function ParentDashboardLayout({
       </Sidebar>
 
       <SidebarInset>
-        <header className="flex shrink-0 items-center gap-2 border-b border-secondary py-2.5 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+        <header className="flex shrink-0 items-center gap-2 border-b border-secondary py-2.5 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex w-full items-center justify-between gap-2 px-4">
             <BreadcrumbCustom />
 

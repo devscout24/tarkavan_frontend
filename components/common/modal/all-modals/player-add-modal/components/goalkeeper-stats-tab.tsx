@@ -1,5 +1,5 @@
-import type { UseFormRegisterReturn } from "react-hook-form" 
 import SeasonStatField from "./season-stat-field"
+import type { SeasonStatsValues } from "../types"
 
 type GoalkeeperStatKey =
   | "goalkeeperGamesPlayed"
@@ -11,21 +11,21 @@ type GoalkeeperStatKey =
   | "goalkeeperTotalSaves"
 
 interface GoalkeeperStatsTabProps {
-  registerStat?: (name: GoalkeeperStatKey) => UseFormRegisterReturn
-  getFieldError?: (name: GoalkeeperStatKey) => string | undefined
+  values: SeasonStatsValues
+  onChange: (name: GoalkeeperStatKey, value: string) => void
 }
 
 export default function GoalkeeperStatsTab({
-  registerStat,
-  getFieldError,
+  values,
+  onChange,
 }: GoalkeeperStatsTabProps) {
   return (
     <>
       <SeasonStatField
         title="Games Played"
         subtitle="Total appearances this season"
-        registerProps={registerStat?.("goalkeeperGamesPlayed")}
-        error={getFieldError?.("goalkeeperGamesPlayed")}
+        value={values.goalkeeperGamesPlayed}
+        onChange={(value) => onChange("goalkeeperGamesPlayed", value)}
       />
 
       <div className="border-t border-white/10 bg-secondary/40 px-6 py-3">
@@ -37,29 +37,29 @@ export default function GoalkeeperStatsTab({
       <SeasonStatField
         title="Goals"
         subtitle="Competitive match goals"
-        registerProps={registerStat?.("goalkeeperGoals")}
-        error={getFieldError?.("goalkeeperGoals")}
+        value={values.goalkeeperGoals}
+        onChange={(value) => onChange("goalkeeperGoals", value)}
       />
 
       <SeasonStatField
         title="Assists"
         subtitle="Key passes leading to goals"
-        registerProps={registerStat?.("goalkeeperAssists")}
-        error={getFieldError?.("goalkeeperAssists")}
+        value={values.goalkeeperAssists}
+        onChange={(value) => onChange("goalkeeperAssists", value)}
       />
 
       <SeasonStatField
         title="Yellow Cards"
         subtitle="Cautions received"
-        registerProps={registerStat?.("goalkeeperYellowCards")}
-        error={getFieldError?.("goalkeeperYellowCards")}
+        value={values.goalkeeperYellowCards}
+        onChange={(value) => onChange("goalkeeperYellowCards", value)}
       />
 
       <SeasonStatField
         title="Red Cards"
         subtitle="Cautions received"
-        registerProps={registerStat?.("goalkeeperRedCards")}
-        error={getFieldError?.("goalkeeperRedCards")}
+        value={values.goalkeeperRedCards}
+        onChange={(value) => onChange("goalkeeperRedCards", value)}
       />
 
       <div className="border-t border-white/10 bg-secondary/40 px-6 py-3">
@@ -71,15 +71,15 @@ export default function GoalkeeperStatsTab({
       <SeasonStatField
         title="Clean Sheets"
         subtitle="Matches with zero goals conceded"
-        registerProps={registerStat?.("goalkeeperCleanSheets")}
-        error={getFieldError?.("goalkeeperCleanSheets")}
+        value={values.goalkeeperCleanSheets}
+        onChange={(value) => onChange("goalkeeperCleanSheets", value)}
       />
 
       <SeasonStatField
         title="Total Saves"
         subtitle="Estimated total saves made"
-        registerProps={registerStat?.("goalkeeperTotalSaves")}
-        error={getFieldError?.("goalkeeperTotalSaves")}
+        value={values.goalkeeperTotalSaves}
+        onChange={(value) => onChange("goalkeeperTotalSaves", value)}
       />
     </>
   )

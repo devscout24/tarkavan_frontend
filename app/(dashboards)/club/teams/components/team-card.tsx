@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { MoreHorizontal } from "lucide-react"
+import { Edit2, MoreHorizontal, Trash2 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -111,9 +111,13 @@ export default function TeamCard({
 
             <DropdownMenuContent>
               <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  <span>Profile</span>
-                  <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                <DropdownMenuItem onClick={onViewTeam} className="hover:bg-brand cursor-pointer ">
+                  <span>Edit</span>
+                  <DropdownMenuShortcut><Edit2/></DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-brand cursor-pointer">
+                  <span>Delete</span>
+                  <DropdownMenuShortcut><Trash2/></DropdownMenuShortcut>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>

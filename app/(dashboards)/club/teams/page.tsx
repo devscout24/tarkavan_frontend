@@ -42,6 +42,7 @@ export default function Page() {
           className="mr-2 w-fit bg-brand px-3 text-primary hover:bg-brand hover:text-primary"
           text="Add Team"
           icon={<Plus />}
+          onClick={() => router.push("?add-new=team")}
         />
       </div>
       <div className="flex gap-6">
@@ -56,6 +57,7 @@ export default function Page() {
             playersLimit={team.maxPlayers}
             coachCount={team.coaches}
             imageSrc={team.image}
+            onViewTeam={() => router.push(`/club/teams/${team.id}`)}
           />
         ))} 
 

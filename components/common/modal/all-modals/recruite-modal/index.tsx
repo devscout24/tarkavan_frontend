@@ -88,7 +88,7 @@ export default function RecruitmentForm({
   return (
     <Card className="w-full rounded-none border-0 bg-[#121319] py-0 text-white ring-0">
       <CardHeader className="space-y-5 px-6 pt-7 pb-0">
-        <CardTitle className="text-4xl font-semibold text-white">
+        <CardTitle className="text-base font-semibold text-white">
           {title}
         </CardTitle>
         <div className="h-px w-full bg-white/15" />
@@ -96,9 +96,9 @@ export default function RecruitmentForm({
 
       <CardContent className="space-y-5 px-6 pt-6 pb-8">
         <div className="space-y-2">
-          <label className="text-4xl text-white">Position</label>
+          <label className="text-base text-white">Position</label>
           <Select value={position} onValueChange={setPosition}>
-            <SelectTrigger className="h-12 w-full border-white/15 bg-transparent px-3 text-3xl text-white data-placeholder:text-white/40">
+            <SelectTrigger className="h-12 w-full border-white/15 bg-transparent px-3 text-base text-white data-placeholder:text-white/40">
               <SelectValue placeholder={positionPlaceholder} />
             </SelectTrigger>
             <SelectContent className="bg-[#1a1c23] text-white">
@@ -112,9 +112,9 @@ export default function RecruitmentForm({
         </div>
 
         <div className="space-y-2">
-          <label className="text-4xl text-white">Team Select</label>
+          <label className="text-base text-white">Team Select</label>
           <Select value={team} onValueChange={setTeam}>
-            <SelectTrigger className="h-12 w-full border-white/15 bg-transparent px-3 text-3xl text-white data-placeholder:text-white/40">
+            <SelectTrigger className="h-12 w-full border-white/15 bg-transparent px-3 text-base text-white data-placeholder:text-white/40">
               <SelectValue placeholder={teamPlaceholder} />
             </SelectTrigger>
             <SelectContent className="bg-[#1a1c23] text-white">
@@ -130,24 +130,24 @@ export default function RecruitmentForm({
         <UiInput
           label="Experience"
           placeholder={experiencePlaceholder}
-          className="h-12 border-white/15 bg-transparent text-3xl placeholder:text-white/40"
+          className="h-12 border-white/15 bg-transparent text-base placeholder:text-white/40"
           onChange={(event) => setExperience(event.target.value)}
         />
 
         <UiInput
           label="Tryout Dates"
           placeholder={tryoutPlaceholder}
-          className="h-12 border-white/15 bg-transparent text-3xl placeholder:text-white/40"
+          className="h-12 border-white/15 bg-transparent text-base placeholder:text-white/40"
           onChange={(event) => setTryoutDates(event.target.value)}
         />
 
         <div className="space-y-2">
-          <label className="text-4xl text-white">Description</label>
+          <label className="text-base text-white">Description</label>
           <textarea
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             placeholder={descriptionPlaceholder}
-            className="min-h-28 w-full resize-none rounded-lg border border-white/15 bg-transparent px-3 py-2 text-3xl text-white transition outline-none placeholder:text-white/40 focus:border-brand/60 focus-visible:ring-2 focus-visible:ring-brand/30"
+            className="min-h-28 w-full resize-none rounded-lg border border-white/15 bg-transparent px-3 py-2 text-base text-white transition outline-none placeholder:text-white/40 focus:border-brand/60 focus-visible:ring-2 focus-visible:ring-brand/30"
           />
         </div>
 
@@ -156,7 +156,7 @@ export default function RecruitmentForm({
             type="button"
             variant="outline"
             onClick={onCancel}
-            className="h-11 min-w-28 rounded-xl border-brand bg-transparent px-6 text-xl text-brand hover:bg-brand/10"
+            className="h-11 min-w-28 rounded-xl border-brand bg-transparent px-6 text-base text-brand hover:text-brand hover:bg-brand/10"
           >
             {cancelLabel}
           </Button>
@@ -164,7 +164,7 @@ export default function RecruitmentForm({
           <Button
             type="button"
             onClick={handleSubmit}
-            className="h-11 min-w-80 rounded-xl bg-brand px-8 text-2xl font-semibold text-primary hover:bg-brand"
+            className="h-11 min-w-80 rounded-xl bg-brand px-8 text-base font-semibold text-primary hover:bg-brand"
           >
             {submitLabel}
           </Button>

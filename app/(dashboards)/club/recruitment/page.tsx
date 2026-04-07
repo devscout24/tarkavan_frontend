@@ -1,6 +1,7 @@
 import RecruitmentSection from "./component/recruitment-section"
 import { type RecruitmentCardData } from "./component/recruitment-card" 
 import Link from "next/link"
+import { Plus } from "lucide-react"
 
 const coachRecruitments: RecruitmentCardData[] = [
   {
@@ -31,7 +32,7 @@ export default function Page() {
     <div className="space-y-6 ">
 
       <div className="flex justify-end mt-1 mr-1   ">
-        <Link href="" className="w-fit text-primary bg-brand hover:bg-brand hover:text-primary px-5 py-2 rounded-[5px]   ">  Add New Recruit</Link>
+        <Link href="?add-new=recruitment" className="w-fit flex items-center gap-2 text-primary bg-brand hover:bg-brand hover:text-primary px-5 py-2 rounded-[5px]   "> <Plus/>  Add New Recruit</Link>
       </div>
       <RecruitmentSection
         addLabel="Coach Recruitments"

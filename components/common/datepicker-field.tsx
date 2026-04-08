@@ -41,7 +41,7 @@ export default function DatepickerField({
           type="button"
           onClick={() => onOpenChange(!open)}
           className={cn(
-            "flex h-11 w-full items-center rounded-xl border border-white/10 bg-[#0F1117] px-3 text-left",
+            "flex h-11 w-full items-center rounded-xl border border-white/10 bg-secondary/10 px-3 text-left",
             error && "border-red-500",
             triggerClassName
           )}
@@ -57,7 +57,7 @@ export default function DatepickerField({
         </button>
 
         {open && (
-          <div className="absolute z-30 mt-2 rounded-xl border border-white/10 bg-[#0F1117] p-2 shadow-xl">
+          <div className="absolute z-30 mt-2 rounded-xl border border-white/10 bg-secondary/10 p-2 shadow-xl">
             <Calendar
               mode="single"
               selected={selected}

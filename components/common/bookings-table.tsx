@@ -257,10 +257,6 @@ export default function BookingsTable({
           </TableBody>
         </Table>
       </div>
-
-      <p className="mt-2 hidden text-xs text-white/60 lg:block">
-        Swipe left or right to see all columns
-      </p>
     </>
   )
 }

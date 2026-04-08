@@ -36,6 +36,7 @@ import { GrGroup } from "react-icons/gr";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { IoIosFootball } from "react-icons/io";
 import { CiCreditCard2 } from "react-icons/ci";
+import Modals from "@/components/common/modal"
 
 export default function PlayerDashboardLayout({
   children,
@@ -100,6 +101,7 @@ export default function PlayerDashboardLayout({
 
   return (
     <SidebarProvider className="h-screen overflow-hidden">
+      <Modals/>
       <Sidebar collapsible="icon" className="relative border-secondary">
         <Image
           src={"/images/sidebarbg.png"}

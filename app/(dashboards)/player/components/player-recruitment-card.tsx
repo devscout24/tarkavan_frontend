@@ -93,7 +93,7 @@ export default function PlayerRecruitmentCard({
           {btnSecond && (
             <CommonBtn 
               variant="outline"
-              className="w-fit px-5 bg-secondary text-sm font-semibold hover:bg-transparent"
+              className="w-fit px-5 bg-transparent border border-brand text-brand hover:text-brand text-sm font-semibold hover:bg-transparent"
               size="lg"
               text={"View Details"}
             />

@@ -1,5 +1,4 @@
-import { Card } from "@/components/ui/card"; 
-import VisibilityEdit from "../components/visibility-edit";
+import { Card } from "@/components/ui/card";  
 import CommonBtn from "@/components/common/common-btn";
 import ProspectCard from "../components/prospect-card";
 import Bio from "../components/bio";
@@ -9,8 +8,7 @@ import Stat from "../components/stat";
 import RadarChart from "../components/radar";
 import RadarStrength from "../components/radar-strength";
 import PlayerMedia from "../components/player-media";
-
- 
+import VisibilityEdit from "@/components/common/visibility-edit";
 
 
 export default function PlayerProfile(){
@@ -32,8 +30,7 @@ export default function PlayerProfile(){
                   <Bio/>
                   <Achievements/> 
                   <SocialLinks/>
-               </div>
-               
+               </div> 
                <div className="flex-7">  
 
                     {/* player stats */}
@@ -85,11 +82,8 @@ export default function PlayerProfile(){
                         </div>
                     </div>
 
-               </div>
-
-            </div>
-
-
+               </div> 
+            </div> 
         </section>
     )
 }

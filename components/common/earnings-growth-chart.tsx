@@ -209,16 +209,26 @@ export default function EarningsGrowthChart() {
             font: (ctx) => {
               const tickIndex = Number(ctx.tick.value)
               return {
-                size: isMobile ? 12 : 16,
+                size: isMobile ? 10 : 14,
                 weight: tickIndex === data.accentIndex ? 600 : 500,
               }
             },
             autoSkip: true,
             maxTicksLimit:
-              filter === "1-year" ? (isMobile ? 6 : 12) : data.labels.length,
+              filter === "1-year"
+                ? isMobile
+                  ? 4
+                  : 12
+                : filter === "6-month"
+                  ? isMobile
+                    ? 4
+                    : data.labels.length
+                  : isMobile
+                    ? 3
+                    : data.labels.length,
             maxRotation: 0,
             minRotation: 0,
-            padding: 12,
+            padding: isMobile ? 6 : 12,
           },
         },
         y: {
@@ -229,10 +239,10 @@ export default function EarningsGrowthChart() {
             stepSize: Y_STEP,
             color: "rgba(255,255,255,0.34)",
             font: {
-              size: isMobile ? 12 : 14,
+              size: isMobile ? 10 : 14,
               weight: 500,
             },
-            padding: 8,
+            padding: isMobile ? 4 : 8,
           },
           grid: {
             color: "rgba(255,255,255,0.12)",
@@ -267,10 +277,8 @@ export default function EarningsGrowthChart() {
         />
       </div>
 
-      <div className="w-full max-w-full min-w-0 overflow-x-auto [scrollbar-color:rgba(198,245,122,0.75)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-brand/75 [&::-webkit-scrollbar-track]:bg-transparent">
-        <div className="h-56 w-full min-w-155 sm:h-64 sm:min-w-170 md:h-72 md:min-w-180 lg:h-75 lg:min-w-0">
-          <Line data={chartData} options={chartOptions} />
-        </div>
+      <div className="h-56 w-full sm:h-64 md:h-72 lg:h-75">
+        <Line data={chartData} options={chartOptions} />
       </div>
     </section>
   )

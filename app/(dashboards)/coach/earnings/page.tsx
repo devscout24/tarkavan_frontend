@@ -63,7 +63,7 @@ const earnings: EarningsRow[] = [
 
 export default function EarningsPage() {
   return (
-    <section className="max-w-full text-white">
+    <section>
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((stat) => (
           <StatCard
@@ -75,7 +75,7 @@ export default function EarningsPage() {
         ))}
       </div>
 
-      <div className="space-y-5 xl:space-y-6">
+      <div className="max-w-[95dvw] space-y-5 self-center xl:space-y-6">
         <EarningsTable earnings={earnings} />
         <EarningsGrowthChart />
       </div>

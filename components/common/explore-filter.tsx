@@ -113,7 +113,7 @@ export default function ExploreFilter() {
           Quick Filters
         </div>
 
-        <div className="grid flex-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="grid flex-1 gap-3 sm:grid-cols-2 xl:grid-cols-5 max-w-6/10  ">
           {(
             [
               ["location", selectOptions.location],

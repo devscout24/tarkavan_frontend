@@ -62,7 +62,7 @@ export default function ProgramCard({
         }
       </div>
 
-      <CardContent className="   p-4">
+      <CardContent className="h-full flex flex-col justify-between  p-4">
         <div className="flex items-start justify-between gap-4 h-15.5 ">
           <h3 className="max-w-[70%] text-lg leading-tight font-semibold line-clamp-2 overflow-hidden text-ellipsis ">
             {title}
@@ -92,7 +92,7 @@ export default function ProgramCard({
             <span>{duration}</span>
           </div>
         </div> 
-        <CommonBtn text={buttonLabel}  className=" mt-2 h-11 w-full rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90   " size={"lg"} variant={"default"} onClick={onClick} />
+        <CommonBtn text={buttonLabel}  className="  h-11 w-full rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90   " size={"lg"} variant={"default"} onClick={onClick} />
       </CardContent>
     </Card>
   )

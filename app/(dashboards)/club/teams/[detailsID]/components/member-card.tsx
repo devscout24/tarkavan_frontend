@@ -61,11 +61,11 @@ export default function TeamMemberCard({
           src={member.imageSrc}
           alt={member.imageAlt ?? member.name}
           fill
-          className="object-cover"
+          className="object-cover min-h-46 "
         />
       </div>
 
-      <CardContent className="space-y-2.5 bg-[#11131c] p-4">
+      <CardContent className="h-full flex flex-col justify-between  space-y-2.5 bg-[#11131c] p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
             <h3 className="text-xl leading-tight font-medium text-white">

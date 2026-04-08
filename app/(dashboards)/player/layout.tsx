@@ -113,7 +113,7 @@ export default function PlayerDashboardLayout({
         </SidebarHeader>
 
         <SidebarContent className=" ">
-          <SidebarSearch />
+          {/* <SidebarSearch /> */}
 
           <SidebarGroup>
             <SidebarMenu>

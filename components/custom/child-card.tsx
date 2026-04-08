@@ -8,6 +8,7 @@ import {
 } from "@/components/animate-ui/primitives/radix/dropdown-menu"
 import VisibilityBadge from "./visibility-badge"
 import Image from "next/image"
+import { TbCurrentLocation } from "react-icons/tb"
 
 interface ChildCardProps {
   imageUrl: string
@@ -17,7 +18,7 @@ interface ChildCardProps {
   jerseyNumber: number
   location: string
   isPublic: boolean
-  stats: {
+  stats?: {
     games: number
     goals: number
     assists: number
@@ -26,6 +27,8 @@ interface ChildCardProps {
   onInvite?: () => void
   onBlock?: () => void
   onRemove?: () => void
+  isDropdown?: boolean
+  adText?: string
 }
 
 const FootballIcon = () => (
@@ -107,9 +110,11 @@ export default function ChildCard({
   onInvite,
   onBlock,
   onRemove,
+  isDropdown = true,
+  adText,
 }: ChildCardProps) {
   return (
-    <div className="max-h-113 max-w-87.25 overflow-hidden rounded-[8px] border border-secondary/50 lg:max-w-75 xl:max-w-87.25">
+    <div className="overflow-hidden rounded-[8px] border border-secondary/50">
       {/* Image Section */}
       <div className="relative max-h-45 w-full lg:max-h-40 xl:max-h-45">
         <Image
@@ -117,13 +122,15 @@ export default function ChildCard({
           height={1000}
           src={imageUrl}
           alt={name}
-          className="block h-full max-h-45 w-full object-contain lg:max-h-40 xl:max-h-45"
+          className="block h-full max-h-45 w-full object-cover lg:max-h-40 xl:max-h-45"
         />
         {/* Badge */}
-        <VisibilityBadge
-          isPublic={isPublic}
-          className="absolute top-4 right-4 lg:top-3 lg:right-3 lg:scale-90 xl:top-4 xl:right-4 xl:scale-100"
-        />
+        {isPublic && (
+          <VisibilityBadge
+            isPublic={isPublic}
+            className="absolute top-4 right-4 lg:top-3 lg:right-3 lg:scale-90 xl:top-4 xl:right-4 xl:scale-100"
+          />
+        )}
       </div>
 
       {/* Content Section */}
@@ -152,37 +159,45 @@ export default function ChildCard({
 
         {/* Parental Control */}
         <div className="flex items-center gap-1.5">
-          <LockIcon />
+          <TbCurrentLocation className="text-white" />
           <p className="text-item">Parental Control Active</p>
         </div>
 
         {/* Stats */}
-        <div className="flex items-center divide-x divide-secondary/50">
-          <div className="flex-1 text-center">
-            <p className="text-base leading-[150%] font-semibold text-white">
-              {stats.games}
-            </p>
-            <p className="text-sm leading-[150%] font-normal text-white">
-              Games
-            </p>
+        {stats && (
+          <div className="flex items-center divide-x divide-secondary/50 rounded-md bg-secondary/30 py-1">
+            <div className="flex-1 text-center">
+              <p className="text-base leading-[150%] font-semibold text-white">
+                {stats?.games}
+              </p>
+              <p className="text-sm leading-[150%] font-normal text-white">
+                Games
+              </p>
+            </div>
+            <div className="flex-1 text-center">
+              <p className="text-base leading-[150%] font-semibold text-white">
+                {stats?.goals}
+              </p>
+              <p className="text-sm leading-[150%] font-normal text-white">
+                Goals
+              </p>
+            </div>
+            <div className="flex-1 text-center">
+              <p className="text-base leading-[150%] font-semibold text-white">
+                {stats?.assists}
+              </p>
+              <p className="text-sm leading-[150%] font-normal text-white">
+                Assists
+              </p>
+            </div>
           </div>
-          <div className="flex-1 text-center">
-            <p className="text-base leading-[150%] font-semibold text-white">
-              {stats.goals}
-            </p>
-            <p className="text-sm leading-[150%] font-normal text-white">
-              Goals
-            </p>
+        )}
+
+        {adText && (
+          <div className="flex items-center divide-x divide-secondary/50 rounded-md bg-secondary/30 py-1">
+            <p className="text-sm font-normal text-white">{adText}</p>
           </div>
-          <div className="flex-1 text-center">
-            <p className="text-base leading-[150%] font-semibold text-white">
-              {stats.assists}
-            </p>
-            <p className="text-sm leading-[150%] font-normal text-white">
-              Assists
-            </p>
-          </div>
-        </div>
+        )}
 
         {/* Actions */}
         <div className="flex items-center gap-2">
@@ -193,37 +208,39 @@ export default function ChildCard({
             className="h-10 flex-1 cursor-pointer border-brand bg-transparent text-sm font-medium text-white transition-all hover:bg-brand hover:text-primary lg:h-9 lg:text-xs xl:h-10 xl:text-sm"
             onClick={onViewProfile}
           />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border border-brand bg-primary lg:h-9 lg:w-9 xl:h-10 xl:w-10">
-                <ThreeDotsIcon />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              sideOffset={8}
-              className="w-28 overflow-hidden rounded-lg border border-secondary/50 bg-white shadow-lg"
-            >
-              <DropdownMenuItem
-                onSelect={onInvite}
-                className="w-full cursor-pointer px-4 py-2 text-center text-sm font-normal text-primary outline-none hover:bg-brand"
+          {isDropdown && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border border-brand bg-primary lg:h-9 lg:w-9 xl:h-10 xl:w-10">
+                  <ThreeDotsIcon />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                sideOffset={8}
+                className="w-28 overflow-hidden rounded-lg border border-secondary/50 bg-white shadow-lg"
               >
-                Invite
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={onBlock}
-                className="w-full cursor-pointer px-4 py-2 text-center text-sm font-normal text-primary outline-none hover:bg-brand/90"
-              >
-                Block
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={onRemove}
-                className="w-full cursor-pointer px-4 py-2 text-center text-sm font-normal text-primary outline-none hover:bg-brand"
-              >
-                Remove
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuItem
+                  onSelect={onInvite}
+                  className="w-full cursor-pointer px-4 py-2 text-center text-sm font-normal text-primary outline-none hover:bg-brand"
+                >
+                  Invite
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={onBlock}
+                  className="w-full cursor-pointer px-4 py-2 text-center text-sm font-normal text-primary outline-none hover:bg-brand/90"
+                >
+                  Block
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={onRemove}
+                  className="w-full cursor-pointer px-4 py-2 text-center text-sm font-normal text-primary outline-none hover:bg-brand"
+                >
+                  Remove
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </div>
     </div>

@@ -61,7 +61,7 @@ export default function Modal({
     <Dialog open={modal === openId} onOpenChange={handleOpenChange}>
       <DialogContent
         className={cn(
-          "max-h-[90dvh] w-full max-w-[95vw] overflow-x-scroll px-2 py-4 sm:px-6 **:data-[slot='dialog-close']:bg-brand ",
+          "max-h-[90dvh] w-full max-w-[95vw] overflow-x-scroll px-2 py-4 sm:px-6 **:data-[slot='dialog-close']:bg-brand bg-transparent   ",
           className
         )}
       >

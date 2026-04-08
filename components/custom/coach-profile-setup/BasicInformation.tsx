@@ -6,10 +6,10 @@ import InputField from "@/components/common/input-field"
 import SelectField from "@/components/common/select-field"
 
 const controlClassName =
-  "h-11 rounded-xl border border-white/10 bg-[#0F1117] px-3 text-sm text-white placeholder:text-secondary/40 focus-visible:border-brand focus-visible:ring-0"
+  "h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-secondary/40 focus-visible:border-brand focus-visible:ring-0"
 
 const triggerClassName =
-  "h-11 w-full rounded-xl border-white/10 bg-[#0F1117] px-3 text-sm text-white data-placeholder:text-secondary/40"
+  "h-11 w-full rounded-xl border-white/10 bg-secondary/10 px-3 text-sm text-white data-placeholder:text-secondary/40"
 
 const genderOptions = [
   { value: "male", label: "Male" },
@@ -24,10 +24,11 @@ export default function BasicInformation() {
 
   return (
     <div className="rounded-2xl text-white">
-      <h3 className="border-b border-dashed border-white/12 pb-4 text-lg font-semibold text-white">
-        Basic Information
-      </h3>
-      <p className="mt-1 text-sm text-white/70">
+      <div className="pb-4">
+        <h3 className="text-lg font-semibold text-white">Basic Information</h3>
+        <div className="mt-3 h-px w-full bg-[repeating-linear-gradient(90deg,rgba(255,255,255,0.12)_0,rgba(255,255,255,0.12)_12px,transparent_12px,transparent_22px)]" />
+      </div>
+      <p className="mt-2 text-sm text-white/70">
         Complete your personal details to build your coach profile.
       </p>
 

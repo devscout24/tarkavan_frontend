@@ -1,24 +1,55 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import CommonUploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
+import { Icon } from "@/components/custom/Icon"
 
 export default function UploadPhoto() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string>("")
+  const [fileName, setFileName] = useState<string>("")
+  const fileReaderRef = useRef<FileReader | null>(null)
 
-  const previewUrl = useMemo(() => {
-    if (!selectedFile) return ""
-    return URL.createObjectURL(selectedFile)
-  }, [selectedFile])
-
+  // Load image from localStorage on mount
   useEffect(() => {
-    return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl)
-      }
+    const savedImage = localStorage.getItem("coachProfileImage")
+    const savedFileName = localStorage.getItem("coachProfileImageName")
+    if (savedImage) {
+      setPreviewUrl(savedImage)
+      setFileName(savedFileName || "")
     }
-  }, [previewUrl])
+  }, [])
+
+  // Save image to localStorage when previewUrl changes (and is not empty)
+  useEffect(() => {
+    if (previewUrl) {
+      localStorage.setItem("coachProfileImage", previewUrl)
+      localStorage.setItem("coachProfileImageName", fileName)
+    } else {
+      localStorage.removeItem("coachProfileImage")
+      localStorage.removeItem("coachProfileImageName")
+    }
+  }, [previewUrl, fileName])
+
+  // Handle file selection and convert to base64
+  const handleFileSelect = (file: File) => {
+    setSelectedFile(file)
+    setFileName(file.name)
+    const reader = new FileReader()
+    fileReaderRef.current = reader
+    reader.onloadend = () => {
+      setPreviewUrl(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  // Remove image handler
+  const handleRemoveImage = () => {
+    setSelectedFile(null)
+    setPreviewUrl("")
+    setFileName("")
+  }
 
   return (
     <div className="rounded-2xl text-white">
@@ -31,26 +62,56 @@ export default function UploadPhoto() {
         <CommonUploadPhoto
           title="Choose Profile Image"
           subtitle="Upload JPG, PNG or WEBP up to 5MB"
-          onFileSelect={(file) => setSelectedFile(file)}
+          onFileSelect={handleFileSelect}
         />
       </div>
 
       {previewUrl ? (
-        <div className="mt-5 flex items-center gap-4">
-          <div className="h-16 w-16 overflow-hidden rounded-full">
+        <div className="mt-5 flex items-center justify-center">
+          <div
+            className="relative flex items-center justify-center rounded-2xl border-2 border-dashed border-white/40 bg-white/5 p-4"
+            style={{ width: 96, height: 96 }}
+          >
             <Image
               src={previewUrl}
               alt="Selected coach profile"
-              width={96}
-              height={96}
-              className="h-full w-full object-cover"
+              width={80}
+              height={80}
+              className="rounded-full object-cover"
+              style={{ width: 80, height: 80 }}
             />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-white">Photo Selected</p>
-            <p className="text-xs text-white/60">
-              {selectedFile?.name ?? "No file selected"}
-            </p>
+            <button
+              type="button"
+              aria-label="Remove image"
+              onClick={handleRemoveImage}
+              className="absolute top-1 right-1 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-white shadow hover:bg-red-700"
+            >
+              <Icon
+                width="14"
+                height="14"
+                viewBox="0 0 16 16"
+                className="pointer-events-none"
+              >
+                <line
+                  x1="4"
+                  y1="4"
+                  x2="12"
+                  y2="12"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+                <line
+                  x1="12"
+                  y1="4"
+                  x2="4"
+                  y2="12"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </Icon>
+            </button>
           </div>
         </div>
       ) : null}

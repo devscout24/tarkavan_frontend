@@ -47,8 +47,9 @@ import { usePathname } from "next/navigation"
 import Image from "next/image"
 import Logo from "@/components/common/logo"
 import MenuBtn from "@/components/custom/menu-btn"
-import SidebarSearch from "@/components/custom/sidebar-search"
+// import SidebarSearch from "@/components/custom/sidebar-search"
 import Link from "next/link"
+import CheckCoachAuth from "@/components/auth/auth-check/check-coach-auth"
 
 const EarningsNavIcon = ({ className }: { className?: string }) => (
   <Image
@@ -128,114 +129,87 @@ export default function ParentDashboardLayout({
   const isMobile = useIsMobile()
 
   return (
-    <SidebarProvider className={` `}>
-      <Modals />
-      <Sidebar collapsible="icon" className="relative border-secondary">
-        <Image
-          width={1000}
-          height={1000}
-          src={"/images/sidebarbg.png"}
-          alt="side-bar-bg"
-          className="absolute top-1/2 left-0 w-full -translate-y-1/2"
-        />
-        <SidebarHeader className="border-b border-secondary py-4.5">
-          {/* Team Switcher */}
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <div className="flex justify-between">
-                <Logo className="w-21.25" />
-                <MenuBtn>
-                  <SidebarTrigger className="-ml-1 cursor-pointer" />
-                </MenuBtn>
-              </div>
-            </SidebarMenuItem>
-          </SidebarMenu>
-          {/* Team Switcher */}
-        </SidebarHeader>
-
-        <SidebarContent className=" ">
-          {/* Sidebar Search */}
-          {/* <SidebarSearch /> */}
-          {/* Sidebar Search */}
-
-          {/* navs */}
-          <SidebarGroup>
+    <CheckCoachAuth> 
+      <SidebarProvider className={` `}>
+        <Modals />
+        <Sidebar collapsible="icon" className="relative border-secondary">
+          <Image
+            width={1000}
+            height={1000}
+            src={"/images/sidebarbg.png"}
+            alt="side-bar-bg"
+            className="absolute top-1/2 left-0 w-full -translate-y-1/2"
+          />
+          <SidebarHeader className="border-b border-secondary py-4.5">
+            {/* Team Switcher */}
             <SidebarMenu>
-              {DATA.navMain.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <Link href={item.url} className="">
-                    <SidebarMenuButton
-                      tooltip={item.title}
-                      className={`border-2 py-4.5 ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
-                    >
-                      {item.icon && (
-                        <item.icon
-                          className={
-                            item.title === "My Programs" ||
-                            item.title === "Bookings" ||
-                            item.title === "Earnings" ||
-                            item.title === "Messages"
-                              ? "text-white"
-                              : undefined
-                          }
-                        />
-                      )}
-                      <span
-                        className={`${pathname == item.url ? "text-bold text-white" : ""}`}
-                      >
-                        {item.title}
-                      </span>
-                    </SidebarMenuButton>
-                  </Link>
-                </SidebarMenuItem>
-              ))}
+              <SidebarMenuItem>
+                <div className="flex justify-between">
+                  <Logo className="w-21.25" />
+                  <MenuBtn>
+                    <SidebarTrigger className="-ml-1 cursor-pointer" />
+                  </MenuBtn>
+                </div>
+              </SidebarMenuItem>
             </SidebarMenu>
-          </SidebarGroup>
-        </SidebarContent>
-        <SidebarFooter>
-          {/* Nav User */}
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton
-                    size="lg"
-                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                  >
-                    <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage
-                        src={DATA.user.avatar}
-                        alt={DATA.user.name}
-                      />
-                      <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                    </Avatar>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">
-                        {DATA.user.name}
-                      </span>
-                      <span className="truncate text-xs">
-                        {DATA.user.email}
-                      </span>
-                    </div>
-                    <ChevronsUpDown className="ml-auto size-4" />
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                  side={isMobile ? "bottom" : "right"}
-                  align="end"
-                  sideOffset={4}
-                >
-                  <DropdownMenuLabel className="p-0 font-normal">
-                    <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+            {/* Team Switcher */}
+          </SidebarHeader>
+
+          <SidebarContent className=" ">
+            {/* Sidebar Search */}
+            {/* <SidebarSearch /> */}
+            {/* Sidebar Search */}
+
+            {/* navs */}
+            <SidebarGroup>
+              <SidebarMenu>
+                {DATA.navMain.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <Link href={item.url} className="">
+                      <SidebarMenuButton
+                        tooltip={item.title}
+                        className={`border-2 py-4.5 ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
+                      >
+                        {item.icon && (
+                          <item.icon
+                            className={
+                              item.title === "My Programs" ||
+                              item.title === "Bookings" ||
+                              item.title === "Earnings" ||
+                              item.title === "Messages"
+                                ? "text-white"
+                                : undefined
+                            }
+                          />
+                        )}
+                        <span
+                          className={`${pathname == item.url ? "text-bold text-white" : ""}`}
+                        >
+                          {item.title}
+                        </span>
+                      </SidebarMenuButton>
+                    </Link>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroup>
+          </SidebarContent>
+          <SidebarFooter>
+            {/* Nav User */}
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <SidebarMenuButton
+                      size="lg"
+                      className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                    >
                       <Avatar className="h-8 w-8 rounded-lg">
                         <AvatarImage
                           src={DATA.user.avatar}
                           alt={DATA.user.name}
                         />
-                        <AvatarFallback className="rounded-lg">
-                          CN
-                        </AvatarFallback>
+                        <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 text-left text-sm leading-tight">
                         <span className="truncate font-semibold">
@@ -245,59 +219,88 @@ export default function ParentDashboardLayout({
                           {DATA.user.email}
                         </span>
                       </div>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuGroup>
+                      <ChevronsUpDown className="ml-auto size-4" />
+                    </SidebarMenuButton>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                    side={isMobile ? "bottom" : "right"}
+                    align="end"
+                    sideOffset={4}
+                  >
+                    <DropdownMenuLabel className="p-0 font-normal">
+                      <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                        <Avatar className="h-8 w-8 rounded-lg">
+                          <AvatarImage
+                            src={DATA.user.avatar}
+                            alt={DATA.user.name}
+                          />
+                          <AvatarFallback className="rounded-lg">
+                            CN
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="grid flex-1 text-left text-sm leading-tight">
+                          <span className="truncate font-semibold">
+                            {DATA.user.name}
+                          </span>
+                          <span className="truncate text-xs">
+                            {DATA.user.email}
+                          </span>
+                        </div>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem>
+                        <Sparkles />
+                        Upgrade to Pro
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem>
+                        <BadgeCheck />
+                        Account
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <CreditCard />
+                        Billing
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Bell />
+                        Notifications
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem>
-                      <Sparkles />
-                      Upgrade to Pro
+                      <LogOut />
+                      Log out
                     </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                      <BadgeCheck />
-                      Account
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <CreditCard />
-                      Billing
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Bell />
-                      Notifications
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <LogOut />
-                    Log out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SidebarMenuItem>
-          </SidebarMenu>
-          {/* Nav User */}
-        </SidebarFooter>
-        <SidebarRail />
-      </Sidebar>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </SidebarMenuItem>
+            </SidebarMenu>
+            {/* Nav User */}
+          </SidebarFooter>
+          <SidebarRail />
+        </Sidebar>
 
-      <SidebarInset>
-        <header className="flex shrink-0 items-center gap-2 border-b border-secondary py-2.5 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-          <div className="flex w-full items-center justify-between gap-2 px-4">
-            <BreadcrumbCustom />
+        <SidebarInset>
+          <header className="flex shrink-0 items-center gap-2 border-b border-secondary py-2.5 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+            <div className="flex w-full items-center justify-between gap-2 px-4">
+              <BreadcrumbCustom />
 
-            <div className="flex items-center gap-4">
-              <Notification />
-              <ProfileDropdown />
+              <div className="flex items-center gap-4">
+                <Notification />
+                <ProfileDropdown />
+              </div>
             </div>
-          </div>
-        </header>
-        <ScrollArea className="h-[92vh] px-1 py-6 md:px-8">
-          {children}
-        </ScrollArea>
-      </SidebarInset>
-    </SidebarProvider>
+          </header>
+          <ScrollArea className="h-[92vh] px-1 py-6 md:px-8">
+            {children}
+          </ScrollArea>
+        </SidebarInset>
+      </SidebarProvider>
+    </CheckCoachAuth>
   )
 }

@@ -14,6 +14,7 @@ type InputProps = {
   onChange?: React.ChangeEventHandler<HTMLInputElement>
   className?: string
   icon?: React.ReactNode
+  value?: string
 }
 
 export default function UiInput({ 
@@ -23,6 +24,7 @@ export default function UiInput({
   onChange,
   className ,
   icon,
+  value
 }: InputProps) { 
 
   return (
@@ -37,6 +39,7 @@ export default function UiInput({
           type={type || "text"}
           placeholder={placeholder || "Enter something..."}
           onChange={onChange}
+          value={value}
           className={`bg-[#2B2E36] text-white placeholder:text-white/50 font-light  py-6 border-white/10 focus-visible:ring-brand/30 focus-visible:border-brand/50 ${icon  ? "pl-8" : ""}   ${className}`}
         />  
       </div>

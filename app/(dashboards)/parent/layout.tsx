@@ -156,7 +156,7 @@ export default function ParentDashboardLayout({
 
         <SidebarContent className=" ">
           {/* Sidebar Search */}
-          <SidebarSearch />
+          {/* <SidebarSearch /> */}
           {/* Sidebar Search */}
 
           {/* navs */}

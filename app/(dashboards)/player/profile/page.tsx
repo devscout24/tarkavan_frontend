@@ -4,11 +4,11 @@ import ProspectCard from "../components/prospect-card";
 import Bio from "../components/bio";
 import Achievements from "../components/achievements";
 import SocialLinks from "../components/social-links";
-import Stat from "../components/stat";
-import RadarChart from "../components/radar";
-import RadarStrength from "../components/radar-strength";
+import Stat from "../components/stat"; 
 import PlayerMedia from "../components/player-media";
 import VisibilityEdit from "@/components/common/visibility-edit";
+import RadarChart from "@/components/common/radar";
+import RadarStrength from "@/components/common/radar-strength";
 
 
 export default function PlayerProfile(){

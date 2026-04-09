@@ -2,7 +2,8 @@ import { Geist, Geist_Mono, Inter } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
+import Toasting from "@/components/custom/toasting";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
@@ -27,7 +28,8 @@ export default function RootLayout({
         inter.variable
       )}
     >
-      <body className="bg-black">
+      <body>
+        <Toasting />
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

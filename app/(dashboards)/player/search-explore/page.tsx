@@ -1,47 +1,8 @@
 "use client"
-import ProgramCard from "@/components/common/program-card"
-import { useRouter } from "next/navigation"
-import ExploreFilter from "../../../../components/common/explore-filter"
+import ExploreFilter from "@/components/common/explore-filter" 
+import ExploreCard from "@/components/common/explore-card"
 
-export default function SearchExplorePage() {
-  const router = useRouter()
-  const programs = [
-    {
-      id: "1",
-      title: "Elite Hoops Leadership Academy",
-      coachName: "Elena Rodriguez",
-      schedule: "Tuesdays, 6:00 PM",
-      duration: "8 Weeks Program",
-      currentPrice: "$249",
-      imageSrc: "/images/player1.png",
-      imageAlt: "Program image",
-      buttonLabel: "View Details",
-    },
-    {
-      id: "2",
-      title: "Premier Soccer Striker Clinic",
-      coachName: "David Chen",
-      schedule: "Weekends, 10:00 AM",
-      duration: "4 Weeks Program",
-      currentPrice: "$199",
-      imageSrc: "/images/player2.png",
-      imageAlt: "Program image",
-      buttonLabel: "View Details",
-    },
-    {
-      id: "3",
-      title: "Mindset & Performance Coaching",
-      coachName: "Sarah Jenkins",
-      schedule: "Thursdays, 5:00 PM",
-      duration: "12 Weeks Program",
-      currentPrice: "$269",
-      previousPrice: "$299",
-      discountLabel: "10% Off",
-      imageSrc: "/images/player3.png",
-      imageAlt: "Program image",
-      buttonLabel: "View Details",
-    },
-  ]
+export default function Page() { 
 
   return (
     <section>
@@ -49,15 +10,51 @@ export default function SearchExplorePage() {
 
       {/* programs cards */}
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {programs.map((program, index) => (
-          <ProgramCard
-            key={index}
-            {...program}
-            onClick={() =>
-              router.push(`/player/programs/details/${program.id}`)
-            }
-          />
-        ))}
+        <ExploreCard
+          image={"/images/player1.png"}
+          name="Martinez"
+          summary="Age: 45 | Coach | Experience: 10+"
+          details={[
+            "North Toronto",
+            "Head Coach – U17 FC Club",
+            "USA Basketball Gold Coach",
+          ]}
+        />
+
+        <ExploreCard
+          image={"/images/player2.png"}
+          name="Premier Soccer Striker Clinic"
+          price="$199"
+          details={[
+            "Coach: David Chen",
+            "Weekends, 10:00 AM",
+            "4 Weeks Program",
+          ]}
+        />
+
+        <ExploreCard
+          image={"/images/player3.png"}
+          name="Daniel Martinez" 
+          summary="Age: 15 | Midfielder | Jersey: 9"
+          details={[
+            "North Toronto",
+            "Parental Control Active",  
+          ]}
+          stats={["Goals: 12", "Assists: 8", "Matches: 20"]}
+        />
+
+        <ExploreCard
+          image={"/images/player3.png"}
+          name="Canada Strikers FC" 
+          summary="Youth Club | Academy"
+          details={[
+            "North Toronto",
+            "High Performance Program", 
+          ]}
+          desc="Premier youth soccer development club focused on building champions "
+        />
+
+
       </div>
     </section>
   )

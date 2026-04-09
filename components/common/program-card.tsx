@@ -66,9 +66,9 @@ export default function ProgramCard({
         )}
       </div>
 
-      <CardContent className="p-4">
-        <div className="flex h-15.5 items-start justify-between gap-4">
-          <h3 className="line-clamp-2 max-w-[70%] overflow-hidden text-lg leading-tight font-semibold text-ellipsis">
+      <CardContent className="h-full flex flex-col justify-between  p-4">
+        <div className="flex items-start justify-between gap-4 h-15.5 ">
+          <h3 className="max-w-[70%] text-lg leading-tight font-semibold line-clamp-2 overflow-hidden text-ellipsis ">
             {title}
           </h3>
 
@@ -95,22 +95,8 @@ export default function ProgramCard({
             <Clock3 className="size-4" />
             <span>{duration}</span>
           </div>
-        </div>
-        <div className="mt-2 flex items-center gap-4">
-          <CommonBtn
-            text={buttonLabel}
-            className="h-11 flex-1 rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90"
-            size={"lg"}
-            variant={"default"}
-            onClick={onClick}
-          />
-          <ThreeDotsMenu
-            isVisible={shouldShowThreeDotsMenu}
-            items={threeDotsItems}
-            triggerClassName="h-11 w-11 rounded-xl"
-            menuClassName="w-44"
-          />
-        </div>
+        </div> 
+        <CommonBtn text={buttonLabel}  className="  h-11 w-full rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90   " size={"lg"} variant={"default"} onClick={onClick} />
       </CardContent>
     </Card>
   )

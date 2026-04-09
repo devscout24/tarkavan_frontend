@@ -12,13 +12,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { DatePickerDemo } from "@/components/common/date-picker"
 
 type Option = {
   label: string
   value: string
 }
 
+type RecruitType = "coach" | "player"
+
 type RecruitmentFormPayload = {
+  recruitType: RecruitType
   position: string
   team: string
   experience: string
@@ -43,7 +48,7 @@ type RecruitmentFormProps = {
 }
 
 export default function RecruitmentForm({
-  title = "Post Coach Recruitment",
+  title = "Post a Recruitment",
   cancelLabel = "Cancel",
   submitLabel = "Post Request",
   positionPlaceholder = "Select Position",
@@ -65,18 +70,20 @@ export default function RecruitmentForm({
   onCancel,
   onSubmit,
 }: RecruitmentFormProps) {
+  const [recruitType, setRecruitType] = useState<RecruitType>(
+    defaultValues?.recruitType ?? "coach"
+  )
   const [position, setPosition] = useState(defaultValues?.position ?? "")
   const [team, setTeam] = useState(defaultValues?.team ?? "")
   const [experience, setExperience] = useState(defaultValues?.experience ?? "")
-  const [tryoutDates, setTryoutDates] = useState(
-    defaultValues?.tryoutDates ?? ""
-  )
+  const [tryoutDates] = useState(defaultValues?.tryoutDates ?? "")
   const [description, setDescription] = useState(
     defaultValues?.description ?? ""
   )
 
   const handleSubmit = () => {
     onSubmit?.({
+      recruitType,
       position,
       team,
       experience: experience.trim(),
@@ -95,15 +102,48 @@ export default function RecruitmentForm({
       </CardHeader>
 
       <CardContent className="space-y-5 px-6 pt-6 pb-8">
+        <div className="space-y-3">
+          <label className="text-base text-white">Recruit Type</label>
+          <RadioGroup
+            value={recruitType}
+            onValueChange={(value) => setRecruitType(value as RecruitType)}
+            className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+          >
+            <label
+              htmlFor="recruit-type-coach"
+              className="flex cursor-pointer items-center gap-3 rounded-lg border border-white/15 px-4 py-3 transition hover:border-brand/60"
+            >
+              <RadioGroupItem value="coach" id="recruit-type-coach" />
+              <span className="text-sm font-medium text-white">
+                Coach Recruit
+              </span>
+            </label>
+
+            <label
+              htmlFor="recruit-type-player"
+              className="flex cursor-pointer items-center gap-3 rounded-lg border border-white/15 px-4 py-3 transition hover:border-brand/60"
+            >
+              <RadioGroupItem value="player" id="recruit-type-player" />
+              <span className="text-sm font-medium text-white">
+                Player Recruit
+              </span>
+            </label>
+          </RadioGroup>
+        </div>
+
         <div className="space-y-2">
           <label className="text-base text-white">Position</label>
           <Select value={position} onValueChange={setPosition}>
-            <SelectTrigger className="h-12 w-full border-white/15 bg-transparent px-3 text-base text-white data-placeholder:text-white/40">
+            <SelectTrigger className="mt-1 h-12 w-full border-white/15 bg-transparent px-3 py-6 text-base text-white data-placeholder:text-white/40">
               <SelectValue placeholder={positionPlaceholder} />
             </SelectTrigger>
             <SelectContent className="bg-[#1a1c23] text-white">
               {positions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  className="hover:bg-brand!"
+                >
                   {option.label}
                 </SelectItem>
               ))}
@@ -114,12 +154,16 @@ export default function RecruitmentForm({
         <div className="space-y-2">
           <label className="text-base text-white">Team Select</label>
           <Select value={team} onValueChange={setTeam}>
-            <SelectTrigger className="h-12 w-full border-white/15 bg-transparent px-3 text-base text-white data-placeholder:text-white/40">
+            <SelectTrigger className="mt-1 h-12 w-full border-white/15 bg-transparent px-3 py-6 text-base text-white data-placeholder:text-white/40">
               <SelectValue placeholder={teamPlaceholder} />
             </SelectTrigger>
             <SelectContent className="bg-[#1a1c23] text-white">
               {teams.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  className="hover:bg-brand!"
+                >
                   {option.label}
                 </SelectItem>
               ))}
@@ -130,16 +174,15 @@ export default function RecruitmentForm({
         <UiInput
           label="Experience"
           placeholder={experiencePlaceholder}
-          className="h-12 border-white/15 bg-transparent text-base placeholder:text-white/40"
+          className="h-12 border-white/15 bg-transparent text-base text-white placeholder:text-white"
           onChange={(event) => setExperience(event.target.value)}
         />
 
-        <UiInput
-          label="Tryout Dates"
-          placeholder={tryoutPlaceholder}
-          className="h-12 border-white/15 bg-transparent text-base placeholder:text-white/40"
-          onChange={(event) => setTryoutDates(event.target.value)}
-        />
+        <div className="space-y-2">
+          <label className="pb-2 text-base text-white">Tryout Dates</label>
+          <DatePickerDemo />
+          <p className="text-xs text-white/45">{tryoutPlaceholder}</p>
+        </div>
 
         <div className="space-y-2">
           <label className="text-base text-white">Description</label>
@@ -156,7 +199,7 @@ export default function RecruitmentForm({
             type="button"
             variant="outline"
             onClick={onCancel}
-            className="h-11 min-w-28 rounded-xl border-brand bg-transparent px-6 text-base text-brand hover:text-brand hover:bg-brand/10"
+            className="h-11 min-w-28 rounded-xl border-brand bg-transparent px-6 text-base text-brand hover:bg-brand/10 hover:text-brand"
           >
             {cancelLabel}
           </Button>

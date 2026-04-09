@@ -17,6 +17,7 @@ type InputProps = {
   onChange?: React.ChangeEventHandler<HTMLInputElement>
   className?: string
   icon?: React.ReactNode
+  value?: string
 }
 
 export default function PwdInput({ 
@@ -25,6 +26,7 @@ export default function PwdInput({
   onChange,
   className ,
   icon,
+  value
 }: InputProps) {
     
     const [showPassword, setShowPassword] =  useState(false);
@@ -40,6 +42,7 @@ export default function PwdInput({
           id={label || ""}
           type={showPassword ? "text" : "password"}
           placeholder={placeholder || "Enter something..."}
+          value={value}
           onChange={onChange}
           className={`bg-[#2B2E36] text-white placeholder:text-white/50 font-light  py-6 border-white/10 focus-visible:ring-brand/30 focus-visible:border-brand/50 pl-8 pr-10  ${className}`}
         />  

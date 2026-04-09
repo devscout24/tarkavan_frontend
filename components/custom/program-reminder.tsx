@@ -65,7 +65,7 @@ export default function ProgramReminder({
             <p className="truncate text-base font-semibold text-white">
               {title}
             </p>
-            <p className="text-base text-secondary">{time}</p>
+            <p className="text-base text-white/50">{time}</p>
           </div>
         </div>
 
@@ -74,7 +74,7 @@ export default function ProgramReminder({
           <div className="h-3 w-3 shrink-0 pt-0.5 text-white">
             <LocationIcon />
           </div>
-          <p className="text-sm text-secondary">{location}</p>
+          <p className="text-sm text-white/50">{location}</p>
         </div>
 
         {/* View Location Button */}

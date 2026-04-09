@@ -1,4 +1,3 @@
- 
 import { Icon } from "./Icon"
 
 interface AddChildCardProps {
@@ -27,16 +26,17 @@ const ArrowIcon = () => (
   </Icon>
 )
 
-
-
-export default function AddChildCard({ onGetStarted , title , text  }: AddChildCardProps) {
-   
-
+export default function AddChildCard({
+  onGetStarted,
+  title,
+  text,
+}: AddChildCardProps) {
   return (
-    <div onClick={onGetStarted} className="flex max-w-87.25 flex-col items-center justify-center gap-4 rounded-[24px] border border-dashed border-secondary/50 p-6 lg:max-w-75 lg:gap-3 lg:p-5 xl:max-w-87.25 xl:gap-4 xl:p-6">
-      <div 
-        className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-secondary/30 lg:h-12 lg:w-12 xl:h-14 xl:w-14"
-      >
+    <div
+      onClick={onGetStarted}
+      className="flex max-w-87.25 flex-col items-center justify-center gap-4 rounded-[24px] border border-dashed border-white/50 p-6 lg:max-w-75 lg:gap-3 lg:p-5 xl:max-w-87.25 xl:gap-4 xl:p-6"
+    >
+      <div className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-secondary lg:h-12 lg:w-12 xl:h-14 xl:w-14">
         <AddChildrenIcon />
       </div>
 
@@ -44,8 +44,9 @@ export default function AddChildCard({ onGetStarted , title , text  }: AddChildC
         <p className="text-lg leading-[120%] font-medium text-white lg:text-base xl:text-lg">
           {title || "Add Your Children"}
         </p>
-        <p className="text-sm leading-[150%] font-normal text-secondary lg:text-xs xl:text-sm">
-          {text || "Add a profile for your other children to manage their soccer career."}
+        <p className="text-sm leading-[150%] font-normal text-white/50 lg:text-xs xl:text-sm">
+          {text ||
+            "Add a profile for your other children to manage their soccer career."}
         </p>
       </div>
 

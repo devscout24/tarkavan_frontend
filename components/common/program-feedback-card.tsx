@@ -53,14 +53,14 @@ export default function ProgramFeedbackCard({
   return (
     <article
       className={cn(
-        "mt-5 rounded-3xl border border-secondary/80 bg-white/8 p-5 md:p-7",
+        "mt-5 rounded-3xl border border-white/40/80 bg-white/8 p-5 md:p-7",
         className
       )}
       aria-label={`Feedback from ${name}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3 md:gap-4">
-          <div className="  overflow-hidden rounded-full border border-brand/40 bg-secondary/40">
+          <div className="  overflow-hidden rounded-full border border-brand/40 bg-white/40">
             {avatarUrl ? (
               <img
                 src={avatarUrl}
@@ -78,14 +78,14 @@ export default function ProgramFeedbackCard({
             <h3 className="truncate text-base font-semibold text-white ">
               {name}
             </h3>
-            <p className="text-[12px] text-secondary ">{date}</p>
+            <p className="text-[12px] text-white/40 ">{date}</p>
           </div>
         </div>
 
         <RatingStars rating={rating} />
       </div>
 
-      <p className="mt-4 text-[14px] leading-8 text-secondary md:mt-5  ">
+      <p className="mt-4 text-[14px] leading-8 text-white/40 md:mt-5  ">
         {review}
       </p>
     </article>

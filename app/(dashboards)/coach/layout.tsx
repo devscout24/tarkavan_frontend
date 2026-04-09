@@ -294,7 +294,7 @@ export default function ParentDashboardLayout({
             </div>
           </div>
         </header>
-        <ScrollArea className="h-[92vh] border px-1 py-6 md:px-8">
+        <ScrollArea className="h-[92vh] px-1 py-6 md:px-8">
           {children}
         </ScrollArea>
       </SidebarInset>

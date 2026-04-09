@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { format, isAfter, isWithinInterval, parseISO } from "date-fns"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import { Calendar, CalendarDayButton } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button"
@@ -27,6 +28,9 @@ export function ProgramCalendar({
   timeSlotsByDate,
   onSelectedSlotsChange,
 }: ProgramCalendarProps) {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
   const normalizedRange = React.useMemo(() => {
     if (isAfter(startDate, endDate)) {
       return { from: endDate, to: startDate }
@@ -183,11 +187,22 @@ export function ProgramCalendar({
       </CardContent>
 
       <div className="px-5 pb-5 "> 
-        <CommonBtn  text="Continue to Payment" size={"lg"} variant={"default"} className="w-full bg-brand text-primary text-[14px] font-semibold hover:bg-brand/90 cursor-pointer   "  />
+        <CommonBtn  
+          text="Continue to Payment" 
+          size={"lg"} 
+          variant={"default"} 
+          className="w-full bg-brand text-primary text-[14px] font-semibold hover:bg-brand/90 cursor-pointer"  
+          onClick={() => {
+            const nextParams = new URLSearchParams(searchParams.toString())
+            nextParams.set("confirm-pay", "program")
+            router.replace(
+              nextParams.toString()
+                ? `${pathname}?${nextParams.toString()}`
+                : pathname
+            )
+          }}
+        />
       </div>
-
-
-
     </Card>
   )
 }

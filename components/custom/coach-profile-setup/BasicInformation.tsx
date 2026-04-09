@@ -6,10 +6,10 @@ import InputField from "@/components/common/input-field"
 import SelectField from "@/components/common/select-field"
 
 const controlClassName =
-  "h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-secondary/40 focus-visible:border-brand focus-visible:ring-0"
+  "h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
 
 const triggerClassName =
-  "h-11 w-full rounded-xl border-white/10 bg-secondary/10 px-3 text-sm text-white data-placeholder:text-secondary/40"
+  "h-11 w-full rounded-xl border-white/10 bg-secondary/10 px-3 text-sm text-white data-placeholder:text-white/50"
 
 const genderOptions = [
   { value: "male", label: "Male" },

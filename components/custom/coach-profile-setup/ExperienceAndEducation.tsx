@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select"
 
 const triggerClassName =
-  "h-11 w-full rounded-xl border-white/10 bg-secondary/10 px-3 text-sm text-white data-placeholder:text-secondary/40"
+  "h-11 w-full rounded-xl border-white/10 bg-secondary/10 px-3 text-sm text-white data-placeholder:text-white/50"
 
 const yearsOptions = [
   { value: "1-3", label: "1-3 years" },
@@ -58,12 +58,12 @@ export default function ExperienceAndEducation({ updateExperience }: ExperienceA
             <SelectTrigger className={triggerClassName}>
               <SelectValue placeholder="Select experience range" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-secondary/90 text-white">
               {yearsOptions.map((option) => (
                 <SelectItem
                   key={option.value}
                   value={option.value}
-                  className="text-primary hover:bg-brand hover:text-primary focus:bg-brand focus:text-primary"
+                  className="text-white hover:bg-brand hover:text-primary focus:bg-brand focus:text-primary"
                 >
                   {option.label}
                 </SelectItem>
@@ -80,7 +80,7 @@ export default function ExperienceAndEducation({ updateExperience }: ExperienceA
             value={education}
             onChange={(event) => setEducation(event.target.value)}
             placeholder="e.g. M.S. in Sports Science"
-            className="h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-secondary/40 focus-visible:border-brand focus-visible:ring-0"
+            className="h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
           />
         </div>
 
@@ -93,7 +93,7 @@ export default function ExperienceAndEducation({ updateExperience }: ExperienceA
             onChange={(event) => setHistory(event.target.value)}
             placeholder="Briefly describe your coaching career journey..."
             rows={5}
-            className="w-full rounded-xl border border-white/10 bg-secondary/10 px-3 py-2 text-sm text-white placeholder:text-secondary/40 focus-visible:border-brand focus-visible:ring-0 focus-visible:outline-none"
+            className="w-full rounded-xl border border-white/10 bg-secondary/10 px-3 py-2 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0 focus-visible:outline-none"
           />
         </div>
       </div>

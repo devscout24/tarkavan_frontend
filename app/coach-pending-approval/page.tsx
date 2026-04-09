@@ -40,7 +40,44 @@ function RefreshIcon() {
 
 export default function CoachPendingApprovalPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#18191B]">
+    <>
+      <style jsx>{`
+        @keyframes lineGrow {
+          from {
+            height: 0;
+            opacity: 0;
+            top: 16px;
+          }
+          to {
+            height: calc(100% - 32px);
+            opacity: 1;
+            top: 16px;
+          }
+        }
+        
+        @keyframes slideInLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes iconAppear {
+          from {
+            opacity: 0;
+            transform: scale(0.8) translateX(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateX(0);
+          }
+        }
+      `}</style>
+      <div className="flex min-h-screen items-center justify-center bg-[#18191B]">
       <div className="w-full max-w-5xl rounded-2xl bg-[#232427] p-8">
         {/* Page header */}
         <h1
@@ -117,78 +154,91 @@ export default function CoachPendingApprovalPage() {
               <div className="mb-4 font-semibold text-white">
                 Application Process
               </div>
-              <div className="relative flex flex-col items-start gap-8 pl-7">
-                {/* Vertical connector line */}
+              <div className="relative">
+                {/* Animated gradient vertical connector line */}
                 <div
-                  className="absolute top-6 bottom-6 left-4 z-0 rounded-full bg-[#C6F57A]"
-                  style={{ width: "2px" }}
+                  className="absolute left-4 z-0 w-0.5 rounded-full"
+                  style={{ 
+                    background: "linear-gradient(180deg, #C6F57A 0%, rgba(255, 255, 255, 0.8) 100%)",
+                    animation: "lineGrow 3s ease-out forwards",
+                    top: "16px"
+                  }}
                 />
 
-                {/* Step 1 – Profile Submitted */}
-                <div className="relative z-10 flex items-center gap-3">
-                  <span className="flex items-center justify-center rounded-full bg-[#C6F57A] p-1">
-                    <Icon width={12} height={12} viewBox="0 0 10 8" fill="none">
-                      <path
-                        d="M3.325 7.01458L0 3.68958L0.83125 2.85833L3.325 5.35208L8.67708 0L9.50833 0.83125L3.325 7.01458Z"
-                        fill="#060807"
-                      />
-                    </Icon>
-                  </span>
-                  <div>
-                    <div className="font-medium text-white">
-                      Profile Submitted
+                {/* Steps container */}
+                <div className="space-y-8">
+                  {/* Step 1 - Profile Submitted */}
+                  <div className="relative flex items-start gap-4 opacity-0" style={{ animation: "iconAppear 0.5s ease-out 0.5s forwards" }}>
+                    {/* Icon positioned on line */}
+                    <div className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#C6F57A] shadow-lg">
+                      <Icon width={12} height={12} viewBox="0 0 10 8" fill="none">
+                        <path
+                          d="M3.325 7.01458L0 3.68958L0.83125 2.85833L3.325 5.35208L8.67708 0L9.50833 0.83125L3.325 7.01458Z"
+                          fill="#060807"
+                        />
+                      </Icon>
                     </div>
-                    <div className="text-xs text-white/60">
-                      Completed on Oct 24, 2023
+                    {/* Text content */}
+                    <div className="pt-1">
+                      <div className="font-medium text-white">
+                        Profile Submitted
+                      </div>
+                      <div className="text-xs text-white/60">
+                        Completed on Oct 24, 2023
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Step 2 – Admin Verification */}
-                <div className="relative z-10 flex items-center gap-3">
-                  <span className="flex items-center justify-center rounded-full bg-[#C6F57A] p-1">
-                    <Icon
-                      width={12}
-                      height={14}
-                      viewBox="0 0 10 12"
-                      fill="none"
-                    >
-                      <path
-                        d="M2.33333 10.5H7V8.75C7 8.10833 6.77153 7.55903 6.31458 7.10208C5.85764 6.64514 5.30833 6.41667 4.66667 6.41667C4.025 6.41667 3.47569 6.64514 3.01875 7.10208C2.56181 7.55903 2.33333 8.10833 2.33333 8.75V10.5ZM4.66667 5.25C5.30833 5.25 5.85764 5.02153 6.31458 4.56458C6.77153 4.10764 7 3.55833 7 2.91667V1.16667H2.33333V2.91667C2.33333 3.55833 2.56181 4.10764 3.01875 4.56458C3.47569 5.02153 4.025 5.25 4.66667 5.25ZM0 11.6667V10.5H1.16667V8.75C1.16667 8.15694 1.30521 7.60035 1.58229 7.08021C1.85938 6.56007 2.24583 6.14444 2.74167 5.83333C2.24583 5.52222 1.85938 5.1066 1.58229 4.58646C1.30521 4.06632 1.16667 3.50972 1.16667 2.91667V1.16667H0V0H9.33333V1.16667H8.16667V2.91667C8.16667 3.50972 8.02812 4.06632 7.75104 4.58646C7.47396 5.1066 7.0875 5.52222 6.59167 5.83333C7.0875 6.14444 7.47396 6.56007 7.75104 7.08021C8.02812 7.60035 8.16667 8.15694 8.16667 8.75V10.5H9.33333V11.6667H0Z"
-                        fill="#060807"
-                      />
-                    </Icon>
-                  </span>
-                  <div>
-                    <div className="font-medium text-white">
-                      Admin Verification
+                  {/* Step 2 - Admin Verification */}
+                  <div className="relative flex items-start gap-4 opacity-0" style={{ animation: "iconAppear 0.5s ease-out 1.5s forwards" }}>
+                    {/* Icon positioned on line */}
+                    <div className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-lg" style={{ background: "linear-gradient(135deg, #C6F57A 0%, rgba(255, 255, 255, 0.9) 100%)" }}>
+                      <Icon
+                        width={12}
+                        height={14}
+                        viewBox="0 0 10 12"
+                        fill="none"
+                      >
+                        <path
+                          d="M2.33333 10.5H7V8.75C7 8.10833 6.77153 7.55903 6.31458 7.10208C5.85764 6.64514 5.30833 6.41667 4.66667 6.41667C4.025 6.41667 3.47569 6.64514 3.01875 7.10208C2.56181 7.55903 2.33333 8.10833 2.33333 8.75V10.5ZM4.66667 5.25C5.30833 5.25 5.85764 5.02153 6.31458 4.56458C6.77153 4.10764 7 3.55833 7 2.91667V1.16667H2.33333V2.91667C2.33333 3.55833 2.56181 4.10764 3.01875 4.56458C3.47569 5.02153 4.025 5.25 4.66667 5.25ZM0 11.6667V10.5H1.16667V8.75C1.16667 8.15694 1.30521 7.60035 1.58229 7.08021C1.85938 6.56007 2.24583 6.14444 2.74167 5.83333C2.24583 5.52222 1.85938 5.1066 1.58229 4.58646C1.30521 4.06632 1.16667 3.50972 1.16667 2.91667V1.16667H0V0H9.33333V1.16667H8.16667V2.91667C8.16667 3.50972 8.02812 4.06632 7.75104 4.58646C7.47396 5.1066 7.0875 5.52222 6.59167 5.83333C7.0875 6.14444 7.47396 6.56007 7.75104 7.08021C8.02812 7.60035 8.16667 8.15694 8.16667 8.75V10.5H9.33333V11.6667H0Z"
+                          fill="#060807"
+                        />
+                      </Icon>
                     </div>
-                    <div className="text-xs text-[#7CB518]">In Progress</div>
+                    {/* Text content */}
+                    <div className="pt-1">
+                      <div className="font-medium text-white">
+                        Admin Verification
+                      </div>
+                      <div className="text-xs text-[#7CB518]">In Progress</div>
+                    </div>
                   </div>
-                </div>
 
-                {/* Step 3 – Account Activation */}
-                <div className="relative z-10 flex items-center gap-3">
-                  <span className="flex items-center justify-center rounded-full bg-[#C6F57A] p-1">
-                    <Icon
-                      width={12}
-                      height={15}
-                      viewBox="0 0 10 13"
-                      fill="none"
-                    >
-                      <path
-                        d="M1.16667 12.25C0.845833 12.25 0.571181 12.1358 0.342708 11.9073C0.114236 11.6788 0 11.4042 0 11.0833V5.25C0 4.92917 0.114236 4.65451 0.342708 4.42604C0.571181 4.19757 0.845833 4.08333 1.16667 4.08333H1.75V2.91667C1.75 2.10972 2.03438 1.42188 2.60313 0.853125C3.17188 0.284375 3.85972 0 4.66667 0C5.47361 0 6.16146 0.284375 6.73021 0.853125C7.29896 1.42188 7.58333 2.10972 7.58333 2.91667V4.08333H8.16667C8.4875 4.08333 8.76215 4.19757 8.99063 4.42604C9.2191 4.65451 9.33333 4.92917 9.33333 5.25V11.0833C9.33333 11.4042 9.2191 11.6788 8.99063 11.9073C8.76215 12.1358 8.4875 12.25 8.16667 12.25H1.16667ZM1.16667 11.0833H8.16667V5.25H1.16667V11.0833ZM4.66667 9.33333C4.9875 9.33333 5.26215 9.2191 5.49062 8.99063C5.7191 8.76215 5.83333 8.4875 5.83333 8.16667C5.83333 7.84583 5.7191 7.57118 5.49062 7.34271C5.26215 7.11424 4.9875 7 4.66667 7C4.34583 7 4.07118 7.11424 3.84271 7.34271C3.61424 7.57118 3.5 7.84583 3.5 8.16667C3.5 8.4875 3.61424 8.76215 3.84271 8.99063C4.07118 9.2191 4.34583 9.33333 4.66667 9.33333ZM2.91667 4.08333H6.41667V2.91667C6.41667 2.43056 6.24653 2.01736 5.90625 1.67708C5.56597 1.33681 5.15278 1.16667 4.66667 1.16667C4.18056 1.16667 3.76736 1.33681 3.42708 1.67708C3.08681 2.01736 2.91667 2.43056 2.91667 2.91667V4.08333ZM1.16667 11.0833V5.25V11.0833Z"
-                        fill="#060807"
-                        fillOpacity={0.7}
-                      />
-                    </Icon>
-                  </span>
-                  <div>
-                    <div className="font-medium text-white">
-                      Account Activation
+                  {/* Step 3 - Account Activation */}
+                  <div className="relative flex items-start gap-4 opacity-0" style={{ animation: "iconAppear 0.5s ease-out 2.5s forwards" }}>
+                    {/* Icon positioned on line */}
+                    <div className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white shadow-lg">
+                      <Icon
+                        width={12}
+                        height={15}
+                        viewBox="0 0 10 13"
+                        fill="none"
+                      >
+                        <path
+                          d="M1.16667 12.25C0.845833 12.25 0.571181 12.1358 0.342708 11.9073C0.114236 11.6788 0 11.4042 0 11.0833V5.25C0 4.92917 0.114236 4.65451 0.342708 4.42604C0.571181 4.19757 0.845833 4.08333 1.16667 4.08333H1.75V2.91667C1.75 2.10972 2.03438 1.42188 2.60313 0.853125C3.17188 0.284375 3.85972 0 4.66667 0C5.47361 0 6.16146 0.284375 6.73021 0.853125C7.29896 1.42188 7.58333 2.10972 7.58333 2.91667V4.08333H8.16667C8.4875 4.08333 8.76215 4.19757 8.99063 4.42604C9.2191 4.65451 9.33333 4.92917 9.33333 5.25V11.0833C9.33333 11.4042 9.2191 11.6788 8.99063 11.9073C8.76215 12.1358 8.4875 12.25 8.16667 12.25H1.16667ZM1.16667 11.0833H8.16667V5.25H1.16667V11.0833ZM4.66667 9.33333C4.9875 9.33333 5.26215 9.2191 5.49062 8.99063C5.7191 8.76215 5.83333 8.4875 5.83333 8.16667C5.83333 7.84583 5.7191 7.57118 5.49062 7.34271C5.26215 7.11424 4.9875 7 4.66667 7C4.34583 7 4.07118 7.11424 3.84271 7.34271C3.61424 7.57118 3.5 7.84583 3.5 8.16667C3.5 8.4875 3.61424 8.76215 3.84271 8.99063C4.07118 9.2191 4.34583 9.33333 4.66667 9.33333ZM2.91667 4.08333H6.41667V2.91667C6.41667 2.43056 6.24653 2.01736 5.90625 1.67708C5.56597 1.33681 5.15278 1.16667 4.66667 1.16667C4.18056 1.16667 3.76736 1.33681 3.42708 1.67708C3.08681 2.01736 2.91667 2.43056 2.91667 2.91667V4.08333ZM1.16667 11.0833V5.25V11.0833Z"
+                          fill="#060807"
+                          fillOpacity={0.7}
+                        />
+                      </Icon>
                     </div>
-                    <div className="text-xs text-white/60">
-                      Awaiting Approval
+                    {/* Text content */}
+                    <div className="pt-1">
+                      <div className="font-medium text-white">
+                        Account Activation
+                      </div>
+                      <div className="text-xs text-white/60">
+                        Awaiting Approval
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -213,5 +263,6 @@ export default function CoachPendingApprovalPage() {
         </div>
       </div>
     </div>
+    </>
   )
 }

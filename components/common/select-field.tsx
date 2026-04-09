@@ -27,7 +27,7 @@ interface SelectFieldProps {
 }
 
 const defaultItemClassName =
-  "text-primary hover:bg-brand hover:text-primary focus:bg-brand focus:text-primary"
+  "text-white hover:bg-brand hover:text-primary focus:bg-brand focus:text-primary"
 
 export default function SelectField({
   label,
@@ -52,7 +52,7 @@ export default function SelectField({
         >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="bg-secondary/90 text-white">
           {options.map((option) => (
             <SelectItem
               key={option.value}

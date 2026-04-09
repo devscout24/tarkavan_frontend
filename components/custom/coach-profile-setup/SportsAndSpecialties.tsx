@@ -12,10 +12,10 @@ import {
 } from "@/components/ui/select"
 
 const triggerClassName =
-  "h-11 w-full rounded-xl border-white/10 bg-secondary/10 px-3 text-sm text-white data-placeholder:text-secondary/40"
+  "h-11 w-full rounded-xl border-white/10 bg-secondary/10 px-3 text-sm text-white data-placeholder:text-white/50"
 
 const titleInputClassName =
-  "h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-secondary/40 focus-visible:border-brand focus-visible:ring-0"
+  "h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
 
 const sportOptions = [{ value: "soccer", label: "Soccer" }]
 
@@ -133,12 +133,12 @@ export default function SportsAndSpecialties({ updateSports }: SportsAndSpecialt
             <SelectTrigger className={triggerClassName}>
               <SelectValue placeholder="Select Current Role" />
             </SelectTrigger>
-            <SelectContent className="max-h-50">
+            <SelectContent className="bg-secondary/90 text-white">
               {roleOptions.map((option) => (
                 <SelectItem
                   key={option.value}
                   value={option.value}
-                  className="text-primary hover:bg-brand hover:text-primary focus:bg-brand focus:text-primary"
+                  className="text-white hover:bg-brand hover:text-primary focus:bg-brand focus:text-primary"
                 >
                   {option.label}
                 </SelectItem>

@@ -1,4 +1,4 @@
-import RecentActivityRow from "@/components/custom/recent-activity-row" 
+import RecentActivityRow from "@/components/custom/recent-activity-row"
 import {
   CalendarCheck,
   Calendars,
@@ -6,8 +6,8 @@ import {
   SquarePen,
   Wallet,
 } from "lucide-react"
-import CommonBtn from "@/components/common/common-btn" 
-import TrainingReminderCard from "@/components/custom/remiender"  
+import CommonBtn from "@/components/common/common-btn"
+import TrainingReminderCard from "@/components/custom/remiender"
 import PlayerStats from "./components/player-stats"
 import ScoutingStatus from "./components/scouting-status"
 import PlayerRecruitmentCard from "./components/player-recruitment-card"
@@ -34,7 +34,7 @@ export default function PlayerDashboardPage() {
   return (
     <section className=" ">
       <h2 className="text-base font-bold text-white">Welcome, Daniel</h2>
-      <p className="mt-1 text-base text-white ">
+      <p className="mt-1 text-base text-white">
         Here is a summary of your children recent activity and upcoming
         sessions.{" "}
       </p>
@@ -43,9 +43,9 @@ export default function PlayerDashboardPage() {
       <PlayerStats />
 
       {/* activity and action  */}
-      <div className="mt-6 flex md:flex-row flex-col-reverse   w-full gap-6 text-white">
+      <div className="mt-6 flex w-full flex-col-reverse gap-6 text-white md:flex-row">
         {/* recent activity */}
-        <div className="xl:flex-8 md:flex-3">
+        <div className="md:flex-3 xl:flex-7">
           <h3 className="mb-2 text-base font-semibold">Recent Activity</h3>
 
           <div className="rounded-[16px] border border-secondary">
@@ -62,7 +62,7 @@ export default function PlayerDashboardPage() {
         </div>
 
         {/* quick actions */}
-        <div className="xl:flex-2 md:flex-2 ">
+        <div className="md:flex-2 xl:flex-3">
           <h3 className="mb-2 text-base font-semibold">Quick Actions</h3>
 
           {/* actions */}
@@ -71,7 +71,7 @@ export default function PlayerDashboardPage() {
               variant={"default"}
               size={"sm"}
               icon={<SquarePen />}
-              className="w-full cursor-pointer text-white bg-secondary py-6! hover:bg-brand hover:text-primary"
+              className="w-full cursor-pointer bg-secondary py-6! text-white hover:bg-brand hover:text-primary"
               text={"Edit My Profile"}
             />
             <CommonBtn
@@ -92,8 +92,13 @@ export default function PlayerDashboardPage() {
 
           <TrainingReminderCard />
 
-          <PlayerRecruitmentCard />
-
+          <PlayerRecruitmentCard
+            position="Defender, Winger"
+            ageGroup="Elite U16 | Age: U16"
+            tryoutDates="Tryouts: March 15-18, 2026"
+            description="Looking for skilled defenders for upcoming season."
+            buttonText="Apply"
+          />
         </div>
       </div>
     </section>

@@ -22,7 +22,7 @@ import {
 import Logo from "@/components/common/logo"
 import MenuBtn from "@/components/custom/menu-btn"
 import Image from "next/image"
-import SidebarSearch from "@/components/custom/sidebar-search"
+// import SidebarSearch from "@/components/custom/sidebar-search"
 import { BiMessageSquareDetail } from "react-icons/bi"
 import { RiDashboardFill, RiMenuSearchLine } from "react-icons/ri"
 import { FaRegUser } from "react-icons/fa6"
@@ -32,6 +32,7 @@ import BreadcrumbCustom from "@/components/custom/breadcrumb"
 import Notification from "@/components/custom/notifications"
 import ProfileDropdown from "@/components/custom/profile-dropdown"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import CheckPlayerAuth from "@/components/auth/auth-check/check-player-auth"
 
 export default function PlayerDashboardLayout({
   children,
@@ -90,93 +91,95 @@ export default function PlayerDashboardLayout({
   const pathname = usePathname()
 
   return (
-    <SidebarProvider className="h-screen overflow-hidden">
-      <Sidebar collapsible="icon" className="relative border-secondary">
-        <Image
-          src={"/images/sidebarbg.png"}
-          width={1000}
-          height={1000}
-          alt="side-bar-bg"
-          className="absolute top-100 left-0 w-full "
-        />
-        <SidebarHeader className="border-b border-secondary py-4.5">
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <div className="flex justify-between">
-                <Logo className="w-21.25" />
-                <MenuBtn>
-                  <SidebarTrigger className="-ml-1 cursor-pointer" />
-                </MenuBtn>
-              </div>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarHeader>
-
-        <SidebarContent className=" ">
-          {/* <SidebarSearch /> */}
-
-          <SidebarGroup>
+    <CheckPlayerAuth>
+      <SidebarProvider className="h-screen overflow-hidden">
+        <Sidebar collapsible="icon" className="relative border-secondary">
+          <Image
+            src={"/images/sidebarbg.png"}
+            width={1000}
+            height={1000}
+            alt="side-bar-bg"
+            className="absolute top-100 left-0 w-full"
+          />
+          <SidebarHeader className="border-b border-secondary py-4.5">
             <SidebarMenu>
-              {DATA.navMain.map((item) => (
-                <Collapsible
-                  key={item.title}
-                  asChild
-                  defaultOpen={item.isActive}
-                  className="group/collapsible"
-                >
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <Link href={item.url} className="">
-                        <SidebarMenuButton
-                          tooltip={item.title}
-                          className={`border-2 py-4.5 ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
-                        >
-                          {item.icon && <item.icon />}
-                          <span
-                            className={`${pathname == item.url ? "text-bold text-white" : ""}`}
-                          >
-                            {item.title}
-                          </span>
-                        </SidebarMenuButton>
-                      </Link>
-                    </CollapsibleTrigger>
-                  </SidebarMenuItem>
-                </Collapsible>
-              ))}
+              <SidebarMenuItem>
+                <div className="flex justify-between">
+                  <Logo className="w-21.25" />
+                  <MenuBtn>
+                    <SidebarTrigger className="-ml-1 cursor-pointer" />
+                  </MenuBtn>
+                </div>
+              </SidebarMenuItem>
             </SidebarMenu>
-          </SidebarGroup>
-        </SidebarContent>
-        <SidebarFooter>
-          <SidebarMenu className="cursor-pointer flex-row gap-2 py-2 pl-2 text-base text-red-500">
-            <LogOut />
-            <span>Logout</span>
-          </SidebarMenu>
-        </SidebarFooter>
-        <SidebarRail />
-      </Sidebar>
+          </SidebarHeader>
 
-      <SidebarInset className="flex h-screen min-h-0 flex-col">
-        <header className="flex shrink-0 items-center gap-2 border-b border-secondary py-2.5 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-          <div className="flex w-full items-center justify-between gap-2 px-4">
-            <BreadcrumbCustom />
+          <SidebarContent className=" ">
+            {/* <SidebarSearch /> */}
 
-            <div className="flex items-center gap-4">
-              <Notification />
-              <ProfileDropdown />
+            <SidebarGroup>
+              <SidebarMenu>
+                {DATA.navMain.map((item) => (
+                  <Collapsible
+                    key={item.title}
+                    asChild
+                    defaultOpen={item.isActive}
+                    className="group/collapsible"
+                  >
+                    <SidebarMenuItem>
+                      <CollapsibleTrigger asChild>
+                        <Link href={item.url} className="">
+                          <SidebarMenuButton
+                            tooltip={item.title}
+                            className={`border-2 py-4.5 ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
+                          >
+                            {item.icon && <item.icon />}
+                            <span
+                              className={`${pathname == item.url ? "text-bold text-white" : ""}`}
+                            >
+                              {item.title}
+                            </span>
+                          </SidebarMenuButton>
+                        </Link>
+                      </CollapsibleTrigger>
+                    </SidebarMenuItem>
+                  </Collapsible>
+                ))}
+              </SidebarMenu>
+            </SidebarGroup>
+          </SidebarContent>
+          <SidebarFooter>
+            <SidebarMenu className="cursor-pointer flex-row gap-2 py-2 pl-2 text-base text-red-500">
+              <LogOut />
+              <span>Logout</span>
+            </SidebarMenu>
+          </SidebarFooter>
+          <SidebarRail />
+        </Sidebar>
+
+        <SidebarInset className="flex h-screen min-h-0 flex-col">
+          <header className="flex shrink-0 items-center gap-2 border-b border-secondary py-2.5 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+            <div className="flex w-full items-center justify-between gap-2 px-4">
+              <BreadcrumbCustom />
+
+              <div className="flex items-center gap-4">
+                <Notification />
+                <ProfileDropdown />
+              </div>
             </div>
-          </div>
-        </header>
-        {pathname.includes("/player/messages") ? (
-          children
-        ) : (
-          <ScrollArea className="min-h-0 flex-1 border px-8 py-6">
-            {children}
-          </ScrollArea>
-        )}
-        {/* <ScrollArea className="h-[92vh] border px-8 py-6">
-          <Outlet />
-        </ScrollArea> */}
-      </SidebarInset>
-    </SidebarProvider>
+          </header>
+          {pathname.includes("/player/messages") ? (
+            children
+          ) : (
+            <ScrollArea className="min-h-0 flex-1 border px-8 py-6">
+              {children}
+            </ScrollArea>
+          )}
+          {/* <ScrollArea className="h-[92vh] border px-8 py-6">
+            <Outlet />
+          </ScrollArea> */}
+        </SidebarInset>
+      </SidebarProvider>
+    </CheckPlayerAuth>
   )
 }

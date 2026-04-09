@@ -1,3 +1,6 @@
+"use client"
+
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Icon } from "./Icon"
 
 interface AddChildCardProps {
@@ -31,12 +34,26 @@ export default function AddChildCard({
   title,
   text,
 }: AddChildCardProps) {
+  const router = useRouter()
+
+  const handleNavigation = () => {
+    router.push("?add-new=player")
+    
+    // Call the original onGetStarted if provided
+    if (onGetStarted) {
+      onGetStarted()
+    }
+  }
+
   return (
     <div
-      onClick={onGetStarted}
+      onClick={handleNavigation}
       className="flex max-w-87.25 flex-col items-center justify-center gap-4 rounded-[24px] border border-dashed border-white/50 p-6 lg:max-w-75 lg:gap-3 lg:p-5 xl:max-w-87.25 xl:gap-4 xl:p-6"
     >
-      <div className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-secondary lg:h-12 lg:w-12 xl:h-14 xl:w-14">
+      <div 
+        onClick={handleNavigation}
+        className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-secondary lg:h-12 lg:w-12 xl:h-14 xl:w-14"
+      >
         <AddChildrenIcon />
       </div>
 
@@ -51,7 +68,7 @@ export default function AddChildCard({
       </div>
 
       <button
-        onClick={onGetStarted}
+        onClick={handleNavigation}
         className="flex cursor-pointer items-center gap-1 text-sm font-medium text-brand lg:text-xs xl:text-sm"
       >
         Get Started

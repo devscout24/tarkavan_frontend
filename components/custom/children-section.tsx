@@ -85,7 +85,7 @@ export default function ChildrenSection({
             onRemove={() => onRemove?.(child.id)}
           />
         ))}
-        <AddChildCard onGetStarted={onGetStarted} />
+        <AddChildCard />
       </div>
     </section>
   )

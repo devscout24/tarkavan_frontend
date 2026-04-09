@@ -76,6 +76,8 @@ export default function Page() {
     },
   ]
 
+  const router = useRouter()
+
   return (
     <section>
       <Button onClick={() => route.back()} className="flex items-center gap-2">
@@ -128,7 +130,7 @@ export default function Page() {
                 </TableCell>
                 <TableCell className={`${columnBorderClass}`}>
                   <div className="flex items-center justify-center gap-5 text-white">
-                    <FiEye className="text-lg text-brand    " />
+                    <FiEye className="text-lg text-brand    " onClick={()=> router.push(`/profile/${data.playerName}`) } />
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button >

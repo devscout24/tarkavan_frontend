@@ -1,6 +1,7 @@
 "use client"
 import ProgramCard from "@/components/common/program-card"
 import PlayerActivePrograms from "../../../../components/common/player-active-programs"
+import ProgramFilterDropdown from "@/components/common/ProgramFilterDropdown"
 import { useRouter } from "next/navigation"
 
 export default function UpcomingEventPage() {
@@ -64,9 +65,12 @@ export default function UpcomingEventPage() {
       <PlayerActivePrograms title="Upcoming Programs" btnText="Edit Details" />
 
       {/* upcoming events content */}
-      <h2 className="mt-6 text-xl font-bold text-white sm:text-2xl">
+     <div className="flex justify-between items-center">
+       <h2 className="mt-6 text-xl font-bold text-white sm:text-2xl">
         My Available Programs
       </h2>
+      <ProgramFilterDropdown />
+     </div>
       {/* programs cards */}
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {programs.map((program, index) => (

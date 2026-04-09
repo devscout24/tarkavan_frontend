@@ -82,7 +82,7 @@ export default function ThreeDotsMenu({
           align="end"
           sideOffset={8}
           className={cn(
-            "w-36 overflow-hidden rounded-lg border border-secondary/50 bg-white shadow-lg",
+            "w-48 overflow-hidden rounded-lg border border-neutral-700 bg-neutral-800 shadow-lg",
             menuClassName
           )}
         >
@@ -92,7 +92,7 @@ export default function ThreeDotsMenu({
               disabled={item.disabled}
               onSelect={item.onSelect}
               className={cn(
-                "w-full cursor-pointer px-4 py-2 text-center text-sm font-normal text-primary outline-none hover:bg-brand",
+                "w-full cursor-pointer px-4 py-2 text-left text-sm text-white transition-colors duration-150 hover:bg-brand hover:text-black focus:bg-brand focus:text-black focus:outline-none",
                 itemClassName,
                 item.className,
                 item.disabled && "cursor-not-allowed opacity-50"

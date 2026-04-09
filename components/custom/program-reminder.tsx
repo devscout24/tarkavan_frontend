@@ -9,6 +9,8 @@ interface ProgramReminderProps {
   onClick?: () => void
 }
 
+import CommonBtn from '@/components/common/common-btn'
+
 const LocationIcon = () => (
   <svg
     width="10"
@@ -78,12 +80,13 @@ export default function ProgramReminder({
         </div>
 
         {/* View Location Button */}
-        <button
+        <CommonBtn
+          variant="outline"
+          size="default"
+          text="View Location"
           onClick={onClick}
-          className="w-full cursor-pointer rounded-[12px] border border-primary bg-white px-4 py-2.5 text-center text-base font-medium text-primary transition-colors duration-200 hover:bg-primary hover:text-white"
-        >
-          View Location
-        </button>
+          className="w-full rounded-[12px] border border-primary bg-white px-4 py-2.5 text-base font-medium text-white transition-colors duration-200 hover:bg-primary hover:text-brand"
+        />
       </div>
 
       {/* Football Icon - Bottom Right */}

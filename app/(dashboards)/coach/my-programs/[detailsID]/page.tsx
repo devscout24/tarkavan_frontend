@@ -54,7 +54,7 @@ export default function ProgramDetails() {
           <span>Back to Programs</span>
         </Button>
         <CommonBtn
-          text="Add Program"
+          text="Edit Program"
           className="h-10 w-fit rounded-[8px] bg-brand px-4 font-medium text-primary hover:bg-brand xl:h-11 xl:px-5 xl:text-base 2xl:h-12 2xl:px-6 2xl:text-lg"
           size="sm"
           variant="default"

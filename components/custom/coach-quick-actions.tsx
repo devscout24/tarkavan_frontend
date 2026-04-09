@@ -1,6 +1,9 @@
+"use client"
+
 import CommonBtn from "@/components/common/common-btn"
 import type { ReactNode } from "react"
 import { ArrowRight } from "lucide-react"
+import { usePathname, useRouter } from "next/navigation"
 
 type CoachQuickAction = {
   icon: ReactNode
@@ -22,12 +25,22 @@ export default function CoachQuickActions({
 }: {
   actions: CoachQuickAction[]
 }) {
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const handleActionClick = (label: string) => {
+    if (label === "Add EAM Programs") {
+      router.push(`${pathname}?add-new=program`)
+    }
+  }
+
   return (
     <div className="space-y-3">
       {actions.map((action) => (
         <button
           key={action.label}
           type="button"
+          onClick={() => handleActionClick(action.label)}
           className={`group flex w-full cursor-pointer items-center justify-between rounded-[16px] border px-4 py-4 text-left transition-colors ${
             action.active
               ? "border-brand bg-brand"

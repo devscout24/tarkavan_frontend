@@ -1,7 +1,10 @@
 import React from "react"
 import CommonBtn from "@/components/common/common-btn"
+import useModal from "@/components/common/modal/useModal"
 
 const ConfirmPayModal = () => {
+  const { close } = useModal()
+  
   const orderDetails = {
     service: "1-on-1 Private Training",
     programFee: "$299.00",
@@ -16,7 +19,8 @@ const ConfirmPayModal = () => {
 
   const handleCancel = () => {
     console.log("Payment cancelled")
-    // Handle cancel logic here
+    // Close the modal and remove URL params
+    close("confirm-pay", ["program"])
   }
 
   return (

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import SelectField from "@/components/common/select-field"
 import {
@@ -29,7 +29,11 @@ const roleOptions = [
   { value: "youth-coach", label: "Youth Coach" },
 ]
 
-export default function SportsAndSpecialties() {
+interface SportsAndSpecialtiesProps {
+  updateSports?: (sports: any) => void
+}
+
+export default function SportsAndSpecialties({ updateSports }: SportsAndSpecialtiesProps) {
   const [sport, setSport] = useState("")
   const [role, setRole] = useState("")
   const [titleInput, setTitleInput] = useState("")
@@ -38,12 +42,23 @@ export default function SportsAndSpecialties() {
     "Skills Trainer",
   ])
 
+  // Update parent component when sports data changes
+  useEffect(() => {
+    if (updateSports) {
+      updateSports({
+        sport,
+        role,
+        coachingTitles,
+      })
+    }
+  }, [sport, role, coachingTitles, updateSports])
+
   const addTitle = () => {
     const normalized = titleInput.trim().replace(/\s+/g, " ")
     if (!normalized) return
 
     const exists = coachingTitles.some(
-      (title) => title.toLowerCase() === normalized.toLowerCase()
+      (title) => title?.toLowerCase() === normalized.toLowerCase()
     )
 
     if (!exists) {

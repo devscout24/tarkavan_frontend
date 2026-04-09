@@ -5,7 +5,11 @@ import CommonUploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
 import { Icon } from "@/components/custom/Icon"
 
-export default function UploadPhoto() {
+interface UploadPhotoProps {
+  updatePhotoUploaded?: (uploaded: boolean) => void
+}
+
+export default function UploadPhoto({ updatePhotoUploaded }: UploadPhotoProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>("")
   const [fileName, setFileName] = useState<string>("")
@@ -26,11 +30,17 @@ export default function UploadPhoto() {
     if (previewUrl) {
       localStorage.setItem("coachProfileImage", previewUrl)
       localStorage.setItem("coachProfileImageName", fileName)
+      if (updatePhotoUploaded) {
+        updatePhotoUploaded(true)
+      }
     } else {
       localStorage.removeItem("coachProfileImage")
       localStorage.removeItem("coachProfileImageName")
+      if (updatePhotoUploaded) {
+        updatePhotoUploaded(false)
+      }
     }
-  }, [previewUrl, fileName])
+  }, [previewUrl, fileName, updatePhotoUploaded])
 
   // Handle file selection and convert to base64
   const handleFileSelect = (file: File) => {

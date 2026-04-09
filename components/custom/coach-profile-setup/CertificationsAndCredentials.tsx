@@ -9,6 +9,10 @@ type CredentialFile = {
   sizeMb: string
 }
 
+interface CertificationsAndCredentialsProps {
+  updateCredentials?: (files: any[]) => void
+}
+
 function UploadCloudIcon() {
   return (
     <svg
@@ -63,11 +67,18 @@ function TrashIcon() {
   )
 }
 
-export default function CertificationsAndCredentials() {
+export default function CertificationsAndCredentials({ updateCredentials }: CertificationsAndCredentialsProps) {
   const [files, setFiles] = useState<CredentialFile[]>([])
   const [hasLoadedStorage, setHasLoadedStorage] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const storageKey = "coach-profile-certifications"
+
+  // Update parent component when files change
+  useEffect(() => {
+    if (updateCredentials) {
+      updateCredentials(files)
+    }
+  }, [files, updateCredentials])
 
   useEffect(() => {
     try {

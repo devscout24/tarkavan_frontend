@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -20,10 +20,25 @@ const yearsOptions = [
   { value: "10+", label: "10+ years" },
 ]
 
-export default function ExperienceAndEducation() {
+interface ExperienceAndEducationProps {
+  updateExperience?: (experience: any) => void
+}
+
+export default function ExperienceAndEducation({ updateExperience }: ExperienceAndEducationProps) {
   const [years, setYears] = useState("")
   const [education, setEducation] = useState("")
   const [history, setHistory] = useState("")
+
+  // Update parent component when experience data changes
+  useEffect(() => {
+    if (updateExperience) {
+      updateExperience({
+        years,
+        education,
+        history,
+      })
+    }
+  }, [years, education, history, updateExperience])
 
   return (
     <section className="rounded-2xl border border-white/8 bg-secondary/20 p-5 text-white md:p-6">

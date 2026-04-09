@@ -85,7 +85,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl p-0">
+    <div className="mx-auto w-full p-0">
       <div className="flex flex-col gap-4 rounded-2xl bg-neutral-900 p-8 text-white">
         <h2 className="mb-2 text-2xl font-semibold">Add Program</h2>
         {/* Photo Upload */}
@@ -196,35 +196,44 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
             placeholder="Program Location"
             className="border-neutral-700 bg-neutral-800"
           />
-          <div className="flex gap-2">
-            <Input
-              name="start"
-              value={form.start}
-              onChange={handleChange}
-              placeholder="Program Start (mm/dd/yyyy)"
-              className="border-neutral-700 bg-neutral-800"
-              type="date"
-            />
-            <Input
-              name="end"
-              value={form.end}
-              onChange={handleChange}
-              placeholder="Program End (mm/dd/yyyy)"
-              className="border-neutral-700 bg-neutral-800"
-              type="date"
-            />
-          </div>
-          <div className="flex gap-2">
-            {form.times.map((time, idx) => (
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col">
+              <span className="text-sm">Program Start</span>
               <Input
-                key={idx}
-                value={time}
-                onChange={(e) => handleTimeChange(idx, e.target.value)}
-                placeholder="HH:MM"
-                className="border-neutral-700 bg-neutral-800"
-                type="time"
+                name="start"
+                value={form.start}
+                onChange={handleChange}
+                placeholder="Program Start (mm/dd/yyyy)"
+                className="mt-1 border-neutral-700 bg-neutral-800"
+                type="date"
               />
-            ))}
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm">Program End</span>
+              <Input
+                name="end"
+                value={form.end}
+                onChange={handleChange}
+                placeholder="Program End (mm/dd/yyyy)"
+                className="mt-1 border-neutral-700 bg-neutral-800"
+                type="date"
+              />
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm">Add Program Time</span>
+            <div className="mt-1 flex gap-2">
+              {form.times.map((time, idx) => (
+                <Input
+                  key={idx}
+                  value={time}
+                  onChange={(e) => handleTimeChange(idx, e.target.value)}
+                  placeholder="HH:MM"
+                  className="border-neutral-700 bg-neutral-800"
+                  type="time"
+                />
+              ))}
+            </div>
           </div>
         </div>
         <Textarea

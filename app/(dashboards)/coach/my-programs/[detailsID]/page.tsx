@@ -1,6 +1,8 @@
 "use client"
+import React from "react"
 
 import AboutProgram from "@/components/common/about-program"
+import CommonBtn from "@/components/common/common-btn"
 import { ProgramCalendar } from "@/components/common/program-calendar"
 import ProgramCoachCard from "@/components/common/program-coach-card"
 import ProgramDetailsBanner from "@/components/common/program-details-banner"
@@ -10,10 +12,14 @@ import ProgramReview from "@/components/common/program-review"
 import { Button } from "@/components/ui/button"
 import { eachDayOfInterval, format } from "date-fns"
 import { ArrowLeftIcon } from "lucide-react"
-import { useRouter } from "next/navigation"
+
+import AddProgramPage from "@/components/common/add-program-modal"
+import { useRouter, useSearchParams, usePathname } from "next/navigation"
 
 export default function ProgramDetails() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const pathname = usePathname()
   const programStartDate = new Date(2026, 3, 1)
   const programEndDate = new Date(2026, 3, 15)
 
@@ -30,16 +36,41 @@ export default function ProgramDetails() {
     return acc
   }, {})
 
+  // Handler for saving the new program (implement logic as needed)
+  const handleSaveProgram = (data: any) => {
+    // TODO: Add your save logic here (API call, state update, etc.)
+    console.log("Saved program:", data)
+  }
+
   return (
     <section className="text-white">
       {/* BACK BUTTON */}
-      <Button
-        className="cursor-pointer bg-transparent hover:underline"
-        onClick={() => router.back()}
-      >
-        <ArrowLeftIcon />
-        <span>Back to Programs</span>
-      </Button>
+      <div className="mb-5 flex items-center justify-between px-2 py-2">
+        <Button
+          className="cursor-pointer bg-transparent pb-4 text-white/50 hover:underline"
+          onClick={() => router.back()}
+        >
+          <ArrowLeftIcon />
+          <span>Back to Programs</span>
+        </Button>
+        <CommonBtn
+          text="Add Program"
+          className="h-10 w-fit rounded-[8px] bg-brand px-4 font-medium text-primary hover:bg-brand xl:h-11 xl:px-5 xl:text-base 2xl:h-12 2xl:px-6 2xl:text-lg"
+          size="sm"
+          variant="default"
+          onClick={() => {
+            const nextParams = new URLSearchParams(searchParams.toString())
+            nextParams.set("add-new", "program")
+            router.replace(
+              nextParams.toString()
+                ? `${pathname}?${nextParams.toString()}`
+                : pathname
+            )
+          }}
+        />
+      </div>
+
+      {/* Add Program Modal handled by Modals component and URL param */}
 
       {/* program details banner */}
       <ProgramDetailsBanner

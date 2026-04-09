@@ -37,7 +37,7 @@ export default function ProgramDetails() {
         className="mb-[24px] cursor-pointer bg-transparent hover:underline"
         onClick={() => router.back()}
       >
-        <ArrowLeftIcon />
+        <ArrowLeftIcon className="text-white" />
         <span className="text-[16px] leading-[150%] font-normal text-white">
           Back to Programs
         </span>

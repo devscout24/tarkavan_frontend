@@ -44,7 +44,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
           value={value || ""}
           onChange={onChange}
           className={cn(
-            "placeholder:text-4 overflow-hidden text-ellipsis whitespace-nowrap placeholder:leading-[150%] placeholder:font-normal placeholder:text-white/30",
+            "placeholder:text-4 overflow-hidden text-ellipsis whitespace-nowrap placeholder:leading-[150%] placeholder:font-normal placeholder:text-secondary",
             error && "border-red-500 focus-visible:border-red-500",
             className
           )}

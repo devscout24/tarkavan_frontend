@@ -102,7 +102,7 @@ export default function PlayerRecruitmentCard({
           <CommonBtn
             onClick={onClick}
             variant="outline"
-            className="w-fit px-5 bg-brand text-sm font-semibold hover:bg-brand/90"
+            className="w-full px-5 bg-brand text-sm font-semibold hover:bg-brand/90"
             size="lg"
             text={buttonText}
           />

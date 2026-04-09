@@ -14,6 +14,7 @@ type PlayerActiveProgramsProps = {
   status?: string
   btnText?: string
   onViewDetails?: () => void
+  showViewAllActive?: boolean
 }
 
 export default function PlayerActivePrograms({
@@ -27,17 +28,20 @@ export default function PlayerActivePrograms({
   status = "In Progress",
   btnText = "View Details",
   onViewDetails,
+  showViewAllActive = true,
 }: PlayerActiveProgramsProps) {
   return (
     <section className="w-full">
       <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
         <h2 className="text-xl font-bold text-white sm:text-2xl">{title}</h2>
-        <button
-          type="button"
-          className="text-[14px] font-semibold text-white/85 transition hover:text-white"
-        >
-          View All Active
-        </button>
+        {showViewAllActive && (
+          <button
+            type="button"
+            className="text-[14px] font-semibold text-white/85 transition hover:text-white"
+          >
+            View All Active
+          </button>
+        )}
       </div>
 
       <article className="overflow-hidden rounded-2xl border border-white/10 bg-brand">

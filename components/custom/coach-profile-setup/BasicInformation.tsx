@@ -1,15 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import DatepickerField from "@/components/common/datepicker-field"
 import InputField from "@/components/common/input-field"
 import SelectField from "@/components/common/select-field"
 
 const controlClassName =
-  "h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-secondary/40 focus-visible:border-brand focus-visible:ring-0"
+  "h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
 
 const triggerClassName =
-  "h-11 w-full rounded-xl border-white/10 bg-secondary/10 px-3 text-sm text-white data-placeholder:text-secondary/40"
+  "h-11 w-full rounded-xl border-white/10 bg-secondary/10 px-3 text-sm text-white data-placeholder:text-white/50"
 
 const genderOptions = [
   { value: "male", label: "Male" },
@@ -17,10 +17,32 @@ const genderOptions = [
   { value: "other", label: "Other" },
 ]
 
-export default function BasicInformation() {
+interface BasicInformationProps {
+  updateBasicInfo?: (info: any) => void
+}
+
+export default function BasicInformation({ updateBasicInfo }: BasicInformationProps) {
   const [openDatePicker, setOpenDatePicker] = useState(false)
   const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>()
   const [gender, setGender] = useState("")
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [nationality, setNationality] = useState("")
+  const [email, setEmail] = useState("")
+
+  // Update parent component when form data changes
+  useEffect(() => {
+    if (updateBasicInfo) {
+      updateBasicInfo({
+        firstName: firstName || "",
+        lastName: lastName || "",
+        dateOfBirth,
+        gender: gender || "",
+        nationality: nationality || "",
+        email: email || "",
+      })
+    }
+  }, [firstName, lastName, dateOfBirth, gender, nationality, email, updateBasicInfo])
 
   return (
     <div className="rounded-2xl text-white">
@@ -37,12 +59,16 @@ export default function BasicInformation() {
           label="First Name"
           placeholder="Enter first name"
           className={controlClassName}
+          value={firstName || ""}
+          onChange={(e) => setFirstName(e.target.value || "")}
         />
 
         <InputField
           label="Last Name"
           placeholder="Enter last name"
           className={controlClassName}
+          value={lastName || ""}
+          onChange={(e) => setLastName(e.target.value || "")}
         />
 
         <DatepickerField
@@ -59,14 +85,16 @@ export default function BasicInformation() {
           placeholder="Select gender"
           options={genderOptions}
           triggerClassName={triggerClassName}
-          value={gender}
-          onValueChange={setGender}
+          value={gender || ""}
+          onValueChange={(value) => setGender(value || "")}
         />
 
         <InputField
           label="Nationality"
           placeholder="Enter nationality"
           className={controlClassName}
+          value={nationality || ""}
+          onChange={(e) => setNationality(e.target.value || "")}
         />
 
         <InputField
@@ -74,6 +102,8 @@ export default function BasicInformation() {
           type="email"
           placeholder="Enter email address"
           className={controlClassName}
+          value={email || ""}
+          onChange={(e) => setEmail(e.target.value || "")}
         />
       </div>
     </div>

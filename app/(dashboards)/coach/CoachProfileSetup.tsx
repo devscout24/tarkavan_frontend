@@ -4,13 +4,23 @@ import SportsAndSpecialties from "@/components/custom/coach-profile-setup/Sports
 import UploadPhoto from "@/components/custom/coach-profile-setup/UploadPhoto"
 import React from "react"
 
-export default function CoachProfileSetup() {
+interface CoachProfileSetupProps {
+  currentStep: number
+  updatePhotoUploaded: (uploaded: boolean) => void
+  updateBasicInfo: (info: any) => void
+}
+
+export default function CoachProfileSetup({ 
+  currentStep, 
+  updatePhotoUploaded, 
+  updateBasicInfo 
+}: CoachProfileSetupProps) {
   return (
     <section className="x-4 py-13">
       <div className="space-y-4 rounded-[16px] bg-secondary/20 p-4 sm:p-6">
-        <CoachProfileSetupHeader />
-        <UploadPhoto />
-        <BasicInformation />
+        <CoachProfileSetupHeader currentStep={currentStep} />
+        <UploadPhoto updatePhotoUploaded={updatePhotoUploaded} />
+        <BasicInformation updateBasicInfo={updateBasicInfo} />
       </div>
     </section>
   )

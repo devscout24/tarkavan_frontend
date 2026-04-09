@@ -9,10 +9,10 @@ import { useForm } from "react-hook-form"
 import type { WizardState } from "../types"
 
 const controlClassName =
-  "h-11 rounded-xl border border-white/10 bg-[#0F1117] px-3 text-sm text-white placeholder:text-secondary/40 focus-visible:border-brand focus-visible:ring-0"
+  "h-11 rounded-xl border border-white/10 bg-[#0F1117] px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
 
 const triggerClassName =
-  "h-11 w-full rounded-xl border-white/10 bg-[#0F1117] px-3 text-sm text-white data-placeholder:text-secondary/40"
+  "h-11 w-full rounded-xl border-white/10 bg-[#0F1117] px-3 text-sm text-white data-placeholder:text-white/50"
 
 interface CoreIdentityFormData {
   profilePhotos: File[]

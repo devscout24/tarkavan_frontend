@@ -27,7 +27,7 @@ export default function RecentActivityRow({
         <p className="text-base leading-[125%] font-normal text-[#ffffff]">
           {title}
         </p>
-        <p className="text-base leading-[150%] text-secondary">{time}</p>
+        <p className="text-base leading-[150%] text-white/50">{time}</p>
       </div>
     </div>
   )

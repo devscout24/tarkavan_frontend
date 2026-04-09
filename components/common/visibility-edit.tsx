@@ -36,7 +36,7 @@ export default function VisibilityEdit() {
           onValueChange={(e) => setSelectedTheme(e.value[0] || "public")}
         > 
           <Select.Control>
-            <Select.Trigger className="flex h-10 w-fit bg-brand/40 px-4 items-center justify-between rounded-lg border border-gray-300  ">
+            <Select.Trigger className="flex h-10 w-fit bg-brand px-4 items-center justify-between rounded-lg border border-gray-300  ">
               <div className="flex items-center gap-2">
                 <ThemeIcon className="h-4 w-4  " />
                 <Select.ValueText placeholder="Select a theme" />

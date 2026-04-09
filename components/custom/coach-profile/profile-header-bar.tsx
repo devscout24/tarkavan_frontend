@@ -1,6 +1,6 @@
 import CommonBtn from "@/components/common/common-btn"
 import VisibilityEdit from "@/components/common/visibility-edit"
-import { Card } from "@/components/ui/card" 
+import { Card } from "@/components/ui/card"
 
 export default function ProfileHeaderBar() {
   return (

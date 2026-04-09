@@ -44,7 +44,7 @@ export default function ProgramCoachCard({
   return (
     <Card
       className={cn(
-        "w-full overflow-hidden rounded-2xl border border-secondary/70 bg-[#171a26] p-0 ring-0",
+        "w-full overflow-hidden rounded-2xl border border-white/40 bg-[#171a26] p-0 ring-0",
         className
       )}
     >
@@ -74,12 +74,12 @@ export default function ProgramCoachCard({
           <p className="mt-1 text-base font-medium text-white">{role}</p>
 
           {location ? (
-            <div className="mt-1 flex items-center gap-1.5 text-base text-secondary">
+            <div className="mt-1 flex items-center gap-1.5 text-base text-white/40">
               <MapPin className="h-4 w-4" />
               <p>{location}</p>
             </div>
           ) : (
-            <p className="mt-1 text-base leading-7 text-secondary">{bio}</p>
+            <p className="mt-1 text-base leading-7 text-white/40">{bio}</p>
           )}
 
           <div className="mt-3 flex flex-wrap gap-2">
@@ -87,7 +87,7 @@ export default function ProgramCoachCard({
               <Badge
                 key={tag}
                 variant="secondary"
-                className="rounded-md bg-secondary/60 px-2 py-1 text-[10px] font-medium text-white"
+                className="bg-white/40/60 rounded-md px-2 py-1 text-[10px] font-medium text-white"
               >
                 {tag}
               </Badge>

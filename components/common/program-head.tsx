@@ -17,7 +17,7 @@ export default function ProgramHead({
   placeholder: string
 }) {
   const selectItemClassName =
-    "text-white data-[highlighted]:bg-brand data-[highlighted]:text-primary focus:bg-brand focus:text-primary text-primary"
+    "text-white bg-transparent rounded-none data-[highlighted]:bg-brand data-[highlighted]:text-primary focus:bg-brand focus:text-primary"
 
   return (
     <div className="mx-1 my-0.5 flex justify-between">

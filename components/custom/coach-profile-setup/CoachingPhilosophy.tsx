@@ -1,14 +1,25 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import CommonBtn from "@/components/common/common-btn"
 import { BsArrowRight } from "react-icons/bs"
 import { FiCheckSquare, FiSquare } from "react-icons/fi"
 
-export default function CoachingPhilosophy() {
+interface CoachingPhilosophyProps {
+  updatePhilosophy?: (text: string) => void
+}
+
+export default function CoachingPhilosophy({ updatePhilosophy }: CoachingPhilosophyProps) {
   const [philosophy, setPhilosophy] = useState("")
   const [playerCentric, setPlayerCentric] = useState(true)
   const [dataDriven, setDataDriven] = useState(false)
+
+  // Update parent component when philosophy changes
+  useEffect(() => {
+    if (updatePhilosophy) {
+      updatePhilosophy(philosophy)
+    }
+  }, [philosophy, updatePhilosophy])
 
   return (
     <section className="rounded-2xl border border-white/8 bg-secondary/20 p-5 text-white md:p-6">
@@ -28,7 +39,7 @@ export default function CoachingPhilosophy() {
         onChange={(event) => setPhilosophy(event.target.value)}
         rows={4}
         placeholder="My philosophy centers on mental resilience and technical precision..."
-        className="mt-3 w-full rounded-xl border border-white/10 bg-secondary/10 px-3 py-2 text-sm text-white placeholder:text-secondary/40 focus-visible:border-brand focus-visible:outline-none"
+        className="mt-3 w-full rounded-xl border border-white/10 bg-secondary/10 px-3 py-2 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:outline-none"
       />
 
       <div className="mt-4 flex flex-wrap items-center gap-5">

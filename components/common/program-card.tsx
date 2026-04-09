@@ -96,7 +96,12 @@ export default function ProgramCard({
             <span>{duration}</span>
           </div>
         </div> 
-        <CommonBtn text={buttonLabel}  className="  h-11 w-full rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90   " size={"lg"} variant={"default"} onClick={onClick} />
+        <div className="flex gap-4">
+          <CommonBtn text={buttonLabel}  className="flex-1 h-11 rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90   " size={"lg"} variant={"default"} onClick={onClick} />
+          {shouldShowThreeDotsMenu && (
+            <ThreeDotsMenu items={threeDotsItems} />
+          )}
+        </div>
       </CardContent>
     </Card>
   )

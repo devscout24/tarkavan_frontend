@@ -48,7 +48,7 @@ export default function DatepickerField({
         >
           <span
             className={
-              selected ? "text-sm text-white" : "text-sm text-secondary/40"
+              selected ? "text-sm text-white" : "text-sm text-white/50"
             }
           >
             {selected ? format(selected, "MM/dd/yyyy") : placeholder}

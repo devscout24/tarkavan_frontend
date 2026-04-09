@@ -81,15 +81,15 @@ export default function ProgramReview({
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[36px] font-bold text-white">{rating.toFixed(1)}</p>
+          <p className="text-[36px] font-bold text-white">
+            {rating.toFixed(1)}
+          </p>
           <RatingStars rating={rating} />
         </div>
 
         <div className="text-right">
-          <p className="text-base text-secondary">{feedbackLabel}</p>
-          <p className="text-xl font-bold text-white  ">
-            {totalReviews} reviews
-          </p>
+          <p className="text-base text-white/40">{feedbackLabel}</p>
+          <p className="text-xl font-bold text-white">{totalReviews} reviews</p>
         </div>
       </div>
 
@@ -99,18 +99,14 @@ export default function ProgramReview({
             key={item.stars}
             className="grid grid-cols-[28px_1fr_44px] items-center gap-3 md:gap-4"
           >
-            <span className="text-base text-secondary  ">
-              {item.stars}
-            </span>
+            <span className="text-base text-white/40">{item.stars}</span>
 
             <Progress
               value={isInView ? clampPercent(item.percentage) : 0}
               className="h-2 rounded-full bg-white/10 [&>div]:bg-brand [&>div]:duration-900 [&>div]:ease-out"
             />
 
-            <span className="text-base text-secondary ">
-              {item.percentage}%
-            </span>
+            <span className="text-base text-white/40">{item.percentage}%</span>
           </div>
         ))}
       </div>
@@ -119,7 +115,7 @@ export default function ProgramReview({
         type="button"
         variant="secondary"
         onClick={onWriteReview}
-        className="text-base mt-6 h-16 w-full rounded-2xl border border-secondary/80 bg-white/10 font-semibold text-white hover:bg-white/15 md:mt-8 "
+        className="mt-6 h-16 w-full rounded-2xl border border-white/40 bg-white/10 text-base font-semibold text-white hover:bg-white/15 md:mt-8"
       >
         <Pencil className="size-4" />
         {reviewLabel}

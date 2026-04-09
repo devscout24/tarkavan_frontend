@@ -41,10 +41,10 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
           ref={ref}
           type={type}
           placeholder={placeholder}
-          value={value}
+          value={value || ""}
           onChange={onChange}
           className={cn(
-            "placeholder:text-4 overflow-hidden text-ellipsis whitespace-nowrap placeholder:leading-[150%] placeholder:font-normal placeholder:text-white/30",
+            "placeholder:text-4 overflow-hidden text-ellipsis whitespace-nowrap placeholder:leading-[150%] placeholder:font-normal placeholder:text-secondary",
             error && "border-red-500 focus-visible:border-red-500",
             className
           )}

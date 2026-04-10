@@ -1,13 +1,12 @@
 import BasicInformation from "@/components/custom/coach-profile-setup/BasicInformation"
-import CoachProfileSetupHeader from "@/components/custom/coach-profile-setup/coach-profile-setup-header"
-import SportsAndSpecialties from "@/components/custom/coach-profile-setup/SportsAndSpecialties"
+import CoachProfileSetupHeader from "@/components/custom/coach-profile-setup/coach-profile-setup-header" 
 import UploadPhoto from "@/components/custom/coach-profile-setup/UploadPhoto"
 import React from "react"
 
 interface CoachProfileSetupProps {
-  currentStep: number
-  updatePhotoUploaded: (uploaded: boolean) => void
-  updateBasicInfo: (info: any) => void
+  currentStep?: number
+  updatePhotoUploaded?: (uploaded: boolean) => void
+  updateBasicInfo?: (info: any) => void
 }
 
 export default function CoachProfileSetup({ 

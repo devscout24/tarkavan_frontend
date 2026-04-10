@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Select,
   SelectContent,
@@ -14,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import Export from "./export"
 
 // Demo Booking type
 interface Booking {
@@ -71,28 +74,37 @@ export default function PaymentTable() {
 
   return (
     <div className="mx-1 mt-6 text-white">
-      <Select>
-        <SelectTrigger className="h-11 w-full rounded-xl border-white/15 bg-transparent py-5 text-white!">
-          <SelectValue placeholder={"All Status"} />
-        </SelectTrigger>
-        <SelectContent
-          position="popper"
-          className="border-white/10 bg-secondary text-white!"
-        >
-          <SelectItem className={selectItemClassName} value={"all"}>
-            {"All"}
-          </SelectItem>
-          <SelectItem className={selectItemClassName} value={"paid"}>
-            {"Paid"}
-          </SelectItem>
-          <SelectItem className={selectItemClassName} value={"pending"}>
-            {"Pending"}
-          </SelectItem>
-          <SelectItem className={selectItemClassName} value={"refunded"}>
-            {"Refunded"}
-          </SelectItem>
-        </SelectContent>
-      </Select>
+      <div className="flex items-center justify-between gap-4">
+        {/* Status Dropdown on Left */}
+        <Select>
+          <SelectTrigger className="h-32 w-32 rounded-full border-white/20 bg-transparent px-3 text-white hover:bg-white/10">
+            <SelectValue placeholder={"All Status"} />
+          </SelectTrigger>
+          <SelectContent
+            position="popper"
+            className="border-white/10 bg-secondary text-white!"
+          >
+            <SelectItem className={selectItemClassName} value={"all"}>
+              {"All"}
+            </SelectItem>
+            <SelectItem className={selectItemClassName} value={"paid"}>
+              {"Paid"}
+            </SelectItem>
+            <SelectItem className={selectItemClassName} value={"pending"}>
+              {"Pending"}
+            </SelectItem>
+            <SelectItem className={selectItemClassName} value={"refunded"}>
+              {"Refunded"}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+
+        {/* Export Component on Right */}
+        <Export 
+          onExport={() => console.log("Export clicked")}
+          className="flex-shrink-0"
+        />
+      </div>
 
       <div className="mx-auto mt-4 max-w-[95vw] [&>div]:rounded-lg [&>div]:border">
         <Table>

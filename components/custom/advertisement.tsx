@@ -11,6 +11,7 @@ interface AdvertisementProps {
   description?: string
   onApply?: () => void
   hideDetails?: boolean
+  isApplied?: boolean
 }
 
 const TimerIcon = () => (
@@ -44,11 +45,12 @@ export default function Advertisement({
   description,
   onApply,
   hideDetails = false,
+  isApplied = false,
 }: AdvertisementProps) {
   return (
-    <section className="flex flex-col overflow-hidden rounded-[24px] bg-primary">
+    <section className="flex h-[400px] flex-col overflow-hidden rounded-[24px] bg-primary">
       {/* Image Section */}
-      <div className="h-39 w-full">
+      <div className="h-39 w-full flex-shrink-0">
         <Image
           width={1000}
           height={1000}
@@ -59,19 +61,19 @@ export default function Advertisement({
       </div>
 
       {/* Content Section */}
-      <div className={`space-y-3 p-5 ${hideDetails ? "hidden" : "block"}`}>
+      <div className={`flex flex-1 flex-col space-y-3 p-5 ${hideDetails ? "hidden" : "block"}`}>
         {/* Positions */}
-        <p className="font-weight-500 text-[18px] leading-[120%] font-normal text-white">
+        <p className="font-weight-500 text-[18px] leading-[120%] font-normal text-white flex-shrink-0">
           {positions}
         </p>
 
         {/* Team Name and Age Group */}
-        <p className="font-weight-400 text-xs leading-[150%] font-normal text-white">
+        <p className="font-weight-400 text-xs leading-[150%] font-normal text-white flex-shrink-0">
           {teamName} | Age: {ageGroup}
         </p>
 
         {/* Tryout Date */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-shrink-0">
           <div className="h-3.5 w-3.5 text-white">
             <TimerIcon />
           </div>
@@ -81,7 +83,7 @@ export default function Advertisement({
         </div>
 
         {/* Description */}
-        <p className="text-xs leading-[150%] font-normal text-white">
+        <p className="text-xs leading-[150%] font-normal text-white line-clamp-5 flex-1">
           {description}
         </p>
 
@@ -89,9 +91,14 @@ export default function Advertisement({
         <CommonBtn
           variant="default"
           size="lg"
-          text="Apply"
-          className="hovcursor-pointer h-10 w-full cursor-pointer bg-brand text-base font-medium text-zinc-950 transition-all hover:bg-brand/90"
-          onClick={onApply}
+          text={isApplied ? "Applied" : "Apply"}
+          className={`h-10 w-full cursor-pointer text-base font-medium transition-all flex-shrink-0 ${
+            isApplied 
+              ? "bg-white text-black cursor-default" 
+              : "bg-brand text-zinc-950 hover:bg-brand/90"
+          }`}
+          onClick={isApplied ? undefined : onApply}
+          disabled={isApplied}
         />
       </div>
     </section>

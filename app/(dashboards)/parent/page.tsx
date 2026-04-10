@@ -1,9 +1,12 @@
-import StatCard from "@/components/common/stat-card" 
-import advertisementImage from "../../../public/images/advertisementImage.png"  
+"use client"
+
+import StatCard from "@/components/common/stat-card"
+import advertisementImage from "../../../public/images/advertisementImage.png"
 import { Icon } from "@/components/custom/Icon"
 import RecentActivityRow from "@/components/custom/recent-activity-row"
 import ProgramReminder from "@/components/custom/program-reminder"
 import Advertisement from "@/components/custom/advertisement"
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
 
 const ChildrenIcon = () => (
   <Icon>
@@ -214,7 +217,7 @@ const activityItems = [
 ]
 
 const quickActions = [
-  { icon: <AddChildIcon />, label: "Add Your Children", active: true },
+  { icon: <AddChildIcon />, label: "Add Your Children", active: false },
   {
     icon: <ProgramsOutlineIcon />,
     label: "Explore EAM Programs",
@@ -231,6 +234,20 @@ const stats = [
 ]
 
 export default function page() {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  const handleAddChildren = () => {
+    const nextParams = new URLSearchParams(searchParams.toString())
+    nextParams.set("add-new", "player")
+    router.replace(
+      nextParams.toString()
+        ? `${pathname}?${nextParams.toString()}`
+        : pathname
+    )
+  }
+
   return (
     <section>
       <div className="mb-4">
@@ -284,6 +301,7 @@ export default function page() {
                 <button
                   key={action.label}
                   type="button"
+                  onClick={action.label === "Add Your Children" ? handleAddChildren : undefined}
                   className={`group transition-alcursor-pointer flex w-full cursor-pointer items-center justify-between rounded-[16px] border px-4 py-4 text-left ${
                     action.active
                       ? "border-brand bg-brand"

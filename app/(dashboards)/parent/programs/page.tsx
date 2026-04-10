@@ -51,8 +51,7 @@ export default function ProgramPage() {
         title="Available Programs"
         options={[
           { value: "all", label: "All" },
-          { value: "football", label: "Football" },
-          { value: "basketball", label: "Basketball" },
+          { value: "soccer", label: "Soccer" },
         ]}
         placeholder="All Sports"
       />

@@ -1,3 +1,6 @@
+"use client"
+
+import { useState } from "react"
 import { Icon } from "./Icon"
 import CommonBtn from "../common/common-btn"
 import {
@@ -9,6 +12,7 @@ import {
 import VisibilityBadge from "./visibility-badge"
 import Image from "next/image"
 import { TbCurrentLocation } from "react-icons/tb"
+import InviteForm from "./InviteForm"
 
 interface ChildCardProps {
   imageUrl: string
@@ -113,6 +117,16 @@ export default function ChildCard({
   isDropdown = true,
   adText,
 }: ChildCardProps) {
+  const [showInviteForm, setShowInviteForm] = useState(false)
+
+  const handleInvite = () => {
+    setShowInviteForm(true)
+  }
+
+  const handleCloseInviteForm = () => {
+    setShowInviteForm(false)
+  }
+
   return (
     <div className="overflow-hidden rounded-[8px] border border-secondary/50">
       {/* Image Section */}
@@ -221,7 +235,7 @@ export default function ChildCard({
                 className="w-28 overflow-hidden rounded-lg border border-secondary/50 bg-white shadow-lg"
               >
                 <DropdownMenuItem
-                  onSelect={onInvite}
+                  onSelect={handleInvite}
                   className="w-full cursor-pointer px-4 py-2 text-center text-sm font-normal text-primary outline-none hover:bg-brand"
                 >
                   Invite
@@ -243,6 +257,9 @@ export default function ChildCard({
           )}
         </div>
       </div>
+    
+    {/* Invite Form Modal */}
+    {showInviteForm && <InviteForm onClose={handleCloseInviteForm} />}
     </div>
   )
 }

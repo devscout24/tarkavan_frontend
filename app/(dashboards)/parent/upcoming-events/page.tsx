@@ -1,9 +1,10 @@
 "use client"
 import ProgramCard from "@/components/common/program-card"
 import PlayerActivePrograms from "../../../../components/common/player-active-programs"
-// import { useNavigate } from "react-router"
+import { useRouter } from "next/navigation"
 
 export default function UpcomingEventPage() {
+  const router = useRouter()
   const programs = [
     {
       id: "1",
@@ -41,11 +42,25 @@ export default function UpcomingEventPage() {
     },
   ]
 
-  // const navigate = useNavigate()
+  const handleViewDetails = () => {
+    router.push("/parent/upcoming-events/details")
+  }
 
   return (
     <section>
-      <PlayerActivePrograms />
+      <PlayerActivePrograms 
+        title="My Active Programs"
+        programName="Varsity Prep Mentorship"
+        coachName="Marcus Thompson"
+        schedule="October 24, 2023"
+        nextSession="Mon & Wed, 5:00 PM"
+        focusLabel="Current Focus"
+        focusValue="Speed & Agility"
+        status="Upcoming"
+        btnText="View Details"
+        onViewDetails={handleViewDetails}
+        showViewAllActive={false}
+      />
 
       {/* upcoming events content */}
       <h2 className="mt-6 text-xl font-bold text-white sm:text-2xl">

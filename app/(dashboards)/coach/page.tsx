@@ -1,3 +1,5 @@
+"use client"
+
 import StatCard from "@/components/common/stat-card"
 import Advertisement from "@/components/custom/advertisement"
 import RecentActivityRow from "@/components/custom/recent-activity-row"
@@ -12,6 +14,9 @@ import {
   UpcomingProgramsIcon,
 } from "@/components/custom/coach-dashboard-icons"
 import advertisementImage from "../../../public/images/advertisementImage.png"
+import { useState } from "react"
+import { toast } from "sonner"
+import { Icon } from "@/components/custom/Icon"
 
 const stats = [
   { icon: <ActiveProgramsIcon />, title: "Active Programs", text: "05" },
@@ -88,6 +93,27 @@ const quickActions = [
 ]
 
 export default function CoachDashboardPage() {
+  const [appliedAdvertisements, setAppliedAdvertisements] = useState<string[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('coachAppliedAdvertisements')
+      return saved ? JSON.parse(saved) : []
+    }
+    return []
+  })
+
+  const handleApplyAdvertisement = (teamName: string) => {
+    if (!appliedAdvertisements.includes(teamName)) {
+      const newApplied = [...appliedAdvertisements, teamName]
+      setAppliedAdvertisements(newApplied)
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('coachAppliedAdvertisements', JSON.stringify(newApplied))
+      }
+      toast.success(`Successfully applied to ${teamName}!`)
+    } else {
+      toast.info(`You have already applied to ${teamName}`)
+    }
+  }
+
   return (
     <section>
       <div className="mb-4">
@@ -113,19 +139,50 @@ export default function CoachDashboardPage() {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_540px] xl:items-start">
         <section className="rounded-[24px]">
           <h5 className="mb-4 text-[24px] leading-[125%] font-medium text-white">
-            Recent Activity
+            Recent Opportunities
           </h5>
 
-          <div className="overflow-hidden rounded-[14px] border border-secondary/60">
-            {activityItems.map((item, index) => (
-              <RecentActivityRow
-                key={item.title}
-                icon={item.icon}
-                title={item.title}
-                time={item.time}
-                showDivider={index !== activityItems.length - 1}
-              />
-            ))}
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex gap-4 pb-2">
+              <div className="min-w-[320px] max-w-[320px] flex-shrink-0">
+                <Advertisement
+                  imageUrl={advertisementImage}
+                  positions="Assistant Coach"
+                  teamName="Elite U16"
+                  ageGroup="3+ years"
+                  tryoutDate="March 15-18, 2026"
+                  description="Looking for experienced assistant coach."
+                  onApply={() => handleApplyAdvertisement("Elite U16")}
+                  isApplied={appliedAdvertisements.includes("Elite U16")}
+                />
+              </div>
+              
+              <div className="min-w-[320px] max-w-[320px] flex-shrink-0">
+                <Advertisement
+                  imageUrl={advertisementImage}
+                  positions="Head Coach"
+                  teamName="Academy Select"
+                  ageGroup="U18"
+                  tryoutDate="April 20-23, 2026"
+                  description="Seeking experienced head coach for elite academy program."
+                  onApply={() => handleApplyAdvertisement("Academy Select")}
+                  isApplied={appliedAdvertisements.includes("Academy Select")}
+                />
+              </div>
+              
+              <div className="min-w-[320px] max-w-[320px] flex-shrink-0">
+                <Advertisement
+                  imageUrl={advertisementImage}
+                  positions="Goalkeeper Coach"
+                  teamName="Premier FC"
+                  ageGroup="U14"
+                  tryoutDate="May 10-13, 2026"
+                  description="Specialized goalkeeper coach needed for competitive team."
+                  onApply={() => handleApplyAdvertisement("Premier FC")}
+                  isApplied={appliedAdvertisements.includes("Premier FC")}
+                />
+              </div>
+            </div>
           </div>
         </section>
 
@@ -137,16 +194,6 @@ export default function CoachDashboardPage() {
           <div className="rounded-[16px] border border-secondary/65 bg-white/10 p-4">
             <CoachQuickActions actions={quickActions} />
 
-            <div className="mt-4">
-              <Advertisement
-                imageUrl={advertisementImage}
-                positions="Assistant Coach"
-                teamName="Elite U16"
-                ageGroup="3+ years"
-                tryoutDate="March 15-18, 2026"
-                description="Looking for experienced assistant coach."
-              />
-            </div>
           </div>
         </aside>
       </div>

@@ -231,7 +231,13 @@ export default function page() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const [appliedAdvertisements, setAppliedAdvertisements] = useState<string[]>([])
+  const [appliedAdvertisements, setAppliedAdvertisements] = useState<string[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('parentAppliedAdvertisements')
+      return saved ? JSON.parse(saved) : []
+    }
+    return []
+  })
 
   const handleAddChildren = () => {
     const nextParams = new URLSearchParams(searchParams.toString())
@@ -245,7 +251,11 @@ export default function page() {
 
   const handleApplyAdvertisement = (teamName: string) => {
     if (!appliedAdvertisements.includes(teamName)) {
-      setAppliedAdvertisements([...appliedAdvertisements, teamName])
+      const newApplied = [...appliedAdvertisements, teamName]
+      setAppliedAdvertisements(newApplied)
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('parentAppliedAdvertisements', JSON.stringify(newApplied))
+      }
       toast.success(`Successfully applied to ${teamName}!`)
     } else {
       toast.info(`You have already applied to ${teamName}`)

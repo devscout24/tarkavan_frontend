@@ -92,6 +92,34 @@ export default function EarningsGrowthChart() {
   const chartConfig = useMemo(() => getChartConfig(), [])
   const data = chartConfig[filter]
 
+  // Dynamic title and description based on filter
+  const getTitleAndDescription = () => {
+    switch (filter) {
+      case "month":
+        return {
+          title: "Weekly Revenue Growth",
+          description: "Comparative analysis for current week"
+        }
+      case "6-month":
+        return {
+          title: "Monthly Revenue Growth", 
+          description: "Comparative analysis for current month"
+        }
+      case "1-year":
+        return {
+          title: "Yearly Revenue Growth",
+          description: "Comparative analysis for current year"
+        }
+      default:
+        return {
+          title: "Weekly Revenue Growth",
+          description: "Comparative analysis for current week"
+        }
+    }
+  }
+
+  const { title, description } = getTitleAndDescription()
+
   const chartData = useMemo<ChartData<"line">>(() => {
     const basePointSize = isMobile ? 2.2 : 3
     const revenuePointSize = isMobile ? 3.5 : 5
@@ -263,10 +291,10 @@ export default function EarningsGrowthChart() {
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:gap-4">
         <div className="min-w-0">
           <h3 className="text-xl leading-[125%] font-medium text-white sm:text-[24px]">
-            Monthly Revenue Growth
+            {title}
           </h3>
           <p className="mt-1 text-sm leading-[133%] text-white/70 sm:text-base">
-            Comparative analysis for the current year
+            {description}
           </p>
         </div>
 

@@ -19,7 +19,7 @@ const stats = [
   { icon: <NetEarningsIcon />, title: "Net Earnings (Month)", text: "$360.00" },
   {
     icon: <PlatformFeeIcon />,
-    title: "100% Platform Fee (Month)",
+    title: "10% Platform Fee (Month)",
     text: "$60.00",
   },
 ]

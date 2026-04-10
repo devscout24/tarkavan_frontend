@@ -66,9 +66,9 @@ export default function ProgramCoachCard({
         )}
 
         <div className="absolute inset-x-0 bottom-0 p-4">
-          <h3 className="text-[32px] leading-[0.95] font-extrabold text-white">
+          <h3 className="text-[32px]! leading-[0.95] font-extrabold text-white">
             {name}
-            <span className="block text-[#B6EE6B]">{highlightedName}</span>
+            <span className="block text-[32px]! leading-[0.95] font-extrabold text-[#B6EE6B]">{highlightedName}</span>
           </h3>
 
           <p className="mt-1 text-base font-medium text-white">{role}</p>

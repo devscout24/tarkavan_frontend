@@ -85,7 +85,7 @@ export default function ProgramReminder({
           size="default"
           text="View Location"
           onClick={onClick}
-          className="w-full rounded-[12px] border border-primary bg-white px-4 py-2.5 text-base font-medium text-white transition-colors duration-200 hover:bg-primary hover:text-brand"
+          className="w-full rounded-[12px] border border-primary bg-white px-4 py-2.5 text-base font-semibold text-primary transition-colors duration-200 hover:bg-primary hover:text-brand"
         />
       </div>
 

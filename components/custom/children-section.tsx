@@ -61,7 +61,7 @@ export default function ChildrenSection({
           size="default"
           icon={<AddChildIcon />}
           text="Add Child"
-          className="w-fit cursor-pointer bg-brand px-2 py-1.5 text-sm font-medium text-brand hover:border-brand hover:bg-transparent hover:text-[#ffffff] lg:py-1 lg:text-xs xl:py-1.5 xl:text-sm"
+          className="w-fit cursor-pointer bg-brand px-2 py-1.5 text-sm font-medium text-primary hover:border-brand hover:bg-transparent hover:text-[#ffffff] lg:py-1 lg:text-xs xl:py-1.5 xl:text-sm"
           onClick={() => router.push("?add-new=player")}
         />
       </div>

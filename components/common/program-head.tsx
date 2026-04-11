@@ -26,7 +26,7 @@ export default function ProgramHead({
         <SelectTrigger className="w-fit text-white">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
-        <SelectContent position="popper">
+        <SelectContent position="popper" className="bg-secondary">
           <SelectGroup>
             {options.map((option) => (
               <SelectItem

@@ -1,7 +1,7 @@
 "use client"
 
-import ProgramCard from "@/components/common/program-card"
-import ProgramHead from "../../../../components/common/program-head"
+import ProgramCard from "@/components/common/program-card" 
+import ProgramHead from "@/components/common/program-head"
 import { useRouter } from "next/navigation"
 
 export default function ProgramPage() {

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { CalendarDays, GraduationCap, Users, UsersRound } from "lucide-react"
+import { CalendarDays, GraduationCap, Search, Users, UsersRound } from "lucide-react"
 
 import {
   Select,
@@ -7,9 +7,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select" 
+} from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import CommonBtn from "@/components/common/common-btn"
+import UiInput from "./ui-input"
 
 type ExploreFilterState = {
   category: string
@@ -74,10 +75,11 @@ export default function ExploreFilter() {
     }))
   }
 
-  const selectItemClassName: string = "text-white data-[highlighted]:bg-brand data-[highlighted]:text-primary focus:bg-brand focus:text-primary text-white py-2! px-4! rounded-0! "
+  const selectItemClassName: string =
+    "text-white data-[highlighted]:bg-brand data-[highlighted]:text-primary focus:bg-brand focus:text-primary text-white py-2! px-4! rounded-0! "
 
   return (
-    <section className="w-full   text-white  ">
+    <section className="w-full text-white">
       <div className="grid gap-4 md:grid-cols-4">
         {categories.map((category) => {
           const Icon = category.icon
@@ -108,53 +110,71 @@ export default function ExploreFilter() {
         })}
       </div>
 
-      <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="inline-flex w-fit rounded-full bg-[#C9F96A] px-4 py-2 text-sm font-semibold tracking-wide text-[#0B0B12] uppercase">
-          Quick Filters
+      <div className="bg-[#2B2E36]/80 p-5 rounded-xl mt-5">
+        <div className="flex">
+          <UiInput
+            placeholder="Search players , coaches, teams, programs..."
+            value={filters.category}
+            onChange={(e) => updateFilter("category", e.target.value)}
+          />
+          <CommonBtn
+            variant="default"
+            size="sm"
+            className="ml-2 h-12  bg-brand hover:bg-brand/90 text-primary hover:text-primary w-fit rounded-lg border border-white/10 px-3 "
+            text="Search"
+            icon={<Search />}
+            
+          />
         </div>
 
-        <div className="grid flex-1 gap-3 sm:grid-cols-2 xl:grid-cols-5 max-w-6/10  ">
-          {(
-            [
-              ["location", selectOptions.location],
-              ["sports", selectOptions.sports],
-              ["trainingArea", selectOptions.trainingArea],
-              ["ageGroup", selectOptions.ageGroup],
-              ["priceRange", selectOptions.priceRange],
-            ] as const
-          ).map(([key, options]) => (
-            <Select
-              key={key}
-              value={filters[key]}
-              onValueChange={(value) => updateFilter(key, value)}
-            >
-              <SelectTrigger className="h-11 w-full rounded-xl border-white/15 bg-transparent text-white">
-                <SelectValue placeholder={options[0]} />
-              </SelectTrigger>
-              <SelectContent
-                position="popper"
-                className="border-white/10 bg-secondary text-white!"
+        <div className="mt-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="inline-flex w-fit rounded-full bg-[#C9F96A] px-4 py-2 text-sm font-semibold tracking-wide text-[#0B0B12] uppercase">
+            Quick Filters
+          </div>
+
+          <div className="grid max-w-6/10 flex-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            {(
+              [
+                ["location", selectOptions.location],
+                ["sports", selectOptions.sports],
+                ["trainingArea", selectOptions.trainingArea],
+                ["ageGroup", selectOptions.ageGroup],
+                ["priceRange", selectOptions.priceRange],
+              ] as const
+            ).map(([key, options]) => (
+              <Select
+                key={key}
+                value={filters[key]}
+                onValueChange={(value) => updateFilter(key, value)}
               >
-                {options.map((option) => (
-                  <SelectItem
-                    key={option}
-                    value={option}
-                    className={selectItemClassName}
-                  >
-                    {option}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          ))}
+                <SelectTrigger className="h-11 w-full rounded-xl border-white/15 bg-transparent text-white">
+                  <SelectValue placeholder={options[0]} />
+                </SelectTrigger>
+                <SelectContent
+                  position="popper"
+                  className="border-white/10 bg-secondary text-white!"
+                >
+                  {options.map((option) => (
+                    <SelectItem
+                      key={option}
+                      value={option}
+                      className={selectItemClassName}
+                    >
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="mt-4 flex justify-end"> 
+      <div className="mt-4 flex justify-end">
         <CommonBtn
           variant="default"
           size="sm"
-          className="h-8 rounded-lg border border-white/10 px-3 text-white hover:bg-white/5 hover:text-white w-fit "
+          className="h-8 w-fit rounded-lg border border-white/10 px-3 text-white hover:bg-white/5 hover:text-white"
           onClick={() => setFilters(initialState)}
           text="Reset Filters"
         />

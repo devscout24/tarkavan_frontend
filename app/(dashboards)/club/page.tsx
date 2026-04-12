@@ -113,20 +113,9 @@ export default function ClubDashboardPage() {
               icon={<Plus />}
               className="mt-4 w-full cursor-pointer bg-secondary py-6 text-white hover:bg-brand hover:text-primary"
               text={"Add Match"}
-            />
-
-            {/* divider */}
-            <div className="my-4 border-t border-secondary/30" />
+            /> 
           </div>
-
-          <PlayerRecruitmentCard
-            position="U16 Elite Academy"
-            tryoutDates="Saturday, Oct 14th"
-            location="Central Park Complex"
-            features={["We have a field"]}
-            buttonText="Request Match"
-            btnSecond
-          />
+ 
         </div>
       </div>
     </section>

@@ -99,17 +99,8 @@ export function ProgramCalendar({
             { before: normalizedRange.from },
             { after: normalizedRange.to },
           ]}
-          onSelect={(day) => {
-            if (!day) return
-
-            if (
-              isWithinInterval(day, {
-                start: normalizedRange.from,
-                end: normalizedRange.to,
-              })
-            ) {
-              setActiveDateKey(getDateKey(day))
-            }
+          onSelect={() => {
+            // Dates are not selectable - only time slots can be selected
           }}
           modifiers={{
             highlightedRange: (day) =>
@@ -167,10 +158,7 @@ export function ProgramCalendar({
                       : "border-white/20 bg-[#2A2D38] text-white"
                   }
                   onClick={() => {
-                    setSelectedSlots((prev) => [
-                      ...prev.filter((item) => item.date !== activeDateKey),
-                      { date: activeDateKey, time: slot },
-                    ])
+                    setSelectedSlots([{ date: activeDateKey, time: slot }])
                   }}
                 >
                   {slot}
@@ -186,12 +174,12 @@ export function ProgramCalendar({
         </div>
       </CardContent>
 
-      <div className="px-5 pb-5 "> 
-        <CommonBtn  
-          text="Continue to Payment" 
-          size={"lg"} 
-          variant={"default"} 
-          className="w-full bg-brand text-primary text-[14px] font-semibold hover:bg-brand/90 cursor-pointer"  
+      <div className="px-5 pb-5">
+        <CommonBtn
+          text="Continue to Payment"
+          size={"lg"}
+          variant={"default"}
+          className="w-full cursor-pointer bg-brand text-[14px] font-semibold text-primary hover:bg-brand/90"
           onClick={() => {
             const nextParams = new URLSearchParams(searchParams.toString())
             nextParams.set("confirm-pay", "program")

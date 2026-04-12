@@ -1,7 +1,12 @@
 import CommonBtn from "@/components/common/common-btn"
 import ProgramCoachCard from "@/components/common/program-coach-card"
+import QRCode from "@/components/common/qr-code"
 import VisibilityEdit from "@/components/common/visibility-edit"
 import { Card } from "@/components/ui/card"
+import { Share, Share2 } from "lucide-react"
+import { FaFacebookF, FaTiktok } from "react-icons/fa"
+import { FaXTwitter } from "react-icons/fa6"
+import { IoLogoInstagram, IoLogoWhatsapp } from "react-icons/io"
 
 export default function page() {
   return (
@@ -18,9 +23,56 @@ export default function page() {
       </Card>
 
       {/* profile details */}
-      <div className="flex mt-6 gap-6  ">
+      <div className="mt-6 flex gap-6">
         <div className="flex-1">
-          <ProgramCoachCard />
+          <ProgramCoachCard
+            showMessageButton={false}
+            location="Chicago,Illinois,USA "
+            tags={["ACADEMY", "HIGH PERFORMANCE PROGRAM"]}
+          />
+
+          <div className="mt-6 flex items-center justify-between rounded-2xl border border-secondary p-7">
+            <div className=""> 
+              <ul className="  flex gap-7.5 rounded-lg  p-4 text-2xl text-white">
+                <a
+                  href="http://example.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaFacebookF />
+                </a>
+                <a
+                  href="http://example.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <IoLogoInstagram />
+                </a>
+                <a
+                  href="http://example.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaTiktok />
+                </a>
+                <a
+                  href="http://example.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaXTwitter />
+                </a>
+                <a
+                  href="http://example.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <IoLogoWhatsapp />
+                </a>
+              </ul>
+            </div> 
+            <CommonBtn size={"lg"} variant={"default"} text="Profile Share" icon={<Share2/>} className=" w-fit bg-brand hover:bg-brand text-primary hover:text-primary px-5   " />
+          </div>
         </div>
         <div className="flex-2">
           {/* bio */}

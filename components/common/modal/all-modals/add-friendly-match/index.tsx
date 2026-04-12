@@ -153,11 +153,11 @@ export default function AddFriendlyMatch({
               <SelectValue placeholder={teamPlaceholder} />
             </SelectTrigger>
             <SelectContent
-              className="border-white/10 bg-[#1b1d22] text-white"
+              className="border-white/10 bg-secondary text-white"
               position="popper"
             >
               {teams.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
+                <SelectItem key={option.value} value={option.value} className="hover:bg-brand!  "  >
                   {option.label}
                 </SelectItem>
               ))}
@@ -217,7 +217,7 @@ export default function AddFriendlyMatch({
           <Input
             value={location}
             onChange={(event) => setLocation(event.target.value)}
-            placeholder={locationPlaceholder}
+            placeholder={locationPlaceholder || "Enter location..."}
             className="h-12 rounded-lg border-white/10 bg-transparent px-3 text-[15px] text-white placeholder:text-white/35 focus-visible:border-brand/50 focus-visible:ring-brand/20"
           />
         </div>

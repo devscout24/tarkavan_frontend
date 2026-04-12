@@ -1,16 +1,16 @@
 "use client"
 
+import AboutProgram from "@/components/common/about-program"
+import { ProgramCalendar } from "@/components/common/program-calendar"
+import ProgramCoachCard from "@/components/common/program-coach-card"
+import ProgramDetailsBanner from "@/components/common/program-details-banner"
+import ProgramFeedbackCard from "@/components/common/program-feedback-card"
+import ProgramHead from "@/components/common/program-head"
+import ProgramReview from "@/components/common/program-review"
 import { Button } from "@/components/ui/button"
 import { eachDayOfInterval, format } from "date-fns"
 import { ArrowLeftIcon } from "lucide-react"
-import { useRouter } from "next/navigation"
-import ProgramDetailsBanner from "../../../../../components/common/program-details-banner"
-import AboutProgram from "../../../../../components/common/about-program"
-import ProgramReview from "../../../../../components/common/program-review"
-import ProgramHead from "../../../../../components/common/program-head"
-import ProgramFeedbackCard from "../../../../../components/common/program-feedback-card"
-import ProgramCoachCard from "../../../../../components/common/program-coach-card"
-import { ProgramCalendar } from "../../../../../components/common/program-calendar"
+import { useRouter } from "next/navigation" 
 
 export default function ProgramDetails() {
   const router = useRouter()

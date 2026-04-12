@@ -65,7 +65,7 @@ function EcosystemCard({
         <Button
           asChild
           size="lg"
-          className="h-12 rounded-full bg-brand px-7 text-lg font-medium text-black hover:bg-brand/90"
+          className="h-12 rounded-full bg-brand px-7 text-lg font-medium text-black hover:bg-brand/90!"
         >
           <Link href={href} aria-label={`${ctaLabel} for ${title}`}>
             {ctaLabel}

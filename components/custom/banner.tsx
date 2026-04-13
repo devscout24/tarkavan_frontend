@@ -1,7 +1,13 @@
+"use client"
 import { ChevronRight } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Banner() {
+
+  const router = useRouter();
+
   return (
     <section
       //   style={{
@@ -20,7 +26,10 @@ export default function Banner() {
       />
 
       {/* Pill button */}
-      <button className="relative z-2 mb-6 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-medium tracking-wide text-nowrap text-blue-100 transition-colors hover:bg-white/20">
+      <button 
+        className="relative z-2 mb-6 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-medium tracking-wide text-nowrap text-blue-100 transition-colors hover:bg-white/20"
+        
+      >
         Grow on Your Own Terms
       </button>
 
@@ -41,29 +50,32 @@ export default function Banner() {
       {/* CTA buttons */}
       <div className="relative z-2 mx-auto mt-10 w-full max-w-3xl">
         <div className="flex flex-col items-center gap-4 sm:hidden">
-          <button
-            type="button"
+          <Link
+            href="/auth?auth-tab=register&user-type=player"
             className="inline-flex min-h-14 w-full max-w-70 items-center justify-center gap-2 rounded-full border border-[#D8FFB1]/60 bg-[linear-gradient(135deg,#09302D_0%,#065A4A_45%,#1DAE75_100%)] px-8 text-base font-medium text-white shadow-[0_0_30px_rgba(23,180,109,0.35)] transition-transform duration-300 hover:scale-[1.02]"
+            // onClick={() => router.push("/auth?auth-tab=register&user-type=player")}
           >
             Join as Player
             <ChevronRight className="size-4" />
-          </button>
+          </Link>
 
-          <button
-            type="button"
+          <Link
+            href="/auth?auth-tab=register&user-type=coach" 
             className="inline-flex min-h-14 w-full max-w-70 items-center justify-center gap-2 rounded-full border border-[#A5CEE3]/45 bg-[linear-gradient(135deg,#00101A_0%,#012739_55%,#016465_100%)] px-8 text-base font-medium text-white shadow-[0_0_28px_rgba(1,85,90,0.28)] transition-transform duration-300 hover:scale-[1.02]"
+            // onClick={() => router.push("/auth?auth-tab=register&user-type=coach")}
           >
             Join as Coach
             <ChevronRight className="size-4" />
-          </button>
+          </Link>
 
-          <button
-            type="button"
+          <Link
+            href="/auth?auth-tab=register&user-type=club"
             className="inline-flex min-h-14 w-full max-w-70 items-center justify-center gap-2 rounded-full border border-[#D8FFB1]/60 bg-[linear-gradient(135deg,#09302D_0%,#086547_45%,#20B46B_100%)] px-8 text-base font-medium text-white shadow-[0_0_30px_rgba(23,180,109,0.35)] transition-transform duration-300 hover:scale-[1.02]"
+            // onClick={() => router.push("/auth?auth-tab=register&user-type=club")}
           >
             Join as Club
             <ChevronRight className="size-4" />
-          </button>
+          </Link>
         </div>
 
         <div className="relative hidden h-52 sm:block">
@@ -93,33 +105,33 @@ export default function Banner() {
           </svg>
 
           <div className="absolute top-0 left-1/2 -translate-x-1/2">
-            <button
-              type="button"
+            <Link
+              href="/auth?auth-tab=register&user-type=player"
               className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full border border-[#D8FFB1]/60 bg-[linear-gradient(135deg,#09302D_0%,#065A4A_45%,#1DAE75_100%)] px-8 text-base font-medium text-white shadow-[0_0_30px_rgba(23,180,109,0.35)] transition-transform duration-300 hover:scale-[1.02] sm:px-10 sm:text-lg"
             >
               Join as Player
               <ChevronRight className="size-4 sm:size-5" />
-            </button>
+            </Link>
           </div>
 
           <div className="absolute bottom-15 left-14 sm:left-25">
-            <button
-              type="button"
+            <Link
+              href="/auth?auth-tab=register&user-type=coach"
               className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full border border-[#A5CEE3]/45 bg-[linear-gradient(135deg,#00101A_0%,#012739_55%,#016465_100%)] px-8 text-base font-medium text-white shadow-[0_0_28px_rgba(1,85,90,0.28)] transition-transform duration-300 hover:scale-[1.02] sm:px-10 sm:text-lg"
             >
               Join as Coach
               <ChevronRight className="size-4 sm:size-5" />
-            </button>
+            </Link>
           </div>
 
           <div className="absolute right-25 bottom-15 sm:right-25">
-            <button
-              type="button"
+            <Link
+              href="/auth?auth-tab=register&user-type=club"
               className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full border border-[#D8FFB1]/60 bg-[linear-gradient(135deg,#09302D_0%,#086547_45%,#20B46B_100%)] px-8 text-base font-medium text-white shadow-[0_0_30px_rgba(23,180,109,0.35)] transition-transform duration-300 hover:scale-[1.02] sm:px-10 sm:text-lg"
             >
               Join as Club
               <ChevronRight className="size-4 sm:size-5" />
-            </button>
+            </Link>
           </div>
         </div>
       </div>

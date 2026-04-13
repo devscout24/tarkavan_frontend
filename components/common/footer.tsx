@@ -56,10 +56,10 @@ export default function Footer() {
       </div>
 
       {/* Glow Effect */}
-      <div className="pointer-events-none absolute top-0 right-0 left-0 h-[150px] bg-[url('/images/footerGlow.svg')] bg-[length:720px_150px] bg-top bg-no-repeat opacity-100" />
+      <div className="pointer-events-none absolute top-0 right-0 left-0 h-37.5 bg-[url('/images/footerGlow.svg')] bg-size-[720px_150px] bg-top bg-no-repeat opacity-100" />
 
-      <div className="relative z-10 mx-auto max-w-[1440px] pt-16">
-        <div className="mx-auto max-w-[1280px]">
+      <div className="relative z-10 mx-auto max-w-340  lg:pt-16">
+        <div className="mx-auto max-w-7xl ">
           {/* Top Section */}
           <div className="grid grid-cols-1 gap-10 border-b border-white/10 pb-16 md:grid-cols-2">
             {/* Brand */}
@@ -74,7 +74,7 @@ export default function Footer() {
                   <h3 className="mb-6 text-base font-medium tracking-wide text-[#f3f3f3]">
                     {section.title}
                   </h3>
-                  <div className="flex flex-col gap-[18px]">
+                  <div className="flex flex-col gap-4.5">
                     {section.links.map((link) => (
                       <Link
                         key={link.label}

@@ -33,10 +33,10 @@ const steps = [
 
 export default function HowGoEliteWorks() {
   return (
-    <section className="w-full bg-[#060807] px-6 py-20 text-white">
+    <section className="w-full bg-[#060807] px-6 py-10 md:py-20 text-white">
       {/* Header */}
-      <div className="mb-20 text-center">
-        <h2 className="text-[64px] font-light tracking-tight text-white">
+      <div className=" mb-10 md:mb-20 text-center">
+        <h2 className=" text-xl md:text-2xl lg:text-4xl xl:text-[64px]  font-light tracking-tight text-white">
           How GoElite Works
         </h2>
         <p className="mt-5 text-xl text-secondary">
@@ -47,29 +47,29 @@ export default function HowGoEliteWorks() {
       {/* Steps + SVG container */}
       <Container>
         <div className="relative mx-auto">
-          <GoEliteShap className=" mt-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-1 " />
+          <GoEliteShap className=" hidden md:block mt-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-1 " />
 
           {/* Steps */}
-          <div className="flex flex-col gap-14">
+          <div className="flex flex-col gap-4 md:gap-10 lg:gap-14">
             {steps.map((step) => (
               <div
                 key={step.number}
-                className={`flex w-full mt-12 relative z-2  ${
+                className={`flex w-full mt-2 md:mt-6 lg:mt-12 relative z-2  ${
                   step.side === "right" ? "justify-end" : "justify-start"
                 }`}
               >
                 <div className="relative flex gap-6  ">
                   {/* Large ghost number */}
-                  <span className="  text-[128px] leading-none font-bold text-secondary select-none">
+                  <span className=" text-2xl md:text-5xl lg:text-[128px] leading-none font-bold text-secondary select-none">
                     {step.number}
                   </span>
 
                   {/* Content */}
                   <div className=" max-w-97  ">
-                    <h3 className="text-[36px] font-bold text-white">
+                    <h3 className=" text-xl md:text-[36px] font-bold text-white">
                       {step.title}
                     </h3>
-                    <p className="mt-2 text-xl leading-relaxed text-white/80">
+                    <p className="mt-2 text-base md:text-xl leading-relaxed text-white/80">
                       {step.desc}
                     </p>
                   </div>

@@ -174,7 +174,7 @@ export default function BrowseCoaches() {
   }, [])
 
   return (
-    <div className="bg-[#060807]">
+    <div className="bg-[#060807]   ">
       <Container>
         <div
           className=""
@@ -186,7 +186,7 @@ export default function BrowseCoaches() {
           }}
         >
           {/* Top content */}
-          <div className="flex  flex-col pt-5 ">
+          <div className="flex px-2 flex-col pt-5 ">
             <p
               className="m-0 text-lg leading-tight font-medium pb-10 "
               style={{
@@ -200,11 +200,11 @@ export default function BrowseCoaches() {
               Built For Everyone
             </p>
 
-            <h2 className="m-0 text-[36px] leading-[1.08] font-normal tracking-[-0.03em] text-[#f3f3f3] md:text-[44px] lg:text-[64px]">
+            <h2 className="m-0 text-2xl md:text-4xl lg:text-[36px] leading-[1.08] font-normal tracking-[-0.03em] text-[#f3f3f3] md:text-[44px] lg:text-[64px]">
               One Platform, Three Ecosystems
             </h2>
 
-            <p className="m-0 max-w-[530px] text-lg leading-[1.55] font-normal text-[#b7bcc6] lg:text-xl">
+            <p className="m-0 mt-5 md:mt-0 max-w-132.5 text-base md:text-lg leading-[1.55] font-normal text-[#b7bcc6] lg:text-xl">
               Whether you&apos;re an athlete looking to level up, a coach
               growing your business, or a team scouting talent — GoElite has
               everything you need.
@@ -220,14 +220,14 @@ export default function BrowseCoaches() {
               {COACHES.map((coach, index) => (
                 <article
                   key={index}
-                  className="w-[min(324px,calc(100vw-64px))] flex-shrink-0 [scroll-snap-align:start] overflow-hidden rounded-[18px] border border-white/[0.08] shadow-[0_18px_50px_rgba(0,0,0,0.28)] transition-all duration-[280ms] ease-in-out hover:border-[rgba(198,245,122,0.2)] hover:shadow-[0_22px_56px_rgba(0,0,0,0.34)]"
+                  className="w-[min(324px,calc(100vw-64px))]  shrink-0 snap-start overflow-hidden rounded-[18px] border border-white/[0.08] shadow-[0_18px_50px_rgba(0,0,0,0.28)] transition-all duration-[280ms] ease-in-out hover:border-[rgba(198,245,122,0.2)] hover:shadow-[0_22px_56px_rgba(0,0,0,0.34)]"
                   style={{
                     background:
                       "linear-gradient(180deg, rgba(17,34,27,0.88) 0%, rgba(13,22,18,0.95) 100%)",
                   }}
                 >
                   {/* Coach image */}
-                  <div className="relative h-[250px] w-[min(324px,calc(100vw-64px))]">
+                  <div className="relative h-62.5 w-[min(324px,calc(100vw-64px))]">
                     <Image
                       src={coach.image}
                       alt={coach.name}
@@ -239,21 +239,21 @@ export default function BrowseCoaches() {
 
                   {/* Coach body */}
                   <div
-                    className="px-[18px] pt-5 pb-[18px]"
+                    className="px-4.5 pt-5  "
                     style={{
                       background:
                         "linear-gradient(180deg, rgba(16,24,20,0.58) 0%, rgba(13,18,16,0.96) 100%)",
                     }}
                   >
-                    <h3 className="m-0 text-[28px] leading-[1.15] font-bold text-[#f0f2f5]">
+                    <h3 className="m-0 text-lg md:text-xl lg:text-[28px] leading-[1.15] font-bold text-[#f0f2f5]">
                       {coach.name}
                     </h3>
 
-                    <p className="mt-2 mb-[18px] text-sm leading-[1.3] font-normal text-[#7b899d]">
+                    <p className="mt-2 mb-4.5 text-sm leading-[1.3] font-normal text-[#7b899d]">
                       {coach.role}
                     </p>
 
-                    <div className="mb-[18px] flex items-center gap-2 text-[13px] text-[#dfe6ee]">
+                    <div className="mb-4.5 flex items-center gap-2 text-[13px] text-[#dfe6ee]">
                       <Image
                         src="/images/starIcon.svg"
                         alt=""
@@ -265,7 +265,7 @@ export default function BrowseCoaches() {
                       <span className="text-[#91a0b4]">({coach.reviews})</span>
                     </div>
 
-                    <div className="flex items-end justify-between gap-4">
+                    <div className="flex items-end justify-between gap-4 pb-2 ">
                       <div className="text-xs leading-none font-normal text-[#f3f3f3]">
                         <strong className="text-[28px] font-bold">
                           {coach.price}

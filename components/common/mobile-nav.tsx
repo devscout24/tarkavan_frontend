@@ -8,8 +8,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { FiMenu } from "react-icons/fi"
-import Logo from "./logo"
-import LoginGetStart from "./login-getstart"
+import Logo from "./logo" 
 import Link from "next/link"
 import { ChevronRight } from "lucide-react"
 
@@ -68,7 +67,7 @@ export function DrawerWithSides() {
               <div className="relative mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
                 <Link
                   href="/auth?auth-tab=login"
-                  className="w-full  flex items-center rounded-full border border-brand bg-[blur(10px)] px-5 py-2.5 text-nowrap text-white transition-colors duration-200 hover:bg-brand/10"
+                  className="w-full  flex items-center justify-center rounded-full border border-brand bg-[blur(10px)] px-5 py-2.5 text-nowrap text-white transition-colors duration-200 hover:bg-brand/10"
                 >
                   Log In
                   <ChevronRight className="size-4" />

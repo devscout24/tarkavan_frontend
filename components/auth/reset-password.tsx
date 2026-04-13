@@ -21,7 +21,7 @@ export default function ResetPassForm() {
         onClick={() => router.back()}
       />
       <div className="mb-7 space-y-2">
-        <h2 className="text-[42px] leading-[1.05] font-semibold tracking-tight">
+        <h2 className="text-lg md:text-2xl xl:text-[42px] leading-[1.05] font-semibold tracking-tight">
           Reset password
         </h2>
         <p className="">
@@ -42,7 +42,7 @@ export default function ResetPassForm() {
           text={"Send code"}
           variant={"default"}
           onClick={handleResetPass}
-          className="mt-1 h-12 w-full rounded-lg bg-brand text-lg font-semibold text-primary transition hover:bg-brand/90"
+          className="mt-1 h-12 w-full rounded-lg bg-brand text-base md:text-lg font-semibold text-primary transition hover:bg-brand/90"
         />
 
         <p className="text-center text-sm font-medium text-[#8D93A1]">

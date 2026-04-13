@@ -40,7 +40,7 @@ export default function RegisterForm() {
           className="cursor-pointer py-2"
           onClick={() => router.back()}
         />
-        <h2 className="text-[42px] leading-[1.05] font-semibold tracking-tight">
+        <h2 className="text-lg md:text-2xl lg:text-[42px] leading-[1.05] font-semibold tracking-tight">
           Register
         </h2>
         <p className="">Let’s login into your account first</p>

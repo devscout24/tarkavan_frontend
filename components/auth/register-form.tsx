@@ -22,8 +22,7 @@ type UserRole = "parent" | "player" | "coach" | "team" | "club"
 const roles: Array<{ label: string; value: UserRole }> = [
   { label: "Register as Parent", value: "parent" },
   { label: "Register as Player", value: "player" },
-  { label: "Register as Coach", value: "coach" },
-  { label: "Register as Team", value: "team" },
+  { label: "Register as Coach", value: "coach" }, 
   { label: "Register as Club", value: "club" },
 ]
 
@@ -63,7 +62,7 @@ export default function RegisterForm() {
             <SelectTrigger className="h-12 w-full rounded-lg border-white/20 bg-transparent px-3 py-6 text-[#F5F6F8]">
               <SelectValue placeholder="Choose a role" />
             </SelectTrigger>
-            <SelectContent className="border-white/20 bg-secondary text-[#F5F6F8]">
+            <SelectContent className="border-white/20 bg-secondary text-[#F5F6F8]" position="popper" >
               {roles.map((r) => (
                 <SelectItem
                   key={r.value}

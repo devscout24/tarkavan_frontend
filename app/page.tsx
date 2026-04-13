@@ -25,12 +25,12 @@ export default function Page() {
      <Nav/>
      
      <Banner/>
-
+     
      <Counter/>
      
      <Ecosystem/>
 
-     <HowGoEliteWorks/>
+     {/* <HowGoEliteWorks/> */}
 
      <ToComplite/>
 

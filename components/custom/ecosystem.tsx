@@ -89,7 +89,7 @@ export default function Ecosystem() {
     >
       <Container>
         <div className="sm:p-12 lg:p-16">
-          <div className="flex items-center justify-between">
+          <div className="md:flex items-center justify-between">
             <div className="space-y-6">
               <p className="text-lg font-medium text-[#3EE4C2]">
                 Built For Everyone

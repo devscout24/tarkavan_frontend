@@ -175,7 +175,7 @@ function TestimonialCard({
 }: (typeof TESTIMONIALS)[number]) {
   return (
     <article
-      className="scroll-snap-align-start box-border flex w-[min(430px,calc(100vw-72px))] flex-shrink-0 cursor-grab [scroll-snap-align:start] flex-col gap-4 rounded-3xl border border-white/5 p-[47px_24px] transition-all duration-[280ms] ease-in-out hover:border-[rgba(198,245,122,0.2)] hover:shadow-[0_18px_42px_rgba(0,0,0,0.22)] lg:w-[430px]"
+      className="scroll-snap-align-start box-border flex w-[min(430px,calc(100vw-72px))] shrink-0 cursor-grab snap-start flex-col gap-4 rounded-3xl border border-white/5 p-[47px_24px] transition-all duration-280 ease-in-out hover:border-[rgba(198,245,122,0.2)] hover:shadow-[0_18px_42px_rgba(0,0,0,0.22)] lg:w-107.5"
       style={{ background: "rgba(32, 197, 101, 0.15)" }}
     >
       {/* Rating */}
@@ -200,7 +200,7 @@ function TestimonialCard({
       {/* Footer */}
       <div className="flex items-center gap-3.5">
         <div
-          className="flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-full border border-[rgba(32,197,101,0.32)] text-sm font-bold text-[#20c565]"
+          className="flex h-10.5 w-10.5  shrink-0 items-center justify-center rounded-full border border-[rgba(32,197,101,0.32)] text-sm font-bold text-[#20c565]"
           style={{ background: "rgba(0,0,0,0.12)" }}
         >
           {initials}
@@ -209,7 +209,7 @@ function TestimonialCard({
           <span className="text-sm leading-[1.2] font-bold text-[#f3f3f3]">
             {name}
           </span>
-          <span className="text-xs leading-[1.3] font-normal text-[#f3f3f3]/[0.72]">
+          <span className="text-xs leading-[1.3] font-normal text-[#f3f3f3]/72">
             {role}
           </span>
         </div>
@@ -254,12 +254,12 @@ export default function AthletesAndCoaches() {
       <Container>
         <div className="overflow-hidden px-5 py-14 md:rounded-[32px] md:px-12 md:py-24  lg:py-40">
           {/* Title */}
-          <h2 className="m-0 mb-12 text-center text-[38px] leading-[1.08] font-normal text-[#f3f3f3] md:mb-20 md:text-[52px] lg:text-[64px]">
+          <h2 className="m-0 mb-6 md:mb-12 text-center text-2xl leading-[1.08] font-normal text-[#f3f3f3] lg:mb-20 md:text-[52px] lg:text-[64px]">
             Trusted by Athletes &amp; Coaches
           </h2>
 
           {/* Two carousel rows */}
-          <div className="flex flex-col gap-[30px]">
+          <div className="flex flex-col gap-7.5 ">
             <CarouselRow direction="backward" rowRef={topRowRef} />
             <CarouselRow direction="forward" rowRef={bottomRowRef} />
           </div>

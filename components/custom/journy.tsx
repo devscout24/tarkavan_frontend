@@ -8,11 +8,11 @@ export default function StartJourney() {
           style={{
             background: "url('/images/journybg.png') center/cover no-repeat",
           }}
-          className="box-border px-5 py-16 md:px-8 md:py-20 lg:rounded-[32px] lg:px-[364px] lg:pt-40 lg:pb-40"
+          className="box-border px-5 py-16 md:px-8 md:py-20 lg:rounded-[32px] lg:px-91 lg:pt-40 lg:pb-40"
         >
           <div className="mx-auto max-w-138 text-center">
             {/* Title */}
-            <h2 className="m-0 text-[36px] leading-[1.08] font-normal tracking-[-0.03em] text-[#f3f3f3] md:text-[44px] lg:text-[64px]">
+            <h2 className="m-0 text-2xl leading-[1.08] font-normal tracking-[-0.03em] text-[#f3f3f3] md:text-[44px] lg:text-[64px]">
               Start Your Sports Journey Today
             </h2>
 

@@ -26,7 +26,7 @@ function Page() {
         >
           <Logo className="absolute top-5 left-1/2 w-45 -translate-x-1/2" />
 
-          <div className="md:hidden">
+          <div className="md:hidden mt-auto max-h-[85vh] overflow-y-scroll  ">
             {tab === "login" ? (
               <LoginForm />
             ) : tab === "register" ? (

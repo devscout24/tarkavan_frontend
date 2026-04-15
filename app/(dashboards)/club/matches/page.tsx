@@ -7,6 +7,7 @@ import {
   MatchPlaceholderCard,
 } from "@/components/common/friendly-match-card"
 import { useRouter } from "next/navigation"
+import MatchTable from "./components/match-table"
 
 const matches = [
   {
@@ -46,6 +47,12 @@ export default function Page() {
 
         <MatchPlaceholderCard />
       </div>
+
+
+       {/* table */}
+       <MatchTable/>
+
+
     </section>
   )
 }

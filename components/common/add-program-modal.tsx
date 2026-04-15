@@ -10,9 +10,10 @@ import {
 import { Textarea } from "../ui/textarea"
 import CommonBtn from "@/components/common/common-btn"
 import UploadPhoto from "@/components/common/upload-photo"
+import Image from "next/image"
 
 interface AddProgramPageProps {
-  onSave?: (data: any) => void
+  onSave?: (data: unknown) => void
 }
 
 const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
@@ -106,7 +107,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
           />
           {form.photo && (
             <div className="mt-2 flex items-center gap-2">
-              <img
+              <Image
                 src={form.photo}
                 alt="Uploaded Preview"
                 className="h-20 w-20 rounded border border-neutral-700 object-cover"
@@ -133,7 +134,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
               value={form.sport}
               onValueChange={(v) => handleSelect("sport", v)}
             >
-              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800">
+              <SelectTrigger className="mt-1 p w-full border-neutral-700 bg-neutral-800    ">
                 <SelectValue placeholder="Select Sport" />
               </SelectTrigger>
               <SelectContent>

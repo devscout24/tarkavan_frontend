@@ -29,7 +29,7 @@ export default function LoginForm() {
   return (
     <div className="w-full max-w-105 rounded-2xl bg-primary p-7 text-[#F5F6F8] shadow-[0_22px_60px_rgba(0,0,0,0.45)] md:p-8">
       <div className="mb-7 space-y-2">
-        <h2 className="text-[42px] leading-[1.05] font-semibold tracking-tight">
+        <h2 className="text-lg md:text-2xl xl:text-[42px] leading-[1.05] font-semibold tracking-tight">
           Login
         </h2>
       </div>
@@ -73,7 +73,7 @@ export default function LoginForm() {
           text={"Login with Google"}
           variant={"default"}
           icon={<FcGoogle />}
-          className="w-full bg-secondary/40 text-lg font-semibold text-white transition hover:bg-secondary/38"
+          className="w-full bg-secondary/40 text-base md:text-lg font-semibold text-white transition hover:bg-secondary/38"
         />
         
         <p className="text-center text-sm font-medium text-[#8D93A1]">

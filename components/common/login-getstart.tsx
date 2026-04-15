@@ -1,9 +1,9 @@
 import Link from "next/link"
 import { ChevronRight } from "lucide-react"
 
-export default function LoginGetStart() {
+export default function LoginGetStart({className}: {className?: string}) {
   return (
-    <div aria-label="Login and get started actions" className="relative">
+    <div  aria-label="Login and get started actions" className={`relative ${className}`}>
       <div className="pointer-events-none absolute inset-0 opacity-20" />
 
       <div className="relative mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">

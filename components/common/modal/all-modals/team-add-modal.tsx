@@ -72,7 +72,7 @@ export default function TeamAddModal() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl p-0">
+    <div className=" ">
       <div className="flex flex-col gap-4 rounded-2xl bg-neutral-900 p-8 text-white">
         <h2 className="mb-2 text-2xl font-semibold">Add Program</h2>
         {/* Photo Upload */}

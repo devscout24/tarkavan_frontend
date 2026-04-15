@@ -42,7 +42,7 @@ export default function PositionDropdowns({
           <SelectTrigger
             className={`mt-2.5 h-12 w-full rounded-xl border border-secondary px-4 text-[14px] leading-[150%] ${
               primaryPosition
-                ? "bg-white text-white"
+                ? "bg-white text-primary"
                 : "bg-secondary text-white"
             }`}
           >
@@ -81,7 +81,7 @@ export default function PositionDropdowns({
           <SelectTrigger
             className={`mt-2.5 h-12 w-full rounded-xl border border-secondary px-4 text-[14px] leading-[150%] ${
               secondaryPosition
-                ? "bg-white text-white"
+                ? "bg-white text-primary"
                 : "bg-secondary text-white"
             }`}
           >

@@ -13,6 +13,7 @@ import { FaTiktok } from "react-icons/fa6"
 import { FaXTwitter } from "react-icons/fa6"
 import { IoLogoWhatsapp } from "react-icons/io5"
 import Nav from "@/components/common/nav"
+import Footer from "@/components/common/footer"
 
 export default function ProfilePage() {
   return (
@@ -126,6 +127,7 @@ export default function ProfilePage() {
           <BIO />
         </div>
       </div>
+      <Footer/>
     </>
   )
 }

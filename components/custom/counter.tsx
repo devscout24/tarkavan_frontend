@@ -88,7 +88,7 @@ export default function Counter() {
       <Container>
         <div
           ref={counterRef}
-          className="mx-15 grid grid-cols-2 gap-6 sm:grid-cols-4"
+          className="mx-15 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4    "
         >
           {counters.map((item) => (
             <CounterItem

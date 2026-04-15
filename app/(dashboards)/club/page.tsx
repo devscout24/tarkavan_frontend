@@ -1,3 +1,4 @@
+"use client"
 import RecentActivityRow from "@/components/custom/recent-activity-row"
 import {
   CalendarCheck,
@@ -5,15 +6,18 @@ import {
   Plus, 
   Wallet,
 } from "lucide-react"
-import CommonBtn from "@/components/common/common-btn" 
-import PlayerRecruitmentCard from "../player/components/player-recruitment-card"
+import CommonBtn from "@/components/common/common-btn"  
 import StatCard from "@/components/common/stat-card"
 import { GrGroup } from "react-icons/gr";
 import { RiUserSearchLine } from "react-icons/ri";
 import EducateIcon from "@/components/icons/EducateIcon"
 import { IoIosFootball } from "react-icons/io";
+import { useRouter } from "next/navigation"
 
 export default function ClubDashboardPage() {
+
+  const router = useRouter()
+
   const activities = [
     {
       icon: <CalendarCheck className="max-h-5 max-w-5" />,
@@ -106,6 +110,7 @@ export default function ClubDashboardPage() {
               icon={<Plus />}
               className="w-full cursor-pointer bg-secondary py-6! text-white hover:bg-brand hover:text-primary"
               text={"Create New Team"}
+              onClick={()=> router.push("?add-new=team") }
             />
             <CommonBtn
               variant={"default"}
@@ -113,20 +118,10 @@ export default function ClubDashboardPage() {
               icon={<Plus />}
               className="mt-4 w-full cursor-pointer bg-secondary py-6 text-white hover:bg-brand hover:text-primary"
               text={"Add Match"}
-            />
-
-            {/* divider */}
-            <div className="my-4 border-t border-secondary/30" />
+              onClick={()=> router.push("?add-new=friendly-match") }
+            /> 
           </div>
-
-          <PlayerRecruitmentCard
-            position="U16 Elite Academy"
-            tryoutDates="Saturday, Oct 14th"
-            location="Central Park Complex"
-            features={["We have a field"]}
-            buttonText="Request Match"
-            btnSecond
-          />
+ 
         </div>
       </div>
     </section>

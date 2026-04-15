@@ -50,9 +50,9 @@ function EcosystemCard({
   ctaLabel,
 }: EcosystemCardProps) {
   return (
-    <Card className="h-full rounded-2xl border border-white/15 bg-white/10 px-6 py-7.5 backdrop-blur-sm">
+    <Card className="h-full rounded-2xl border border-white/15 bg-white/10 px-3 md:px-6 py-3 md:py-7.5 backdrop-blur-sm">
       <CardHeader className="pb-2">
-        <CardTitle className="text-[24px] font-bold text-white">
+        <CardTitle className=" text-lg md:text-[24px] font-medium md:font-bold text-white">
           {title}
         </CardTitle>
       </CardHeader>
@@ -65,7 +65,7 @@ function EcosystemCard({
         <Button
           asChild
           size="lg"
-          className="h-12 rounded-full bg-brand px-7 text-lg font-medium text-black hover:bg-brand/90"
+          className="h-12 rounded-full bg-brand px-7 text-base md:text-lg font-medium text-black hover:bg-brand/90!"
         >
           <Link href={href} aria-label={`${ctaLabel} for ${title}`}>
             {ctaLabel}
@@ -88,8 +88,8 @@ export default function Ecosystem() {
       }}
     >
       <Container>
-        <div className="sm:p-12 lg:p-16">
-          <div className="flex items-center justify-between">
+        <div className="sm:p-12 px-2 py-10 lg:p-16">
+          <div className="md:flex items-center justify-between">
             <div className="space-y-6">
               <p className="text-lg font-medium text-[#3EE4C2]">
                 Built For Everyone
@@ -97,12 +97,12 @@ export default function Ecosystem() {
 
               <h2
                 id="ecosystem-heading"
-                className="text-[64px] leading-tight tracking-tight text-white"
+                className=" text-xl md:text-2xl lg:text-4xl xl:text-[64px] leading-tight tracking-tight text-white"
               >
                 One Platform, Three Ecosystems
               </h2>
 
-              <p className="max-w-2xl text-2xl leading-relaxed text-secondary">
+              <p className="max-w-2xl text-base md:text-2xl leading-relaxed text-secondary">
                 Whether you&apos;re an athlete looking to level up, a coach
                 growing your business, or a team scouting talent - GoElite has
                 everything you need.

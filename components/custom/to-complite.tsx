@@ -74,13 +74,13 @@ function FeatureCard({ item }: { item: FeatureItem }) {
         <div className="mb-3 inline-flex h-7 w-7 items-center justify-center rounded-md border border-brand/35 bg-brand/10 text-brand">
           <Icon className="size-4" />
         </div>
-        <CardTitle className="text-[24px] font-bold text-white">
+        <CardTitle className=" text-base md:text-lg lg:text-[24px] font-bold text-white">
           {item.title}
         </CardTitle>
       </CardHeader>
 
       <CardContent>
-        <CardDescription className="text-lg  leading-relaxed text-secondary">
+        <CardDescription className="text-base md:text-lg leading-relaxed text-secondary">
           {item.description}
         </CardDescription>
       </CardContent>
@@ -91,18 +91,18 @@ function FeatureCard({ item }: { item: FeatureItem }) {
 export default function ToComplite() {
   return (
     <section 
-      className=" py-35  bg-[#060807]!  "
+      className="py-10 md:py-20 lg:py-35  bg-[#060807]!  "
     >
       <Container>
         <div className="mx-auto max-w-330 rounded-2xl  px-5 py-12 sm:px-10 lg:px-12">
           <header className="text-center">
             <h2
               id="compete-heading"
-              className="text-[64px] font-semibold tracking-tight text-white"
+              className=" text-2xl md:text-4xl lg:text-[64px] font-semibold tracking-tight text-white"
             >
               Everything You Need to Compete
             </h2>
-            <p className="mx-auto mt-7.5 max-w-xl text-xl leading-relaxed text-secondary ">
+            <p className="mx-auto mt-7.5 max-w-xl text-base md:text-xl leading-relaxed text-secondary ">
               A complete ecosystem built for the modern athlete, coach, and
               team.
             </p>

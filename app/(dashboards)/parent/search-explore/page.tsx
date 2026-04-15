@@ -54,7 +54,7 @@ export default function SearchExplorePage() {
             key={index}
             {...program}
             onClick={() =>
-              router.push(`/parent/search-explore/${program.id}`)
+              router.push(`/parent/programs/${program.id}`)
             }
           />
         ))}

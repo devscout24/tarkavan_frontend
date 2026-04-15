@@ -20,7 +20,7 @@ export default function EnterCode() {
         onClick={() => router.back()}
       />
       <div className="mb-7 space-y-2">
-        <h2 className="text-[42px] leading-[1.05] font-semibold tracking-tight">
+        <h2 className=" text-lg md:text-2xl xl:text-[42px] leading-[1.05] font-semibold tracking-tight">
           Enter your code
         </h2>
         <p className="">Enter the 4-digit code we sent to your email.</p>

@@ -29,7 +29,7 @@ export default function ProgramCoachCard({
   name = "SHAHIN",
   highlightedName = "TARKAVAN",
   role = "Head Performance Coach",
-  bio = "Former DI Strength & Conditioning Coordinator with 12+ years experience in prep-to-pro transitions.",
+  bio,
   tags = defaultTags,
   imageUrl = "/images/coach.png",
   imageAlt = "Program coach",
@@ -79,7 +79,10 @@ export default function ProgramCoachCard({
               <p>{location}</p>
             </div>
           ) : (
+            bio ?
             <p className="mt-1 text-base leading-7 text-white/40">{bio}</p>
+            :
+            null
           )}
 
           <div className="mt-3 flex flex-wrap gap-2">

@@ -37,7 +37,7 @@ export default function Achievement({
   return (
     <Card
       className={cn(
-        "rounded-[22px] border border-brand/80 bg-[#151515] p-0 shadow-[0_0_0_1px_rgba(178,246,111,0.16)] mt-6  ",
+        "rounded-[22px] border border-brand/80 bg-[#151515]/40 p-0 shadow-[0_0_0_1px_rgba(178,246,111,0.16)] mt-6  ",
         className
       )}
     >

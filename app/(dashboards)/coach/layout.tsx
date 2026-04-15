@@ -13,28 +13,11 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-} from "@/components/animate-ui/components/radix/sidebar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/animate-ui/components/radix/dropdown-menu"
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Settings,
-  Sparkles,
-} from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useIsMobile } from "@/hooks/use-mobile"
-import { RiDashboardFill, RiMenuSearchLine } from "react-icons/ri"
+} from "@/components/animate-ui/components/radix/sidebar" 
+import { 
+  Settings, 
+} from "lucide-react"  
+import { RiDashboardFill, RiLogoutCircleRLine, RiMenuSearchLine } from "react-icons/ri"
 import { FaGraduationCap, FaRegCalendarCheck, FaRegUser } from "react-icons/fa"
 import earningsIcon from "../../../public/images/earningsIcon.svg"
 import messagesIcon from "../../../public/images/messagesIcon.svg"
@@ -125,11 +108,10 @@ export default function ParentDashboardLayout({
     ],
   }
 
-  const pathname = usePathname()
-  const isMobile = useIsMobile()
+  const pathname = usePathname() 
 
   return (
-    <CheckCoachAuth> 
+    <CheckCoachAuth>
       <SidebarProvider className={` `}>
         <Modals />
         <Sidebar collapsible="icon" className="relative border-secondary">
@@ -195,92 +177,10 @@ export default function ParentDashboardLayout({
             </SidebarGroup>
           </SidebarContent>
           <SidebarFooter>
-            {/* Nav User */}
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <SidebarMenuButton
-                      size="lg"
-                      className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                    >
-                      <Avatar className="h-8 w-8 rounded-lg">
-                        <AvatarImage
-                          src={DATA.user.avatar}
-                          alt={DATA.user.name}
-                        />
-                        <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                      </Avatar>
-                      <div className="grid flex-1 text-left text-sm leading-tight">
-                        <span className="truncate font-semibold">
-                          {DATA.user.name}
-                        </span>
-                        <span className="truncate text-xs">
-                          {DATA.user.email}
-                        </span>
-                      </div>
-                      <ChevronsUpDown className="ml-auto size-4" />
-                    </SidebarMenuButton>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                    side={isMobile ? "bottom" : "right"}
-                    align="end"
-                    sideOffset={4}
-                  >
-                    <DropdownMenuLabel className="p-0 font-normal">
-                      <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                        <Avatar className="h-8 w-8 rounded-lg">
-                          <AvatarImage
-                            src={DATA.user.avatar}
-                            alt={DATA.user.name}
-                          />
-                          <AvatarFallback className="rounded-lg">
-                            CN
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="grid flex-1 text-left text-sm leading-tight">
-                          <span className="truncate font-semibold">
-                            {DATA.user.name}
-                          </span>
-                          <span className="truncate text-xs">
-                            {DATA.user.email}
-                          </span>
-                        </div>
-                      </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuGroup>
-                      <DropdownMenuItem>
-                        <Sparkles />
-                        Upgrade to Pro
-                      </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuGroup>
-                      <DropdownMenuItem>
-                        <BadgeCheck />
-                        Account
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <CreditCard />
-                        Billing
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Bell />
-                        Notifications
-                      </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                      <LogOut />
-                      Log out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </SidebarMenuItem>
-            </SidebarMenu>
-            {/* Nav User */}
+            <SidebarMenuButton className={`py-4.5 text-red-500`}>
+              <RiLogoutCircleRLine />
+              <span className={` `}>Log out</span>
+            </SidebarMenuButton>
           </SidebarFooter>
           <SidebarRail />
         </Sidebar>

@@ -74,7 +74,7 @@ export default function TeamAddModal() {
   return (
     <div className=" ">
       <div className="flex flex-col gap-4 rounded-2xl bg-neutral-900 p-8 text-white">
-        <h2 className="mb-2 text-2xl font-semibold">Add Program</h2>
+        <h2 className="mb-2 text-2xl font-semibold">Add New Team</h2>
         {/* Photo Upload */}
         <div className="mb-2">
           <UploadPhoto
@@ -90,149 +90,69 @@ export default function TeamAddModal() {
             </span>
           )}
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div>
-            <span className="text-sm">Sport Selection</span>
-            <Select
-              value={form.sport}
-              onValueChange={(v) => handleSelect("sport", v)}
-            >
-              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800">
-                <SelectValue placeholder="Select Sport" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="football">Football</SelectItem>
-                <SelectItem value="basketball">Basketball</SelectItem>
-                <SelectItem value="tennis">Tennis</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+
+        <div className="border-b border-dashed  ">
+          <h2 className="pb-1 ">Core Identity</h2>
+        </div>
+
+        <div className="">
+          <span>Team Name</span>
           <Input
-            name="name"
-            value={form.name}
+            name="location"
+            value={form.location}
             onChange={handleChange}
-            placeholder="Program Name"
-            className="border-neutral-700 bg-neutral-800"
+            placeholder="e. g. Elite U16"
+            className="border-neutral-700 bg-neutral-800 py-5 "
           />
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
             <span className="text-sm">Age Group</span>
             <Select
               value={form.ageGroup}
               onValueChange={(v) => handleSelect("ageGroup", v)}
             >
-              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800">
+              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5 ">
                 <SelectValue placeholder="Select Age Group" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="u10">U10</SelectItem>
-                <SelectItem value="u12">U12</SelectItem>
-                <SelectItem value="u14">U14</SelectItem>
+              <SelectContent position="popper">
+                <SelectItem value="u10" className="hover:bg-brand!">U10</SelectItem>
+                <SelectItem value="u12" className="hover:bg-brand!">U12</SelectItem>
+                <SelectItem value="u14" className="hover:bg-brand!">U14</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <Input
-            name="price"
-            value={form.price}
-            onChange={handleChange}
-            placeholder="Program Price ($)"
-            className="border-neutral-700 bg-neutral-800"
-            type="number"
-          />
-          <Input
-            name="discountPrice"
-            value={form.discountPrice}
-            onChange={handleChange}
-            placeholder="Program Discount Price ($)"
-            className="border-neutral-700 bg-neutral-800"
-            type="number"
-          />
-          <Input
-            name="location"
-            value={form.location}
-            onChange={handleChange}
-            placeholder="Program Location"
-            className="border-neutral-700 bg-neutral-800"
-          />
-          <div className="flex gap-2">
-            <Input
-              name="start"
-              value={form.start}
-              onChange={handleChange}
-              placeholder="Program Start (mm/dd/yyyy)"
-              className="border-neutral-700 bg-neutral-800"
-              type="date"
-            />
-            <Input
-              name="end"
-              value={form.end}
-              onChange={handleChange}
-              placeholder="Program End (mm/dd/yyyy)"
-              className="border-neutral-700 bg-neutral-800"
-              type="date"
-            />
-          </div>
-          <div className="flex gap-2">
-            {form.times.map((time, idx) => (
-              <Input
-                key={idx}
-                value={time}
-                onChange={(e) => handleTimeChange(idx, e.target.value)}
-                placeholder="HH:MM"
-                className="border-neutral-700 bg-neutral-800"
-                type="time"
-              />
-            ))}
+          <div>
+            <span className="text-sm">Competition Level </span>
+            <Select
+              value={form.sport}
+              onValueChange={(v) => handleSelect("sport", v)}
+            >
+              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5 ">
+                <SelectValue placeholder="Select Competition Level" />
+              </SelectTrigger>
+              <SelectContent position="popper">
+                <SelectItem value="football" className="hover:bg-brand!">Football</SelectItem>
+                <SelectItem value="basketball" className="hover:bg-brand!">Basketball</SelectItem>
+                <SelectItem value="tennis" className="hover:bg-brand!">Tennis</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
-        <Textarea
-          name="about"
-          value={form.about}
-          onChange={handleChange}
-          placeholder="About This Program"
-          className="mt-2 border-neutral-700 bg-neutral-800"
-        />
-        <div className="mt-2 rounded-lg border border-dashed border-neutral-700 p-3">
-          <div className="flex flex-col gap-2">
-            {form.goals.map((goal, idx) => (
-              <div key={idx} className="flex items-center gap-2">
-                <Input
-                  value={goal}
-                  onChange={(e) => handleGoalChange(idx, e.target.value)}
-                  placeholder={`Goal ${idx + 1}`}
-                  className="border-neutral-700 bg-neutral-800"
-                />
-                {form.goals.length > 1 && (
-                  <CommonBtn
-                    text="✕"
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => removeGoal(idx)}
-                  />
-                )}
-              </div>
-            ))}
-            <CommonBtn
-              text="+ Add Goals"
-              size="sm"
-              variant="outline"
-              className="mt-2 w-full"
-              onClick={addGoal}
-            />
-          </div>
-        </div>
-        <div className="mt-6 flex justify-between gap-4">
+ 
+        <div className="mt-6 flex justify-end mr-2  gap-4">
           <CommonBtn
             text="Cancel"
             size="lg"
             variant="outline"
-            className="w-1/2"
+            className="w-fit px-10 hover:border-brand hover:text-white "
             onClick={() => {}}
           />
           <CommonBtn
             text="Save Program"
             size="lg"
             variant="default"
-            className="w-1/2 bg-lime-400 text-black hover:bg-lime-500"
+            className="w-fit px-10 bg-brand text-black hover:bg-brand"
             onClick={() => {}}
           />
         </div>

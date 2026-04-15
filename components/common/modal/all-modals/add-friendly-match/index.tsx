@@ -259,7 +259,7 @@ export default function AddFriendlyMatch({
           </RadioGroup>
         </div>
 
-        <div className="flex items-center gap-4 pt-4">
+        <div className="flex items-center justify-end  gap-4 pt-4">
           <Button
             type="button"
             variant="outline"
@@ -273,7 +273,7 @@ export default function AddFriendlyMatch({
           <Button
             type="button"
             onClick={handleSubmit}
-            className="h-11 flex-1 rounded-xl bg-brand px-6 text-[15px] font-semibold text-primary hover:bg-brand/95"
+            className="h-11  rounded-xl bg-brand px-6 text-[15px] font-semibold text-primary hover:bg-brand/95"
           >
             {submitLabel}
           </Button>

@@ -88,7 +88,7 @@ export default function Notification() {
                 }}
               >
                 <div className="flex items-center justify-between">
-                  <h1 className="text-sm font-medium">{notification.title}</h1>
+                  <h1 className="text-sm font-medium text-white ">{notification.title}</h1>
                   {notification.count && (
                     <div className="flex items-center gap-0.5 text-xs font-medium text-neutral-500 dark:text-neutral-300">
                       <RotateCcw className="size-3" />
@@ -111,14 +111,14 @@ export default function Notification() {
             </div>
             <span className="grid">
               <motion.span
-                className="col-start-1 row-start-1 text-sm font-medium text-neutral-600 dark:text-neutral-300"
+                className="col-start-1 row-start-1 text-sm font-medium text-white dark:text-neutral-300"
                 variants={notificationTextVariants}
                 transition={textSwitchTransition}
               >
                 Notifications
               </motion.span>
               <motion.span
-                className="col-start-1 row-start-1 flex cursor-pointer items-center gap-1 text-sm font-medium text-neutral-600 select-none dark:text-neutral-300"
+                className="text-white col-start-1 row-start-1 flex cursor-pointer items-center gap-1 text-sm font-medium   select-none dark:text-neutral-300"
                 variants={viewAllTextVariants}
                 transition={textSwitchTransition}
               >

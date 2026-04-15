@@ -100,7 +100,7 @@ export default function ClubDashboardPage() {
 
         {/* quick actions */}
         <div className="md:flex-2 xl:flex-3">
-          <h3 className="mb-2 text-base font-semibold">Quick Actions</h3>
+          <h3 className="mb-2 text-base font-semibold ml-6 ">Quick Actions</h3>
 
           {/* actions */}
           <div className="rounded-[16px]">
@@ -108,7 +108,15 @@ export default function ClubDashboardPage() {
               variant={"default"}
               size={"sm"}
               icon={<Plus />}
-              className="w-full cursor-pointer bg-secondary py-6! text-white hover:bg-brand hover:text-primary"
+              className="w-full cursor-pointer bg-secondary py-6! text-white hover:bg-brand hover:text-primary scale-90 "
+              text={"Add Program"}
+              onClick={()=> router.push("?add-new=program") }
+            />
+            <CommonBtn
+              variant={"default"}
+              size={"sm"}
+              icon={<Plus />}
+              className="w-full cursor-pointer bg-secondary py-6! text-white hover:bg-brand hover:text-primary mt-4 scale-90 "
               text={"Create New Team"}
               onClick={()=> router.push("?add-new=team") }
             />
@@ -116,7 +124,7 @@ export default function ClubDashboardPage() {
               variant={"default"}
               size={"sm"}
               icon={<Plus />}
-              className="mt-4 w-full cursor-pointer bg-secondary py-6 text-white hover:bg-brand hover:text-primary"
+              className="mt-4 w-full cursor-pointer bg-secondary py-6 text-white hover:bg-brand hover:text-primary scale-90 "
               text={"Add Match"}
               onClick={()=> router.push("?add-new=friendly-match") }
             /> 

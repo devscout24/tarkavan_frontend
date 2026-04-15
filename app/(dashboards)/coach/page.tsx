@@ -10,8 +10,7 @@ import {
   RecentRegisterIcon,
   RecentUpcomingIcon,
   UpcomingProgramsIcon,
-} from "@/components/custom/coach-dashboard-icons"
-import advertisementImage from "../../../public/images/advertisementImage.png"
+} from "@/components/custom/coach-dashboard-icons" 
 
 const stats = [
   { icon: <ActiveProgramsIcon />, title: "Active Programs", text: "05" },
@@ -60,8 +59,9 @@ const quickActions = [
         />
       </svg>
     ),
-    label: "Add EAM Programs",
+    label: "Add Programs",
     active: true,
+    link: "?add-new=program"
   },
   {
     icon: (
@@ -95,7 +95,7 @@ export default function CoachDashboardPage() {
           Welcome, Daniel
         </h4>
         <p className="leading-[150%] font-normal text-white">
-          Here's what's happening with your coaching business today.
+          {`Here's what's happening with your coaching business today.`}
         </p>
       </div>
 
@@ -139,7 +139,7 @@ export default function CoachDashboardPage() {
 
             <div className="mt-4">
               <Advertisement
-                imageUrl={advertisementImage}
+                imageUrl={"/images/advertisementImage.png"}
                 positions="Assistant Coach"
                 teamName="Elite U16"
                 ageGroup="3+ years"

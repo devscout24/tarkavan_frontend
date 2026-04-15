@@ -53,13 +53,7 @@ export default function ProfileDropdown() {
               </div>
             </div>
           </DropdownMenuItem>
-          <DropdownMenuSeparator /> 
-          <DropdownMenuItem>
-            <span className="text-white">Upgrade role</span>
-            <DropdownMenuShortcut>
-              <Sparkles className="text-white" /> 
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
+          <DropdownMenuSeparator />  
           <DropdownMenuItem>
             <span className="text-white">role</span>
             <DropdownMenuShortcut>

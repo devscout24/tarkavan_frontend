@@ -15,14 +15,16 @@ import {
 } from "@/components/ui/select"
 import { FieldLabel } from "../ui/field"
 import { BsArrowLeft } from "react-icons/bs"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation" 
+import { toast } from "sonner"
+import { registerUser } from "./action"
 
 type UserRole = "parent" | "player" | "coach" | "team" | "club"
 
 const roles: Array<{ label: string; value: UserRole }> = [
   { label: "Register as Parent", value: "parent" },
   { label: "Register as Player", value: "player" },
-  { label: "Register as Coach", value: "coach" }, 
+  { label: "Register as Coach", value: "coach" },
   { label: "Register as Club", value: "club" },
 ]
 
@@ -30,11 +32,50 @@ export default function RegisterForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const initialRole = searchParams.get("user-type")
+  const [fullName, setFullName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [role, setRole] = useState<UserRole>(
     roles.some((item) => item.value === initialRole)
       ? (initialRole as UserRole)
       : "parent"
   )
+  const [loading, setLoading] = useState(false)
+
+  const handleRegister = async () => {
+    setLoading(true)
+    const data = {
+      name: fullName,
+      email,
+      password,
+      password_confirmation: password,
+      role,
+    } 
+
+    try {
+      const formData = new FormData()
+
+      Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, value)
+      })
+
+      const res = await registerUser(formData)
+
+      console.log(res)
+      if(res.success){
+        toast.success("Registration successful! Please login to continue.")
+      }
+      else{
+        setLoading(false)
+        toast.error(``)
+      }
+ 
+    } catch (error) {
+      setLoading(false) 
+      toast.error("Registration failed. Please try again.")
+      console.error("Registration error:", error)
+    } 
+  }
 
   return (
     <div className="w-full max-w-105 rounded-2xl bg-primary p-7 text-[#F5F6F8] shadow-[0_22px_60px_rgba(0,0,0,0.45)] md:p-8">
@@ -62,7 +103,10 @@ export default function RegisterForm() {
             <SelectTrigger className="h-12 w-full rounded-lg border-white/20 bg-transparent px-3 py-6 text-[#F5F6F8]">
               <SelectValue placeholder="Choose a role" />
             </SelectTrigger>
-            <SelectContent className="border-white/20 bg-secondary text-[#F5F6F8]" position="popper" >
+            <SelectContent
+              className="border-white/20 bg-secondary text-[#F5F6F8]"
+              position="popper"
+            >
               {roles.map((r) => (
                 <SelectItem
                   key={r.value}
@@ -80,20 +124,31 @@ export default function RegisterForm() {
           label="Full name"
           placeholder="Your full name"
           icon={<UserRound />}
+          value={fullName}
+          onChange={(event) => setFullName(event.target.value)}
         />
 
         <UiInput
           label="Email"
           placeholder="example@exmple.com"
           icon={<UserRound />}
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
         />
 
-        <PwdInput label="Password" placeholder="••••••••" />
+        <PwdInput
+          label="Password"
+          placeholder="••••••••"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+        />
 
         <CommonBtn
           size={"lg"}
           text={"Register"}
           variant={"default"}
+          onClick={handleRegister}
+          isLoading={loading}
           className="mt-1 h-12 w-full rounded-lg bg-brand text-lg font-semibold text-primary transition hover:bg-brand/90"
         />
 

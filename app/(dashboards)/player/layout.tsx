@@ -95,7 +95,7 @@ export default function PlayerDashboardLayout({
   return (
     <TooltipProvider>
       <CheckPlayerAuth>
-        <SidebarProvider className="h-screen overflow-hidden">
+        <SidebarProvider className="h-screen overflow-hidden" >
           <Sidebar collapsible="icon" className="relative border-secondary">
             <Image
               src={"/images/sidebarbg.png"}
@@ -137,6 +137,7 @@ export default function PlayerDashboardLayout({
                               className={`border-2 py-4.5 ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
                             >
                               {item.icon && <item.icon />}
+                              
                               <span
                                 className={`${pathname == item.url ? "text-bold text-white" : ""}`}
                               >

@@ -17,8 +17,7 @@ import {
 import { 
   Calendars, 
   Settings, 
-} from "lucide-react" 
-import { useIsMobile } from "@/hooks/use-mobile"
+} from "lucide-react"  
 import { RiDashboardFill, RiLogoutCircleRLine, RiMenuSearchLine } from "react-icons/ri"
 import { FaGraduationCap, FaRegUser } from "react-icons/fa"
 import paymentsIcon from "../../../public/images/paymentIcon.svg"
@@ -28,7 +27,7 @@ import Notification from "@/components/custom/notifications"
 import BreadcrumbCustom from "@/components/custom/breadcrumb"
 import ProfileDropdown from "@/components/custom/profile-dropdown"
 import Modals from "@/components/common/modal"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import Image from "next/image"
 import Logo from "@/components/common/logo"
 import MenuBtn from "@/components/custom/menu-btn" 
@@ -109,8 +108,8 @@ export default function ParentDashboardLayout({
     ],
   }
 
-  const pathname = usePathname()
-  const isMobile = useIsMobile()
+  const pathname = usePathname() 
+  const router = useRouter()
 
   return (
     <CheckParentAuth>

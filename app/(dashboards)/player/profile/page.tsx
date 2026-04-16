@@ -1,3 +1,4 @@
+ 
 import { Card } from "@/components/ui/card"
 import CommonBtn from "@/components/common/common-btn"
 import ProspectCard from "../components/prospect-card"
@@ -9,11 +10,11 @@ import PlayerMedia from "../components/player-media"
 import VisibilityEdit from "@/components/common/visibility-edit"
 import RadarChart from "@/components/common/radar"
 import RadarStrength from "@/components/common/radar-strength"
-import PositionMap from "@/components/common/position-map" 
+import PositionMap from "@/components/common/position-map"
 
 export default function PlayerProfile() {
   return (
-    <> 
+    <>
       <section className="text-white">
         {/* visibility and customization options */}
         <Card className="flex-row items-center bg-secondary/40 px-5">
@@ -29,7 +30,7 @@ export default function PlayerProfile() {
         {/* profile info */}
         <div className="mt-6 gap-6 lg:flex">
           <div className="flex-3">
-            <ProspectCard />
+            <ProspectCard academyVotes={20} provincialVotes={30} />
             <Bio />
             <Achievements />
             <SocialLinks />
@@ -58,10 +59,9 @@ export default function PlayerProfile() {
               </h2>
 
               <div className="grid grid-cols-1 items-center gap-4 rounded-xl bg-secondary/30 py-1 xl:grid-cols-2">
-                <RadarChart />
-
+                <RadarChart /> 
                 <div className="px-6">
-                  <RadarStrength />
+                  <RadarStrength /> 
                 </div>
               </div>
             </div>

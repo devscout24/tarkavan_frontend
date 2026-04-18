@@ -10,6 +10,7 @@ import EducateIcon from "@/components/icons/EducateIcon"
 import { IoIosFootball } from "react-icons/io";
 import { useRouter } from "next/navigation"
 import Advertisement from "@/components/custom/advertisement"
+import PlusIcon from "@/components/icons/plus-icon";
 
 export default function ClubDashboardPage() {
 
@@ -120,7 +121,7 @@ export default function ClubDashboardPage() {
             <CommonBtn
               variant={"default"}
               size={"sm"}
-              icon={<Plus />}
+              icon={<PlusIcon />}
               className="w-full cursor-pointer bg-secondary py-6! text-white hover:bg-brand hover:text-primary scale-90 "
               text={"Add Program"}
               onClick={()=> router.push("?add-new=program") }
@@ -128,7 +129,7 @@ export default function ClubDashboardPage() {
             <CommonBtn
               variant={"default"}
               size={"sm"}
-              icon={<Plus />}
+              icon={<PlusIcon />}
               className="w-full cursor-pointer bg-secondary py-6! text-white hover:bg-brand hover:text-primary mt-4 scale-90 "
               text={"Create New Team"}
               onClick={()=> router.push("?add-new=team") }
@@ -136,7 +137,7 @@ export default function ClubDashboardPage() {
             <CommonBtn
               variant={"default"}
               size={"sm"}
-              icon={<Plus />}
+              icon={<PlusIcon />}
               className="mt-4 w-full cursor-pointer bg-secondary py-6 text-white hover:bg-brand hover:text-primary scale-90 "
               text={"Add Match"}
               onClick={()=> router.push("?add-new=friendly-match") }

@@ -1,20 +1,17 @@
 "use client"
 
 import StatCard from "@/components/common/stat-card"
-import Advertisement from "@/components/custom/advertisement"
-import RecentActivityRow from "@/components/custom/recent-activity-row"
+import Advertisement from "@/components/custom/advertisement" 
 import CoachQuickActions from "@/components/custom/coach-quick-actions"
 import {
   ActiveProgramsIcon,
   NetEarningsIcon,
-  PlatformFeeIcon,
-  RecentPaymentIcon,
-  RecentRegisterIcon,
-  RecentUpcomingIcon,
+  PlatformFeeIcon, 
   UpcomingProgramsIcon,
 } from "@/components/custom/coach-dashboard-icons" 
 import { useState } from "react"
 import { toast } from "sonner"
+import PlusIcon from "@/components/icons/plus-icon"
 
 const stats = [
   { icon: <ActiveProgramsIcon />, title: "Active Programs", text: "05" },
@@ -27,42 +24,11 @@ const stats = [
   },
 ]
 
-const activityItems = [
-  {
-    icon: <RecentRegisterIcon />,
-    title: "Shaun Booking for Elite Soccer Training",
-    time: "2 hours ago",
-  },
-  {
-    icon: <RecentPaymentIcon />,
-    title: "Payment of $299.00 completed",
-    time: "Yesterday",
-  },
-  {
-    icon: <RecentUpcomingIcon />,
-    title: "Upcoming session: Basketball Skills on Saturday",
-    time: "3 days ago",
-  },
-]
+ 
 
 const quickActions = [
   {
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        fill="none"
-      >
-        <path
-          d="M7.99806 13.3392C8.55 13.3392 8.9974 12.8918 8.9974 12.3399V9.00454H12.3321C12.8837 9.00454 13.331 8.55754 13.3314 8.00587C13.3317 7.45367 12.8842 7.00587 12.3321 7.00587H8.9974V3.67123C8.9974 3.11956 8.5504 2.67224 7.99873 2.67188C7.44653 2.67152 6.99873 3.11905 6.99873 3.67123V7.00587H3.66341C3.11149 7.00587 2.66406 7.45327 2.66406 8.0052C2.66406 8.55714 3.11149 9.00454 3.66341 9.00454H6.99873V12.3399C6.99873 12.8918 7.44613 13.3392 7.99806 13.3392Z"
-          stroke="#060807"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    ),
+    icon:  <PlusIcon/>,
     label: "Add Programs",
     active: true,
     link: "?add-new=program"
@@ -143,7 +109,7 @@ export default function CoachDashboardPage() {
 
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-4 pb-2">
-              <div className="min-w-[320px] max-w-[320px] flex-shrink-0">
+              <div className="min-w-[320px] max-w-[320px]  shrink-0">
                 <Advertisement
                   imageUrl={"/images/advertisementImage.png"}
                   positions="Assistant Coach"

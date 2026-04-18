@@ -69,7 +69,7 @@ export default function ClubDashboardPage() {
           </h5>
 
           <div className="scrollbar-hide overflow-x-auto">
-            <div className="flex flex-wrap gap-4 pb-2">
+            <div className="flex flex-wrap justify-center gap-4 pb-2">
               <div className="max-w-[320px] min-w-[320px] shrink-0">
                 <Advertisement
                   imageUrl={"/images/advertisementImage.png"}

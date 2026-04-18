@@ -46,12 +46,14 @@ export default function Modal({
       <Drawer open={modal === openId} onOpenChange={handleOpenChange}>
         <DrawerContent
           className={cn(
-            "max-h-[90vh] w-full overflow-x-scroll px-2 py-4 sm:px-6",
+            "max-h-[90vh] w-full overflow-x-scroll px-2 py-4 sm:px-6    ",
             className
           )}
         >
-          <DialogTitle className="scale-0 opacity-0 absolute top-0 left-0 h-0! bg-transparent! -z-5 "></DialogTitle>
-          {children}
+          <DialogTitle className="scale-0 opacity-0 absolute top-0 left-0 h-0! bg-transparent! -z-5  "></DialogTitle>
+          <div className="overflow-y-scroll">
+            {children}
+          </div>
         </DrawerContent>
       </Drawer>
     )

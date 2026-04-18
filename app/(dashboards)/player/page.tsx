@@ -1,12 +1,5 @@
 "use client"
-import RecentActivityRow from "@/components/custom/recent-activity-row"
-import {
-  CalendarCheck,
-  Calendars,
-  Share2,
-  SquarePen,
-  Wallet,
-} from "lucide-react"
+import { Share2, SquarePen } from "lucide-react"
 import CommonBtn from "@/components/common/common-btn"
 import TrainingReminderCard from "@/components/custom/remiender"
 import PlayerStats from "./components/player-stats"
@@ -15,31 +8,11 @@ import PlayerRecruitmentCard from "./components/player-recruitment-card"
 import { useRouter } from "next/navigation"
 import ShareModal from "@/components/common/modal/all-modals/share-modal"
 import { useState } from "react"
+import Advertisement from "@/components/custom/advertisement"
 
 export default function PlayerDashboardPage() {
-  const activities = [
-    {
-      icon: <CalendarCheck className="max-h-5 max-w-5" />,
-      time: "2 hours ago",
-      title: "Shaun registered for Elite Soccer Training",
-    },
-    {
-      icon: <Wallet className="max-h-5 max-w-5" />,
-      time: "Yesterday",
-      title: "Payment of $299.00 completed",
-    },
-    {
-      icon: <Calendars className="max-h-5 max-w-5" />,
-      time: "3 days ago",
-      title: "Upcoming session: Basketball Skills on Saturday",
-    },
-  ]
-
   const router = useRouter()
-  const copyToClipboard = (url: string) => {
-    navigator.clipboard.writeText(url)
-    alert("Link copied!")
-  }
+
   const [openShareModal, setOpenShareModal] = useState(false)
 
   return (
@@ -56,19 +29,52 @@ export default function PlayerDashboardPage() {
       {/* activity and action  */}
       <div className="mt-6 flex w-full flex-col-reverse gap-6 text-white md:flex-row">
         {/* recent activity */}
-        <div className="md:flex-3 xl:flex-7">
-          <h3 className="mb-2 text-base font-semibold">Recent Activity</h3>
+        <div className="rounded-[24px]">
+          <h5 className="mb-4 text-[18px] leading-[150%] font-semibold text-white">
+            Recent Opportunities
+          </h5>
 
-          <div className="rounded-[16px] border border-secondary">
-            {activities.map((activity, index) => (
-              <RecentActivityRow
-                key={index}
-                icon={activity.icon}
-                time={activity.time}
-                title={activity.title}
-                showDivider={index !== activities.length - 1}
-              />
-            ))}
+          <div className="scrollbar-hide overflow-x-auto">
+            <div className="flex flex-wrap gap-4 pb-2">
+              <div className="max-w-[320px] min-w-[320px] shrink-0">
+                <Advertisement
+                  imageUrl={"/images/advertisementImage.png"}
+                  positions="Defender, Winger"
+                  teamName="Elite U16"
+                  ageGroup="U16"
+                  tryoutDate="March 15-18, 2026"
+                  description="Looking for skilled defenders for upcoming season."
+                  onApply={() => {}}
+                  isApplied={true}
+                />
+              </div>
+
+              <div className="max-w-[320px] min-w-[320px] shrink-0">
+                <Advertisement
+                  imageUrl={"/images/advertisementImage.png"}
+                  positions="Goalkeeper, Midfielder"
+                  teamName="Academy Select"
+                  ageGroup="U18"
+                  tryoutDate="April 20-23, 2026"
+                  description="Join our elite academy program for professional development."
+                  onApply={() => {}}
+                  isApplied={false}
+                />
+              </div>
+
+              <div className="max-w-[320px] min-w-[320px] shrink-0">
+                <Advertisement
+                  imageUrl={"/images/advertisementImage.png"}
+                  positions="Striker, Attacker"
+                  teamName="Premier FC"
+                  ageGroup="U14"
+                  tryoutDate="May 10-13, 2026"
+                  description="Seeking talented forwards for competitive league play."
+                  onApply={() => {}}
+                  isApplied={true}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -96,7 +102,7 @@ export default function PlayerDashboardPage() {
             />
 
             <ShareModal
-              key={"shareUrl"}  
+              key={"shareUrl"}
               open={openShareModal}
               onOpenChange={setOpenShareModal}
               url={"https://tarkavan.vercel.app/profile/234"}

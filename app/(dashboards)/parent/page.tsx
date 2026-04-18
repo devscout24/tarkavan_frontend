@@ -1,12 +1,9 @@
 "use client"
-
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+ 
 import StatCard from "@/components/common/stat-card"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import ProgramReminder from "@/components/custom/program-reminder"
-import Advertisement from "@/components/custom/advertisement"
-import CommonBtn from "@/components/common/common-btn"
+import Advertisement from "@/components/custom/advertisement" 
 import advertisementImage from "@/public/images/advertisementImage.png"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -82,74 +79,9 @@ const PaymentsIcon = () => (
   </Icon>
 )
 
-const RecentRegisterIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-    <path
-      fillRule="evenodd"
-      clipRule="evenodd"
-      d="M6.075 0.9375C6.47886 0.9375 6.80625 1.26565 6.80625 1.67045V2.40963C7.23968 2.4034 7.7088 2.4034 8.21527 2.4034H9.78473C10.2912 2.4034 10.7603 2.4034 11.1938 2.40963V1.67045C11.1938 1.26565 11.5211 0.9375 11.925 0.9375C12.3289 0.9375 12.6562 1.26565 12.6562 1.67045V2.4746C12.7885 2.48667 12.9158 2.50078 13.0382 2.51728C13.9158 2.63555 14.6548 2.88856 15.2416 3.4768C15.8285 4.06503 16.0809 4.80569 16.1989 5.68534C16.3125 6.53261 16.3125 7.60988 16.3125 8.94637V10.5195C16.3125 11.856 16.3125 12.9333 16.1989 13.7806C16.0809 14.6602 15.8285 15.4009 15.2416 15.9891C14.6548 16.5773 13.9158 16.8304 13.0382 16.9487C12.1929 17.0625 11.1181 17.0625 9.78473 17.0625H8.21527C6.88186 17.0625 5.80709 17.0625 4.9618 16.9487C4.08419 16.8304 3.34526 16.5773 2.7584 15.9891C2.17153 15.4009 1.9191 14.6602 1.80111 13.7806C1.68746 12.9333 1.68749 11.8561 1.6875 10.5196V8.94637C1.68749 7.60988 1.68746 6.53259 1.80111 5.68534C1.9191 4.80569 2.17153 4.06503 2.7584 3.4768C3.34526 2.88856 4.08419 2.63555 4.9618 2.51728C5.08427 2.50078 5.21156 2.48667 5.34375 2.4746V1.67045C5.34375 1.26565 5.67114 0.9375 6.075 0.9375ZM3.1604 7.3125C3.15034 7.79685 3.15001 8.35335 3.15001 9V10.4659C3.15001 11.8687 3.15156 12.8471 3.25058 13.5853C3.34676 14.3024 3.5227 14.6821 3.79255 14.9525C4.06239 15.2231 4.44125 15.3994 5.15668 15.4958C5.89314 15.595 6.86923 15.5966 8.26875 15.5966H9.73125C11.1308 15.5966 12.1069 15.595 12.8434 15.4958C13.5588 15.3994 13.9376 15.2231 14.2075 14.9525C14.4773 14.6821 14.6533 14.3024 14.7494 13.5853C14.8484 12.8471 14.85 11.8687 14.85 10.4659V9C14.85 8.35335 14.8497 7.79685 14.8396 7.3125H3.1604Z"
-    />
-    <path d="M12.3323 9.32992C12.4705 9.72037 12.2661 10.149 11.8757 10.2872C11.0232 10.5892 10.1954 11.3854 9.54256 12.2041C9.22681 12.6001 8.97204 12.9756 8.79646 13.252C8.70894 13.3897 8.57866 13.6124 8.53404 13.6888C8.39131 13.9509 8.10646 14.1037 7.80916 14.0773C7.51164 14.051 7.25818 13.8508 7.16374 13.5674C7.04159 13.201 6.79349 12.9436 6.54871 12.7687C6.42777 12.6823 6.21663 12.5791 6.13702 12.5414C5.74441 12.4102 5.53282 11.9859 5.66374 11.5931C5.79473 11.2001 6.21947 10.9878 6.61243 11.1187C6.65776 11.1367 6.80603 11.1946 6.87796 11.2286C7.02102 11.2964 7.21338 11.4001 7.42057 11.5481C7.56511 11.6513 7.72081 11.7791 7.87291 11.9343C8.01759 11.7277 8.18401 11.5018 8.36971 11.269C9.06249 10.4002 10.1096 9.32144 11.3749 8.87332C11.7653 8.73502 12.194 8.93947 12.3323 9.32992Z" />
-  </svg>
-)
+ 
 
-const RecentPaymentIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-    <path
-      d="M1.5 3.375H6.3594C7.09415 3.375 7.80338 3.64463 8.35253 4.13277L10.875 6.375"
-      stroke="#060807"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M3.75 10.125H1.5"
-      stroke="#060807"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M6.375 5.625L7.875 7.125C8.28922 7.53922 8.28922 8.21078 7.875 8.625C7.46079 9.03922 6.78922 9.03922 6.375 8.625L5.25 7.5C4.60448 8.14553 3.58253 8.21812 2.8522 7.6704L2.625 7.5"
-      stroke="#060807"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M3.75 8.25V13.125C3.75 13.9534 4.42157 14.625 5.25 14.625H15C15.8285 14.625 16.5 13.9534 16.5 13.125V7.875C16.5 7.04657 15.8285 6.375 15 6.375H7.125"
-      stroke="#060807"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M11.4375 10.5C11.4375 11.2249 10.8499 11.8125 10.125 11.8125C9.40013 11.8125 8.8125 11.2249 8.8125 10.5C8.8125 9.77513 9.40013 9.1875 10.125 9.1875C10.8499 9.1875 11.4375 9.77513 11.4375 10.5Z"
-      stroke="#060807"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-)
-
-const RecentUpcomingIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-    <g clipPath="url(#recent-calendar-clip)">
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M13.4297 0.937256C13.831 0.937271 14.1562 1.26365 14.1562 1.66602V2.03004H14.8828C16.0865 2.03004 17.0623 3.00856 17.0625 4.21558V11.5017C17.0624 12.7088 16.0866 13.6872 14.8828 13.6872H7.61721C6.41344 13.6872 5.43759 12.7088 5.4375 11.5017V4.21558C5.43764 3.00856 6.41347 2.03004 7.61721 2.03004H8.34374V1.66602C8.34374 1.26364 8.66901 0.937256 9.07034 0.937256C9.47159 0.937271 9.79686 1.26365 9.79686 1.66602V2.03004H12.7031V1.66602C12.7031 1.26364 13.0284 0.937256 13.4297 0.937256ZM6.89063 5.81226V11.5017C6.89072 11.904 7.21597 12.2305 7.61721 12.2305H14.8828C15.284 12.2305 15.6093 11.904 15.6094 11.5017V5.81226H6.89063Z"
-      />
-      <path d="M4.5 9.18723H2.39063V14.8826C2.39063 15.2838 2.71592 15.6091 3.11719 15.6091H10.3828C10.7841 15.6091 11.1094 15.2838 11.1094 14.8826V14.6247H12.5625V14.8826C12.5625 16.0864 11.5866 17.0622 10.3828 17.0622H3.11719C1.91338 17.0622 0.9375 16.0864 0.9375 14.8826V7.61696C0.9375 6.41314 1.91338 5.43726 3.11719 5.43726H4.5V9.18723Z" />
-    </g>
-    <defs>
-      <clipPath id="recent-calendar-clip">
-        <rect width="18" height="18" fill="white" />
-      </clipPath>
-    </defs>
-  </svg>
-)
+ 
 
 const AddChildIcon = () => (
   <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
@@ -189,23 +121,23 @@ const ArrowIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
-const activityItems = [
-  {
-    icon: <RecentRegisterIcon />,
-    title: "Shaun registered for Elite Soccer Training",
-    time: "2 hours ago",
-  },
-  {
-    icon: <RecentPaymentIcon />,
-    title: "Payment of $299.00 completed",
-    time: "Yesterday",
-  },
-  {
-    icon: <RecentUpcomingIcon />,
-    title: "Upcoming session: Basketball Skills on Saturday",
-    time: "3 days ago",
-  },
-]
+// const activityItems = [
+//   {
+//     icon: <RecentRegisterIcon />,
+//     title: "Shaun registered for Elite Soccer Training",
+//     time: "2 hours ago",
+//   },
+//   {
+//     icon: <RecentPaymentIcon />,
+//     title: "Payment of $299.00 completed",
+//     time: "Yesterday",
+//   },
+//   {
+//     icon: <RecentUpcomingIcon />,
+//     title: "Upcoming session: Basketball Skills on Saturday",
+//     time: "3 days ago",
+//   },
+// ]
 
 const quickActions = [
   { icon: <AddChildIcon />, label: "Add Your Children", active: false },
@@ -224,7 +156,7 @@ const stats = [
   { icon: <PaymentsIcon />, title: "Recent Payments", text: "$360.00" },
 ]
 
-export default function page() {
+export default function Page() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -263,7 +195,7 @@ export default function page() {
   }
 
   return (
-    <section>
+    <section className=" px-2 ">
       <div className="mb-4">
         <h4 className="font-base mb-1 leading-[150%] font-bold text-[#ffffff]">
           Welcome Back, Shahin!
@@ -286,14 +218,14 @@ export default function page() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_540px] xl:items-start">
-        <section className="rounded-[24px]">
+        <div className="rounded-[24px]">
           <h5 className="mb-4 text-[18px] leading-[150%] font-semibold text-white">
             Recent Opportunities
           </h5>
 
           <div className="scrollbar-hide overflow-x-auto">
-            <div className="flex gap-4 pb-2">
-              <div className="max-w-[320px] min-w-[320px] flex-shrink-0">
+            <div className="flex flex-wrap gap-4 pb-2">
+              <div className="max-w-[320px] min-w-[320px]  shrink-0">
                 <Advertisement
                   imageUrl={advertisementImage}
                   positions="Defender, Winger"
@@ -306,7 +238,7 @@ export default function page() {
                 />
               </div>
 
-              <div className="max-w-[320px] min-w-[320px] flex-shrink-0">
+              <div className="max-w-[320px] min-w-[320px]  shrink-0">
                 <Advertisement
                   imageUrl={advertisementImage}
                   positions="Goalkeeper, Midfielder"
@@ -319,7 +251,7 @@ export default function page() {
                 />
               </div>
 
-              <div className="max-w-[320px] min-w-[320px] flex-shrink-0">
+              <div className="max-w-[320px] min-w-[320px]  shrink-0">
                 <Advertisement
                   imageUrl={advertisementImage}
                   positions="Striker, Attacker"
@@ -334,19 +266,8 @@ export default function page() {
             </div>
           </div>
 
-          {/* <div className="overflow-hidden rounded-[18px] border border-secondary/60">
-            {activityItems.map((item, index) => (
-              <RecentActivityRow
-                key={item.title}
-                icon={item.icon}
-                title={item.title}
-                description={item.description}
-                time={item.time}
-                showDivider={index !== activityItems.length - 1}
-              />
-            ))}
-          </div> */}
-        </section>
+ 
+        </div>
 
         <aside className="space-y-6">
           <section>

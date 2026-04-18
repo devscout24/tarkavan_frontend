@@ -1,10 +1,6 @@
-"use client"
-import RecentActivityRow from "@/components/custom/recent-activity-row"
-import {
-  CalendarCheck,
-  Calendars,
-  Plus, 
-  Wallet,
+"use client" 
+import { 
+  Plus,  
 } from "lucide-react"
 import CommonBtn from "@/components/common/common-btn"  
 import StatCard from "@/components/common/stat-card"
@@ -13,29 +9,13 @@ import { RiUserSearchLine } from "react-icons/ri";
 import EducateIcon from "@/components/icons/EducateIcon"
 import { IoIosFootball } from "react-icons/io";
 import { useRouter } from "next/navigation"
+import Advertisement from "@/components/custom/advertisement"
 
 export default function ClubDashboardPage() {
 
   const router = useRouter()
 
-  const activities = [
-    {
-      icon: <CalendarCheck className="max-h-5 max-w-5" />,
-      time: "2 hours ago",
-      title: "U18 Midfielder Liam Thompson  Applied",
-    },
-    {
-      icon: <Wallet className="max-h-5 max-w-5" />,
-      time: "Yesterday",
-      title: "Had Coach Marcus Thorne  Applied",
-    },
-    {
-      icon: <Calendars className="max-h-5 max-w-5" />,
-      time: "3 days ago",
-      title: "U16 Goalkeeper Liam Thompson  Applied",
-    },
-  ]
-
+ 
   const stats = [
   {
     "title": "Active Teams",
@@ -82,25 +62,58 @@ export default function ClubDashboardPage() {
       {/* activity and action  */}
       <div className="mt-6 flex w-full flex-col-reverse gap-6 text-white md:flex-row">
         {/* recent activity */}
-        <div className="md:flex-3 xl:flex-8">
-          <h3 className="mb-2 text-base font-semibold">Recent Activity</h3>
+        <div className="rounded-[24px]">
+          <h5 className="mb-4 text-[18px] leading-[150%] font-semibold text-white">
+            Recent Opportunities
+          </h5>
 
-          <div className="rounded-[16px] border border-secondary">
-            {activities.map((activity, index) => (
-              <RecentActivityRow
-                key={index}
-                icon={activity.icon}
-                time={activity.time}
-                title={activity.title}
-                showDivider={index !== activities.length - 1}
-              />
-            ))}
+          <div className="scrollbar-hide overflow-x-auto">
+            <div className="flex flex-wrap gap-4 pb-2">
+              <div className="max-w-[320px] min-w-[320px] shrink-0">
+                <Advertisement
+                  imageUrl={"/images/advertisementImage.png"}
+                  positions="Defender, Winger"
+                  teamName="Elite U16"
+                  ageGroup="U16"
+                  tryoutDate="March 15-18, 2026"
+                  description="Looking for skilled defenders for upcoming season."
+                  onApply={() => {}}
+                  isApplied={true}
+                />
+              </div>
+
+              <div className="max-w-[320px] min-w-[320px] shrink-0">
+                <Advertisement
+                  imageUrl={"/images/advertisementImage.png"}
+                  positions="Goalkeeper, Midfielder"
+                  teamName="Academy Select"
+                  ageGroup="U18"
+                  tryoutDate="April 20-23, 2026"
+                  description="Join our elite academy program for professional development."
+                  onApply={() => {}}
+                  isApplied={false}
+                />
+              </div>
+
+              <div className="max-w-[320px] min-w-[320px] shrink-0">
+                <Advertisement
+                  imageUrl={"/images/advertisementImage.png"}
+                  positions="Striker, Attacker"
+                  teamName="Premier FC"
+                  ageGroup="U14"
+                  tryoutDate="May 10-13, 2026"
+                  description="Seeking talented forwards for competitive league play."
+                  onApply={() => {}}
+                  isApplied={true}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
         {/* quick actions */}
-        <div className="md:flex-2 xl:flex-3">
-          <h3 className="mb-2 text-base font-semibold ml-6 ">Quick Actions</h3>
+        <div className="md:flex-2 xl:flex-3 border border-white/20 rounded-2xl  ">
+          <h3 className="mb-2 text-base font-semibold ml-6 mt-2  ">Quick Actions</h3>
 
           {/* actions */}
           <div className="rounded-[16px]">

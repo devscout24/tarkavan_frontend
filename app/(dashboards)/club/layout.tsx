@@ -14,17 +14,16 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/animate-ui/components/radix/sidebar"
-import { Calendars, LogOut, Settings } from "lucide-react"
+import { Settings } from "lucide-react"
 import {
   Collapsible,
   CollapsibleTrigger,
 } from "@/components/animate-ui/primitives/radix/collapsible"
 import Logo from "@/components/common/logo"
 import MenuBtn from "@/components/custom/menu-btn"
-import Image from "next/image"
-import SidebarSearch from "@/components/custom/sidebar-search"
+import Image from "next/image" 
 import { BiMessageSquareDetail } from "react-icons/bi"
-import { RiDashboardFill, RiMenuSearchLine } from "react-icons/ri"
+import { RiDashboardFill, RiLogoutCircleRLine, RiMenuSearchLine } from "react-icons/ri"
 import { FaRegUser } from "react-icons/fa6"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -32,10 +31,10 @@ import BreadcrumbCustom from "@/components/custom/breadcrumb"
 import Notification from "@/components/custom/notifications"
 import ProfileDropdown from "@/components/custom/profile-dropdown"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { GrGroup } from "react-icons/gr";
-import { AiOutlineUsergroupAdd } from "react-icons/ai";
-import { IoIosFootball } from "react-icons/io";
-import { CiCreditCard2 } from "react-icons/ci";
+import { GrGroup } from "react-icons/gr"
+import { AiOutlineUsergroupAdd } from "react-icons/ai"
+import { IoIosFootball } from "react-icons/io"
+import { CiCreditCard2 } from "react-icons/ci"
 import Modals from "@/components/common/modal"
 import CheckClubAuth from "@/components/auth/auth-check/check-club-auth"
 
@@ -101,16 +100,16 @@ export default function PlayerDashboardLayout({
   const pathname = usePathname()
 
   return (
-    <CheckClubAuth> 
+    <CheckClubAuth>
       <SidebarProvider className="h-screen overflow-hidden">
-        <Modals/>
+        <Modals />
         <Sidebar collapsible="icon" className="relative border-secondary">
           <Image
             src={"/images/sidebarbg.png"}
             width={1000}
             height={1000}
             alt="side-bar-bg"
-            className="absolute top-100 left-0 w-full "
+            className="absolute top-100 left-0 w-full"
           />
           <SidebarHeader className="border-b border-secondary py-4.5">
             <SidebarMenu>
@@ -144,7 +143,11 @@ export default function PlayerDashboardLayout({
                             tooltip={item.title}
                             className={`border-2 py-4.5 text-[#999999] ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
                           >
-                            {item.icon && <item.icon className={`text-[#999999] ${pathname == item.url ? "text-brand" : ""}`} />}
+                            {item.icon && (
+                              <item.icon
+                                className={`text-[#999999] ${pathname == item.url ? "text-brand" : ""}`}
+                              />
+                            )}
                             <span
                               className={`${pathname == item.url ? "text-bold text-white" : ""}`}
                             >
@@ -160,10 +163,10 @@ export default function PlayerDashboardLayout({
             </SidebarGroup>
           </SidebarContent>
           <SidebarFooter>
-            <SidebarMenu className="cursor-pointer flex-row gap-2 py-2 pl-2 text-base text-red-500">
-              <LogOut />
-              <span>Logout</span>
-            </SidebarMenu>
+            <SidebarMenuButton className={`py-4.5 text-red-500`}>
+              <RiLogoutCircleRLine />
+              <span className={` `}>Log out</span>
+            </SidebarMenuButton>
           </SidebarFooter>
           <SidebarRail />
         </Sidebar>
@@ -171,8 +174,7 @@ export default function PlayerDashboardLayout({
         <SidebarInset className="flex h-screen min-h-0 flex-col">
           <header className="flex shrink-0 items-center gap-2 border-b border-secondary py-2.5 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
             <div className="flex w-full items-center justify-between gap-2 px-4">
-              <BreadcrumbCustom />
-
+              <BreadcrumbCustom /> 
               <div className="flex items-center gap-4">
                 <Notification />
                 <ProfileDropdown />

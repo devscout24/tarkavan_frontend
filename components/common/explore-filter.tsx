@@ -11,6 +11,7 @@ import {
 import { cn } from "@/lib/utils"
 import CommonBtn from "@/components/common/common-btn"
 import UiInput from "./ui-input"
+import { TbPlayFootball } from "react-icons/tb";
 
 type ExploreFilterState = {
   category: string
@@ -22,6 +23,11 @@ type ExploreFilterState = {
 }
 
 const categories = [
+  {
+    value: "Players",
+    label: "Find Players",
+    icon: TbPlayFootball,
+  },
   {
     value: "coaches",
     label: "Find Coaches",
@@ -63,7 +69,7 @@ const initialState: ExploreFilterState = {
 
 export default function ExploreFilter() {
   const [filters, setFilters] = React.useState<ExploreFilterState>(initialState)
-  console.log(filters)
+ 
 
   const updateFilter = <K extends keyof ExploreFilterState>(
     key: K,
@@ -80,7 +86,7 @@ export default function ExploreFilter() {
 
   return (
     <section className="w-full text-white">
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5    ">
         {categories.map((category) => {
           const Icon = category.icon
           const isActive = filters.category === category.value

@@ -32,6 +32,8 @@ export default function CommonBtn({
       size={size}
       className={className}
       onClick={onClick}
+      hoverScale={1}
+      tapScale={1}
       {...props}
     >
       {isLoading ? <LoaderCircle className="animate-spin" /> : icon}

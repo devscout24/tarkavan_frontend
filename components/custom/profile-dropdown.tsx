@@ -8,12 +8,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/animate-ui/components/radix/dropdown-menu" 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ChevronDown, Power, Settings, Sparkles } from "lucide-react"
+import { ChevronDown, Power, Settings } from "lucide-react"
 import { usePathname } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { TbPlayFootball } from "react-icons/tb"
 
 export default function ProfileDropdown() {
   const role = usePathname().split("/")[1]
+  const router = useRouter()
 
   return (
     <DropdownMenu>
@@ -60,7 +62,7 @@ export default function ProfileDropdown() {
               <TbPlayFootball className="text-white" />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => router.push(`/${role}/profile-settings`)}>
             <span className="text-white">Edit Profile</span>
             <DropdownMenuShortcut>
               <Settings className="text-white" />

@@ -1,3 +1,4 @@
+"use client"
 import RecentActivityRow from "@/components/custom/recent-activity-row"
 import {
   CalendarCheck,
@@ -11,6 +12,9 @@ import TrainingReminderCard from "@/components/custom/remiender"
 import PlayerStats from "./components/player-stats"
 import ScoutingStatus from "./components/scouting-status"
 import PlayerRecruitmentCard from "./components/player-recruitment-card"
+import { useRouter } from "next/navigation"
+import ShareModal from "@/components/common/modal/all-modals/share-modal"
+import { useState } from "react"
 
 export default function PlayerDashboardPage() {
   const activities = [
@@ -30,6 +34,13 @@ export default function PlayerDashboardPage() {
       title: "Upcoming session: Basketball Skills on Saturday",
     },
   ]
+
+  const router = useRouter()
+  const copyToClipboard = (url: string) => {
+    navigator.clipboard.writeText(url)
+    alert("Link copied!")
+  }
+  const [openShareModal, setOpenShareModal] = useState(false)
 
   return (
     <section className=" ">
@@ -73,13 +84,23 @@ export default function PlayerDashboardPage() {
               icon={<SquarePen />}
               className="w-full cursor-pointer bg-secondary py-6! text-white hover:bg-brand hover:text-primary"
               text={"Edit My Profile"}
+              onClick={() => router.push("/player/profile-settings")}
             />
             <CommonBtn
               variant={"default"}
               size={"sm"}
               icon={<Share2 />}
               className="mt-4 w-full cursor-pointer bg-secondary py-6 text-white hover:bg-brand hover:text-primary"
-              text={"Edit My Profile"}
+              text={"Share Player Card"}
+              onClick={() => setOpenShareModal(true)}
+            />
+
+            <ShareModal
+              key={"shareUrl"}  
+              open={openShareModal}
+              onOpenChange={setOpenShareModal}
+              url={"https://tarkavan.vercel.app/profile/234"}
+              title="Watch my Player Card"
             />
 
             {/* divider */}

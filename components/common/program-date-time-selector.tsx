@@ -60,7 +60,7 @@ export default function ProgramDateTimeSelector() {
           day_button:
             "size-11 rounded-xl text-lg font-normal text-[#232323] hover:bg-[#F5F5F5]",
           selected:
-            "bg-[#101010] text-white hover:bg-[#101010] hover:text-white",
+            "bg-brand! text-white hover:bg-brand/70 hover:text-primary rounded-xl  ",
           today:
             "bg-[#ECECEC] text-[#272727] rounded-xl data-[selected=true]:bg-[#101010] data-[selected=true]:text-white",
           outside:
@@ -101,7 +101,7 @@ export default function ProgramDateTimeSelector() {
             variant="outline"
             className={
               selectedTime === time
-                ? "h-10 rounded-xl border-[#101010] bg-[#101010] text-lg font-medium text-white hover:bg-[#101010] hover:text-white"
+                ? "h-10 rounded-xl border-brand bg-brand text-lg font-medium text-primary hover:bg-brand/70  hover:text-primary"
                 : "h-10 rounded-xl border-[#DEDEDE] bg-white text-lg font-medium text-[#202020] hover:bg-[#F8F8F8]"
             }
             onClick={() => setSelectedTime(time)}

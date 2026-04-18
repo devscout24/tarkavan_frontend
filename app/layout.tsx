@@ -1,4 +1,5 @@
-import { Geist, Geist_Mono, Inter } from "next/font/google"
+import { Geist_Mono, Inter } from "next/font/google"
+import type { Metadata } from "next"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -11,6 +12,26 @@ const fontMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
 })
+
+export const metadata: Metadata = {
+  title: "My App",
+  description: "Best player card app",
+  openGraph: {
+    title: "My App",
+    description: "Best player card app",
+    url: "https://tarkavan.vercel.app/",
+    siteName: "My App",
+    images: [
+      {
+        url: "https://tarkavan.vercel.app/preview.jpg",
+        width: 1200,
+        height: 630,
+      },
+    ],
+    type: "website",
+  },
+}
+
 
 export default function RootLayout({
   children,

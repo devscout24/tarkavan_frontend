@@ -36,7 +36,8 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
       times: ["", "", ""],
       about: "",
       goals: [""],
-      photo, // string (dataURL) or null
+      photo,
+      type: ""
     }
   })
 
@@ -89,6 +90,27 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
     <div className="mx-auto w-full p-0">
       <div className="flex flex-col gap-4 rounded-2xl bg-neutral-900 p-8 text-white">
         <h2 className="mb-2 text-2xl font-semibold">Add Program</h2>
+
+        <div className="flex flex-col">
+          <span className="text-sm">Program Type</span>
+          <Select
+            value={form.type}
+            onValueChange={(v) => handleSelect("type", v)}
+          >
+            <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5">
+              <SelectValue placeholder="Select Program Type" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+              <SelectItem value="group" className="hover:bg-brand!">
+                Group
+              </SelectItem>
+              <SelectItem value="one-on-one" className="hover:bg-brand!">
+                One-on-One
+              </SelectItem> 
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* Photo Upload */}
         <div className="mb-2">
           <UploadPhoto
@@ -126,6 +148,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
             </div>
           )}
         </div>
+
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {/* First row: Sport Selection & Program Name */}
           <div className="flex flex-col">
@@ -134,11 +157,13 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
               value={form.sport}
               onValueChange={(v) => handleSelect("sport", v)}
             >
-              <SelectTrigger className="mt-1 p w-full border-neutral-700 bg-neutral-800  py-5   ">
+              <SelectTrigger className="p mt-1 w-full border-neutral-700 bg-neutral-800 py-5">
                 <SelectValue placeholder="Select Sport" />
               </SelectTrigger>
               <SelectContent position="popper">
-                <SelectItem value="soccer" className="hover:bg-brand ">Soccer</SelectItem> 
+                <SelectItem value="soccer" className="hover:bg-brand">
+                  Soccer
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -149,7 +174,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
               value={form.name}
               onChange={handleChange}
               placeholder="Program Name"
-              className="mt-1 border-neutral-700 bg-neutral-800 py-5  "
+              className="mt-1 border-neutral-700 bg-neutral-800 py-5"
             />
           </div>
           {/* Second row: Age Group & Program Price */}
@@ -159,13 +184,19 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
               value={form.ageGroup}
               onValueChange={(v) => handleSelect("ageGroup", v)}
             >
-              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5  ">
+              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5">
                 <SelectValue placeholder="Select Age Group" />
               </SelectTrigger>
               <SelectContent position="popper">
-                <SelectItem value="u10" className="hover:bg-brand!">U10</SelectItem>
-                <SelectItem value="u12" className="hover:bg-brand!">U12</SelectItem>
-                <SelectItem value="u14" className="hover:bg-brand!">U14</SelectItem>
+                <SelectItem value="u10" className="hover:bg-brand!">
+                  U10
+                </SelectItem>
+                <SelectItem value="u12" className="hover:bg-brand!">
+                  U12
+                </SelectItem>
+                <SelectItem value="u14" className="hover:bg-brand!">
+                  U14
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -176,7 +207,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
               value={form.price}
               onChange={handleChange}
               placeholder="Program Price ($)"
-              className="mt-1 border-neutral-700 bg-neutral-800 py-5  "
+              className="mt-1 border-neutral-700 bg-neutral-800 py-5"
               type="number"
             />
           </div>
@@ -185,7 +216,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
             value={form.discountPrice}
             onChange={handleChange}
             placeholder="Program Discount Price ($)"
-            className="border-neutral-700 bg-neutral-800 py-5  "
+            className="border-neutral-700 bg-neutral-800 py-5"
             type="number"
           />
           <Input
@@ -193,7 +224,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
             value={form.location}
             onChange={handleChange}
             placeholder="Program Location"
-            className="border-neutral-700 bg-neutral-800 py-5  "
+            className="border-neutral-700 bg-neutral-800 py-5"
           />
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col">
@@ -203,7 +234,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
                 value={form.start}
                 onChange={handleChange}
                 placeholder="Program Start (mm/dd/yyyy)"
-                className="mt-1 border-neutral-700 bg-neutral-800 py-5  "
+                className="mt-1 border-neutral-700 bg-neutral-800 py-5"
                 type="date"
               />
             </div>
@@ -214,7 +245,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
                 value={form.end}
                 onChange={handleChange}
                 placeholder="Program End (mm/dd/yyyy)"
-                className="mt-1 border-neutral-700 bg-neutral-800 py-5  "
+                className="mt-1 border-neutral-700 bg-neutral-800 py-5"
                 type="date"
               />
             </div>
@@ -228,13 +259,14 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
                   value={time}
                   onChange={(e) => handleTimeChange(idx, e.target.value)}
                   placeholder="HH:MM"
-                  className="border-neutral-700 bg-neutral-800 py-5  "
+                  className="border-neutral-700 bg-neutral-800 py-5"
                   type="time"
                 />
               ))}
             </div>
           </div>
         </div>
+
         <Textarea
           name="about"
           value={form.about}
@@ -242,6 +274,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
           placeholder="About This Program"
           className="mt-2 border-neutral-700 bg-neutral-800"
         />
+
         <div className="mt-2 rounded-lg border border-dashed border-neutral-700 p-3">
           <div className="flex flex-col gap-2">
             {form.goals.map((goal, idx) => (
@@ -250,7 +283,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
                   value={goal}
                   onChange={(e) => handleGoalChange(idx, e.target.value)}
                   placeholder={`Goal ${idx + 1}`}
-                  className="mx-auto w-97/100 border-neutral-700 bg-neutral-800 py-5  "
+                  className="mx-auto w-97/100 border-neutral-700 bg-neutral-800 py-5"
                 />
                 {form.goals.length > 1 && (
                   <CommonBtn
@@ -258,7 +291,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
                     size="sm"
                     variant="ghost"
                     onClick={() => removeGoal(idx)}
-                    className=" hover:border-brand hover:bg-brand hover:text-primary  "
+                    className="hover:border-brand hover:bg-brand hover:text-primary"
                   />
                 )}
               </div>
@@ -267,24 +300,25 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
               text="+ Add Goals"
               size="sm"
               variant="outline"
-              className="py-5! mx-auto mt-2 w-97/100 hover:border-brand hover:bg-brand hover:text-primary     "
+              className="mx-auto mt-2 w-97/100 py-5! hover:border-brand hover:bg-brand hover:text-primary"
               onClick={addGoal}
             />
           </div>
         </div>
-        <div className="mt-6 flex justify-end mr-4 gap-4">
+
+        <div className="mt-6 mr-4 flex justify-end gap-4">
           <CommonBtn
             text="Cancel"
             size="lg"
             variant="outline"
-            className="w-fit px-10 hover:border-brand hover:bg-brand hover:text-primary "
+            className="w-fit px-10 hover:border-brand hover:bg-brand hover:text-primary"
             onClick={() => {}}
           />
           <CommonBtn
             text="Save Program"
             size="lg"
             variant="default"
-            className="w-fit px-10 bg-brand text-black hover:border hover:bg-transparent hover:text-white"
+            className="w-fit bg-brand px-10 text-black hover:border hover:bg-transparent hover:text-white"
             onClick={handleSave}
           />
         </div>

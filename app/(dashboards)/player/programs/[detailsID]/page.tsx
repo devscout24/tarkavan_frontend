@@ -3,6 +3,7 @@
 import AboutProgram from "@/components/common/about-program"
 import { ProgramCalendar } from "@/components/common/program-calendar"
 import ProgramCoachCard from "@/components/common/program-coach-card"
+import ProgramDateTimeSelector from "@/components/common/program-date-time-selector"
 import ProgramDetailsBanner from "@/components/common/program-details-banner"
 import ProgramFeedbackCard from "@/components/common/program-feedback-card"
 import ProgramHead from "@/components/common/program-head"
@@ -109,11 +110,12 @@ export default function ProgramDetails() {
         {/* right side */}
         <div className="flex-1">
           <ProgramCoachCard />
-          <ProgramCalendar
+          <ProgramDateTimeSelector/>
+          {/* <ProgramCalendar
             startDate={programStartDate}
             endDate={programEndDate}
             timeSlotsByDate={timeSlotsByDate}
-          />
+          /> */}
         </div>
       </div>
     </section>

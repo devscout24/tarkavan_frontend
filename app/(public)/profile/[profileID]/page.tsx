@@ -9,7 +9,7 @@ import RadarStrength from "@/components/common/radar-strength"
 import BIO from "../components/bio"
 import PositionMap from "@/components/common/position-map"
 import QRCode from "@/components/common/qr-code"
-import { FaFacebookF } from "react-icons/fa"
+import { FaFacebookF, FaStar } from "react-icons/fa"
 import { IoLogoInstagram } from "react-icons/io5"
 import { FaTiktok } from "react-icons/fa6"
 import { FaXTwitter } from "react-icons/fa6"
@@ -17,7 +17,8 @@ import { IoLogoWhatsapp } from "react-icons/io5"
 import Nav from "@/components/common/nav"
 import Footer from "@/components/common/footer"
 import CommonBtn from "@/components/common/common-btn"
-import { useState } from "react" 
+import { useState } from "react"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 export default function ProfilePage() {
   const [teamVoted, setTeamVoted] = useState(false)
@@ -26,10 +27,12 @@ export default function ProfilePage() {
     team: false,
     academy: false,
   })
+  const provincialVotes = 7
+  const academyVotes = 12
 
   return (
     <>
-      <Nav /> 
+      <Nav />
       <div
         className="bg-primary px-8 pt-24 pb-16"
         style={{
@@ -48,7 +51,7 @@ export default function ProfilePage() {
               <ProfileCard academyVotes={12} provincialVotes={7} />
               <Achievement />
 
-              <div className="mt-6 flex items-center flex-wrap gap-2 justify-between rounded-2xl border border-brand p-7">
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-brand p-7">
                 <div className="">
                   <h2 className="text-[24px] font-semibold text-white">
                     Watch Highlights
@@ -102,7 +105,7 @@ export default function ProfilePage() {
                 <h2 className="text-[24px] font-semibold text-white">
                   Player Stats
                 </h2>
-                <div className="mt-4 flex justify-between gap-2 flex-wrap   ">
+                <div className="mt-4 flex flex-wrap justify-between gap-2">
                   <StatCard title="Games" text="30" />
                   {/* <StatCard title="Minutes Played" text="35" /> */}
                   <StatCard title="Goals" text="22" />
@@ -126,38 +129,40 @@ export default function ProfilePage() {
                   <div className="px-6">
                     <RadarStrength />
 
-                    {/* player votes */}
-                    <div className="mt-10 space-y-4">
-                      <CommonBtn
-                        size={"lg"}
-                        variant={"default"}
-                        text={teamVoted ? "Voted" : "Provincial Team Vote"}
-                        className="w-full cursor-pointer bg-yellow-500 text-primary hover:bg-yellow-500/90 hover:text-primary"
-                        onClick={() => {
-                          setLoading((prev) => ({ ...prev, team: true }))
-                          setTimeout(() => {
-                            setTeamVoted((prev) => !prev)
-                            setLoading((prev) => ({ ...prev, team: false }))
-                          }, 2000)
-                        }}
-                        isLoading={loading.team}
-                      />
-                      <CommonBtn
-                        size={"lg"}
-                        variant={"default"}
-                        text={
-                          academyVoted ? "Voted" : "Professional Academy Vote"
-                        }
-                        className="w-full cursor-pointer bg-red-500 text-primary hover:bg-red-500/90 hover:text-primary"
-                        onClick={() => {
-                          setLoading((prev) => ({ ...prev, academy: true }))
-                          setTimeout(() => {
-                            setAcademyVoted((prev) => !prev)
-                            setLoading((prev) => ({ ...prev, academy: false }))
-                          }, 2000)
-                        }}
-                        isLoading={loading.academy}
-                      />
+                    {/* stars */}
+                    <div className="mt-4 ">
+                      <h2 className="text-lg font-bold text-white">Player Ratings</h2>
+                      <div className="flex w-full gap-2 ">
+                        {/* provincial votes */}
+                        {provincialVotes > 0 && (
+                          <HoverCard openDelay={0}>
+                            <HoverCardTrigger className="relative">
+                              <FaStar className="text-7xl text-yellow-500" />
+                              <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
+                                {provincialVotes}
+                              </span>
+                            </HoverCardTrigger>
+                            <HoverCardContent>
+                              Provincial Team Vote: {provincialVotes} votes
+                            </HoverCardContent>
+                          </HoverCard>
+                        )}
+
+                        {/* Professional academy votes */}
+                        {academyVotes > 0 && (
+                          <HoverCard openDelay={0}>
+                            <HoverCardTrigger className="relative">
+                              <FaStar className="text-7xl text-red-500" />
+                              <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
+                                {academyVotes}
+                              </span>
+                            </HoverCardTrigger>
+                            <HoverCardContent>
+                              Professional Academy Vote: {academyVotes} votes
+                            </HoverCardContent>
+                          </HoverCard>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -172,12 +177,12 @@ export default function ProfilePage() {
 
           <BIO />
 
-          <div className="mt-10 w-full flex flex-wrap justify-center gap-10 sticky bottom-0 backdrop-blur-md py-5   ">
+          <div className="sticky bottom-0 mt-10 flex w-full flex-wrap justify-center gap-10 py-5 backdrop-blur-md">
             <CommonBtn
               size={"lg"}
               variant={"default"}
               text={teamVoted ? "Voted" : "Provincial Team Vote"}
-              className="w-fit px-10 cursor-pointer bg-yellow-500 text-primary hover:bg-yellow-500/80 hover:text-primary"
+              className="w-fit cursor-pointer bg-yellow-500 px-10 text-primary hover:bg-yellow-500/80 hover:text-primary"
               onClick={() => {
                 setLoading((prev) => ({ ...prev, team: true }))
                 setTimeout(() => {
@@ -191,7 +196,7 @@ export default function ProfilePage() {
               size={"lg"}
               variant={"default"}
               text={academyVoted ? "Voted" : "Professional Academy Vote"}
-              className="w-fit px-10 cursor-pointer bg-red-500 text-primary hover:bg-red-500/80 hover:text-primary"
+              className="w-fit cursor-pointer bg-red-500 px-10 text-primary hover:bg-red-500/80 hover:text-primary"
               onClick={() => {
                 setLoading((prev) => ({ ...prev, academy: true }))
                 setTimeout(() => {

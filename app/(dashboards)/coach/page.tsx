@@ -13,6 +13,8 @@ import {
   RecentUpcomingIcon,
   UpcomingProgramsIcon,
 } from "@/components/custom/coach-dashboard-icons" 
+import { useState } from "react"
+import { toast } from "sonner"
 
 const stats = [
   { icon: <ActiveProgramsIcon />, title: "Active Programs", text: "05" },
@@ -143,7 +145,7 @@ export default function CoachDashboardPage() {
             <div className="flex gap-4 pb-2">
               <div className="min-w-[320px] max-w-[320px] flex-shrink-0">
                 <Advertisement
-                  imageUrl={advertisementImage}
+                  imageUrl={"/images/advertisementImage.png"}
                   positions="Assistant Coach"
                   teamName="Elite U16"
                   ageGroup="3+ years"
@@ -154,9 +156,9 @@ export default function CoachDashboardPage() {
                 />
               </div>
               
-              <div className="min-w-[320px] max-w-[320px] flex-shrink-0">
+              <div className="min-w-[320px] max-w-[320px]  shrink-0">
                 <Advertisement
-                  imageUrl={advertisementImage}
+                  imageUrl={"/images/advertisementImage.png"}
                   positions="Head Coach"
                   teamName="Academy Select"
                   ageGroup="U18"
@@ -167,9 +169,9 @@ export default function CoachDashboardPage() {
                 />
               </div>
               
-              <div className="min-w-[320px] max-w-[320px] flex-shrink-0">
+              <div className="min-w-[320px] max-w-[320px]  shrink-0">
                 <Advertisement
-                  imageUrl={advertisementImage}
+                  imageUrl={"/images/advertisementImage.png"}
                   positions="Goalkeeper Coach"
                   teamName="Premier FC"
                   ageGroup="U14"

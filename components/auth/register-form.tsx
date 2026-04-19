@@ -18,6 +18,7 @@ import { BsArrowLeft } from "react-icons/bs"
 import { useRouter, useSearchParams } from "next/navigation" 
 import { toast } from "sonner"
 import { registerUser } from "./action"
+import { setAuthCookie } from "@/lib/set-token"
 
 type UserRole = "parent" | "player" | "coach" | "team" | "club"
 
@@ -62,14 +63,18 @@ export default function RegisterForm() {
       const res = await registerUser(formData)
 
       console.log(res)
-      if(res.success){
-        toast.success("Registration successful! Please login to continue.")
+      if(res.data.data.token){
+        localStorage.setItem("go_elite_token", res.data.data.token)
+        setAuthCookie(res.data.data.token)
+        localStorage.setItem("go_elite_user", JSON.stringify(res.data.data.user))
+        setLoading(false)
+        toast.success("Registration successful! Welcome to GoElite.")
       }
       else{
         setLoading(false)
-        toast.error(``)
+        toast.error(`Registration failed. Please try again.`)
       }
- 
+  
     } catch (error) {
       setLoading(false) 
       toast.error("Registration failed. Please try again.")

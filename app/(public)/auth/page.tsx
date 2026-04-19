@@ -6,10 +6,11 @@ import RegisterForm from "@/components/auth/register-form"
 import ResetPassForm from "@/components/auth/reset-password"
 import Logo from "@/components/common/logo"
 import { useSearchParams } from "next/navigation"
-import { Suspense } from "react"
+import { Suspense, useState } from "react"
 
 function Page() {
   const searchParams = useSearchParams()
+  const [email, setEmail] = useState("")
   const tab = searchParams.get("auth-tab") || "login"
 
   return (
@@ -26,17 +27,17 @@ function Page() {
         >
           <Logo className="absolute top-5 left-1/2 w-45 -translate-x-1/2" />
 
-          <div className="md:hidden mt-auto max-h-[85vh] overflow-y-scroll  ">
+          <div className="mt-auto max-h-[85vh] overflow-y-scroll md:hidden">
             {tab === "login" ? (
               <LoginForm />
             ) : tab === "register" ? (
               <RegisterForm />
             ) : tab === "reset-pass" ? (
-              <ResetPassForm />
+              <ResetPassForm setEmail={setEmail} email={email} />
             ) : tab === "enter-code" ? (
-              <EnterCode />
+              <EnterCode email={email} />
             ) : tab === "create-new-pass" ? (
-              <CreateNewPass />
+              <CreateNewPass email={email} />
             ) : (
               <LoginForm />
             )}
@@ -56,11 +57,11 @@ function Page() {
           ) : tab === "register" ? (
             <RegisterForm />
           ) : tab === "reset-pass" ? (
-            <ResetPassForm />
+            <ResetPassForm setEmail={setEmail} email={email} />
           ) : tab === "enter-code" ? (
-            <EnterCode />
+            <EnterCode email={email} />
           ) : tab === "create-new-pass" ? (
-            <CreateNewPass />
+            <CreateNewPass email={email} />
           ) : (
             <LoginForm />
           )}
@@ -71,5 +72,9 @@ function Page() {
 }
 
 export default function AuthPage() {
-  return <Suspense fallback={<div>Loading...</div>}><Page /></Suspense>
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Page />
+    </Suspense>
+  )
 }

@@ -1,35 +1,56 @@
+
 import { UserRound } from "lucide-react"
 import CommonBtn from "../common/common-btn"
 import UiInput from "../common/ui-input"
-import { FcGoogle } from "react-icons/fc"
-import PwdInput from "../common/password-input" 
+import PwdInput from "../common/password-input"
 import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
+import { loginUser } from "./action"
+import { setAuthCookie } from "@/lib/set-token"
 
 export default function LoginForm() {
-  
-  const [loading , setLoading] =  useState(false)
-  const [email , setEmail] = useState("")
-  const [password , setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
 
-  const handleLogin  = ()=> {
+  const handleLogin = async () => {
     setLoading(true)
-    setTimeout(()=>{ 
-      if(email.trim() === "" || password.trim() === "") { 
-        toast.error("Please fill in all fields")
-        setLoading(false)
-        return
-      } 
-      setLoading(false)
-    },1000)
-  }
+    try {
+      const res = await loginUser({ email, password })
 
+      if (res.data.status) {
+        toast.success("Login successful! Welcome back.")
+        setAuthCookie(res.data.data.token)
+        localStorage.setItem("go_elite_token", res.data.data.token)
+        const dbUser = res.data.data.user
+        const newUserData = {
+          cover_image: dbUser.cover_image,
+          email: dbUser.email,
+          id: dbUser.id,
+          is_verified: dbUser.is_verified,
+          name: dbUser.name,
+          phone: dbUser.phone,
+          profile_image: dbUser.profile_image,
+          role: dbUser.role,
+        }
+        localStorage.setItem("go_elite_user", JSON.stringify(newUserData))
+
+        setLoading(false)
+      } else {
+        setLoading(false)
+        toast.error(`Login failed. Please try again.`)
+      }
+    } catch (error) {
+      setLoading(false)
+      toast.error("Login failed. Please try again.")
+    }
+  }
 
   return (
     <div className="w-full max-w-105 rounded-2xl bg-primary p-7 text-[#F5F6F8] shadow-[0_22px_60px_rgba(0,0,0,0.45)] md:p-8">
       <div className="mb-7 space-y-2">
-        <h2 className="text-lg md:text-2xl xl:text-[42px] leading-[1.05] font-semibold tracking-tight">
+        <h2 className="text-lg leading-[1.05] font-semibold tracking-tight md:text-2xl xl:text-[42px]">
           Login
         </h2>
       </div>
@@ -49,13 +70,16 @@ export default function LoginForm() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <Link href="/auth?auth-tab=reset-pass" className="-mt-3! text-sm font-semibold w-full inline-block text-right text-brand hover:underline">
+        <Link
+          href="/auth?auth-tab=reset-pass"
+          className="-mt-3! inline-block w-full text-right text-sm font-semibold text-brand hover:underline"
+        >
           Forgot Password?
         </Link>
 
         <CommonBtn
           size={"lg"}
-          onClick={handleLogin} 
+          onClick={handleLogin}
           text={"Login"}
           variant={"default"}
           isLoading={loading}
@@ -68,14 +92,14 @@ export default function LoginForm() {
           <div className="h-px flex-1 bg-[#2D313A]" />
         </div>
 
-        <CommonBtn
+        {/* <CommonBtn
           size={"lg"}
           text={"Login with Google"}
           variant={"default"}
           icon={<FcGoogle />}
           className="w-full bg-secondary/40 text-base md:text-lg font-semibold text-white transition hover:bg-secondary/38"
-        />
-        
+        /> */}
+
         <p className="text-center text-sm font-medium text-[#8D93A1]">
           Don&apos;t have an account?{" "}
           <Link
@@ -85,7 +109,6 @@ export default function LoginForm() {
             Register Here
           </Link>
         </p>
-
       </form>
     </div>
   )

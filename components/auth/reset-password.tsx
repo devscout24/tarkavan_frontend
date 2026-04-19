@@ -4,11 +4,36 @@ import UiInput from "../common/ui-input"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { BsArrowLeft } from "react-icons/bs"
+import { useState } from "react"
+import { getForgetPassCode } from "./action"
+import { toast } from "sonner"
 
-export default function ResetPassForm() {
+export default function ResetPassForm({setEmail , email} : {setEmail: React.Dispatch<React.SetStateAction<string>> , email: string}) {
   const router = useRouter()
-  const handleResetPass = () => {
-    router.push("/auth?auth-tab=enter-code")
+  
+  const [isLoading , setIsLoading] = useState(false)
+  
+
+  const handleSendForgetPassCode = async () => {
+    setIsLoading(true)
+     try{
+
+      const res = await getForgetPassCode(email as string)
+      console.log(res)
+      if(res.data.data.otp ){
+        setIsLoading(false)
+        // localStorage.setItem("reset_password_token" ,  res.data.data.reset_password_token)
+        router.push("/auth?auth-tab=enter-code")
+      }
+      else{
+        toast.error("Failed to send code. Please try again.")
+        setIsLoading(false)
+      }
+
+     }catch(error){
+        toast.error("Failed to send code. Please try again.")
+        setIsLoading(false)
+     }
   }
 
   return (
@@ -35,13 +60,16 @@ export default function ResetPassForm() {
           label="Email"
           placeholder="Please enter your email address"
           icon={<UserRound />}
+          value={email}
+          onChange={(e) => setEmail(e.target.value as string)}
         />
 
         <CommonBtn
           size={"lg"}
           text={"Send code"}
           variant={"default"}
-          onClick={handleResetPass}
+          onClick={handleSendForgetPassCode}
+          isLoading={isLoading}
           className="mt-1 h-12 w-full rounded-lg bg-brand text-base md:text-lg font-semibold text-primary transition hover:bg-brand/90"
         />
 

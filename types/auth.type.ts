@@ -1,0 +1,11 @@
+export type TUser = {
+  id: number;
+  name: string;
+  last_name: string | null;
+  email: string;
+  role: "parent";
+  status: "approve";
+  is_verified: boolean;
+  created_at: string;
+  updated_at: string;
+};

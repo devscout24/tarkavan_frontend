@@ -1,19 +1,34 @@
 "use server"
 
 import api from "@/lib/api-fetcher"
-import type { AxiosError } from "axios"
+import { TApiError } from "@/types"
+import type { AxiosError } from "axios" 
+import axios from "axios"
 
 export async function registerUser(data: FormData) {
   try {
     const res = await api.post("/parent/register", data)
+    console.log(res)
     return { success: true, data: res.data }
   } catch (err: unknown) {
-    const error = err as AxiosError<{ message?: string }>
-    const message =
-      error.response?.data?.message || error.message || "Something went wrong"
-    const status = error.response?.status || 500
+    if (axios.isAxiosError<TApiError>(err)) {
+      const errors = err.response?.data?.errors
 
-    return { success: false, message, status }
+      const message =
+        errors
+          ? Object.values(errors).flat().join(", ")
+          : "Something went wrong"
+
+      const status = err.response?.status || 500
+
+      return { success: false, message, status }
+    }
+
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
   }
 }
 

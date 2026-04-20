@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Drawer,
   DrawerContent,
@@ -11,10 +13,16 @@ import { FiMenu } from "react-icons/fi"
 import Logo from "./logo" 
 import Link from "next/link"
 import { ChevronRight } from "lucide-react"
+import { useRouter } from "next/navigation" 
+import { Button } from "../ui/button"
+import handleGetStarted from "@/lib/helpers"
 
 const side = "left" as const
 
 export function DrawerWithSides() {
+
+  const router = useRouter()
+
   return (
     <div className="flex flex-wrap gap-2 md:hidden">
       <Drawer key={side} direction={side}>
@@ -73,12 +81,12 @@ export function DrawerWithSides() {
                   <ChevronRight className="size-4" />
                 </Link>
 
-                <Link
-                  href="/auth?auth-tab=register"
+                <Button
+                  onClick={()=> handleGetStarted(router)}
                   className="w-full  flex items-center rounded-full border border-brand bg-brand px-5 py-3 text-sm font-semibold text-nowrap text-primary transition-colors duration-200 hover:bg-brand"
                 >
                   Get Started
-                </Link>
+                </Button>
               </div>
             </div>
           </DrawerFooter>

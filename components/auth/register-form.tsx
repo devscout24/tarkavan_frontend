@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select"
 import { FieldLabel } from "../ui/field"
 import { BsArrowLeft } from "react-icons/bs"
-import { useRouter, useSearchParams } from "next/navigation" 
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { registerUser } from "./action"
 import { setAuthCookie } from "@/lib/set-token"
@@ -51,35 +51,39 @@ export default function RegisterForm() {
       password,
       password_confirmation: password,
       role,
-    } 
+    }
 
     try {
       const formData = new FormData()
 
       Object.entries(data).forEach(([key, value]) => {
         formData.append(key, value)
-      })
+      }) 
 
       const res = await registerUser(formData)
 
-      console.log(res)
-      if(res.data.data.token){
+      if (!res.success) {
+        setLoading(false)
+        toast.error(res.message)
+        return
+      }
+ 
+      if (res.data.data.token) {
         localStorage.setItem("go_elite_token", res.data.data.token)
         setAuthCookie(res.data.data.token)
-        localStorage.setItem("go_elite_user", JSON.stringify(res.data.data.user))
+        localStorage.setItem(
+          "go_elite_user",
+          JSON.stringify(res.data.data.user)
+        )
         setLoading(false)
         toast.success("Registration successful! Welcome to GoElite.")
+        router.push(`${res.data.data.user.role}`)
       }
-      else{
-        setLoading(false)
-        toast.error(`Registration failed. Please try again.`)
-      }
-  
     } catch (error) {
-      setLoading(false) 
-      toast.error("Registration failed. Please try again.")
+      setLoading(false)
+      // toast.error("Registration failed. Please try again.")
       console.error("Registration error:", error)
-    } 
+    }
   }
 
   return (

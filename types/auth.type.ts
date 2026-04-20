@@ -3,7 +3,7 @@ export type TUser = {
   name: string;
   last_name: string | null;
   email: string;
-  role: "parent";
+  role: "parent" | "player" | "club" | "coach" ;
   status: "approve";
   is_verified: boolean;
   created_at: string;

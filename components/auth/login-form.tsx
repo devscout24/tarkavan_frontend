@@ -1,4 +1,4 @@
-
+"use client"
 import { UserRound } from "lucide-react"
 import CommonBtn from "../common/common-btn"
 import UiInput from "../common/ui-input"
@@ -8,11 +8,13 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { loginUser } from "./action"
 import { setAuthCookie } from "@/lib/set-token"
+import { useRouter } from "next/navigation"
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const router = useRouter()
 
   const handleLogin = async () => {
     setLoading(true)
@@ -35,8 +37,11 @@ export default function LoginForm() {
           role: dbUser.role,
         }
         localStorage.setItem("go_elite_user", JSON.stringify(newUserData))
-
         setLoading(false)
+        
+        router.push(`${newUserData.role || res.data.data.user.role}`)
+
+
       } else {
         setLoading(false)
         toast.error(`Login failed. Please try again.`)

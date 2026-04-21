@@ -233,24 +233,38 @@ export default function Page() {
 
           <div className="scrollbar-hide overflow-x-auto">
             <div className="flex flex-wrap gap-4 pb-2">
-              {dashboardData?.recent_opportunities && dashboardData.recent_opportunities.length > 0 ? (
+              {dashboardData?.recent_opportunities &&
+              dashboardData.recent_opportunities.length > 0 ? (
                 dashboardData.recent_opportunities.map((opportunity) => (
-                  <div key={opportunity.id} className="max-w-[320px] min-w-[320px] shrink-0">
+                  <div
+                    key={opportunity.id}
+                    className="max-w-[320px] min-w-[320px] shrink-0"
+                  >
                     <Advertisement
                       imageUrl={opportunity.image_url || advertisementImage}
                       positions={opportunity.positions || "Various"}
                       teamName={opportunity.team_name || "Team"}
                       ageGroup={opportunity.age_group || "U16"}
                       tryoutDate={opportunity.tryout_date || "TBD"}
-                      description={opportunity.description || "Opportunity available."}
-                      onApply={() => handleApplyAdvertisement(opportunity.team_name || "Team")}
-                      isApplied={appliedAdvertisements.includes(opportunity.team_name || "")}
+                      description={
+                        opportunity.description || "Opportunity available."
+                      }
+                      onApply={() =>
+                        handleApplyAdvertisement(
+                          opportunity.team_name || "Team"
+                        )
+                      }
+                      isApplied={appliedAdvertisements.includes(
+                        opportunity.team_name || ""
+                      )}
                     />
                   </div>
                 ))
               ) : (
-                <div className="w-full text-center py-8">
-                  <p className="text-white/60 text-sm">No recent opportunities available</p>
+                <div className="w-full py-8 text-center">
+                  <p className="text-sm text-white/60">
+                    No recent opportunities available
+                  </p>
                 </div>
               )}
             </div>
@@ -312,15 +326,22 @@ export default function Page() {
           </section>
 
           {/* Program Reminder */}
-          {dashboardData?.upcoming_program_reminders && dashboardData.upcoming_program_reminders.length > 0 ? (
+          {dashboardData?.upcoming_program_reminders &&
+          dashboardData.upcoming_program_reminders.length > 0 ? (
             dashboardData.upcoming_program_reminders.map((reminder) => (
               <ProgramReminder
                 key={reminder.id}
                 title={reminder.title || "Program Reminder"}
-                date={reminder.program_date ? { 
-                  month: new Date(reminder.program_date).toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
-                  day: new Date(reminder.program_date).getDate()
-                } : { month: "TBD", day: 1 }}
+                date={
+                  reminder.program_date
+                    ? {
+                        month: new Date(reminder.program_date)
+                          .toLocaleDateString("en-US", { month: "short" })
+                          .toUpperCase(),
+                        day: new Date(reminder.program_date).getDate(),
+                      }
+                    : { month: "TBD", day: 1 }
+                }
                 time={reminder.reminder_date || "TBD"}
                 location={reminder.description || "Location TBD"}
                 // onClick={() => console.log("View location clicked")}
@@ -331,7 +352,9 @@ export default function Page() {
               <h5 className="mb-4 text-[18px] leading-[150%] font-semibold">
                 Program Reminders
               </h5>
-              <p className="text-white/60 text-sm">No upcoming program reminders</p>
+              <p className="text-sm text-white/60">
+                No upcoming program reminders
+              </p>
             </div>
           )}
 

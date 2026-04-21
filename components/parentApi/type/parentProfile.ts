@@ -1,4 +1,4 @@
-// Parent API Types
+// Parent Profile Types
 
 export interface ParentProfile {
   name: string

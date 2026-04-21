@@ -8,7 +8,8 @@ import advertisementImage from "@/public/images/advertisementImage.png"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Icon } from "@/components/custom/Icon"
-import { getParentDashboard } from "./action"
+import { getDashboard } from "@/components/parentApi"
+import type { DashboardData, DashboardApiResult } from "@/components/parentApi"
 
 const ChildrenIcon = () => (
   <Icon width="18" height="14" viewBox="0 0 18 14">
@@ -128,21 +129,11 @@ const quickActions = [
   { icon: <BillingIcon />, label: "View Billing History", active: false },
 ]
 
-type ParentDashboardSummary = {
-  total_children: number
-  total_upcoming_recruitments: number
-  total_upcoming_programs: number
-}
-
 export default function Page() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const [summary, setSummary] = useState<ParentDashboardSummary>({
-    total_children: 0,
-    total_upcoming_recruitments: 0,
-    total_upcoming_programs: 0,
-  })
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
   const [appliedAdvertisements, setAppliedAdvertisements] = useState<string[]>(
     () => {
       if (typeof window !== "undefined") {
@@ -180,21 +171,10 @@ export default function Page() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await getParentDashboard()
+        const res: DashboardApiResult = await getDashboard()
 
-        if (res.success) {
-          const dashboardSummary =
-            res.data?.data?.data?.summary ?? res.data?.data?.summary
-
-          if (dashboardSummary) {
-            setSummary({
-              total_children: dashboardSummary.total_children ?? 0,
-              total_upcoming_recruitments:
-                dashboardSummary.total_upcoming_recruitments ?? 0,
-              total_upcoming_programs:
-                dashboardSummary.total_upcoming_programs ?? 0,
-            })
-          }
+        if (res.success && res.data) {
+          setDashboardData(res.data)
         }
       } catch (error) {
         console.error("Error fetching data:", error)
@@ -207,19 +187,19 @@ export default function Page() {
     {
       icon: <ChildrenIcon />,
       title: "Total Children",
-      text: String(summary.total_children),
+      text: String(dashboardData?.summary.total_children || 0),
     },
     {
       icon: <ProgramsIcon />,
-      title: "Total Programs",
-      text: String(summary.total_upcoming_programs),
+      title: "Upcoming Programs",
+      text: String(dashboardData?.summary.total_upcoming_programs || 0),
     },
     {
       icon: <UpcomingIcon />,
       title: "Upcoming Sessions",
-      text: String(summary.total_upcoming_recruitments),
+      text: String(dashboardData?.summary.total_upcoming_recruitments || 0),
     },
-    { icon: <PaymentsIcon />, title: "Recent Payments", text: "$360.00" },
+    // { icon: <PaymentsIcon />, title: "Recent Payments", text: "$360.00" },
   ]
 
   return (
@@ -234,7 +214,7 @@ export default function Page() {
         </p>
       </div>
 
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {mappedStats.map((stat) => (
           <StatCard
             key={stat.title}
@@ -253,44 +233,26 @@ export default function Page() {
 
           <div className="scrollbar-hide overflow-x-auto">
             <div className="flex flex-wrap gap-4 pb-2">
-              <div className="max-w-[320px] min-w-[320px] shrink-0">
-                <Advertisement
-                  imageUrl={advertisementImage}
-                  positions="Defender, Winger"
-                  teamName="Elite U16"
-                  ageGroup="U16"
-                  tryoutDate="March 15-18, 2026"
-                  description="Looking for skilled defenders for upcoming season."
-                  onApply={() => handleApplyAdvertisement("Elite U16")}
-                  isApplied={appliedAdvertisements.includes("Elite U16")}
-                />
-              </div>
-
-              <div className="max-w-[320px] min-w-[320px] shrink-0">
-                <Advertisement
-                  imageUrl={advertisementImage}
-                  positions="Goalkeeper, Midfielder"
-                  teamName="Academy Select"
-                  ageGroup="U18"
-                  tryoutDate="April 20-23, 2026"
-                  description="Join our elite academy program for professional development."
-                  onApply={() => handleApplyAdvertisement("Academy Select")}
-                  isApplied={appliedAdvertisements.includes("Academy Select")}
-                />
-              </div>
-
-              <div className="max-w-[320px] min-w-[320px] shrink-0">
-                <Advertisement
-                  imageUrl={advertisementImage}
-                  positions="Striker, Attacker"
-                  teamName="Premier FC"
-                  ageGroup="U14"
-                  tryoutDate="May 10-13, 2026"
-                  description="Seeking talented forwards for competitive league play."
-                  onApply={() => handleApplyAdvertisement("Premier FC")}
-                  isApplied={appliedAdvertisements.includes("Premier FC")}
-                />
-              </div>
+              {dashboardData?.recent_opportunities && dashboardData.recent_opportunities.length > 0 ? (
+                dashboardData.recent_opportunities.map((opportunity) => (
+                  <div key={opportunity.id} className="max-w-[320px] min-w-[320px] shrink-0">
+                    <Advertisement
+                      imageUrl={opportunity.image_url || advertisementImage}
+                      positions={opportunity.positions || "Various"}
+                      teamName={opportunity.team_name || "Team"}
+                      ageGroup={opportunity.age_group || "U16"}
+                      tryoutDate={opportunity.tryout_date || "TBD"}
+                      description={opportunity.description || "Opportunity available."}
+                      onApply={() => handleApplyAdvertisement(opportunity.team_name || "Team")}
+                      isApplied={appliedAdvertisements.includes(opportunity.team_name || "")}
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="w-full text-center py-8">
+                  <p className="text-white/60 text-sm">No recent opportunities available</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -350,13 +312,28 @@ export default function Page() {
           </section>
 
           {/* Program Reminder */}
-          <ProgramReminder
-            title="Elite Technical Clinic"
-            date={{ month: "MAR", day: 15 }}
-            time="Friday, 4:30 PM - 6:00 PM"
-            location="West Side Sports Complex, Field 4"
-            // onClick={() => console.log("View location clicked")}
-          />
+          {dashboardData?.upcoming_program_reminders && dashboardData.upcoming_program_reminders.length > 0 ? (
+            dashboardData.upcoming_program_reminders.map((reminder) => (
+              <ProgramReminder
+                key={reminder.id}
+                title={reminder.title || "Program Reminder"}
+                date={reminder.program_date ? { 
+                  month: new Date(reminder.program_date).toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
+                  day: new Date(reminder.program_date).getDate()
+                } : { month: "TBD", day: 1 }}
+                time={reminder.reminder_date || "TBD"}
+                location={reminder.description || "Location TBD"}
+                // onClick={() => console.log("View location clicked")}
+              />
+            ))
+          ) : (
+            <div className="rounded-[24px] border border-white/12 bg-primary p-4 text-white">
+              <h5 className="mb-4 text-[18px] leading-[150%] font-semibold">
+                Program Reminders
+              </h5>
+              <p className="text-white/60 text-sm">No upcoming program reminders</p>
+            </div>
+          )}
 
           {/* Advertisement */}
         </aside>

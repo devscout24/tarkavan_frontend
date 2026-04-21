@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useEffect, useState } from "react"
 import {
   CalendarDays,
   GraduationCap,
@@ -28,6 +29,8 @@ import { cn } from "@/lib/utils"
 import CommonBtn from "@/components/common/common-btn"
 import UiInput from "./ui-input"
 import { TbPlayFootball } from "react-icons/tb"
+import { fetchSportOptions } from "@/components/parentApi/api/sport-options"
+import { SportOption } from "@/components/parentApi/type/sport-options.type"
 
 type ExploreFilterState = {
   category: string
@@ -72,7 +75,7 @@ const selectOptions = {
     Canada: ["Toronto", "Vancouver", "Calgary", "Ottawa"],
     "United States": ["New York", "Los Angeles", "Chicago", "Austin"],
   },
-  sports: ["All Sports", "Football", "Basketball", "Tennis", "Track"],
+  // sports will be loaded dynamically
   trainingArea: ["Training Area", "Indoor", "Outdoor", "Strength", "Speed"],
   ageGroup: ["Age Group", "U12", "U14", "U16", "U18"],
   priceRange: ["Price Range", "$0 - $50", "$50 - $100", "$100 - $250"],
@@ -87,36 +90,47 @@ const initialState: ExploreFilterState = {
   priceRange: "",
 }
 
-export default function ExploreFilter() {
-  const [filters, setFilters] = React.useState<ExploreFilterState>(initialState)
+function ExploreFilter() {
+  const [filters, setFilters] = useState<ExploreFilterState>(initialState)
+  const [sportsOptions, setSportsOptions] = useState<SportOption[]>([])
+  const [sportsLoading, setSportsLoading] = useState(false)
+  const [sportsError, setSportsError] = useState<string | null>(null)
+
+  useEffect(() => {
+    setSportsLoading(true)
+    setSportsError(null)
+    fetchSportOptions()
+      .then((res) => {
+        if (res.status) setSportsOptions(res.data)
+        else setSportsError(res.message || "Failed to fetch sports options.")
+      })
+      .catch((err) =>
+        setSportsError(err?.message || "Failed to fetch sports options.")
+      )
+      .finally(() => setSportsLoading(false))
+  }, [])
 
   const updateFilter = <K extends keyof ExploreFilterState>(
     key: K,
     value: ExploreFilterState[K]
   ) => {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value,
-    }))
+    setFilters((prev) => ({ ...prev, [key]: value }))
   }
 
-  const selectItemClassName: string =
+  const selectItemClassName =
     "text-white data-[highlighted]:bg-brand data-[highlighted]:text-primary focus:bg-brand focus:text-primary text-white py-2! px-4! rounded-0! "
 
+  // --- Render ---
   return (
     <section className="w-full text-white">
       <div className="grid gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {categories.map((category) => {
-          const Icon = category.icon
-          const isActive = filters.category === category.value
-
+        {categories.map(({ value, label, icon: Icon }) => {
+          const isActive = filters.category === value
           return (
             <button
-              key={category.value}
+              key={value}
               type="button"
-              onClick={() =>
-                updateFilter("category", isActive ? "" : category.value)
-              }
+              onClick={() => updateFilter("category", isActive ? "" : value)}
               className={cn(
                 "flex min-h-28 flex-col items-center justify-center rounded-2xl border px-4 py-5 text-center transition-all duration-200",
                 isActive
@@ -128,7 +142,7 @@ export default function ExploreFilter() {
                 <Icon className="size-5" />
               </span>
               <span className="mt-4 text-base font-medium text-white">
-                {category.label}
+                {label}
               </span>
             </button>
           )
@@ -157,6 +171,7 @@ export default function ExploreFilter() {
           </div>
 
           <div className="grid max-w-6/10 flex-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            {/* Location Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
@@ -199,9 +214,45 @@ export default function ExploreFilter() {
               </DropdownMenuContent>
             </DropdownMenu>
 
+            {/* Sports Select - dynamic from API */}
+            <Select
+              value={filters.sports || "all"}
+              onValueChange={(value) =>
+                updateFilter("sports", value === "all" ? "" : value)
+              }
+              disabled={sportsLoading || !!sportsError}
+            >
+              <SelectTrigger className="h-11 w-full rounded-xl border-white/15 bg-transparent text-white">
+                <SelectValue
+                  placeholder={
+                    sportsLoading
+                      ? "Loading sports..."
+                      : sportsError
+                        ? "Failed to load sports"
+                        : "All Sports"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent
+                position="popper"
+                className="border-white/10 bg-secondary text-white!"
+              >
+                <SelectItem value="all">All Sports</SelectItem>
+                {sportsOptions.map((option) => (
+                  <SelectItem
+                    key={option.id}
+                    value={option.name}
+                    className={selectItemClassName}
+                  >
+                    {option.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Other selects remain static */}
             {(
               [
-                ["sports", selectOptions.sports],
                 ["trainingArea", selectOptions.trainingArea],
                 ["ageGroup", selectOptions.ageGroup],
                 ["priceRange", selectOptions.priceRange],
@@ -240,12 +291,12 @@ export default function ExploreFilter() {
           variant="default"
           size="sm"
           className="h-8 w-fit rounded-lg border border-white/10 px-3 text-white hover:bg-white/5 hover:text-white"
-          onClick={() => {
-            setFilters(initialState)
-          }}
+          onClick={() => setFilters(initialState)}
           text="Reset Filters"
         />
       </div>
     </section>
   )
 }
+
+export default ExploreFilter

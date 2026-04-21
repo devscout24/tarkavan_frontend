@@ -13,11 +13,13 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-} from "@/components/animate-ui/components/radix/sidebar" 
-import { 
-  Settings, 
-} from "lucide-react"  
-import { RiDashboardFill, RiLogoutCircleRLine, RiMenuSearchLine } from "react-icons/ri"
+} from "@/components/animate-ui/components/radix/sidebar"
+import { Settings } from "lucide-react"
+import {
+  RiDashboardFill,
+  RiLogoutCircleRLine,
+  RiMenuSearchLine,
+} from "react-icons/ri"
 import { FaGraduationCap, FaRegCalendarCheck, FaRegUser } from "react-icons/fa"
 import earningsIcon from "../../../public/images/earningsIcon.svg"
 import messagesIcon from "../../../public/images/messagesIcon.svg"
@@ -29,8 +31,8 @@ import Modals from "@/components/common/modal"
 import { usePathname } from "next/navigation"
 import Image from "next/image"
 import Logo from "@/components/common/logo"
-import MenuBtn from "@/components/custom/menu-btn" 
-import Link from "next/link" 
+import MenuBtn from "@/components/custom/menu-btn"
+import Link from "next/link"
 import AuthCheckPoint from "@/components/auth/auth-checkopoint"
 
 const EarningsNavIcon = ({ className }: { className?: string }) => (
@@ -107,7 +109,7 @@ export default function ParentDashboardLayout({
     ],
   }
 
-  const pathname = usePathname() 
+  const pathname = usePathname()
 
   return (
     <AuthCheckPoint role="coach">
@@ -125,8 +127,22 @@ export default function ParentDashboardLayout({
             {/* Team Switcher */}
             <SidebarMenu>
               <SidebarMenuItem>
-                <div className="flex justify-between">
-                  <Logo className="w-21.25" />
+                <div className="flex items-center justify-between">
+                  <div className="group-data-[collapsible=icon]:hidden">
+                    <Logo className="w-21.25" />
+                  </div>
+                  <Link
+                    href="/"
+                    className="hidden size-10 items-center justify-center rounded-md group-data-[collapsible=icon]:inline-flex"
+                  >
+                    <Image
+                      width={32}
+                      height={32}
+                      src="/images/logo.png"
+                      alt="Tarkavan Logo"
+                      className="h-8 w-8 object-contain"
+                    />
+                  </Link>
                   <MenuBtn>
                     <SidebarTrigger className="-ml-1 cursor-pointer" />
                   </MenuBtn>
@@ -200,6 +216,6 @@ export default function ParentDashboardLayout({
           </ScrollArea>
         </SidebarInset>
       </SidebarProvider>
-    </AuthCheckPoint>  
+    </AuthCheckPoint>
   )
 }

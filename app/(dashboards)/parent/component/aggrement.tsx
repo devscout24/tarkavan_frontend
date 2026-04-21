@@ -1,7 +1,8 @@
-import type { ReactNode } from "react"
+import { useState, type ReactNode } from "react"
 
 import CommonBtn from "@/components/common/common-btn"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useRouter } from "next/navigation"
 
 type AgreementCard = {
   number: string
@@ -411,6 +412,22 @@ function AgreementCardView({ card }: { card: AgreementCard }) {
 }
 
 export default function Agreement() {
+  const router = useRouter()
+  const [isAgreed, setIsAgreed] = useState(false)
+  const [checkboxError, setCheckboxError] = useState("")
+
+  const handleContinue = () => {
+    if (!isAgreed) {
+      setCheckboxError(
+        "Please confirm the agreement checkbox before continuing."
+      )
+      return
+    }
+
+    setCheckboxError("")
+    router.push("/auth?auth-tab=register&parent-agreement=true")
+  }
+
   return (
     <section className="relative overflow-hidden bg-primary pt-28 pb-16 text-white">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(198,245,122,0.08),transparent_30%),radial-gradient(circle_at_80%_15%,rgba(198,245,122,0.05),transparent_25%)]" />
@@ -446,11 +463,25 @@ export default function Agreement() {
 
         <div className="mt-6 border border-brand/20 bg-[#1A1A1A] p-6 sm:p-8">
           <div className="mb-3 flex items-start gap-3">
-            <Checkbox className="mt-0.5 border-white/20 data-[state=checked]:border-brand data-[state=checked]:bg-brand data-[state=checked]:text-[#111111]" />
+            <Checkbox
+              checked={isAgreed}
+              onCheckedChange={(checked) => {
+                setIsAgreed(checked === true)
+                if (checked === true) {
+                  setCheckboxError("")
+                }
+              }}
+              className="mt-0.5 border-white/20 data-[state=checked]:border-brand data-[state=checked]:bg-brand data-[state=checked]:text-[#111111]"
+            />
             <h2 className="text-[14px] leading-[142.857%] font-bold text-white uppercase">
               Acknowledgment and Consent
             </h2>
           </div>
+          {checkboxError ? (
+            <p className="mb-3 text-sm font-medium text-red-400">
+              {checkboxError}
+            </p>
+          ) : null}
           <p className="max-w-5xl text-[14px] leading-[162.5%] font-normal text-[#ADAAAA]">
             By checking the agreement box during account creation, I confirm
             that:
@@ -502,6 +533,7 @@ export default function Agreement() {
               Exit Flow
             </button>
             <CommonBtn
+              onClick={handleContinue}
               variant="default"
               size="lg"
               text="Agree and Continue"

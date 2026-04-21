@@ -11,8 +11,79 @@ import VisibilityEdit from "@/components/common/visibility-edit"
 import RadarChart from "@/components/common/radar"
 import RadarStrength from "@/components/common/radar-strength"
 import PositionMap from "@/components/common/position-map"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
 
 export default function PlayerProfile() {
+
+type PlayerStats = {
+  id: string;
+  year: string;
+  games: number;
+  goals: number;
+  assists: number;
+  yellowCards: number;
+  redCards: number;
+}
+
+const demoStats: PlayerStats[] = [
+  {
+    id: "1",
+    year: "2021",
+    games: 28,
+    goals: 22,
+    assists: 15,
+    yellowCards: 35,
+    redCards: 42, 
+  },
+  {
+    id: "2", 
+    year: "2022",
+    games: 30,
+    goals: 25,
+    assists: 18,
+    yellowCards: 40,
+    redCards: 47,
+  },
+  {
+    id: "3",
+    year: "2023",
+    games: 32,
+    goals: 30,
+    assists: 20,
+    yellowCards: 45,
+    redCards: 52,
+  },
+  {
+    id: "4",
+    year: "2024",
+    games: 15,
+    goals: 12,
+    assists: 8,
+    yellowCards: 25,
+    redCards: 32,
+  },
+  {
+    id: "5",
+    year: "2025",
+    games: 20,
+    goals: 18,
+    assists: 10,
+    yellowCards: 30,
+    redCards: 37,
+  }
+]
+
+const columnBorderClass = "border-r border-white/15 last:border-r-0"
+
+
   return (
     <>
       <section className="text-white">
@@ -42,13 +113,61 @@ export default function PlayerProfile() {
                 Player Stats
               </h2>
 
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              {/* <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 <Stat name="Games" count={28} />
                 <Stat name="Goals" count={22} />
                 <Stat name="Assists" count={15} />
                 <Stat name="Yellow" count={35} />
                 <Stat name="Red" count={42} />
-              </div>
+              </div> */}
+
+                    <div className="mx-auto mt-4 max-w-[95vw] [&>div]:rounded-lg [&>div]:border">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-brand  hover:bg-brand">
+              <TableHead
+                className={`sticky left-0 z-10 bg-brand  ${columnBorderClass} text-primary! `}
+              >
+                Year
+              </TableHead>
+              <TableHead className={"text-primary!"}>Games</TableHead>
+              <TableHead className={"text-primary!"}>Goals</TableHead>
+              <TableHead className={"text-primary!"}>Assists</TableHead>
+              <TableHead className={"text-primary!"}>Yellow Cards</TableHead>
+              <TableHead className={"text-primary!"}>Red Cards</TableHead> 
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {demoStats.map((stat) => (
+              <TableRow key={stat.id} className="hover:bg-transparent border-t border-white/20">
+                <TableCell
+                  className={`sticky left-0 bg-background font-medium ${columnBorderClass}`}
+                >
+                  {stat.year}
+                </TableCell>
+                <TableCell className={columnBorderClass}>
+                  {stat.games}
+                </TableCell>
+                <TableCell className={columnBorderClass}>
+                  {stat.goals}
+                </TableCell>
+                <TableCell className={columnBorderClass}>
+                  {stat.assists}
+                </TableCell>
+                <TableCell className={columnBorderClass}>
+                  {stat.yellowCards}
+                </TableCell>
+                <TableCell className={columnBorderClass}>
+                  {stat.redCards}
+                </TableCell> 
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+
+
             </div>
 
             {/* Player Attributes */}

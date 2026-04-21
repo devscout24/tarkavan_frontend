@@ -135,6 +135,8 @@ export default function PlayerAddModal() {
     [updateStepData]
   )
 
+  
+
   return (
     <div className="bg-[#090B10]">
       {currentStep === 1 ? (

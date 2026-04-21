@@ -38,6 +38,7 @@ import AuthCheckPoint from "@/components/auth/auth-checkopoint"
 export default function PlayerDashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  
   const DATA = {
     user: {
       name: "Skyleen",

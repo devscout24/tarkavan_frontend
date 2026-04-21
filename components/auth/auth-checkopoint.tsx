@@ -1,5 +1,6 @@
 "use client"
 import Loader from "@/components/common/loader"
+import isValidToken from "@/lib/isValid-token"
 import { TUser } from "@/types"
 import { useRouter } from "next/navigation"
 import React, { useEffect, useState } from "react"
@@ -9,7 +10,7 @@ type Props = {
   role: string
 }
 
-export default function AuthCheckPoint({ children , role }: Props) {
+export default function AuthCheckPoint({ children, role }: Props) {
   const router = useRouter()
   const [isChecking, setIsChecking] = useState(true)
 
@@ -17,7 +18,16 @@ export default function AuthCheckPoint({ children , role }: Props) {
     const check = async () => {
       try {
         const token = localStorage.getItem("go_elite_token")
-        const user: TUser | null  = localStorage.getItem("go_elite_user") ? JSON.parse(localStorage.getItem("go_elite_user") || "") : null
+        const user: TUser | null = localStorage.getItem("go_elite_user")
+          ? JSON.parse(localStorage.getItem("go_elite_user") || "")
+          : null
+
+        const istokenValid = isValidToken(token || "")
+
+        if (!istokenValid) {
+          router.replace("/auth")
+          return
+        }
 
         if (!token || !user || !user.email || !user.role) {
           router.replace("/auth")

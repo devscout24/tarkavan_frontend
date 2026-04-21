@@ -5,6 +5,7 @@ import LoginForm from "@/components/auth/login-form"
 import RegisterForm from "@/components/auth/register-form"
 import ResetPassForm from "@/components/auth/reset-password"
 import Logo from "@/components/common/logo"
+import Modals from "@/components/common/modal"
 import { useSearchParams } from "next/navigation"
 import { Suspense, useState } from "react"
 
@@ -15,6 +16,7 @@ function Page() {
 
   return (
     <section className=" ">
+      <Modals/>
       <div className="grid min-h-dvh grid-cols-1 md:grid-cols-2">
         <div
           style={{

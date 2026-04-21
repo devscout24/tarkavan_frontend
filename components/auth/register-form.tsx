@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { UserRound } from "lucide-react"
 import CommonBtn from "../common/common-btn"
 import UiInput from "../common/ui-input"
@@ -20,11 +20,11 @@ import { toast } from "sonner"
 import { registerUser } from "./action"
 import { setAuthCookie } from "@/lib/set-token"
 
-type UserRole = "parent" | "player" | "coach" | "team" | "club"
+type UserRole = "player" | "parent" | "coach" | "team" | "club"
 
 const roles: Array<{ label: string; value: UserRole }> = [
-  { label: "Register as Parent", value: "parent" },
   { label: "Register as Player", value: "player" },
+  { label: "Register as Parent", value: "parent" },
   { label: "Register as Coach", value: "coach" },
   { label: "Register as Club", value: "club" },
 ]
@@ -39,51 +39,84 @@ export default function RegisterForm() {
   const [role, setRole] = useState<UserRole>(
     roles.some((item) => item.value === initialRole)
       ? (initialRole as UserRole)
-      : "parent"
+      : "player"
   )
   const [loading, setLoading] = useState(false)
+  const parentAgreement = searchParams.get("parent-agreement")
+  const isParentAgreementAgreed = parentAgreement === "true"
+
+  console.log(isParentAgreementAgreed)
+
+  useEffect(() => {
+    if (role === "parent" && !isParentAgreementAgreed) {
+      router.push("/auth?auth-tab=register&parent=agreement")
+    }
+  }, [role, isParentAgreementAgreed, router])
 
   const handleRegister = async () => {
     setLoading(true)
-    const data = {
-      name: fullName,
-      email,
-      password,
-      password_confirmation: password,
-      role,
-    }
 
-    try {
-      const formData = new FormData()
-
-      Object.entries(data).forEach(([key, value]) => {
-        formData.append(key, value)
-      }) 
-
-      const res = await registerUser(formData)
-
-      if (!res.success) {
+    // parent register
+    if(role === "parent" && isParentAgreementAgreed) {
+      const data = {
+        name: fullName,
+        email,
+        password,
+        password_confirmation: password,
+        role,
+      }
+  
+      try {
+        const formData = new FormData()
+  
+        Object.entries(data).forEach(([key, value]) => {
+          formData.append(key, value)
+        })
+  
+        const res = await registerUser(formData)
+  
+        if (!res.success) {
+          setLoading(false)
+          toast.error(res.message)
+          return
+        }
+  
+        if (res.data.data.token) {
+          localStorage.setItem("go_elite_token", res.data.data.token)
+          setAuthCookie(res.data.data.token)
+          localStorage.setItem(
+            "go_elite_user",
+            JSON.stringify(res.data.data.user)
+          )
+          setLoading(false)
+          toast.success("Registration successful! Welcome to GoElite.")
+          router.push(`${res.data.data.user.role}`)
+        }
+      } catch (error) {
         setLoading(false)
-        toast.error(res.message)
+        // toast.error("Registration failed. Please try again.")
+        console.error("Registration error:", error)
         return
       }
- 
-      if (res.data.data.token) {
-        localStorage.setItem("go_elite_token", res.data.data.token)
-        setAuthCookie(res.data.data.token)
-        localStorage.setItem(
-          "go_elite_user",
-          JSON.stringify(res.data.data.user)
-        )
-        setLoading(false)
-        toast.success("Registration successful! Welcome to GoElite.")
-        router.push(`${res.data.data.user.role}`)
-      }
-    } catch (error) {
-      setLoading(false)
-      // toast.error("Registration failed. Please try again.")
-      console.error("Registration error:", error)
     }
+    else if (role === "parent" && !isParentAgreementAgreed) {
+      setLoading(false)
+      router.push("/auth?auth-tab=register&parent=agreement")
+      return
+    }
+
+
+    // coach register
+    if(role === "coach") {
+      
+    }
+    
+    
+
+
+
+
+
   }
 
   return (

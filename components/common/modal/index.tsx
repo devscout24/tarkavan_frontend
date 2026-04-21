@@ -8,6 +8,7 @@ import ReviewModal from "./all-modals/review-modal"
 import ConfirmPayModal from "./all-modals/confirm-pay-modal"
 import AddFriendlyMatch from "./all-modals/add-friendly-match"
 import LogoutComfirmation from "./all-modals/logout-comfirmation"
+import Agreement from "@/app/(dashboards)/parent/component/aggrement"
 
 export default function Modals() {
   const { Modal } = useModal()
@@ -85,6 +86,15 @@ export default function Modals() {
         className="max-w-full overflow-hidden! border-0! p-0! sm:max-w-[92vw] md:max-w-lg"
       >
         <LogoutComfirmation />
+      </Modal>
+      <Modal
+        modalId="parent"
+        openId="agreement"
+        className="max-w-full overflow-hidden! border-0! p-0! md:max-w-2xl"
+      >
+        <ScrollArea className="max-h-[90vh]">
+          <Agreement />
+        </ScrollArea>
       </Modal>
     </>
   )

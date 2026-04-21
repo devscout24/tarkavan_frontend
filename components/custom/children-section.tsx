@@ -20,6 +20,8 @@ interface Child {
   }
 }
 
+import { Skeleton } from "@/components/ui/skeleton"
+
 interface ChildrenSectionProps {
   items: Child[]
   onAddChild?: () => void
@@ -28,6 +30,7 @@ interface ChildrenSectionProps {
   onBlock?: (id: string) => void
   onRemove?: (id: string) => void
   onGetStarted?: () => void
+  emptyText?: string
 }
 
 const AddChildIcon = () => (
@@ -49,6 +52,7 @@ export default function ChildrenSection({
   onBlock,
   onRemove,
   onGetStarted,
+  emptyText = "No children found.",
 }: ChildrenSectionProps) {
   const router = useRouter()
 
@@ -68,24 +72,33 @@ export default function ChildrenSection({
 
       {/* Cards Grid */}
       <div className="flex flex-col items-center gap-6 lg:flex-row lg:flex-wrap lg:items-stretch lg:justify-center xl:flex-nowrap xl:justify-start">
-        {items.map((child) => (
-          <ChildCard
-            key={child.id}
-            imageUrl={child.imageUrl}
-            name={child.name}
-            age={child.age}
-            position={child.position}
-            jerseyNumber={child.jerseyNumber}
-            location={child.location}
-            isPublic={child.isPublic}
-            stats={child.stats}
-            onViewProfile={() => onViewProfile?.(child.id)}
-            onInvite={() => onInvite?.(child.id)}
-            onBlock={() => onBlock?.(child.id)}
-            onRemove={() => onRemove?.(child.id)}
-          />
-        ))}
-        <AddChildCard />
+        {items.length === 0 ? (
+          <div className="flex w-full flex-col items-center justify-center py-12">
+            <p className="mb-4 text-lg text-white/80">{emptyText}</p>
+            <AddChildCard />
+          </div>
+        ) : (
+          <>
+            {items.map((child) => (
+              <ChildCard
+                key={child.id}
+                imageUrl={child.imageUrl}
+                name={child.name}
+                age={child.age}
+                position={child.position}
+                jerseyNumber={child.jerseyNumber}
+                location={child.location}
+                isPublic={child.isPublic}
+                stats={child.stats}
+                onViewProfile={() => onViewProfile?.(child.id)}
+                onInvite={() => onInvite?.(child.id)}
+                onBlock={() => onBlock?.(child.id)}
+                onRemove={() => onRemove?.(child.id)}
+              />
+            ))}
+            <AddChildCard />
+          </>
+        )}
       </div>
     </section>
   )

@@ -139,11 +139,17 @@ export default function ChildCard({
           className="block h-full max-h-45 w-full object-cover lg:max-h-40 xl:max-h-45"
         />
         {/* Badge */}
-        {isPublic && (
+        {isPublic ? (
           <VisibilityBadge
             isPublic={isPublic}
             className="absolute top-4 right-4 lg:top-3 lg:right-3 lg:scale-90 xl:top-4 xl:right-4 xl:scale-100"
           />
+        ) : (
+          <div className="absolute top-4 right-4 lg:top-3 lg:right-3 lg:scale-90 xl:top-4 xl:right-4 xl:scale-100">
+            <span className="inline-flex items-center justify-center rounded-full px-3 py-2 text-base leading-[120%] font-normal text-white lg:px-2.5 lg:py-1.5 lg:text-sm xl:px-3 xl:py-2 xl:text-base bg-secondary">
+              PRIVATE
+            </span>
+          </div>
         )}
       </div>
 
@@ -219,7 +225,7 @@ export default function ChildCard({
             variant="outline"
             size="lg"
             text="View Profile"
-            className="h-10 flex-1 cursor-pointer border-brand bg-transparent text-sm font-medium text-white transition-all hover:bg-brand hover:text-brand lg:h-9 lg:text-xs xl:h-10 xl:text-sm"
+            className="h-10 flex-1 cursor-pointer border-brand bg-transparent text-sm font-medium text-white transition-all hover:bg-brand hover:text-primary lg:h-9 lg:text-xs xl:h-10 xl:text-sm"
             onClick={onViewProfile}
           />
           {isDropdown && (

@@ -113,7 +113,7 @@ export default function ParentDashboardLayout({
   const router = useRouter()
 
   return (
-    // <AuthCheckPoint role="parent">
+    <AuthCheckPoint role="parent">
       <SidebarProvider className={` `}>
         <Modals />
         <Sidebar collapsible="icon" className="relative border-secondary">
@@ -202,6 +202,6 @@ export default function ParentDashboardLayout({
           </ScrollArea>
         </SidebarInset>
       </SidebarProvider>
-    // </AuthCheckPoint>
+    </AuthCheckPoint>
   )
 }

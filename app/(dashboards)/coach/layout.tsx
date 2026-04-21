@@ -110,7 +110,7 @@ export default function ParentDashboardLayout({
   const pathname = usePathname() 
 
   return (
-    // <AuthCheckPoint role="coach">
+    <AuthCheckPoint role="coach">
       <SidebarProvider className={` `}>
         <Modals />
         <Sidebar collapsible="icon" className="relative border-secondary">
@@ -200,6 +200,6 @@ export default function ParentDashboardLayout({
           </ScrollArea>
         </SidebarInset>
       </SidebarProvider>
-    // {/* </AuthCheckPoint> */}
+    </AuthCheckPoint>  
   )
 }

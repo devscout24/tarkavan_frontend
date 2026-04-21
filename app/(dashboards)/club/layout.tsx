@@ -105,7 +105,7 @@ export default function PlayerDashboardLayout({
   const pathname = usePathname()
 
   return (
-    // <AuthCheckPoint role="club">
+    <AuthCheckPoint role="club">
       <SidebarProvider className="h-screen overflow-hidden">
         <Modals />
         <Sidebar collapsible="icon" className="relative border-secondary">
@@ -198,6 +198,6 @@ export default function PlayerDashboardLayout({
           </ScrollArea> */}
         </SidebarInset>
       </SidebarProvider>
-    // </AuthCheckPoint>
+    </AuthCheckPoint>
   )
 }

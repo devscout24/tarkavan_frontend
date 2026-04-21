@@ -93,7 +93,7 @@ export default function PlayerDashboardLayout({
 
   return (
     <TooltipProvider>
-      {/* <AuthCheckPoint role="player"> */}
+      <AuthCheckPoint role="player">
         <SidebarProvider className="h-screen overflow-hidden" >
           <Sidebar collapsible="icon" className="relative border-secondary">
             <Image
@@ -183,7 +183,7 @@ export default function PlayerDashboardLayout({
           </ScrollArea> */}
           </SidebarInset>
         </SidebarProvider>
-      {/* </AuthCheckPoint> */}
+      </AuthCheckPoint>
     </TooltipProvider>
   )
 }

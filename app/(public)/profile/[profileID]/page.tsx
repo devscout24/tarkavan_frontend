@@ -18,7 +18,11 @@ import Nav from "@/components/common/nav"
 import Footer from "@/components/common/footer"
 import CommonBtn from "@/components/common/common-btn"
 import { useState } from "react"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
 
 export default function ProfilePage() {
   const [teamVoted, setTeamVoted] = useState(false)
@@ -130,38 +134,52 @@ export default function ProfilePage() {
                     <RadarStrength />
 
                     {/* stars */}
-                    <div className="mt-4 ">
-                      <h2 className="text-lg font-bold text-white">Player Ratings</h2>
-                      <div className="flex w-full gap-2 ">
+                    <div className="mt-4">
+                      <h2 className="text-lg font-bold text-white">
+                        Player Ratings
+                      </h2>
+                      <div className="w-full   gap-2">
                         {/* provincial votes */}
-                        {provincialVotes > 0 && (
-                          <HoverCard openDelay={0}>
-                            <HoverCardTrigger className="relative">
-                              <FaStar className="text-7xl text-yellow-500" />
-                              <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
-                                {provincialVotes}
-                              </span>
-                            </HoverCardTrigger>
-                            <HoverCardContent>
-                              Provincial Team Vote: {provincialVotes} votes
-                            </HoverCardContent>
-                          </HoverCard>
-                        )}
+                        <div className=" grid grid-cols-2    ">
+                          {provincialVotes > 0 && (
+                            <HoverCard openDelay={0}>
+                              <HoverCardTrigger className="relative w-fit  ">
+                                <FaStar className="text-7xl text-yellow-500" />
+                                <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
+                                  {provincialVotes}
+                                </span>
+                              </HoverCardTrigger>
+                              <HoverCardContent>
+                                Provincial Team Vote: {provincialVotes} votes
+                              </HoverCardContent>
+                            </HoverCard>
+                          )}
+                          <div className="flex items-center gap-2">
+                            <span className="block h-2 w-2 rounded-full bg-yellow-500" />
+                            <p className="text-white">Provincial Team</p>
+                          </div>
+                        </div>
 
                         {/* Professional academy votes */}
-                        {academyVotes > 0 && (
-                          <HoverCard openDelay={0}>
-                            <HoverCardTrigger className="relative">
-                              <FaStar className="text-7xl text-red-500" />
-                              <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
-                                {academyVotes}
-                              </span>
-                            </HoverCardTrigger>
-                            <HoverCardContent>
-                              Professional Academy Vote: {academyVotes} votes
-                            </HoverCardContent>
-                          </HoverCard>
-                        )}
+                        <div className="grid grid-cols-2    ">
+                          {academyVotes > 0 && (
+                            <HoverCard openDelay={0}>
+                              <HoverCardTrigger className="relative w-fit  ">
+                                <FaStar className="text-7xl text-red-500" />
+                                <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
+                                  {academyVotes}
+                                </span>
+                              </HoverCardTrigger>
+                              <HoverCardContent>
+                                Professional Academy Vote: {academyVotes} votes
+                              </HoverCardContent>
+                            </HoverCard>
+                          )}
+                          <div className="flex items-center gap-2">
+                            <span className="block h-2 w-2 rounded-full bg-red-500" />
+                            <p className="text-white">Professional Academy</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

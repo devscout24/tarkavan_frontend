@@ -18,11 +18,17 @@ interface AddProgramPageProps {
 
 const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
   const [form, setForm] = useState(() => {
-    // Try to load photo from localStorage
+    // Try to load photo from sessionStorage (better size limits than localStorage)
     let photo = null
-    const saved = localStorage.getItem("add-program-photo")
-    if (saved) {
-      photo = saved
+    if (typeof window !== "undefined") {
+      try {
+        const saved = sessionStorage.getItem("add-program-photo")
+        if (saved) {
+          photo = saved
+        }
+      } catch {
+        // Ignore storage access errors
+      }
     }
     return {
       sport: "",
@@ -37,7 +43,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
       about: "",
       goals: [""],
       photo,
-      type: ""
+      type: "",
     }
   })
 
@@ -91,6 +97,56 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
       <div className="flex flex-col gap-4 rounded-2xl bg-neutral-900 p-8 text-white">
         <h2 className="mb-2 text-2xl font-semibold">Add Program</h2>
 
+        {/* Photo Upload */}
+        <div className="mb-2">
+          <UploadPhoto
+            onFileSelect={async (file) => {
+              // Convert file to dataURL
+              const reader = new FileReader()
+              reader.onload = () => {
+                const dataUrl = reader.result as string
+                setForm((prev) => ({ ...prev, photo: dataUrl }))
+                try {
+                  sessionStorage.setItem("add-program-photo", dataUrl)
+                } catch {
+                  // If sessionStorage is full, keep in memory only
+                  console.warn("sessionStorage full, keeping image in memory")
+                }
+              }
+              reader.readAsDataURL(file)
+            }}
+            title="UPLOAD PHOTO"
+            subtitle="JPG or PNG, max 5MB. Headshots preferred."
+          />
+          {form.photo && (
+            <div className="mt-2 flex items-center gap-2">
+              <Image
+                src={form.photo}
+                alt="Uploaded Preview"
+                width={80}
+                height={80}
+                unoptimized
+                className="h-20 w-20 rounded border border-neutral-700 object-cover"
+              />
+              <button
+                type="button"
+                className="ml-2 flex h-7 w-7 items-center justify-center rounded-full border border-neutral-700 bg-black/60 text-lg text-white hover:bg-red-600 hover:text-white"
+                onClick={() => {
+                  setForm((prev) => ({ ...prev, photo: null }))
+                  try {
+                    sessionStorage.removeItem("add-program-photo")
+                  } catch {
+                    // Ignore removal errors
+                  }
+                }}
+                aria-label="Remove uploaded photo"
+              >
+                ×
+              </button>
+            </div>
+          )}
+        </div>
+
         <div className="flex flex-col">
           <span className="text-sm">Program Type</span>
           <Select
@@ -106,47 +162,9 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
               </SelectItem>
               <SelectItem value="one-on-one" className="hover:bg-brand!">
                 One-on-One
-              </SelectItem> 
+              </SelectItem>
             </SelectContent>
           </Select>
-        </div>
-
-        {/* Photo Upload */}
-        <div className="mb-2">
-          <UploadPhoto
-            onFileSelect={async (file) => {
-              // Convert file to dataURL
-              const reader = new FileReader()
-              reader.onload = () => {
-                const dataUrl = reader.result as string
-                setForm((prev) => ({ ...prev, photo: dataUrl }))
-                localStorage.setItem("add-program-photo", dataUrl)
-              }
-              reader.readAsDataURL(file)
-            }}
-            title="UPLOAD PHOTO"
-            subtitle="JPG or PNG, max 5MB. Headshots preferred."
-          />
-          {form.photo && (
-            <div className="mt-2 flex items-center gap-2">
-              <Image
-                src={form.photo}
-                alt="Uploaded Preview"
-                className="h-20 w-20 rounded border border-neutral-700 object-cover"
-              />
-              <button
-                type="button"
-                className="ml-2 flex h-7 w-7 items-center justify-center rounded-full border border-neutral-700 bg-black/60 text-lg text-white hover:bg-red-600 hover:text-white"
-                onClick={() => {
-                  setForm((prev) => ({ ...prev, photo: null }))
-                  localStorage.removeItem("add-program-photo")
-                }}
-                aria-label="Remove uploaded photo"
-              >
-                ×
-              </button>
-            </div>
-          )}
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

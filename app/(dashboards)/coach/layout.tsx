@@ -29,10 +29,9 @@ import Modals from "@/components/common/modal"
 import { usePathname } from "next/navigation"
 import Image from "next/image"
 import Logo from "@/components/common/logo"
-import MenuBtn from "@/components/custom/menu-btn"
-// import SidebarSearch from "@/components/custom/sidebar-search"
-import Link from "next/link"
-import CheckCoachAuth from "@/components/auth/auth-check/check-coach-auth"
+import MenuBtn from "@/components/custom/menu-btn" 
+import Link from "next/link" 
+import AuthCheckPoint from "@/components/auth/auth-checkopoint"
 
 const EarningsNavIcon = ({ className }: { className?: string }) => (
   <Image
@@ -111,7 +110,7 @@ export default function ParentDashboardLayout({
   const pathname = usePathname() 
 
   return (
-    <CheckCoachAuth>
+    // <AuthCheckPoint role="coach">
       <SidebarProvider className={` `}>
         <Modals />
         <Sidebar collapsible="icon" className="relative border-secondary">
@@ -201,6 +200,6 @@ export default function ParentDashboardLayout({
           </ScrollArea>
         </SidebarInset>
       </SidebarProvider>
-    </CheckCoachAuth>
+    // {/* </AuthCheckPoint> */}
   )
 }

@@ -14,15 +14,14 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/animate-ui/components/radix/sidebar"
-import { Calendars, LogOut, Settings } from "lucide-react"
+import { Calendars, Settings } from "lucide-react"
 import {
   Collapsible,
   CollapsibleTrigger,
 } from "@/components/animate-ui/primitives/radix/collapsible"
 import Logo from "@/components/common/logo"
 import MenuBtn from "@/components/custom/menu-btn"
-import Image from "next/image"
-// import SidebarSearch from "@/components/custom/sidebar-search"
+import Image from "next/image" 
 import { BiMessageSquareDetail } from "react-icons/bi"
 import { RiDashboardFill, RiMenuSearchLine } from "react-icons/ri"
 import { FaRegUser } from "react-icons/fa6"
@@ -31,10 +30,10 @@ import { usePathname } from "next/navigation"
 import BreadcrumbCustom from "@/components/custom/breadcrumb"
 import Notification from "@/components/custom/notifications"
 import ProfileDropdown from "@/components/custom/profile-dropdown"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import CheckPlayerAuth from "@/components/auth/auth-check/check-player-auth"
+import { ScrollArea } from "@/components/ui/scroll-area" 
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { RiLogoutCircleRLine } from "react-icons/ri"
+import AuthCheckPoint from "@/components/auth/auth-checkopoint"
 
 export default function PlayerDashboardLayout({
   children,
@@ -94,7 +93,7 @@ export default function PlayerDashboardLayout({
 
   return (
     <TooltipProvider>
-      <CheckPlayerAuth>
+      {/* <AuthCheckPoint role="player"> */}
         <SidebarProvider className="h-screen overflow-hidden" >
           <Sidebar collapsible="icon" className="relative border-secondary">
             <Image
@@ -184,7 +183,7 @@ export default function PlayerDashboardLayout({
           </ScrollArea> */}
           </SidebarInset>
         </SidebarProvider>
-      </CheckPlayerAuth>
+      {/* </AuthCheckPoint> */}
     </TooltipProvider>
   )
 }

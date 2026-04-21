@@ -48,6 +48,40 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* loader css */
+  --animate-circle-keys: circle-keys 2s ease-in-out infinite;
+  --animate-dot-keys: dot-keys 2s ease-in-out infinite;
+  --animate-outline-keys: outline-keys 2s ease-in-out infinite;
+  
+
+  @keyframes circle-keys {
+  0%   { transform: scale(1);   opacity: 1; }
+  50%  { transform: scale(1.5); opacity: 0.5; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes dot-keys {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
+@keyframes outline-keys {
+  0% {
+    transform: scale(0);
+    outline: solid 20px hsl(0, 0%, 87%);
+    outline-offset: 0;
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    outline: solid 0 transparent;
+    outline-offset: 20px;
+    opacity: 0;
+  }
+}
+
 }
 
 :root {
@@ -123,10 +157,7 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-
-
 @layer base {
-
   html {
     @apply font-sans;
   }
@@ -151,5 +182,3 @@
 * {
   font-family: "Plus Jakarta Sans", sans-serif;
 }
-
- 

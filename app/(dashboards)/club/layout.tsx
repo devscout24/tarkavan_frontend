@@ -35,8 +35,8 @@ import { GrGroup } from "react-icons/gr"
 import { AiOutlineUsergroupAdd } from "react-icons/ai"
 import { IoIosFootball } from "react-icons/io"
 import { CiCreditCard2 } from "react-icons/ci"
-import Modals from "@/components/common/modal"
-import CheckClubAuth from "@/components/auth/auth-check/check-club-auth"
+import Modals from "@/components/common/modal" 
+import AuthCheckPoint from "@/components/auth/auth-checkopoint"
 
 export default function PlayerDashboardLayout({
   children,
@@ -62,6 +62,11 @@ export default function PlayerDashboardLayout({
       {
         title: "My Teams",
         url: "/club/teams",
+        icon: GrGroup,
+      },
+      {
+        title: "My Programs",
+        url: "/club/my-programs",
         icon: GrGroup,
       },
       {
@@ -100,7 +105,7 @@ export default function PlayerDashboardLayout({
   const pathname = usePathname()
 
   return (
-    <CheckClubAuth>
+    // <AuthCheckPoint role="club">
       <SidebarProvider className="h-screen overflow-hidden">
         <Modals />
         <Sidebar collapsible="icon" className="relative border-secondary">
@@ -193,6 +198,6 @@ export default function PlayerDashboardLayout({
           </ScrollArea> */}
         </SidebarInset>
       </SidebarProvider>
-    </CheckClubAuth>
+    // </AuthCheckPoint>
   )
 }

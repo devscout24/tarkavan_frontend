@@ -28,4 +28,16 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
     }
   }
 
-export default handleGetStarted
+
+  const handleLogout = (router: AppRouterInstance) => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("go_elite_token")
+      localStorage.removeItem("go_elite_user")
+    }
+    router.push("/")
+  }
+
+
+
+
+export { handleGetStarted, handleLogout }

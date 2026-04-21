@@ -31,8 +31,9 @@ import { usePathname, useRouter } from "next/navigation"
 import Image from "next/image"
 import Logo from "@/components/common/logo"
 import MenuBtn from "@/components/custom/menu-btn" 
-import Link from "next/link"
-import CheckParentAuth from "@/components/auth/auth-check/check-parent-auth"
+import Link from "next/link" 
+import AuthCheckPoint from "@/components/auth/auth-checkopoint"
+import { handleLogout } from "@/lib/helpers"
 
 const PaymentsNavIcon = ({ className }: { className?: string }) => (
   <Image
@@ -112,7 +113,7 @@ export default function ParentDashboardLayout({
   const router = useRouter()
 
   return (
-    <CheckParentAuth>
+    // <AuthCheckPoint role="parent">
       <SidebarProvider className={` `}>
         <Modals />
         <Sidebar collapsible="icon" className="relative border-secondary">
@@ -177,7 +178,7 @@ export default function ParentDashboardLayout({
             </SidebarGroup>
           </SidebarContent>
           <SidebarFooter>
-            <SidebarMenuButton className={`py-4.5 text-red-500`}>
+            <SidebarMenuButton className={`py-4.5 text-red-500`} onClick={()=>  router.push("?logout-confirmation=confirm") } >
               <RiLogoutCircleRLine />
               <span className={` `}>Log out</span>
             </SidebarMenuButton>
@@ -201,6 +202,6 @@ export default function ParentDashboardLayout({
           </ScrollArea>
         </SidebarInset>
       </SidebarProvider>
-    </CheckParentAuth>
+    // </AuthCheckPoint>
   )
 }

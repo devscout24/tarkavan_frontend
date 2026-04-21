@@ -13,38 +13,41 @@ import { defaultWizardState, type WizardState } from "./types"
 
 const PLAYER_ADD_WIZARD_STORAGE_KEY = "player-add-modal:wizard-state:v1"
 
+function getInitialWizardState(): WizardState {
+  if (typeof window === "undefined") {
+    return defaultWizardState
+  }
+
+  try {
+    const rawState = window.localStorage.getItem(PLAYER_ADD_WIZARD_STORAGE_KEY)
+    if (!rawState) {
+      return defaultWizardState
+    }
+
+    const parsed = JSON.parse(rawState) as WizardState
+    if (!parsed?.forms) {
+      return defaultWizardState
+    }
+
+    return {
+      ...defaultWizardState,
+      ...parsed,
+      forms: {
+        ...defaultWizardState.forms,
+        ...parsed.forms,
+      },
+    }
+  } catch {
+    return defaultWizardState
+  }
+}
+
 export default function PlayerAddModal() {
-  const [wizardState, setWizardState] =
-    useState<WizardState>(defaultWizardState)
+  const [wizardState, setWizardState] = useState<WizardState>(() =>
+    getInitialWizardState()
+  )
   const currentStep = wizardState.currentStep
   const totalSteps = 8
-
-  useEffect(() => {
-    try {
-      const rawState = window.localStorage.getItem(
-        PLAYER_ADD_WIZARD_STORAGE_KEY
-      )
-      if (!rawState) {
-        return
-      }
-
-      const parsed = JSON.parse(rawState) as WizardState
-      if (!parsed?.forms) {
-        return
-      }
-
-      setWizardState({
-        ...defaultWizardState,
-        ...parsed,
-        forms: {
-          ...defaultWizardState.forms,
-          ...parsed.forms,
-        },
-      })
-    } catch {
-      // Ignore invalid persisted data.
-    }
-  }, [])
 
   useEffect(() => {
     try {

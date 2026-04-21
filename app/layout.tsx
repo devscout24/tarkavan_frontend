@@ -14,13 +14,13 @@ const fontMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "My App",
-  description: "Best player card app",
+  title: "Go Elite",
+  description: "Best football player app",
   openGraph: {
-    title: "My App",
-    description: "Best player card app",
+    title: "Go Elite",
+    description: "Best football player app",
     url: "https://tarkavan.vercel.app/",
-    siteName: "My App",
+    siteName: "Go Elite",
     images: [
       {
         url: "https://tarkavan.vercel.app/preview.jpg",
@@ -49,7 +49,7 @@ export default function RootLayout({
         inter.variable
       )}
     >
-      <body>
+      <body suppressHydrationWarning={true} className="min-h-screen bg-background text-fg-primary">
         <Toasting />
         <ThemeProvider>{children}</ThemeProvider>
       </body>

@@ -2,8 +2,8 @@
 import Link from "next/link"
 import { ChevronRight } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { Button } from "../ui/button"
-import handleGetStarted from "@/lib/helpers"
+import { Button } from "../ui/button" 
+import { handleGetStarted } from "@/lib/helpers"
 
 export default function LoginGetStart({ className }: { className?: string }) {
   const router = useRouter()
@@ -28,7 +28,7 @@ export default function LoginGetStart({ className }: { className?: string }) {
 
         <Button
           onClick={()=> handleGetStarted(router)}
-          className="flex items-center rounded-full border border-brand bg-brand px-5 py-3 text-sm font-semibold text-nowrap text-primary transition-colors duration-200 hover:bg-brand"
+          className="flex  items-center rounded-full border border-brand bg-brand px-5 py-5.5 text-sm font-semibold text-nowrap text-primary transition-colors duration-200 hover:bg-brand"
         >
           Get Started
         </Button>

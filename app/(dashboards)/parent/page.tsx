@@ -1,13 +1,14 @@
 "use client"
- 
+
 import StatCard from "@/components/common/stat-card"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import ProgramReminder from "@/components/custom/program-reminder"
-import Advertisement from "@/components/custom/advertisement" 
+import Advertisement from "@/components/custom/advertisement"
 import advertisementImage from "@/public/images/advertisementImage.png"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Icon } from "@/components/custom/Icon"
+import { getParentDashboard } from "./action"
 
 const ChildrenIcon = () => (
   <Icon width="18" height="14" viewBox="0 0 18 14">
@@ -79,10 +80,6 @@ const PaymentsIcon = () => (
   </Icon>
 )
 
- 
-
- 
-
 const AddChildIcon = () => (
   <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
     <path d="M17 10V7H14V5H17V2H19V5H22V7H19V10H17ZM8 8C6.9 8 5.95833 7.60833 5.175 6.825C4.39167 6.04167 4 5.1 4 4C4 2.9 4.39167 1.95833 5.175 1.175C5.95833 0.391667 6.9 0 8 0C9.1 0 10.0417 0.391667 10.825 1.175C11.6083 1.95833 12 2.9 12 4C12 5.1 11.6083 6.04167 10.825 6.825C10.0417 7.60833 9.1 8 8 8ZM0 16V13.2C0 12.6333 0.145833 12.1125 0.4375 11.6375C0.729167 11.1625 1.11667 10.8 1.6 10.55C2.63333 10.0333 3.68333 9.64583 4.75 9.3875C5.81667 9.12917 6.9 9 8 9C9.1 9 10.1833 9.12917 11.25 9.3875C12.3167 9.64583 13.3667 10.0333 14.4 10.55C14.8833 10.8 15.2708 11.1625 15.5625 11.6375C15.8542 12.1125 16 12.6333 16 13.2V16H0ZM2 14H14V13.2C14 13.0167 13.9542 12.85 13.8625 12.7C13.7708 12.55 13.65 12.4333 13.5 12.35C12.6 11.9 11.6917 11.5625 10.775 11.3375C9.85833 11.1125 8.93333 11 8 11C7.06667 11 6.14167 11.1125 5.225 11.3375C4.30833 11.5625 3.4 11.9 2.5 12.35C2.35 12.4333 2.22917 12.55 2.1375 12.7C2.04583 12.85 2 13.0167 2 13.2V14ZM8 6C8.55 6 9.02083 5.80417 9.4125 5.4125C9.80417 5.02083 10 4.55 10 4C10 3.45 9.80417 2.97917 9.4125 2.5875C9.02083 2.19583 8.55 2 8 2C7.45 2 6.97917 2.19583 6.5875 2.5875C6.19583 2.97917 6 3.45 6 4C6 4.55 6.19583 5.02083 6.5875 5.4125C6.97917 5.80417 7.45 6 8 6Z" />
@@ -121,24 +118,6 @@ const ArrowIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
-// const activityItems = [
-//   {
-//     icon: <RecentRegisterIcon />,
-//     title: "Shaun registered for Elite Soccer Training",
-//     time: "2 hours ago",
-//   },
-//   {
-//     icon: <RecentPaymentIcon />,
-//     title: "Payment of $299.00 completed",
-//     time: "Yesterday",
-//   },
-//   {
-//     icon: <RecentUpcomingIcon />,
-//     title: "Upcoming session: Basketball Skills on Saturday",
-//     time: "3 days ago",
-//   },
-// ]
-
 const quickActions = [
   { icon: <AddChildIcon />, label: "Add Your Children", active: false },
   {
@@ -149,17 +128,21 @@ const quickActions = [
   { icon: <BillingIcon />, label: "View Billing History", active: false },
 ]
 
-const stats = [
-  { icon: <ChildrenIcon />, title: "Total Children", text: "02" },
-  { icon: <ProgramsIcon />, title: "Total Programs", text: "05" },
-  { icon: <UpcomingIcon />, title: "Upcoming Sessions", text: "01" },
-  { icon: <PaymentsIcon />, title: "Recent Payments", text: "$360.00" },
-]
+type ParentDashboardSummary = {
+  total_children: number
+  total_upcoming_recruitments: number
+  total_upcoming_programs: number
+}
 
 export default function Page() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const [summary, setSummary] = useState<ParentDashboardSummary>({
+    total_children: 0,
+    total_upcoming_recruitments: 0,
+    total_upcoming_programs: 0,
+  })
   const [appliedAdvertisements, setAppliedAdvertisements] = useState<string[]>(
     () => {
       if (typeof window !== "undefined") {
@@ -194,8 +177,53 @@ export default function Page() {
     }
   }
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getParentDashboard()
+
+        if (res.success) {
+          const dashboardSummary =
+            res.data?.data?.data?.summary ?? res.data?.data?.summary
+
+          if (dashboardSummary) {
+            setSummary({
+              total_children: dashboardSummary.total_children ?? 0,
+              total_upcoming_recruitments:
+                dashboardSummary.total_upcoming_recruitments ?? 0,
+              total_upcoming_programs:
+                dashboardSummary.total_upcoming_programs ?? 0,
+            })
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error)
+      }
+    }
+    fetchData()
+  }, [])
+
+  const mappedStats = [
+    {
+      icon: <ChildrenIcon />,
+      title: "Total Children",
+      text: String(summary.total_children),
+    },
+    {
+      icon: <ProgramsIcon />,
+      title: "Total Programs",
+      text: String(summary.total_upcoming_programs),
+    },
+    {
+      icon: <UpcomingIcon />,
+      title: "Upcoming Sessions",
+      text: String(summary.total_upcoming_recruitments),
+    },
+    { icon: <PaymentsIcon />, title: "Recent Payments", text: "$360.00" },
+  ]
+
   return (
-    <section className=" px-2 ">
+    <section className="px-2">
       <div className="mb-4">
         <h4 className="font-base mb-1 leading-[150%] font-bold text-[#ffffff]">
           Welcome Back, Shahin!
@@ -207,7 +235,7 @@ export default function Page() {
       </div>
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {stats.map((stat) => (
+        {mappedStats.map((stat) => (
           <StatCard
             key={stat.title}
             icon={stat.icon}
@@ -225,7 +253,7 @@ export default function Page() {
 
           <div className="scrollbar-hide overflow-x-auto">
             <div className="flex flex-wrap gap-4 pb-2">
-              <div className="max-w-[320px] min-w-[320px]  shrink-0">
+              <div className="max-w-[320px] min-w-[320px] shrink-0">
                 <Advertisement
                   imageUrl={advertisementImage}
                   positions="Defender, Winger"
@@ -238,7 +266,7 @@ export default function Page() {
                 />
               </div>
 
-              <div className="max-w-[320px] min-w-[320px]  shrink-0">
+              <div className="max-w-[320px] min-w-[320px] shrink-0">
                 <Advertisement
                   imageUrl={advertisementImage}
                   positions="Goalkeeper, Midfielder"
@@ -251,7 +279,7 @@ export default function Page() {
                 />
               </div>
 
-              <div className="max-w-[320px] min-w-[320px]  shrink-0">
+              <div className="max-w-[320px] min-w-[320px] shrink-0">
                 <Advertisement
                   imageUrl={advertisementImage}
                   positions="Striker, Attacker"
@@ -265,8 +293,6 @@ export default function Page() {
               </div>
             </div>
           </div>
-
- 
         </div>
 
         <aside className="space-y-6">

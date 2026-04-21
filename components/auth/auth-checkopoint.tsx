@@ -1,13 +1,15 @@
 "use client"
+import Loader from "@/components/common/loader"
 import { TUser } from "@/types"
 import { useRouter } from "next/navigation"
 import React, { useEffect, useState } from "react"
 
 type Props = {
   children: React.ReactNode
+  role: string
 }
 
-export default function CheckPlayerAuth({ children }: Props) {
+export default function AuthCheckPoint({ children , role }: Props) {
   const router = useRouter()
   const [isChecking, setIsChecking] = useState(true)
 
@@ -15,16 +17,14 @@ export default function CheckPlayerAuth({ children }: Props) {
     const check = async () => {
       try {
         const token = localStorage.getItem("go_elite_token")
-        const userRaw = localStorage.getItem("go_elite_user")
-
-        const user: TUser | null = userRaw ? JSON.parse(userRaw) : null
+        const user: TUser | null  = localStorage.getItem("go_elite_user") ? JSON.parse(localStorage.getItem("go_elite_user") || "") : null
 
         if (!token || !user || !user.email || !user.role) {
           router.replace("/auth")
           return
         }
 
-        if (user.role !== "player") {
+        if (user.role !== role) {
           router.replace(`/${user.role}`)
           return
         }
@@ -35,11 +35,10 @@ export default function CheckPlayerAuth({ children }: Props) {
       }
     }
     check()
-  }, [router])
+  }, [router, role])
 
   if (isChecking) {
-    return null
-    // or return <div>Loading...</div>
+    return <Loader />
   }
 
   return <>{children}</>

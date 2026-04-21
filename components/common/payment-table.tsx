@@ -1,5 +1,6 @@
 "use client"
 
+import type { ParentPaymentItem } from "@/components/parentApi/type/parent-payments"
 import {
   Select,
   SelectContent,
@@ -16,67 +17,70 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { useMemo, useState } from "react"
 import Export from "./export"
 
-// Demo Booking type
-interface Booking {
-  id: string
-  programName: string
-  childName: string
-  amount: string
-  hst: string
-  discount: string
-  total: string
-  date: string
-  status: number | string
+interface PaymentTableProps {
+  payments?: ParentPaymentItem[]
 }
 
-const demoInvoices: Booking[] = [
-  {
-    id: "1",
-    programName: "Elite Soccer Training",
-    childName: "Sarah Smith",
-    amount: "$299.00",
-    hst: "$38.87",
-    discount: "$20.00",
-    total: "$317.87",
-    date: "2026-04-10",
-    status: "paid",
-  },
-  {
-    id: "2",
-    programName: "Advanced Basketball Camp",
-    childName: "James Johnson",
-    amount: "$350.00",
-    hst: "$45.50",
-    discount: "$0.00",
-    total: "$395.50",
-    date: "2026-04-12",
-    status: "pending",
-  },
-  {
-    id: "3",
-    programName: "Swimming Lessons Pro",
-    childName: "Emily Davis",
-    amount: "$180.00",
-    hst: "$23.40",
-    discount: "$10.00",
-    total: "$193.40",
-    date: "2026-04-15",
-    status: "refunded",
-  },
-]
+const formatCurrency = (value: unknown) => {
+  if (value === null || value === undefined || value === "") {
+    return "$0.00"
+  }
 
-export default function PaymentTable() {
+  const numericValue =
+    typeof value === "number"
+      ? value
+      : Number(String(value).replace(/[^0-9.-]+/g, ""))
+
+  if (Number.isNaN(numericValue)) {
+    return String(value)
+  }
+
+  return `$${numericValue.toFixed(2)}`
+}
+
+const formatDate = (value: unknown) => {
+  if (!value) {
+    return "--"
+  }
+
+  const date = new Date(String(value))
+  if (Number.isNaN(date.getTime())) {
+    return String(value)
+  }
+
+  return date.toISOString().split("T")[0]
+}
+
+const getPaymentStatus = (payment: ParentPaymentItem) =>
+  String(payment.status ?? payment.payment_status ?? "unknown").toLowerCase()
+
+const getProgramName = (payment: ParentPaymentItem) =>
+  String(payment.program_name ?? payment.programName ?? "--")
+
+const getChildName = (payment: ParentPaymentItem) =>
+  String(payment.child_name ?? payment.childName ?? payment.player_name ?? "--")
+
+export default function PaymentTable({ payments = [] }: PaymentTableProps) {
   const selectItemClassName: string =
     "text-white data-[highlighted]:bg-brand data-[highlighted]:text-primary focus:bg-brand focus:text-primary   py-2! px-4! rounded-0! "
   const columnBorderClass = "border-r border-white/15 last:border-r-0"
+  const [statusFilter, setStatusFilter] = useState("all")
+  const filteredPayments = useMemo(() => {
+    if (statusFilter === "all") {
+      return payments
+    }
+
+    return payments.filter((payment) => getPaymentStatus(payment) === statusFilter)
+  }, [payments, statusFilter])
 
   return (
     <div className="mx-1 mt-6 text-white">
       <div className="flex items-center justify-between gap-4">
         {/* Status Dropdown on Left */}
-        <Select>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="h-32 w-32 rounded-full border-white/20 bg-transparent px-3 text-white hover:bg-white/10">
             <SelectValue placeholder={"All Status"} />
           </SelectTrigger>
@@ -100,7 +104,7 @@ export default function PaymentTable() {
         </Select>
 
         {/* Export Component on Right */}
-        <Export 
+        <Export
           onExport={() => console.log("Export clicked")}
           className="flex-shrink-0"
         />
@@ -109,9 +113,9 @@ export default function PaymentTable() {
       <div className="mx-auto mt-4 max-w-[95vw] [&>div]:rounded-lg [&>div]:border">
         <Table>
           <TableHeader>
-            <TableRow className="bg-brand  hover:bg-brand">
+            <TableRow className="bg-brand hover:bg-brand">
               <TableHead
-                className={`sticky left-0 z-10 bg-brand  ${columnBorderClass} text-primary! `}
+                className={`sticky left-0 z-10 bg-brand ${columnBorderClass} text-primary!`}
               >
                 Program Name
               </TableHead>
@@ -125,36 +129,47 @@ export default function PaymentTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {demoInvoices.map((invoice) => (
-              <TableRow key={invoice.id} className="hover:bg-transparent border-t border-white/20">
-                <TableCell
-                  className={`sticky left-0 bg-background font-medium ${columnBorderClass}`}
+            {filteredPayments.length > 0 ? (
+              filteredPayments.map((payment, index) => (
+                <TableRow
+                  key={String(payment.id ?? `${getProgramName(payment)}-${index}`)}
+                  className="border-t border-white/20 hover:bg-transparent"
                 >
-                  {invoice.programName}
-                </TableCell>
-                <TableCell className={columnBorderClass}>
-                  {invoice.childName}
-                </TableCell>
-                <TableCell className={columnBorderClass}>
-                  {invoice.amount}
-                </TableCell>
-                <TableCell className={columnBorderClass}>
-                  {invoice.hst}
-                </TableCell>
-                <TableCell className={columnBorderClass}>
-                  {invoice.discount}
-                </TableCell>
-                <TableCell className={columnBorderClass}>
-                  {invoice.total}
-                </TableCell>
-                <TableCell className={columnBorderClass}>
-                  {invoice.date}
-                </TableCell>
-                <TableCell className={columnBorderClass}>
-                  {invoice.status}
+                  <TableCell
+                    className={`sticky left-0 bg-background font-medium ${columnBorderClass}`}
+                  >
+                    {getProgramName(payment)}
+                  </TableCell>
+                  <TableCell className={columnBorderClass}>
+                    {getChildName(payment)}
+                  </TableCell>
+                  <TableCell className={columnBorderClass}>
+                    {formatCurrency(payment.amount)}
+                  </TableCell>
+                  <TableCell className={columnBorderClass}>
+                    {formatCurrency(payment.hst)}
+                  </TableCell>
+                  <TableCell className={columnBorderClass}>
+                    {formatCurrency(payment.discount)}
+                  </TableCell>
+                  <TableCell className={columnBorderClass}>
+                    {formatCurrency(payment.total ?? payment.total_amount)}
+                  </TableCell>
+                  <TableCell className={columnBorderClass}>
+                    {formatDate(payment.date ?? payment.payment_date)}
+                  </TableCell>
+                  <TableCell className={columnBorderClass}>
+                    {getPaymentStatus(payment)}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow className="border-t border-white/20 hover:bg-transparent">
+                <TableCell colSpan={8} className="py-8 text-center text-white/60">
+                  No payment history found.
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </div>

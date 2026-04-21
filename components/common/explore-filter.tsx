@@ -36,7 +36,7 @@ type ExploreFilterState = {
   category: string
   location: string
   sports: string
-  trainingArea: string
+  // trainingArea: string
   ageGroup: string
   priceRange: string
 }
@@ -76,7 +76,7 @@ const selectOptions = {
     "United States": ["New York", "Los Angeles", "Chicago", "Austin"],
   },
   // sports will be loaded dynamically
-  trainingArea: ["Training Area", "Indoor", "Outdoor", "Strength", "Speed"],
+  // trainingArea: ["Training Area", "Indoor", "Outdoor", "Strength", "Speed"],
   ageGroup: ["Age Group", "U12", "U14", "U16", "U18"],
   priceRange: ["Price Range", "$0 - $50", "$50 - $100", "$100 - $250"],
 } as const
@@ -85,7 +85,7 @@ const initialState: ExploreFilterState = {
   category: "",
   location: "",
   sports: "",
-  trainingArea: "",
+  // trainingArea: "",
   ageGroup: "",
   priceRange: "",
 }
@@ -170,7 +170,7 @@ function ExploreFilter() {
             Quick Filters
           </div>
 
-          <div className="grid max-w-6/10 flex-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          <div className="grid max-w-6/10 flex-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {/* Location Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -253,7 +253,7 @@ function ExploreFilter() {
             {/* Other selects remain static */}
             {(
               [
-                ["trainingArea", selectOptions.trainingArea],
+                // ["trainingArea", selectOptions.trainingArea],
                 ["ageGroup", selectOptions.ageGroup],
                 ["priceRange", selectOptions.priceRange],
               ] as const

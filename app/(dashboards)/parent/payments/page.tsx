@@ -1,30 +1,64 @@
+"use client"
+
 import StatCard from "@/components/common/stat-card"
+import {
+  fetchParentPayments,
+  type ParentPaymentItem,
+  type PaymentSummary,
+} from "@/components/parentApi"
+import { useEffect, useState } from "react"
 import { FaRegCreditCard } from "react-icons/fa"
 import { MdOutlinePending } from "react-icons/md"
 import { CiWallet } from "react-icons/ci"
 import PaymentTable from "../../../../components/common/payment-table"
+import { RotateCcw } from "lucide-react"
 
 export default function PaymentPage() {
+  const [summary, setSummary] = useState<PaymentSummary>({
+    total_paid: 0,
+    pending_payments: 0,
+    refunded_payments: 0,
+    total_transactions: 0,
+  })
+  const [payments, setPayments] = useState<ParentPaymentItem[]>([])
+
+  useEffect(() => {
+    const loadPayments = async () => {
+      try {
+        const response = await fetchParentPayments()
+
+        if (response.status) {
+          setSummary(response.data.summary)
+          setPayments(response.data.payments)
+        }
+      } catch (error) {
+        console.error("Failed to load parent payments:", error)
+      }
+    }
+
+    loadPayments()
+  }, [])
+
   const paymentStats = [
     {
       icon: <FaRegCreditCard className="h-5 w-5" />,
       title: "Total Paid",
-      value: "$696.11",
+      value: `$${Number(summary.total_paid || 0).toFixed(2)}`,
     },
     {
       icon: <MdOutlinePending className="h-5 w-5" />,
       title: "Pending Payments",
-      value: "$224.87",
+      value: `$${Number(summary.pending_payments || 0).toFixed(2)}`,
     },
     {
-      icon: <MdOutlinePending className="h-5 w-5" />,
-      title: "Remaining Payments",
-      value: "$124.87",
+      icon: <RotateCcw className="h-5 w-5" />,
+      title: "Refunded Payments",
+      value: `$${Number(summary.refunded_payments || 0).toFixed(2)}`,
     },
     {
       icon: <CiWallet className="h-5 w-5" />,
       title: "Total Transactions",
-      value: "05",
+      value: String(summary.total_transactions || 0).padStart(2, "0"),
     },
   ]
 
@@ -43,7 +77,7 @@ export default function PaymentPage() {
       </div>
 
       {/* payment table */}
-      <PaymentTable />
+      <PaymentTable payments={payments} />
     </section>
   )
 }

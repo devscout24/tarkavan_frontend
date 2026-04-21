@@ -13,14 +13,14 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-} from "@/components/animate-ui/components/radix/sidebar" 
-import { 
-  Calendars, 
-  Settings, 
-} from "lucide-react"  
-import { RiDashboardFill, RiLogoutCircleRLine, RiMenuSearchLine } from "react-icons/ri"
+} from "@/components/animate-ui/components/radix/sidebar"
+import { Calendars, CreditCard, Settings } from "lucide-react"
+import {
+  RiDashboardFill,
+  RiLogoutCircleRLine,
+  RiMenuSearchLine,
+} from "react-icons/ri"
 import { FaGraduationCap, FaRegUser } from "react-icons/fa"
-import paymentsIcon from "../../../public/images/paymentIcon.svg"
 import messagesIcon from "../../../public/images/messagesIcon.svg"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import Notification from "@/components/custom/notifications"
@@ -30,20 +30,10 @@ import Modals from "@/components/common/modal"
 import { usePathname, useRouter } from "next/navigation"
 import Image from "next/image"
 import Logo from "@/components/common/logo"
-import MenuBtn from "@/components/custom/menu-btn" 
-import Link from "next/link" 
+import MenuBtn from "@/components/custom/menu-btn"
+import Link from "next/link"
 import AuthCheckPoint from "@/components/auth/auth-checkopoint"
 import { handleLogout } from "@/lib/helpers"
-
-const PaymentsNavIcon = ({ className }: { className?: string }) => (
-  <Image
-    width={20}
-    height={20}
-    src={paymentsIcon}
-    alt="Payments"
-    className={`h-5 w-5 brightness-0 invert ${className ?? ""}`}
-  />
-)
 
 const MessagesNavIcon = ({ className }: { className?: string }) => (
   <Image
@@ -94,7 +84,7 @@ export default function ParentDashboardLayout({
       {
         title: "Payments",
         url: "/parent/payments",
-        icon: PaymentsNavIcon,
+        icon: CreditCard,
       },
       {
         title: "Messages",
@@ -109,7 +99,7 @@ export default function ParentDashboardLayout({
     ],
   }
 
-  const pathname = usePathname() 
+  const pathname = usePathname()
   const router = useRouter()
 
   return (
@@ -178,7 +168,10 @@ export default function ParentDashboardLayout({
             </SidebarGroup>
           </SidebarContent>
           <SidebarFooter>
-            <SidebarMenuButton className={`py-4.5 text-red-500`} onClick={()=>  router.push("?logout-confirmation=confirm") } >
+            <SidebarMenuButton
+              className={`py-4.5 text-red-500`}
+              onClick={() => router.push("?logout-confirmation=confirm")}
+            >
               <RiLogoutCircleRLine />
               <span className={` `}>Log out</span>
             </SidebarMenuButton>

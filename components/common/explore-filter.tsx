@@ -1,6 +1,22 @@
 import * as React from "react"
-import { CalendarDays, GraduationCap, Search, Users, UsersRound } from "lucide-react"
+import {
+  CalendarDays,
+  GraduationCap,
+  Search,
+  Users,
+  UsersRound,
+} from "lucide-react"
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   Select,
   SelectContent,
@@ -11,7 +27,7 @@ import {
 import { cn } from "@/lib/utils"
 import CommonBtn from "@/components/common/common-btn"
 import UiInput from "./ui-input"
-import { TbPlayFootball } from "react-icons/tb";
+import { TbPlayFootball } from "react-icons/tb"
 
 type ExploreFilterState = {
   category: string
@@ -51,7 +67,21 @@ const categories = [
 ]
 
 const selectOptions = {
-  location: ["All Location", "Toronto", "Vancouver", "Calgary", "Ottawa"],
+  countries: ["Canada", "United States"],
+  citiesByCountry: {
+    Canada: ["Toronto", "Vancouver", "Calgary", "Ottawa"],
+    "United States": ["New York", "Los Angeles", "Chicago", "Austin"],
+  },
+  statesByCity: {
+    Toronto: ["Ontario"],
+    Vancouver: ["British Columbia"],
+    Calgary: ["Alberta"],
+    Ottawa: ["Ontario"],
+    "New York": ["New York"],
+    "Los Angeles": ["California"],
+    Chicago: ["Illinois"],
+    Austin: ["Texas"],
+  },
   sports: ["All Sports", "Football", "Basketball", "Tennis", "Track"],
   trainingArea: ["Training Area", "Indoor", "Outdoor", "Strength", "Speed"],
   ageGroup: ["Age Group", "U12", "U14", "U16", "U18"],
@@ -69,7 +99,6 @@ const initialState: ExploreFilterState = {
 
 export default function ExploreFilter() {
   const [filters, setFilters] = React.useState<ExploreFilterState>(initialState)
- 
 
   const updateFilter = <K extends keyof ExploreFilterState>(
     key: K,
@@ -86,7 +115,7 @@ export default function ExploreFilter() {
 
   return (
     <section className="w-full text-white">
-      <div className="grid gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5    ">
+      <div className="grid gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {categories.map((category) => {
           const Icon = category.icon
           const isActive = filters.category === category.value
@@ -116,7 +145,7 @@ export default function ExploreFilter() {
         })}
       </div>
 
-      <div className="bg-[#2B2E36]/80 p-5 rounded-xl mt-5">
+      <div className="mt-5 rounded-xl bg-[#2B2E36]/80 p-5">
         <div className="flex">
           <UiInput
             placeholder="Search players , coaches, teams, programs..."
@@ -126,10 +155,9 @@ export default function ExploreFilter() {
           <CommonBtn
             variant="default"
             size="sm"
-            className="ml-2 h-12  bg-brand hover:bg-brand/90 text-primary hover:text-primary w-fit rounded-lg border border-white/10 px-3 "
+            className="ml-2 h-12 w-fit rounded-lg border border-white/10 bg-brand px-3 text-primary hover:bg-brand/90 hover:text-primary"
             text="Search"
             icon={<Search />}
-            
           />
         </div>
 
@@ -139,9 +167,66 @@ export default function ExploreFilter() {
           </div>
 
           <div className="grid max-w-6/10 flex-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="flex py-1.5 w-full items-center rounded-xl border border-white/15 bg-transparent px-3 text-left text-sm text-white"
+                >
+                  <span className="truncate">
+                    {filters.location || "Select Location"}
+                  </span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-60 border-white/10 bg-secondary text-white"
+                align="start"
+              >
+                {selectOptions.countries.map((country) => (
+                  <DropdownMenuSub key={country}>
+                    <DropdownMenuSubTrigger className="focus:bg-brand focus:text-primary data-[state=open]:bg-brand data-[state=open]:text-primary">
+                      {country}
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuSubContent className="min-w-52 border-white/10 bg-secondary text-white">
+                        {selectOptions.citiesByCountry[
+                          country as keyof typeof selectOptions.citiesByCountry
+                        ].map((city) => (
+                          <DropdownMenuSub key={`${country}-${city}`}>
+                            <DropdownMenuSubTrigger className="focus:bg-brand focus:text-primary data-[state=open]:bg-brand data-[state=open]:text-primary">
+                              {city}
+                            </DropdownMenuSubTrigger>
+                            <DropdownMenuPortal>
+                              <DropdownMenuSubContent className="min-w-52 border-white/10 bg-secondary text-white">
+                                {selectOptions.statesByCity[
+                                  city as keyof typeof selectOptions.statesByCity
+                                ].map((stateValue) => (
+                                  <DropdownMenuItem
+                                    key={`${country}-${city}-${stateValue}`}
+                                    onClick={() =>
+                                      updateFilter(
+                                        "location",
+                                        `${country}, ${city}, ${stateValue}`
+                                      )
+                                    }
+                                    className="focus:bg-brand focus:text-primary"
+                                  >
+                                    {stateValue}
+                                  </DropdownMenuItem>
+                                ))}
+                              </DropdownMenuSubContent>
+                            </DropdownMenuPortal>
+                          </DropdownMenuSub>
+                        ))}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             {(
               [
-                ["location", selectOptions.location],
                 ["sports", selectOptions.sports],
                 ["trainingArea", selectOptions.trainingArea],
                 ["ageGroup", selectOptions.ageGroup],
@@ -181,7 +266,9 @@ export default function ExploreFilter() {
           variant="default"
           size="sm"
           className="h-8 w-fit rounded-lg border border-white/10 px-3 text-white hover:bg-white/5 hover:text-white"
-          onClick={() => setFilters(initialState)}
+          onClick={() => {
+            setFilters(initialState)
+          }}
           text="Reset Filters"
         />
       </div>

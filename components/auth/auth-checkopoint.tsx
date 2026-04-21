@@ -2,22 +2,33 @@
 import Loader from "@/components/common/loader"
 import { TUser } from "@/types"
 import { useRouter } from "next/navigation"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 
 type Props = {
   children: React.ReactNode
   role: string
 }
 
-export default function AuthCheckPoint({ children , role }: Props) {
+export default function AuthCheckPoint({ children, role }: Props) {
   const router = useRouter()
   const [isChecking, setIsChecking] = useState(true)
+  const user = useMemo<TUser | null>(() => {
+    if (typeof window === "undefined") {
+      return null
+    }
+
+    try {
+      const rawUser = window.localStorage.getItem("go_elite_user")
+      return rawUser ? JSON.parse(rawUser) : null
+    } catch {
+      return null
+    }
+  }, [])
 
   useEffect(() => {
     const check = async () => {
       try {
-        const token = localStorage.getItem("go_elite_token")
-        const user: TUser | null  = localStorage.getItem("go_elite_user") ? JSON.parse(localStorage.getItem("go_elite_user") || "") : null
+        const token = window.localStorage.getItem("go_elite_token")
 
         if (!token || !user || !user.email || !user.role) {
           router.replace("/auth")
@@ -35,7 +46,23 @@ export default function AuthCheckPoint({ children , role }: Props) {
       }
     }
     check()
-  }, [router, role])
+  }, [router, role, user])
+
+  // Redirect pending accounts to their setup flow.
+  useEffect(() => {
+    if (!user || user.status !== "pending") {
+      return
+    }
+
+    if (role === "coach") {
+      router.replace("/coach?coach=profile-setup")
+      return
+    }
+
+    if (role === "club") {
+      router.replace("/club?club=profile-setup")
+    }
+  }, [user, role, router])
 
   if (isChecking) {
     return <Loader />

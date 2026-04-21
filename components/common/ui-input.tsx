@@ -15,6 +15,7 @@ type InputProps = {
   className?: string
   icon?: React.ReactNode
   value?: string
+  labelClass?: string
 }
 
 export default function UiInput({ 
@@ -24,12 +25,14 @@ export default function UiInput({
   onChange,
   className ,
   icon,
-  value
+  value,
+  labelClass
+
 }: InputProps) { 
 
   return (
     <Field>
-      {label &&  <FieldLabel htmlFor={label || "" }>{label}</FieldLabel>} 
+      {label &&  <FieldLabel htmlFor={label || "" } className={labelClass}>{label}</FieldLabel>} 
       <div className="relative"> 
         {icon && 
         <div className="absolute top-1/2 left-1 -translate-y-1/2 text-secondary ">{icon}</div>

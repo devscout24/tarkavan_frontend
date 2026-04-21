@@ -42,10 +42,11 @@ export default function RegisterForm() {
       : "player"
   )
   const [loading, setLoading] = useState(false)
+  const [dateOfBirth, setDateOfBirth] = useState("")
   const parentAgreement = searchParams.get("parent-agreement")
   const isParentAgreementAgreed = parentAgreement === "true"
 
-  console.log(isParentAgreementAgreed)
+  // console.log(isParentAgreementAgreed)
 
   useEffect(() => {
     if (role === "parent" && !isParentAgreementAgreed) {
@@ -57,7 +58,7 @@ export default function RegisterForm() {
     setLoading(true)
 
     // parent register
-    if(role === "parent" && isParentAgreementAgreed) {
+    if (role === "parent" && isParentAgreementAgreed) {
       const data = {
         name: fullName,
         email,
@@ -65,22 +66,22 @@ export default function RegisterForm() {
         password_confirmation: password,
         role,
       }
-  
+
       try {
         const formData = new FormData()
-  
+
         Object.entries(data).forEach(([key, value]) => {
           formData.append(key, value)
         })
-  
+
         const res = await registerUser(formData)
-  
+
         if (!res.success) {
           setLoading(false)
           toast.error(res.message)
           return
         }
-  
+
         if (res.data.data.token) {
           localStorage.setItem("go_elite_token", res.data.data.token)
           setAuthCookie(res.data.data.token)
@@ -98,25 +99,103 @@ export default function RegisterForm() {
         console.error("Registration error:", error)
         return
       }
-    }
-    else if (role === "parent" && !isParentAgreementAgreed) {
+    } else if (role === "parent" && !isParentAgreementAgreed) {
       setLoading(false)
       router.push("/auth?auth-tab=register&parent=agreement")
       return
     }
 
-
     // coach register
-    if(role === "coach") {
-      
+    if (role === "coach") {
+      const data = {
+        name: fullName,
+        email,
+        password,
+        password_confirmation: password,
+        role,
+      }
+
+      try {
+        const formData = new FormData()
+
+        Object.entries(data).forEach(([key, value]) => {
+          formData.append(key, value)
+        })
+
+        const res = await registerUser(formData)
+
+        if (!res.success) {
+          setLoading(false)
+          toast.error(res.message)
+          return
+        }
+
+        if (res.data.data.token) {
+          localStorage.setItem("go_elite_token", res.data.data.token)
+          setAuthCookie(res.data.data.token)
+          localStorage.setItem(
+            "go_elite_user",
+            JSON.stringify(res.data.data.user)
+          )
+          setLoading(false)
+          toast.success("Registration successful! Welcome to GoElite.")
+          router.push(
+            `/${res.data.data.user.role}?coach=profile-setup` ||
+              "/coach?coach=profile-setup"
+          )
+          return
+        }
+      } catch (error) {
+        setLoading(false)
+        // toast.error("Registration failed. Please try again.")
+        console.error("Registration error:", error)
+        return
+      }
     }
-    
-    
 
+    // club register
+    if (role === "club") {
+      const data = {
+        name: fullName,
+        email,
+        password,
+        password_confirmation: password,
+        role,
+      }
 
+      try {
+        const formData = new FormData()
 
+        Object.entries(data).forEach(([key, value]) => {
+          formData.append(key, value)
+        })
 
+        const res = await registerUser(formData)
 
+        if (!res.success) {
+          setLoading(false)
+          toast.error(res.message)
+          return
+        }
+
+        if (res.data.data.token) {
+          localStorage.setItem("go_elite_token", res.data.data.token)
+          setAuthCookie(res.data.data.token)
+          localStorage.setItem(
+            "go_elite_user",
+            JSON.stringify(res.data.data.user)
+          )
+          setLoading(false)
+          toast.success("Registration successful! Welcome to GoElite.")
+          router.push(`/${res.data.data.user.role}/?club=profile-setup` || "/club?club=profile-setup")
+        }
+      } catch (error) {
+        setLoading(false)
+        // toast.error("Registration failed. Please try again.")
+        console.error("Registration error:", error)
+        return
+      }
+    }
   }
 
   return (
@@ -177,6 +256,17 @@ export default function RegisterForm() {
           value={email}
           onChange={(event) => setEmail(event.target.value)}
         />
+
+        {role === "player" && (
+          <UiInput
+            label="Date of Birth"
+            placeholder="Over 18 years player"
+            icon={<UserRound />}
+            value={dateOfBirth}
+            type="date"
+            onChange={(event) => setDateOfBirth(event.target.value)}
+          />
+        )}
 
         <PwdInput
           label="Password"

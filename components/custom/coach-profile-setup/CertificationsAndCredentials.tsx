@@ -10,7 +10,7 @@ type CredentialFile = {
 }
 
 interface CertificationsAndCredentialsProps {
-  updateCredentials?: (files: any[]) => void
+  updateCredentials?: (files: unknown[]) => void
 }
 
 function UploadCloudIcon() {

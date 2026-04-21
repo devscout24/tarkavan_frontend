@@ -30,7 +30,7 @@ const roleOptions = [
 ]
 
 interface SportsAndSpecialtiesProps {
-  updateSports?: (sports: any) => void
+  updateSports?: (sports: unknown) => void
 }
 
 export default function SportsAndSpecialties({ updateSports }: SportsAndSpecialtiesProps) {

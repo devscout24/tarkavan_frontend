@@ -72,16 +72,6 @@ const selectOptions = {
     Canada: ["Toronto", "Vancouver", "Calgary", "Ottawa"],
     "United States": ["New York", "Los Angeles", "Chicago", "Austin"],
   },
-  statesByCity: {
-    Toronto: ["Ontario"],
-    Vancouver: ["British Columbia"],
-    Calgary: ["Alberta"],
-    Ottawa: ["Ontario"],
-    "New York": ["New York"],
-    "Los Angeles": ["California"],
-    Chicago: ["Illinois"],
-    Austin: ["Texas"],
-  },
   sports: ["All Sports", "Football", "Basketball", "Tennis", "Track"],
   trainingArea: ["Training Area", "Indoor", "Outdoor", "Strength", "Speed"],
   ageGroup: ["Age Group", "U12", "U14", "U16", "U18"],
@@ -171,7 +161,7 @@ export default function ExploreFilter() {
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="flex py-1.5 w-full items-center rounded-xl border border-white/15 bg-transparent px-3 text-left text-sm text-white"
+                  className="flex w-full items-center rounded-xl border border-white/15 bg-transparent px-3 py-1.5 text-left text-sm text-white"
                 >
                   <span className="truncate">
                     {filters.location || "Select Location"}
@@ -192,31 +182,15 @@ export default function ExploreFilter() {
                         {selectOptions.citiesByCountry[
                           country as keyof typeof selectOptions.citiesByCountry
                         ].map((city) => (
-                          <DropdownMenuSub key={`${country}-${city}`}>
-                            <DropdownMenuSubTrigger className="focus:bg-brand focus:text-primary data-[state=open]:bg-brand data-[state=open]:text-primary">
-                              {city}
-                            </DropdownMenuSubTrigger>
-                            <DropdownMenuPortal>
-                              <DropdownMenuSubContent className="min-w-52 border-white/10 bg-secondary text-white">
-                                {selectOptions.statesByCity[
-                                  city as keyof typeof selectOptions.statesByCity
-                                ].map((stateValue) => (
-                                  <DropdownMenuItem
-                                    key={`${country}-${city}-${stateValue}`}
-                                    onClick={() =>
-                                      updateFilter(
-                                        "location",
-                                        `${country}, ${city}, ${stateValue}`
-                                      )
-                                    }
-                                    className="focus:bg-brand focus:text-primary"
-                                  >
-                                    {stateValue}
-                                  </DropdownMenuItem>
-                                ))}
-                              </DropdownMenuSubContent>
-                            </DropdownMenuPortal>
-                          </DropdownMenuSub>
+                          <DropdownMenuItem
+                            key={`${country}-${city}`}
+                            onClick={() =>
+                              updateFilter("location", `${country}, ${city}`)
+                            }
+                            className="focus:bg-brand focus:text-primary"
+                          >
+                            {city}
+                          </DropdownMenuItem>
                         ))}
                       </DropdownMenuSubContent>
                     </DropdownMenuPortal>

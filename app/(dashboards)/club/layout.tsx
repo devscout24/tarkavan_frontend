@@ -198,6 +198,6 @@ export default function PlayerDashboardLayout({
           </ScrollArea> */}
         </SidebarInset>
       </SidebarProvider>
-    </AuthCheckPoint>
+    </AuthCheckPoint>   
   )
 }

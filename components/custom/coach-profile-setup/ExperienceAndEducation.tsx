@@ -21,7 +21,7 @@ const yearsOptions = [
 ]
 
 interface ExperienceAndEducationProps {
-  updateExperience?: (experience: any) => void
+  updateExperience?: (experience: unknown) => void
 }
 
 export default function ExperienceAndEducation({ updateExperience }: ExperienceAndEducationProps) {

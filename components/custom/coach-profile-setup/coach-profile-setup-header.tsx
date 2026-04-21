@@ -17,17 +17,10 @@ export default function CoachProfileSetupHeader({
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-[28px] leading-[120%] font-semibold text-white">
             Coach Profile Setup
-          </h2>
-
-          <p className="shrink-0 text-[20px] leading-[120%] font-medium text-brand">
-            Step {currentStep} of {totalSteps}
-          </p>
+          </h2> 
         </div>
 
-        <Progress
-          value={progress}
-          className="h-2 bg-white/90 **:data-[slot=progress-indicator]:bg-brand"
-        />
+ 
 
         <p className="text-[22px] leading-[140%] text-[#D9D9D9]">
           Complete your profile to join the elite coaching network.

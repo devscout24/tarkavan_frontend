@@ -9,6 +9,8 @@ import ConfirmPayModal from "./all-modals/confirm-pay-modal"
 import AddFriendlyMatch from "./all-modals/add-friendly-match"
 import LogoutComfirmation from "./all-modals/logout-comfirmation"
 import Agreement from "@/app/(dashboards)/parent/component/aggrement"
+import CoachProfileSetup from "@/app/(dashboards)/coach/CoachProfileSetup"
+import ClubProfileSetup from "./all-modals/club-profile-setup"
 
 export default function Modals() {
   const { Modal } = useModal()
@@ -87,6 +89,7 @@ export default function Modals() {
       >
         <LogoutComfirmation />
       </Modal>
+
       <Modal
         modalId="parent"
         openId="agreement"
@@ -96,6 +99,30 @@ export default function Modals() {
           <Agreement />
         </ScrollArea>
       </Modal>
+
+      <Modal
+        modalId="coach"
+        openId="profile-setup"
+        className="max-w-full overflow-hidden! border-0! p-0! md:max-w-2xl"
+      >
+        <ScrollArea className="max-h-[90vh]">
+          <CoachProfileSetup />
+        </ScrollArea>
+      </Modal>
+
+      <Modal
+        modalId="club"
+        openId="profile-setup"
+        className="max-w-full overflow-hidden! border-0! p-0! md:max-w-2xl"
+      >
+        <ScrollArea className="max-h-[90vh]">
+          <ClubProfileSetup />
+        </ScrollArea>
+      </Modal>
+
+
+
+
     </>
   )
 }

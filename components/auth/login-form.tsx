@@ -35,6 +35,7 @@ export default function LoginForm() {
           phone: dbUser.phone,
           profile_image: dbUser.profile_image,
           role: dbUser.role,
+          status: dbUser.status,
         }
         localStorage.setItem("go_elite_user", JSON.stringify(newUserData))
         setLoading(false)

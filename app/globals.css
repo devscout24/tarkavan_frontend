@@ -1,6 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+
+@source "../app/**/*.{ts,tsx,js,jsx,mdx}";
+@source "../components/**/*.{ts,tsx,js,jsx,mdx}";
+@source "../hooks/**/*.{ts,tsx,js,jsx,mdx}";
+@source "../lib/**/*.{ts,tsx,js,jsx,mdx}";
+@source "../types/**/*.{ts,tsx,js,jsx,mdx}";
+@source not "../dist/**/*";
+@source not "../.next/**/*";
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -53,35 +61,48 @@
   --animate-circle-keys: circle-keys 2s ease-in-out infinite;
   --animate-dot-keys: dot-keys 2s ease-in-out infinite;
   --animate-outline-keys: outline-keys 2s ease-in-out infinite;
-  
 
   @keyframes circle-keys {
-  0%   { transform: scale(1);   opacity: 1; }
-  50%  { transform: scale(1.5); opacity: 0.5; }
-  100% { transform: scale(1);   opacity: 1; }
-}
-
-@keyframes dot-keys {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(0); }
-  100% { transform: scale(1); }
-}
-
-@keyframes outline-keys {
-  0% {
-    transform: scale(0);
-    outline: solid 20px hsl(0, 0%, 87%);
-    outline-offset: 0;
-    opacity: 1;
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.5);
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
   }
-  100% {
-    transform: scale(1);
-    outline: solid 0 transparent;
-    outline-offset: 20px;
-    opacity: 0;
-  }
-}
 
+  @keyframes dot-keys {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(0);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes outline-keys {
+    0% {
+      transform: scale(0);
+      outline: solid 20px hsl(0, 0%, 87%);
+      outline-offset: 0;
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      outline: solid 0 transparent;
+      outline-offset: 20px;
+      opacity: 0;
+    }
+  }
 }
 
 :root {

@@ -1,43 +1,72 @@
-"use client" 
+"use client"
 
-
-import CommonBtn from "@/components/common/common-btn"  
+import CommonBtn from "@/components/common/common-btn"
 import StatCard from "@/components/common/stat-card"
-import { GrGroup } from "react-icons/gr";
-import { RiUserSearchLine } from "react-icons/ri";
+import { GrGroup } from "react-icons/gr"
+import { RiUserSearchLine } from "react-icons/ri"
 import EducateIcon from "@/components/icons/EducateIcon"
-import { IoIosFootball } from "react-icons/io";
+import { IoIosFootball } from "react-icons/io"
 import { useRouter } from "next/navigation"
 import Advertisement from "@/components/custom/advertisement"
-import PlusIcon from "@/components/icons/plus-icon";
+import PlusIcon from "@/components/icons/plus-icon"
+import { useEffect, useState } from "react"
+import { getClubDashboard } from "./action"
+import ClubDashboardSubscription from "@/components/custom/club-dashboard-subscription"
+import { toast } from "sonner"
 
 export default function ClubDashboardPage() {
-
   const router = useRouter()
 
- 
   const stats = [
-  {
-    "title": "Active Teams",
-    "text": "04",
-    "icon": <GrGroup />
-  },
-  {
-    "title": "Player Applications",
-    "text": "07",
-    "icon": <RiUserSearchLine />
-  },
-  {
-    "title": "Coach Applications",
-    "text": "03",
-    "icon": <EducateIcon/>
-  },
-  {
-    "title": "Upcoming Matches",
-    "text": "02",
-    "icon": <IoIosFootball />
-  }
-]
+    {
+      title: "Active Teams",
+      text: "04",
+      icon: <GrGroup />,
+    },
+    {
+      title: "Player Applications",
+      text: "07",
+      icon: <RiUserSearchLine />,
+    },
+    {
+      title: "Coach Applications",
+      text: "03",
+      icon: <EducateIcon />,
+    },
+    {
+      title: "Upcoming Matches",
+      text: "02",
+      icon: <IoIosFootball />,
+    },
+  ]
+  const [isDashboard, setIsDashboard] = useState(false)
+
+  useEffect(() => {
+    const getDashboardData = async () => {
+      try {
+        const res = await getClubDashboard()
+        console.log(res)
+        if (!res?.status) {
+          setIsDashboard(true)
+          toast.error(
+            res?.message ||
+              "May be you are not logged in or not authenticated subscription."
+          )
+          return
+        }
+      } catch (err) {}
+    }
+
+    getDashboardData()
+  }, [])
+
+  // if (isDashboard) {
+  //   return (
+  //     <div>
+  //       <ClubDashboardSubscription />
+  //     </div>
+  //   )
+  // }
 
   return (
     <section className=" ">
@@ -62,14 +91,14 @@ export default function ClubDashboardPage() {
       {/* activity and action  */}
       <div className="mt-6 flex w-full flex-col-reverse gap-6 text-white md:flex-row">
         {/* recent activity */}
-        <div className="rounded-[24px]">
+        <div className="flex-2 rounded-[24px]">
           <h5 className="mb-4 text-[18px] leading-[150%] font-semibold text-white">
             Recent Opportunities
           </h5>
 
           <div className="scrollbar-hide overflow-x-auto">
-            <div className="flex flex-wrap justify-center gap-4 pb-2">
-              <div className="max-w-[320px] min-w-[320px] shrink-0">
+            <div className="flex flex-wrap gap-4 pb-2">
+              <div className="min-w-[320px] flex-1 shrink-0">
                 <Advertisement
                   imageUrl={"/images/advertisementImage.png"}
                   positions="Defender, Winger"
@@ -82,7 +111,7 @@ export default function ClubDashboardPage() {
                 />
               </div>
 
-              <div className="max-w-[320px] min-w-[320px] shrink-0">
+              <div className="min-w-[320px] flex-1 shrink-0">
                 <Advertisement
                   imageUrl={"/images/advertisementImage.png"}
                   positions="Goalkeeper, Midfielder"
@@ -95,7 +124,7 @@ export default function ClubDashboardPage() {
                 />
               </div>
 
-              <div className="max-w-[320px] min-w-[320px] shrink-0">
+              <div className="min-w-[320px] flex-1 shrink-0">
                 <Advertisement
                   imageUrl={"/images/advertisementImage.png"}
                   positions="Striker, Attacker"
@@ -112,8 +141,10 @@ export default function ClubDashboardPage() {
         </div>
 
         {/* quick actions */}
-        <div className="md:flex-2 xl:flex-3 border border-white/20 rounded-2xl  ">
-          <h3 className="mb-2 text-base font-semibold ml-6 mt-2  ">Quick Actions</h3>
+        <div className="flex-1 rounded-2xl border border-white/20">
+          <h3 className="mt-2 mb-2 ml-6 text-base font-semibold">
+            Quick Actions
+          </h3>
 
           {/* actions */}
           <div className="rounded-[16px]">
@@ -121,28 +152,27 @@ export default function ClubDashboardPage() {
               variant={"default"}
               size={"sm"}
               icon={<PlusIcon />}
-              className="w-full cursor-pointer bg-secondary py-6! text-white hover:bg-brand hover:text-primary scale-90 "
+              className="w-full scale-90 cursor-pointer bg-secondary py-6! text-white hover:bg-brand hover:text-primary"
               text={"Add Program"}
-              onClick={()=> router.push("?add-new=program") }
+              onClick={() => router.push("?add-new=program")}
             />
             <CommonBtn
               variant={"default"}
               size={"sm"}
               icon={<PlusIcon />}
-              className="w-full cursor-pointer bg-secondary py-6! text-white hover:bg-brand hover:text-primary mt-4 scale-90 "
+              className="mt-4 w-full scale-90 cursor-pointer bg-secondary py-6! text-white hover:bg-brand hover:text-primary"
               text={"Create New Team"}
-              onClick={()=> router.push("?add-new=team") }
+              onClick={() => router.push("?add-new=team")}
             />
             <CommonBtn
               variant={"default"}
               size={"sm"}
               icon={<PlusIcon />}
-              className="mt-4 w-full cursor-pointer bg-secondary py-6 text-white hover:bg-brand hover:text-primary scale-90 "
+              className="mt-4 w-full scale-90 cursor-pointer bg-secondary py-6 text-white hover:bg-brand hover:text-primary"
               text={"Add Match"}
-              onClick={()=> router.push("?add-new=friendly-match") }
-            /> 
+              onClick={() => router.push("?add-new=friendly-match")}
+            />
           </div>
- 
         </div>
       </div>
     </section>

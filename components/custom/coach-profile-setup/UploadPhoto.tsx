@@ -7,9 +7,13 @@ import { Icon } from "@/components/custom/Icon"
 
 interface UploadPhotoProps {
   updatePhotoUploaded?: (uploaded: boolean) => void
+  onFileSelect?: (file: File | null) => void
 }
 
-export default function UploadPhoto({ updatePhotoUploaded }: UploadPhotoProps) {
+export default function UploadPhoto({
+  updatePhotoUploaded,
+  onFileSelect,
+}: UploadPhotoProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>("")
   const [fileName, setFileName] = useState<string>("")
@@ -46,6 +50,7 @@ export default function UploadPhoto({ updatePhotoUploaded }: UploadPhotoProps) {
   const handleFileSelect = (file: File) => {
     setSelectedFile(file)
     setFileName(file.name)
+    onFileSelect?.(file)
     const reader = new FileReader()
     fileReaderRef.current = reader
     reader.onloadend = () => {
@@ -59,6 +64,7 @@ export default function UploadPhoto({ updatePhotoUploaded }: UploadPhotoProps) {
     setSelectedFile(null)
     setPreviewUrl("")
     setFileName("")
+    onFileSelect?.(null)
   }
 
   return (

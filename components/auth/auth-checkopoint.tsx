@@ -30,7 +30,7 @@ export default function AuthCheckPoint({ children, role }: Props) {
   useEffect(() => {
     const check = () => {
       try {
-        const token = window.localStorage.getItem("go_elite_token")
+        const token = window.localStorage.getItem("go_elite_token") 
 
         if (
           !token ||

@@ -1,4 +1,5 @@
-import SubscriptionPlanCard from "@/components/common/subscription-plan-card"
+"use client"
+import SubscriptionPlanCard from "@/components/common/subscription-plan-card" 
 
 const plans = [
   {
@@ -48,7 +49,7 @@ export default function Page() {
           {plans.map((plan) => (
             <SubscriptionPlanCard key={plan.title} {...plan} />
           ))}
-        </div>
+        </div> 
       </div>
     </section>
   )

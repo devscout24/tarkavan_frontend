@@ -39,7 +39,13 @@ export default function ClubDashboardPage() {
       icon: <IoIosFootball />,
     },
   ]
-  const [isDashboard, setIsDashboard] = useState(false)
+  const [isDashboard, setIsDashboard] = useState<{
+    status: boolean
+    message: string
+  }>({
+    status: false,
+    message: "",
+  })
 
   useEffect(() => {
     const getDashboardData = async () => {
@@ -47,26 +53,36 @@ export default function ClubDashboardPage() {
         const res = await getClubDashboard()
         console.log(res)
         if (!res?.status) {
-          setIsDashboard(true)
+          setIsDashboard({
+            status: true,
+            message:
+              String(res?.message) ||
+              "May be you are not logged in or not authenticated subscription.",
+          })
           toast.error(
             res?.message ||
               "May be you are not logged in or not authenticated subscription."
           )
           return
         }
-      } catch (err) {}
+      } catch (err) {
+        setIsDashboard({
+          status: true,
+          message:
+            "An error occurred while fetching dashboard data. Please try again later.",
+        })
+        toast.error(
+          "An error occurred while fetching dashboard data. Please try again later."
+        )
+      }
     }
 
     getDashboardData()
   }, [])
 
-  // if (isDashboard) {
-  //   return (
-  //     <div>
-  //       <ClubDashboardSubscription />
-  //     </div>
-  //   )
-  // }
+  if (isDashboard.status) {
+    return <ClubDashboardSubscription text={isDashboard.message} link="/club/subscription" btnText="Get Subscription" />
+  }
 
   return (
     <section className=" ">

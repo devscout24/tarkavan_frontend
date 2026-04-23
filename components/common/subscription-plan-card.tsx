@@ -1,9 +1,9 @@
- 
+"use client";
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { BsFillPatchCheckFill } from "react-icons/bs";
+import { BsFillPatchCheckFill } from "react-icons/bs"; 
 
 export type SubscriptionPlanCardProps = {
   title: string
@@ -90,7 +90,7 @@ export default function SubscriptionPlanCard({
             )}
           >
             {ctaLabel}
-          </Button>
+          </Button> 
         </div>
       </CardContent>
     </Card>

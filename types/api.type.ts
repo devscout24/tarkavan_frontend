@@ -3,3 +3,4 @@ export type TApiError = {
   message: number | string
   errors?: Record<string, string[]>
 }
+

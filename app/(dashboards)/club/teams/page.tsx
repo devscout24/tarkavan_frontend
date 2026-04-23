@@ -2,8 +2,8 @@
 import AddChildCard from "@/components/custom/add-child-card"
 import TeamCard from "./components/team-card"
 import CommonBtn from "@/components/common/common-btn"
-import { Plus } from "lucide-react" 
-import { useRouter } from "next/navigation"
+import { Plus } from "lucide-react"
+import { useRouter } from "next/navigation" 
 
 export default function Page() {
   const teams = [
@@ -29,7 +29,7 @@ export default function Page() {
       coaches: 2,
       image: "team2.jpg",
     },
-  ]
+  ] 
 
   const router = useRouter()
 
@@ -59,7 +59,7 @@ export default function Page() {
             imageSrc={team.image}
             onViewTeam={() => router.push(`/club/teams/${team.id}`)}
           />
-        ))} 
+        ))}
 
         <AddChildCard
           title="Add Team"

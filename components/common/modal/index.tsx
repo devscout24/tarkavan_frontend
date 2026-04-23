@@ -10,7 +10,7 @@ import AddFriendlyMatch from "./all-modals/add-friendly-match"
 import LogoutComfirmation from "./all-modals/logout-comfirmation"
 import Agreement from "@/app/(dashboards)/parent/component/aggrement"
 import CoachProfileSetup from "@/app/(dashboards)/coach/CoachProfileSetup"
-import ClubProfileSetup from "./all-modals/club-profile-setup"
+import ClubProfileSetup from "./all-modals/club-profile-setup" 
 
 export default function Modals() {
   const { Modal } = useModal()
@@ -119,6 +119,8 @@ export default function Modals() {
           <ClubProfileSetup />
         </ScrollArea>
       </Modal>
+
+ 
 
 
 

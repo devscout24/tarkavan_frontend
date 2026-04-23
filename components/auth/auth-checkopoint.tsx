@@ -3,7 +3,7 @@ import Loader from "@/components/common/loader"
 import isValidToken from "@/lib/isValid-token"
 import { TUser } from "@/types"
 import { usePathname, useRouter } from "next/navigation"
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useState } from "react"
 
 type Props = {
   children: React.ReactNode
@@ -14,52 +14,45 @@ export default function AuthCheckPoint({ children, role }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const [isChecking, setIsChecking] = useState(true)
-  const user = useMemo<TUser | null>(() => {
-    if (typeof window === "undefined") {
-      return null
-    }
-
-    try {
-      const rawUser = window.localStorage.getItem("go_elite_user")
-      return rawUser ? JSON.parse(rawUser) : null
-    } catch {
-      return null
-    }
-  }, [])
 
   useEffect(() => {
     const check = () => {
       try {
-        const token = window.localStorage.getItem("go_elite_token") 
+        const token = window.localStorage.getItem("go_elite_token")
+        const rawUser = window.localStorage.getItem("go_elite_user")
+        const user: TUser | null = rawUser ? JSON.parse(rawUser) : null
+
+        const requiredRole = role.trim().toLowerCase()
+        const userRole = user?.role?.trim().toLowerCase()
 
         if (
           !token ||
           !isValidToken(token) ||
           !user ||
           !user.email ||
-          !user.role
+          !userRole
         ) {
           router.replace("/auth")
           return
         }
 
-        if (user.role !== role) {
-          router.replace(`/${user.role}`)
+        if (userRole !== requiredRole) {
+          router.replace(`/${userRole}`)
           return
         }
 
         const pendingRedirect =
-          role === "coach"
+          requiredRole === "coach"
             ? "/coach?coach=profile-setup"
-            : role === "club"
+            : requiredRole === "club"
               ? "/club?club=profile-setup"
               : null
 
         if (user.status === "pending" && pendingRedirect) {
-          const isAllowedPath = pathname === `/${role}`
-          const requiredQuery = `${role}=profile-setup`
+          const isAllowedPath = pathname === `/${requiredRole}`
+          const queryParams = new URLSearchParams(window.location.search)
           const hasRequiredQuery =
-            window.location.search.includes(requiredQuery)
+            queryParams.get(requiredRole) === "profile-setup"
 
           // Pending coach/club users can only continue on their profile-setup route.
           if (!isAllowedPath || !hasRequiredQuery) {
@@ -75,7 +68,7 @@ export default function AuthCheckPoint({ children, role }: Props) {
       }
     }
     check()
-  }, [pathname, router, role, user])
+  }, [pathname, router, role])
 
   if (isChecking) {
     return <Loader />

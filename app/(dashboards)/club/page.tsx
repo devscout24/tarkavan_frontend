@@ -13,64 +13,86 @@ import { useEffect, useState } from "react"
 import { getClubDashboard } from "./action"
 import ClubDashboardSubscription from "@/components/custom/club-dashboard-subscription"
 import { toast } from "sonner"
+import { type TClubDashboardData } from "@/types"
+
+type TClubDashboardSuccessResponse = {
+  success: true
+  data: TClubDashboardData
+}
+
+const isClubDashboardSuccessResponse = (
+  value: unknown
+): value is TClubDashboardSuccessResponse => {
+  if (typeof value !== "object" || value === null) {
+    return false
+  }
+
+  if (!("success" in value) || !("data" in value)) {
+    return false
+  }
+
+  return value.success === true
+}
 
 export default function ClubDashboardPage() {
   const router = useRouter()
+  const [dashboardData, setDashboardData] = useState<TClubDashboardData | null>(
+    null
+  )
+  const [isError, setIsError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
 
-  const stats = [
-    {
-      title: "Active Teams",
-      text: "04",
-      icon: <GrGroup />,
-    },
-    {
-      title: "Player Applications",
-      text: "07",
-      icon: <RiUserSearchLine />,
-    },
-    {
-      title: "Coach Applications",
-      text: "03",
-      icon: <EducateIcon />,
-    },
-    {
-      title: "Upcoming Matches",
-      text: "02",
-      icon: <IoIosFootball />,
-    },
-  ]
-  const [isDashboard, setIsDashboard] = useState<{
-    status: boolean
-    message: string
-  }>({
-    status: false,
-    message: "",
-  })
+  const stats = dashboardData
+    ? [
+        {
+          title: "Active Teams",
+          text: String(dashboardData.summary.active_teams),
+          icon: <GrGroup />,
+        },
+        {
+          title: "Player Applications",
+          text: String(dashboardData.summary.player_applications),
+          icon: <RiUserSearchLine />,
+        },
+        {
+          title: "Coach Applications",
+          text: String(dashboardData.summary.coach_applications),
+          icon: <EducateIcon />,
+        },
+        {
+          title: "Upcoming Matches",
+          text: String(dashboardData.summary.upcoming_matches),
+          icon: <IoIosFootball />,
+        },
+      ]
+    : [
+        { title: "Active Teams", text: "0", icon: <GrGroup /> },
+        { title: "Player Applications", text: "0", icon: <RiUserSearchLine /> },
+        { title: "Coach Applications", text: "0", icon: <EducateIcon /> },
+        { title: "Upcoming Matches", text: "0", icon: <IoIosFootball /> },
+      ]
 
   useEffect(() => {
     const getDashboardData = async () => {
       try {
         const res = await getClubDashboard()
-        console.log(res)
-        if (!res?.status) {
-          setIsDashboard({
-            status: true,
-            message:
-              String(res?.message) ||
-              "May be you are not logged in or not authenticated subscription.",
-          })
+        if (!isClubDashboardSuccessResponse(res)) {
+          setIsError(true)
+          setErrorMessage(
+            "May be you are not logged in or not authenticated subscription."
+          )
           toast.error(
-            res?.message ||
-              "May be you are not logged in or not authenticated subscription."
+            "May be you are not logged in or not authenticated subscription."
           )
           return
         }
+
+        setDashboardData(res.data)
       } catch (err) {
-        setIsDashboard({
-          status: true,
-          message:
-            "An error occurred while fetching dashboard data. Please try again later.",
-        })
+        setIsError(true)
+        setErrorMessage(
+          "An error occurred while fetching dashboard data. Please try again later."
+        )
         toast.error(
           "An error occurred while fetching dashboard data. Please try again later."
         )
@@ -80,16 +102,23 @@ export default function ClubDashboardPage() {
     getDashboardData()
   }, [])
 
-  if (isDashboard.status) {
-    return <ClubDashboardSubscription text={isDashboard.message} link="/club/subscription" btnText="Get Subscription" />
+  if (isError) {
+    return (
+      <ClubDashboardSubscription
+        text={errorMessage}
+        link="/club/subscription"
+        btnText="Get Subscription"
+      />
+    )
   }
 
   return (
     <section className=" ">
-      <h2 className="text-base font-bold text-white">Welcome, Daniel</h2>
+      <h2 className="text-base font-bold text-white">
+        Welcome, {dashboardData?.club_info.club_name || "Club"}
+      </h2>
       <p className="mt-1 text-base text-white">
-        Here is a summary of your children recent activity and upcoming
-        sessions.{" "}
+        {"Here is a summary of your club's recent activity and upcoming  sessions."}
       </p>
 
       {/* stats */}

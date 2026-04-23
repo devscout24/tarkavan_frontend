@@ -23,7 +23,7 @@ export default function LoginForm() {
 
       if (res.data.status) {
         toast.success("Login successful! Welcome back.")
-        setAuthCookie(res.data.data.token)
+        await setAuthCookie(res.data.data.token)
         localStorage.setItem("go_elite_token", res.data.data.token)
         const dbUser = res.data.data.user
         const newUserData = {
@@ -39,10 +39,13 @@ export default function LoginForm() {
         }
         localStorage.setItem("go_elite_user", JSON.stringify(newUserData))
         setLoading(false)
-        
-        router.push(`${newUserData.role || res.data.data.user.role}`)
 
-
+        const normalizedRole = String(
+          newUserData.role || res.data.data.user.role || ""
+        )
+          .trim()
+          .toLowerCase()
+        router.replace(`/${normalizedRole}`)
       } else {
         setLoading(false)
         toast.error(`Login failed. Please try again.`)

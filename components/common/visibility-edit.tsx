@@ -4,7 +4,9 @@ import { Select, createListCollection } from "@ark-ui/react/select";
 import { ChevronDownIcon } from "lucide-react";
 import { useState } from "react";
 import { TiWorld } from "react-icons/ti";
-import { BsLock } from "react-icons/bs";
+import { TbPlayFootball } from "react-icons/tb";
+import { AiOutlineTeam } from "react-icons/ai";
+import { GoUnlock } from "react-icons/go";
 
 interface Theme {
   label: string;
@@ -17,7 +19,9 @@ export default function VisibilityEdit() {
 
   const themes: Theme[] = [
     { label: "Public", value: "public", icon: TiWorld },
-    { label: "Private", value: "private", icon: BsLock }, 
+    { label: "Players/Athletes Only", value: "Players", icon: TbPlayFootball }, 
+    { label: "Coach and team Only", value: "Coach", icon: AiOutlineTeam }, 
+    { label: "Private", value: "Private", icon: GoUnlock }, 
   ];
 
   const collection = createListCollection<Theme>({ items: themes });

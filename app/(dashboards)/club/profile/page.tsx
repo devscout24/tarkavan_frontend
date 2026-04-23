@@ -6,8 +6,21 @@ import {  Share2 } from "lucide-react"
 import { FaFacebookF, FaTiktok } from "react-icons/fa"
 import { FaXTwitter } from "react-icons/fa6"
 import { IoLogoInstagram, IoLogoWhatsapp } from "react-icons/io"
+import { getClubProfile } from "../action"
 
-export default function page() {
+export default async function page() {
+
+  let data 
+  try{
+
+    const res = await getClubProfile()
+    console.log(res)
+
+  }catch(err){
+
+  }
+
+
   return (
     <section>
       {/* visibility and customization options */}
@@ -30,7 +43,7 @@ export default function page() {
             tags={["ACADEMY", "HIGH PERFORMANCE PROGRAM"]}
           />
 
-          <div className="mt-6 flex items-center justify-between rounded-2xl border border-secondary p-7">
+          <div className="mt-6 flex items-center flex-wrap justify-between rounded-2xl border border-secondary p-7">
             <div className=""> 
               <ul className="  flex gap-7.5 rounded-lg  p-4 text-2xl text-white">
                 <a

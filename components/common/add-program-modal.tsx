@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Input } from "../ui/input"
 import {
   Select,
@@ -11,12 +11,49 @@ import { Textarea } from "../ui/textarea"
 import CommonBtn from "@/components/common/common-btn"
 import UploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
+import { createProgram } from "@/app/(dashboards)/club/action"
+import { toast } from "sonner"
+import { getSportOptions } from "@/app/(dashboards)/action"
 
 interface AddProgramPageProps {
   onSave?: (data: unknown) => void
 }
 
+type TSportOption = {
+  id: number
+  name: string
+  audience: string
+  status: string
+}
+
+type TSportOptionsPayload = {
+  status: boolean
+  message: string
+  data: TSportOption[]
+}
+
+type TSportOptionsSuccessResponse = {
+  success: true
+  data: TSportOptionsPayload
+}
+
+const isSportOptionsSuccessResponse = (
+  value: unknown
+): value is TSportOptionsSuccessResponse => {
+  if (typeof value !== "object" || value === null) {
+    return false
+  }
+
+  if (!("success" in value) || !("data" in value)) {
+    return false
+  }
+
+  return value.success === true
+}
+
 const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [sportOptions, setSportOptions] = useState<TSportOption[]>([])
   const [form, setForm] = useState(() => {
     // Try to load photo from sessionStorage (better size limits than localStorage)
     let photo = null
@@ -43,7 +80,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
       about: "",
       goals: [""],
       photo,
-      type: "",
+      type: "one_one",
     }
   })
 
@@ -87,9 +124,113 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
     })
   }
 
-  const handleSave = () => {
-    if (onSave) onSave(form)
-    // Add navigation or notification as needed
+  useEffect(() => {
+    const getSportData = async () => {
+      try {
+        const res = await getSportOptions()
+
+        if (!isSportOptionsSuccessResponse(res)) {
+          return
+        }
+
+        const payload = res.data
+        if (!payload.status || !Array.isArray(payload.data)) {
+          return
+        }
+
+        const activeSportOptions = payload.data.filter(
+          (sport) => sport.status === "active"
+        )
+        setSportOptions(activeSportOptions)
+      } catch (err) {
+        console.error("Error fetching sport data:", err)
+      }
+    }
+    getSportData()
+  }, [])
+
+  const handleAddProgram = async () => {
+    if (isSubmitting) {
+      return
+    }
+
+    try {
+      setIsSubmitting(true)
+
+      const formData = new FormData()
+      formData.append("sport", form.sport)
+      formData.append("program_type", form.type)
+      formData.append("program_name", form.name)
+      formData.append("program_price", form.price)
+      formData.append("program_location", form.location)
+      formData.append("program_start", form.start)
+      formData.append("program_end", form.end)
+      formData.append("about_program", form.about)
+      formData.append("discount_price", form.discountPrice || "0")
+      formData.append("upto_age", form.ageGroup)
+
+      // if (form.type) {
+      //   formData.append("program_type", form.type)
+      // }
+
+      form.times
+        .filter((time) => Boolean(time.trim()))
+        .forEach((time, index) => {
+          formData.append(`program_times[${index}]`, time)
+        })
+
+      form.goals
+        .filter((goal) => Boolean(goal.trim()))
+        .forEach((goal, index) => {
+          formData.append(`goals[${index}]`, goal)
+        })
+
+      if (form.photo && form.photo.startsWith("data:")) {
+        const photoResponse = await fetch(form.photo)
+        const photoBlob = await photoResponse.blob()
+        const extension = photoBlob.type.split("/")[1]?.toLowerCase() || "jpg"
+        const file = new File([photoBlob], `program-photo.${extension}`, {
+          type: photoBlob.type || "image/jpeg",
+        })
+        formData.append("program_photo", file)
+      }
+
+      const res = await createProgram(formData)
+      console.log(res)
+
+      if (
+        typeof res === "object" &&
+        res !== null &&
+        "success" in res &&
+        res.success
+      ) {
+        toast.success("Program added successfully")
+        if (onSave) {
+          onSave(form)
+        }
+        try {
+          sessionStorage.removeItem("add-program-photo")
+        } catch {
+          // Ignore storage removal errors
+        }
+        return
+      }
+
+      const fallbackMessage =
+        "Failed to create program. Please check your inputs."
+      const message =
+        typeof res === "object" &&
+        res !== null &&
+        "message" in res &&
+        typeof res.message === "string"
+          ? res.message
+          : fallbackMessage
+      toast.error(message)
+    } catch {
+      toast.error("Failed to create program. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -160,7 +301,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
               <SelectItem value="group" className="hover:bg-brand!">
                 Group
               </SelectItem>
-              <SelectItem value="one-on-one" className="hover:bg-brand!">
+              <SelectItem value="one_one" className="hover:bg-brand!">
                 One-on-One
               </SelectItem>
             </SelectContent>
@@ -179,9 +320,15 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
                 <SelectValue placeholder="Select Sport" />
               </SelectTrigger>
               <SelectContent position="popper">
-                <SelectItem value="soccer" className="hover:bg-brand">
-                  Soccer
-                </SelectItem>
+                {sportOptions.map((sport) => (
+                  <SelectItem
+                    key={sport.id}
+                    value={String(sport.id)}
+                    className="hover:bg-brand"
+                  >
+                    {sport.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -206,14 +353,17 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
                 <SelectValue placeholder="Select Age Group" />
               </SelectTrigger>
               <SelectContent position="popper">
-                <SelectItem value="u10" className="hover:bg-brand!">
-                  U10
+                <SelectItem value="13" className="hover:bg-brand!">
+                  U13
                 </SelectItem>
-                <SelectItem value="u12" className="hover:bg-brand!">
-                  U12
+                <SelectItem value="15" className="hover:bg-brand!">
+                  U15
                 </SelectItem>
-                <SelectItem value="u14" className="hover:bg-brand!">
-                  U14
+                <SelectItem value="17" className="hover:bg-brand!">
+                  U17
+                </SelectItem>
+                <SelectItem value="18" className="hover:bg-brand!">
+                  18-plus
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -333,11 +483,11 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
             onClick={() => {}}
           />
           <CommonBtn
-            text="Save Program"
+            text={isSubmitting ? "Saving..." : "Save Program"}
             size="lg"
             variant="default"
             className="w-fit bg-brand px-10 text-black hover:border hover:bg-transparent hover:text-white"
-            onClick={handleSave}
+            onClick={handleAddProgram}
           />
         </div>
       </div>

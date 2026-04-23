@@ -32,9 +32,11 @@ export async function clubProfileSetup(data: FormData) {
 export async function getClubDashboard() {
   try {
     const res = await api.get("/club/dashboard")
-    return { success: true, data: res.data }
+    console.log(res)
+    return { success: true, data: res.data.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {
+      console.log(err?.response?.data)
       return err?.response?.data
     }
 
@@ -88,7 +90,7 @@ export async function getSubscribeClubPlan() {
 
 export async function purchaseSubscription(plan_id: string) {  
   try {
-    const res = await api.post("/club/subscription/purchase" , {plan_id} )
+    const res = await api.post("/club/subscription/purchase" , {plan_id} ) 
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {

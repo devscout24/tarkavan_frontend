@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -7,9 +7,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
 import CommonBtn from "@/components/common/common-btn"
 import UploadPhoto from "@/components/common/upload-photo"
+import { createTeam } from "@/app/(dashboards)/club/action"
+import { getCompetitionLabel } from "@/app/(dashboards)/action"
 
 export default function TeamAddModal() {
   const [form, setForm] = useState({
@@ -26,6 +27,9 @@ export default function TeamAddModal() {
     goals: [""],
     photo: null as File | null,
   })
+  const [competitionLevels, setCompetitionLevels] = useState<
+    Array<{ id: number; name: string }>
+  >([])
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -71,6 +75,29 @@ export default function TeamAddModal() {
     })
   }
 
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const res = await getCompetitionLabel()
+        if (res && "success" in res && res.success && "data" in res) {
+          setCompetitionLevels(res.data?.data || [])
+        }
+      } catch (err) {
+        console.error("Error fetching competition levels:", err)
+      }
+    }
+    getData()
+  }, [])
+
+  // const getData = async () => {
+  //   try {
+  //     const res = await createTeam()
+  //     console.log(res)
+  //   } catch (err) {
+  //     console.error("Error fetching subscription data:", err)
+  //   }
+  // }
+
   return (
     <div className=" ">
       <div className="flex flex-col gap-4 rounded-2xl bg-neutral-900 p-8 text-white">
@@ -91,8 +118,8 @@ export default function TeamAddModal() {
           )}
         </div>
 
-        <div className="border-b border-dashed  ">
-          <h2 className="pb-1 ">Core Identity</h2>
+        <div className="border-b border-dashed">
+          <h2 className="pb-1">Core Identity</h2>
         </div>
 
         <div className="">
@@ -102,7 +129,7 @@ export default function TeamAddModal() {
             value={form.location}
             onChange={handleChange}
             placeholder="e. g. Elite U16"
-            className="border-neutral-700 bg-neutral-800 py-5 "
+            className="border-neutral-700 bg-neutral-800 py-5"
           />
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -112,13 +139,22 @@ export default function TeamAddModal() {
               value={form.ageGroup}
               onValueChange={(v) => handleSelect("ageGroup", v)}
             >
-              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5 ">
+              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5">
                 <SelectValue placeholder="Select Age Group" />
               </SelectTrigger>
               <SelectContent position="popper">
-                <SelectItem value="u10" className="hover:bg-brand!">U10</SelectItem>
-                <SelectItem value="u12" className="hover:bg-brand!">U12</SelectItem>
-                <SelectItem value="u14" className="hover:bg-brand!">U14</SelectItem>
+                <SelectItem value="13" className="hover:bg-brand!">
+                  U13
+                </SelectItem>
+                <SelectItem value="15" className="hover:bg-brand!">
+                  U15
+                </SelectItem>
+                <SelectItem value="17" className="hover:bg-brand!">
+                  U17
+                </SelectItem>
+                <SelectItem value="18" className="hover:bg-brand!">
+                  18-plus
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -128,31 +164,37 @@ export default function TeamAddModal() {
               value={form.sport}
               onValueChange={(v) => handleSelect("sport", v)}
             >
-              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5 ">
+              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5">
                 <SelectValue placeholder="Select Competition Level" />
               </SelectTrigger>
               <SelectContent position="popper">
-                <SelectItem value="football" className="hover:bg-brand!">Football</SelectItem>
-                <SelectItem value="basketball" className="hover:bg-brand!">Basketball</SelectItem>
-                <SelectItem value="tennis" className="hover:bg-brand!">Tennis</SelectItem>
+                {competitionLevels.map((level) => (
+                  <SelectItem
+                    key={level.id}
+                    value={level.id.toString()}
+                    className="hover:bg-brand!"
+                  >
+                    {level.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
         </div>
- 
-        <div className="mt-6 flex justify-end mr-2  gap-4">
+
+        <div className="mt-6 mr-2 flex justify-end gap-4">
           <CommonBtn
             text="Cancel"
             size="lg"
             variant="outline"
-            className="w-fit px-10 hover:border-brand hover:text-white "
+            className="w-fit px-10 hover:border-brand hover:text-white"
             onClick={() => {}}
           />
           <CommonBtn
             text="Save Program"
             size="lg"
             variant="default"
-            className="w-fit px-10 bg-brand text-black hover:bg-brand"
+            className="w-fit bg-brand px-10 text-black hover:bg-brand"
             onClick={() => {}}
           />
         </div>

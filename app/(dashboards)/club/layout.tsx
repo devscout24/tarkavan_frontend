@@ -21,9 +21,13 @@ import {
 } from "@/components/animate-ui/primitives/radix/collapsible"
 import Logo from "@/components/common/logo"
 import MenuBtn from "@/components/custom/menu-btn"
-import Image from "next/image" 
+import Image from "next/image"
 import { BiMessageSquareDetail } from "react-icons/bi"
-import { RiDashboardFill, RiLogoutCircleRLine, RiMenuSearchLine } from "react-icons/ri"
+import {
+  RiDashboardFill,
+  RiLogoutCircleRLine,
+  RiMenuSearchLine,
+} from "react-icons/ri"
 import { FaRegUser } from "react-icons/fa6"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -35,7 +39,7 @@ import { GrGroup } from "react-icons/gr"
 import { AiOutlineUsergroupAdd } from "react-icons/ai"
 import { IoIosFootball } from "react-icons/io"
 import { CiCreditCard2 } from "react-icons/ci"
-import Modals from "@/components/common/modal" 
+import Modals from "@/components/common/modal"
 import AuthCheckPoint from "@/components/auth/auth-checkopoint"
 
 export default function PlayerDashboardLayout({
@@ -119,8 +123,22 @@ export default function PlayerDashboardLayout({
           <SidebarHeader className="border-b border-secondary py-4.5">
             <SidebarMenu>
               <SidebarMenuItem>
-                <div className="flex justify-between">
-                  <Logo className="w-21.25" />
+                <div className="flex items-center justify-between">
+                  <div className="group-data-[collapsible=icon]:hidden">
+                    <Logo className="w-21.25" />
+                  </div>
+                  <Link
+                    href="/"
+                    className="hidden size-10 items-center justify-center rounded-md group-data-[collapsible=icon]:inline-flex"
+                  >
+                    <Image
+                      width={32}
+                      height={32}
+                      src="/images/logo.png"
+                      alt="Tarkavan Logo"
+                      className="h-8 w-8 object-contain"
+                    />
+                  </Link>
                   <MenuBtn>
                     <SidebarTrigger className="-ml-1 cursor-pointer" />
                   </MenuBtn>
@@ -179,7 +197,7 @@ export default function PlayerDashboardLayout({
         <SidebarInset className="flex h-screen min-h-0 flex-col">
           <header className="flex shrink-0 items-center gap-2 border-b border-secondary py-2.5 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
             <div className="flex w-full items-center justify-between gap-2 px-4">
-              <BreadcrumbCustom /> 
+              <BreadcrumbCustom />
               <div className="flex items-center gap-4">
                 <Notification />
                 <ProfileDropdown />
@@ -198,6 +216,6 @@ export default function PlayerDashboardLayout({
           </ScrollArea> */}
         </SidebarInset>
       </SidebarProvider>
-    </AuthCheckPoint>   
+    </AuthCheckPoint>
   )
 }

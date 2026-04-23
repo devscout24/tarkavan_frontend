@@ -118,8 +118,22 @@ export default function ParentDashboardLayout({
             {/* Team Switcher */}
             <SidebarMenu>
               <SidebarMenuItem>
-                <div className="flex justify-between">
-                  <Logo className="w-21.25" />
+                <div className="flex items-center justify-between">
+                  <div className="group-data-[collapsible=icon]:hidden">
+                    <Logo className="w-21.25" />
+                  </div>
+                  <Link
+                    href="/"
+                    className="hidden size-10 items-center justify-center rounded-md group-data-[collapsible=icon]:inline-flex"
+                  >
+                    <Image
+                      width={32}
+                      height={32}
+                      src="/images/logo.png"
+                      alt="Tarkavan Logo"
+                      className="h-8 w-8 object-contain"
+                    />
+                  </Link>
                   <MenuBtn>
                     <SidebarTrigger className="-ml-1 cursor-pointer" />
                   </MenuBtn>

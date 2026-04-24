@@ -166,6 +166,7 @@ export default function CoachProfileSetup({
               'go_elite_user',
               JSON.stringify({ ...parsedUser, status: 'approved' })
             )
+            localStorage.setItem(`profile_completed_${parsedUser.id}`, "true")
           }
         } catch {
           // ignore

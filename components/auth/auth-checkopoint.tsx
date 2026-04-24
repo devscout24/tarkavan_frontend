@@ -48,7 +48,9 @@ export default function AuthCheckPoint({ children, role }: Props) {
               ? `/club?club=profile-setup`
               : null
 
-        if (user.status === "pending" && pendingRedirect) {
+        const hasCompletedSetup = window.localStorage.getItem(`profile_completed_${user.id}`) === "true"
+
+        if (user.status === "pending" && pendingRedirect && !hasCompletedSetup) {
           const queryParams = new URLSearchParams(window.location.search)
           const hasProfileSetupQuery =
             queryParams.get(requiredRole) === "profile-setup"

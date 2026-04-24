@@ -123,6 +123,7 @@ export default function ClubProfileSetup() {
       if (parsedUser) {
         const updatedUser = { ...parsedUser, status: "approve" }
         localStorage.setItem("go_elite_user", JSON.stringify(updatedUser))
+        localStorage.setItem(`profile_completed_${parsedUser.id}`, "true")
       } 
       router.replace("/club")
       window.location.reload()

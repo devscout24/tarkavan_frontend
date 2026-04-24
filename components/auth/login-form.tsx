@@ -46,10 +46,11 @@ export default function LoginForm() {
           .trim()
           .toLowerCase()
 
-        // If coach/club is still pending, send directly to profile-setup modal
-        // so the modal appears immediately without a second redirect
+        // If coach/club is still pending AND hasn't completed setup locally, show modal
         const isPending = newUserData.status === "pending"
-        if (isPending && (normalizedRole === "coach" || normalizedRole === "club")) {
+        const hasCompletedSetup = localStorage.getItem(`profile_completed_${newUserData.id}`) === "true"
+
+        if (isPending && !hasCompletedSetup && (normalizedRole === "coach" || normalizedRole === "club")) {
           router.replace(`/${normalizedRole}?${normalizedRole}=profile-setup`)
         } else {
           router.replace(`/${normalizedRole}`)

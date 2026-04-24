@@ -58,7 +58,13 @@ export default function CoachProfileSetup({
   }, [formData])
 
   // Load saved form data from localStorage on mount
+  // Also clean up old keys that child components previously wrote directly
   useEffect(() => {
+    // Clear stale child-component localStorage keys
+    localStorage.removeItem('coachProfileImage')
+    localStorage.removeItem('coachProfileImageName')
+    localStorage.removeItem('coach-profile-certifications')
+
     try {
       const savedData = localStorage.getItem(STORAGE_KEY)
       if (savedData) {
@@ -99,19 +105,18 @@ export default function CoachProfileSetup({
     const errors: string[] = []
 
     // Required field validations
-    if (!data.name.trim()) errors.push('First name is required')
-    if (!data.last_name.trim()) errors.push('Last name is required')
-    if (!data.email.trim()) errors.push('Email is required')
+    if (!data.name?.trim()) errors.push('First name is required')
+    if (!data.last_name?.trim()) errors.push('Last name is required')
+    if (!data.email?.trim()) errors.push('Email is required')
     if (!data.dob) errors.push('Date of birth is required')
     if (!data.gender) errors.push('Gender is required')
-    if (!data.nationality.trim()) errors.push('Nationality is required')
-    if (!data.country.trim()) errors.push('Country is required')
-    if (!data.city.trim()) errors.push('City is required')
-    if (!data.sports.trim()) errors.push('Sport selection is required')
-    if (!data.years_of_experience.trim()) errors.push('Years of experience is required')
-    if (!data.highest_education.trim()) errors.push('Highest education is required')
-    if (!data.coaching_education.trim()) errors.push('Coaching education is required')
-    if (!data.coaching_philosophy.trim()) errors.push('Coaching philosophy is required')
+    if (!data.nationality?.trim()) errors.push('Nationality is required')
+    if (!data.country?.trim()) errors.push('Country is required')
+    if (!data.city?.trim()) errors.push('City is required')
+    if (!data.sports?.trim()) errors.push('Sport selection is required')
+    if (!data.years_of_experience?.trim()) errors.push('Years of experience is required')
+    if (!data.highest_education?.trim()) errors.push('Highest education is required')
+    if (!data.coaching_philosophy?.trim()) errors.push('Coaching philosophy is required')
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -125,19 +130,18 @@ export default function CoachProfileSetup({
     }
   }
 
-  // Handle form submission
+  // Handle form submission — reads latest data directly from the ref
   const handleSubmit = useCallback(async (e?: React.FormEvent) => {
     e?.preventDefault()
     setIsLoading(true)
 
     try {
-      // Get current form data from ref
+      // Always read the latest snapshot from the ref (updated every render)
       const currentFormData = formDataRef.current
-      
+
       // Validate form
       const validation = validateForm(currentFormData)
       if (!validation.isValid) {
-        // Show validation errors as toast
         validation.errors.forEach(error => {
           toast.error(error)
         })
@@ -150,10 +154,26 @@ export default function CoachProfileSetup({
 
       if (result.success) {
         toast.success(result.message || 'Coach profile created successfully!')
-        // Clear saved form data after successful submission
         localStorage.removeItem(STORAGE_KEY)
-        // Reset form
+
+        // Mark the user as approved so AuthCheckPoint never redirects
+        // to profile-setup again on future logins or page refreshes
+        try {
+          const rawUser = localStorage.getItem('go_elite_user')
+          if (rawUser) {
+            const parsedUser = JSON.parse(rawUser)
+            localStorage.setItem(
+              'go_elite_user',
+              JSON.stringify({ ...parsedUser, status: 'approved' })
+            )
+          }
+        } catch {
+          // ignore
+        }
+
         setFormData(getInitialFormData())
+        // Redirect to clean dashboard URL (no query params → modal won't reopen)
+        window.location.replace('/coach')
       } else {
         toast.error(result.message || 'Failed to create coach profile')
       }
@@ -163,6 +183,7 @@ export default function CoachProfileSetup({
     } finally {
       setIsLoading(false)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   
@@ -195,6 +216,30 @@ export default function CoachProfileSetup({
     })
   }, [updateFormData])
 
+  // Stable callback for ExperienceAndEducation
+  const handleExperienceUpdate = useCallback((data: any) => {
+    updateFormData({
+      years_of_experience: data.years || '',
+      highest_education: data.education || '',
+      coaching_education: data.history || '',
+    })
+  }, [updateFormData])
+
+  // Stable callback for CertificationsAndCredentials (optional, not validated)
+  const handleCredentialsUpdate = useCallback((files: unknown[]) => {
+    // Files are stored inside the child; just track that uploads happened
+    updateFormData({ images: files as any[] })
+  }, [updateFormData])
+
+  // Stable callback for CoachingPhilosophy
+  const handlePhilosophyUpdate = useCallback((data: { philosophy: string; playerCentric: boolean; dataDriven: boolean }) => {
+    updateFormData({
+      coaching_philosophy: data.philosophy,
+      player_centric_approach: data.playerCentric,
+      data_driving_training: data.dataDriven
+    })
+  }, [updateFormData])
+
   return (
     <section className="bg-primary">
       <div className="space-y-4 rounded-[16px] bg-primary p-4 sm:p-6">
@@ -214,11 +259,19 @@ export default function CoachProfileSetup({
           updateSports={handleSportsUpdate}
         />
         
-        <ExperienceAndEducation />
+        <ExperienceAndEducation
+          updateExperience={handleExperienceUpdate}
+        />
         
-        <CertificationsAndCredentials />
+        <CertificationsAndCredentials
+          updateCredentials={handleCredentialsUpdate}
+        />
         
-        <CoachingPhilosophy />
+        <CoachingPhilosophy 
+          updatePhilosophy={handlePhilosophyUpdate}
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
+        />
       </div>
     </section>
   )

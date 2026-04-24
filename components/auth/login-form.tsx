@@ -45,7 +45,15 @@ export default function LoginForm() {
         )
           .trim()
           .toLowerCase()
-        router.replace(`/${normalizedRole}`)
+
+        // If coach/club is still pending, send directly to profile-setup modal
+        // so the modal appears immediately without a second redirect
+        const isPending = newUserData.status === "pending"
+        if (isPending && (normalizedRole === "coach" || normalizedRole === "club")) {
+          router.replace(`/${normalizedRole}?${normalizedRole}=profile-setup`)
+        } else {
+          router.replace(`/${normalizedRole}`)
+        }
       } else {
         setLoading(false)
         toast.error(`Login failed. Please try again.`)

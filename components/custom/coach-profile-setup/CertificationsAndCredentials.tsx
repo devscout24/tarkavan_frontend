@@ -69,9 +69,7 @@ function TrashIcon() {
 
 export default function CertificationsAndCredentials({ updateCredentials }: CertificationsAndCredentialsProps) {
   const [files, setFiles] = useState<CredentialFile[]>([])
-  const [hasLoadedStorage, setHasLoadedStorage] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  const storageKey = "coach-profile-certifications"
 
   // Update parent component when files change
   useEffect(() => {
@@ -80,26 +78,6 @@ export default function CertificationsAndCredentials({ updateCredentials }: Cert
     }
   }, [files, updateCredentials])
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(storageKey)
-      if (raw) {
-        const parsed = JSON.parse(raw) as CredentialFile[]
-        if (Array.isArray(parsed)) {
-          setFiles(parsed)
-        }
-      }
-    } catch {
-      setFiles([])
-    } finally {
-      setHasLoadedStorage(true)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!hasLoadedStorage) return
-    localStorage.setItem(storageKey, JSON.stringify(files))
-  }, [files, hasLoadedStorage])
 
   const handleSelect = (selected: FileList | null) => {
     if (!selected) return

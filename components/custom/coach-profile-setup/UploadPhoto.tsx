@@ -19,32 +19,12 @@ export default function UploadPhoto({
   const [fileName, setFileName] = useState<string>("")
   const fileReaderRef = useRef<FileReader | null>(null)
 
-  // Load image from localStorage on mount
+  // Notify parent when photo selection changes
   useEffect(() => {
-    const savedImage = localStorage.getItem("coachProfileImage")
-    const savedFileName = localStorage.getItem("coachProfileImageName")
-    if (savedImage) {
-      setPreviewUrl(savedImage)
-      setFileName(savedFileName || "")
+    if (updatePhotoUploaded) {
+      updatePhotoUploaded(!!previewUrl)
     }
-  }, [])
-
-  // Save image to localStorage when previewUrl changes (and is not empty)
-  useEffect(() => {
-    if (previewUrl) {
-      localStorage.setItem("coachProfileImage", previewUrl)
-      localStorage.setItem("coachProfileImageName", fileName)
-      if (updatePhotoUploaded) {
-        updatePhotoUploaded(true)
-      }
-    } else {
-      localStorage.removeItem("coachProfileImage")
-      localStorage.removeItem("coachProfileImageName")
-      if (updatePhotoUploaded) {
-        updatePhotoUploaded(false)
-      }
-    }
-  }, [previewUrl, fileName, updatePhotoUploaded])
+  }, [previewUrl, updatePhotoUploaded])
 
   // Handle file selection and convert to base64
   const handleFileSelect = (file: File) => {

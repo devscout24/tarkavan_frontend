@@ -6,20 +6,26 @@ import { BsArrowRight } from "react-icons/bs"
 import { FiCheckSquare, FiSquare } from "react-icons/fi"
 
 interface CoachingPhilosophyProps {
-  updatePhilosophy?: (text: string) => void
+  updatePhilosophy?: (data: { philosophy: string; playerCentric: boolean; dataDriven: boolean }) => void
+  onSubmit?: () => void
+  isLoading?: boolean
 }
 
-export default function CoachingPhilosophy({ updatePhilosophy }: CoachingPhilosophyProps) {
+export default function CoachingPhilosophy({
+  updatePhilosophy,
+  onSubmit,
+  isLoading = false,
+}: CoachingPhilosophyProps) {
   const [philosophy, setPhilosophy] = useState("")
   const [playerCentric, setPlayerCentric] = useState(true)
   const [dataDriven, setDataDriven] = useState(false)
 
-  // Update parent component when philosophy changes
+  // Update parent component when any philosophy field changes
   useEffect(() => {
     if (updatePhilosophy) {
-      updatePhilosophy(philosophy)
+      updatePhilosophy({ philosophy, playerCentric, dataDriven })
     }
-  }, [philosophy, updatePhilosophy])
+  }, [philosophy, playerCentric, dataDriven, updatePhilosophy])
 
   return (
     <section className="rounded-2xl border border-white/8 bg-secondary/20 p-5 text-white md:p-6">
@@ -43,35 +49,54 @@ export default function CoachingPhilosophy({ updatePhilosophy }: CoachingPhiloso
       />
 
       <div className="mt-4 flex flex-wrap items-center gap-5">
-        <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-white/90">
-          <input
-            type="checkbox"
-            checked={playerCentric}
-            onChange={(event) => setPlayerCentric(event.target.checked)}
-            className="sr-only"
-          />
+        {/* Use div instead of label+input to prevent Radix Dialog's onInteractOutside from firing */}
+        <div
+          role="checkbox"
+          aria-checked={playerCentric}
+          tabIndex={0}
+          className="inline-flex cursor-pointer items-center gap-2 text-sm text-white/90 select-none"
+          onClick={(e) => {
+            e.stopPropagation()
+            setPlayerCentric((prev) => !prev)
+          }}
+          onKeyDown={(e) => {
+            if (e.key === " " || e.key === "Enter") {
+              e.preventDefault()
+              setPlayerCentric((prev) => !prev)
+            }
+          }}
+        >
           {playerCentric ? (
             <FiCheckSquare className="size-4 text-white" />
           ) : (
             <FiSquare className="size-4 text-white/90" />
           )}
           <span>Player-centric approach</span>
-        </label>
+        </div>
 
-        <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-white/90">
-          <input
-            type="checkbox"
-            checked={dataDriven}
-            onChange={(event) => setDataDriven(event.target.checked)}
-            className="sr-only"
-          />
+        <div
+          role="checkbox"
+          aria-checked={dataDriven}
+          tabIndex={0}
+          className="inline-flex cursor-pointer items-center gap-2 text-sm text-white/90 select-none"
+          onClick={(e) => {
+            e.stopPropagation()
+            setDataDriven((prev) => !prev)
+          }}
+          onKeyDown={(e) => {
+            if (e.key === " " || e.key === "Enter") {
+              e.preventDefault()
+              setDataDriven((prev) => !prev)
+            }
+          }}
+        >
           {dataDriven ? (
             <FiCheckSquare className="size-4 text-white" />
           ) : (
             <FiSquare className="size-4 text-white/90" />
           )}
           <span>Data-driven training</span>
-        </label>
+        </div>
       </div>
 
       <div className="mt-5 h-px w-full bg-white/10" />
@@ -87,9 +112,12 @@ export default function CoachingPhilosophy({ updatePhilosophy }: CoachingPhiloso
         <CommonBtn
           variant="default"
           size="lg"
-          text="Finish & Create Profile"
+          text={isLoading ? "Submitting..." : "Finish & Create Profile"}
           className="h-12 w-60 rounded-xl bg-brand px-5 text-sm font-semibold text-primary hover:border hover:border-secondary hover:bg-transparent hover:text-white"
           iconRight={<BsArrowRight className="size-4" />}
+          onClick={onSubmit}
+          isLoading={isLoading}
+          disabled={isLoading}
         />
       </div>
     </section>

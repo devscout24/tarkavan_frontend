@@ -10,6 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { getCoachPositions } from "@/components/parentApi/api/coachPositions"
+import { getSportOptions } from "@/components/parentApi/api/sportOptions"
+import type { CoachPosition, SportOption } from "@/components/parentApi/type"
 
 const triggerClassName =
   "h-11 w-full rounded-xl border-white/10 bg-secondary/10 px-3 text-sm text-white data-placeholder:text-white/50"
@@ -17,17 +20,6 @@ const triggerClassName =
 const titleInputClassName =
   "h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
 
-const sportOptions = [{ value: "soccer", label: "Soccer" }]
-
-const roleOptions = [
-  { value: "head-coach", label: "Head Coach" },
-  { value: "assistant-coach", label: "Assistant Coach" },
-  { value: "goalkeeping-coach", label: "Goalkeeping Coach" },
-  { value: "fitness-coach", label: "Fitness Coach" },
-  { value: "skills-trainer", label: "Skills Trainer" },
-  { value: "performance-analyst", label: "Performance Analyst" },
-  { value: "youth-coach", label: "Youth Coach" },
-]
 
 interface SportsAndSpecialtiesProps {
   updateSports?: (sports: unknown) => void
@@ -37,10 +29,48 @@ export default function SportsAndSpecialties({ updateSports }: SportsAndSpecialt
   const [sport, setSport] = useState("")
   const [role, setRole] = useState("")
   const [titleInput, setTitleInput] = useState("")
-  const [coachingTitles, setCoachingTitles] = useState<string[]>([
-    "Head Coach",
-    "Skills Trainer",
-  ])
+  const [coachingTitles, setCoachingTitles] = useState<string[]>([])
+  const [sportOptions, setSportOptions] = useState<SportOption[]>([])
+  const [roleOptions, setRoleOptions] = useState<CoachPosition[]>([])
+  const [formattedSportOptions, setFormattedSportOptions] = useState<{value: string, label: string}[]>([])
+  const [formattedRoleOptions, setFormattedRoleOptions] = useState<{value: string, label: string}[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Fetch sport options and coach positions on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [sportsResult, positionsResult] = await Promise.all([
+          getSportOptions(),
+          getCoachPositions()
+        ])
+
+        if (sportsResult.success && sportsResult.data) {
+          const formattedSports = sportsResult.data.map(sport => ({
+            value: sport.id.toString(),
+            label: sport.name
+          }))
+          setSportOptions(sportsResult.data)
+          setFormattedSportOptions(formattedSports)
+        }
+
+        if (positionsResult.success && positionsResult.data) {
+          const formattedPositions = positionsResult.data.map(position => ({
+            value: position.id.toString(),
+            label: position.name
+          }))
+          setRoleOptions(positionsResult.data)
+          setFormattedRoleOptions(formattedPositions)
+        }
+      } catch (error) {
+        console.error('Failed to fetch options:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
 
   // Update parent component when sports data changes
   useEffect(() => {
@@ -83,7 +113,7 @@ export default function SportsAndSpecialties({ updateSports }: SportsAndSpecialt
         <SelectField
           label="Sport Selection"
           placeholder="Select Sport"
-          options={sportOptions}
+          options={formattedSportOptions}
           triggerClassName={triggerClassName}
           value={sport}
           onValueChange={setSport}
@@ -134,7 +164,7 @@ export default function SportsAndSpecialties({ updateSports }: SportsAndSpecialt
               <SelectValue placeholder="Select Current Role" />
             </SelectTrigger>
             <SelectContent className="bg-secondary/90 text-white">
-              {roleOptions.map((option) => (
+              {formattedRoleOptions.map((option) => (
                 <SelectItem
                   key={option.value}
                   value={option.value}

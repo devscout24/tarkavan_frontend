@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 import DatepickerField from "@/components/common/datepicker-field"
 import InputField from "@/components/common/input-field"
 import SelectField from "@/components/common/select-field"
+import { getCountries, getCities } from "@/components/parentApi/api/locations"
+import type { Country, City } from "@/components/parentApi/type"
 
 const controlClassName =
   "h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
@@ -17,6 +19,18 @@ const genderOptions = [
   { value: "other", label: "Other" },
 ]
 
+const cityOptions = [
+  { value: "dhaka", label: "Dhaka" },
+  { value: "chittagong", label: "Chittagong" },
+  { value: "khulna", label: "Khulna" },
+  { value: "rajshahi", label: "Rajshahi" },
+  { value: "sylhet", label: "Sylhet" },
+  { value: "barisal", label: "Barisal" },
+  { value: "rangpur", label: "Rangpur" },
+  { value: "mymensingh", label: "Mymensingh" },
+]
+
+
 interface BasicInformationProps {
   updateBasicInfo?: (info: any) => void
 }
@@ -29,6 +43,53 @@ export default function BasicInformation({ updateBasicInfo }: BasicInformationPr
   const [lastName, setLastName] = useState("")
   const [nationality, setNationality] = useState("")
   const [email, setEmail] = useState("")
+  const [city, setCity] = useState("")
+  const [country, setCountry] = useState("")
+  const [countries, setCountries] = useState<Country[]>([])
+  const [cities, setCities] = useState<City[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Fetch countries on component mount
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const result = await getCountries()
+        if (result.success && result.data) {
+          setCountries(result.data)
+        }
+      } catch (error) {
+        console.error('Failed to fetch countries:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchCountries()
+  }, [])
+
+  // Fetch cities when country changes
+  useEffect(() => {
+    if (!country) {
+      setCities([])
+      return
+    }
+
+    const selectedCountry = countries.find(c => c.id.toString() === country)
+    if (!selectedCountry) return
+
+    const fetchCities = async () => {
+      try {
+        const result = await getCities(selectedCountry.id)
+        if (result.success && result.data) {
+          setCities(result.data)
+        }
+      } catch (error) {
+        console.error('Failed to fetch cities:', error)
+      }
+    }
+
+    fetchCities()
+  }, [country, countries])
 
   // Update parent component when form data changes
   useEffect(() => {
@@ -40,9 +101,11 @@ export default function BasicInformation({ updateBasicInfo }: BasicInformationPr
         gender: gender || "",
         nationality: nationality || "",
         email: email || "",
+        city: city || "",
+        country: country || "",
       })
     }
-  }, [firstName, lastName, dateOfBirth, gender, nationality, email, updateBasicInfo])
+  }, [firstName, lastName, dateOfBirth, gender, nationality, email, city, country, updateBasicInfo])
 
   return (
     <div className="rounded-2xl text-white">
@@ -104,6 +167,27 @@ export default function BasicInformation({ updateBasicInfo }: BasicInformationPr
           className={controlClassName}
           value={email || ""}
           onChange={(e) => setEmail(e.target.value || "")}
+        />
+
+        <SelectField
+          label="Country"
+          placeholder="Select country"
+          options={countries.map(c => ({ value: c.id.toString(), label: c.name }))}
+          triggerClassName={triggerClassName}
+          value={country || ""}
+          onValueChange={(value) => {
+            setCountry(value || "")
+            setCity("") // Reset city when country changes
+          }}
+        />
+
+        <SelectField
+          label="City"
+          placeholder="Select city"
+          options={cities.map(c => ({ value: c.id.toString(), label: c.name }))}
+          triggerClassName={triggerClassName}
+          value={city || ""}
+          onValueChange={(value) => setCity(value || "")}
         />
       </div>
     </div>

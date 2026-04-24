@@ -123,7 +123,7 @@ const quickActions = [
   { icon: <AddChildIcon />, label: "Add Your Children", active: false },
   {
     icon: <ProgramsOutlineIcon />,
-    label: "Explore EAM Programs",
+    label: "Explore Programs",
     active: false,
   },
   { icon: <BillingIcon />, label: "View Billing History", active: false },

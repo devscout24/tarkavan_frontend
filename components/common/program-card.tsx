@@ -2,6 +2,7 @@
 import { Calendar, Clock3, UserRound } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import CommonBtn from "./common-btn"
 import ThreeDotsMenu, { type ThreeDotsMenuItem } from "./three-dots-menu"
@@ -101,6 +102,46 @@ export default function ProgramCard({
           {shouldShowThreeDotsMenu && (
             <ThreeDotsMenu items={threeDotsItems} />
           )}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+export function ProgramCardSkeleton() {
+  return (
+    <Card className="w-full overflow-hidden rounded-2xl border border-secondary/40 bg-primary py-0">
+      <div className="relative h-48 w-full overflow-hidden">
+        <Skeleton className="h-full w-full rounded-none" />
+      </div>
+
+      <CardContent className="h-full flex flex-col justify-between p-4">
+        <div className="flex items-start justify-between gap-4 h-15.5">
+          <Skeleton className="h-6 w-[70%]" />
+          <div className="text-right">
+            <Skeleton className="h-5 w-16 mb-1" />
+            <Skeleton className="h-4 w-12 ml-auto" />
+          </div>
+        </div>
+
+        <div className="space-y-3 mt-4">
+          <div className="flex items-center gap-2">
+            <Skeleton className="size-4 rounded-full" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Skeleton className="size-4 rounded-full" />
+            <Skeleton className="h-4 w-28" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Skeleton className="size-4 rounded-full" />
+            <Skeleton className="h-4 w-40" />
+          </div>
+        </div> 
+
+        <div className="flex gap-4 mt-6">
+          <Skeleton className="flex-1 h-11 rounded-xl" />
+          <Skeleton className="h-11 w-11 rounded-full" />
         </div>
       </CardContent>
     </Card>

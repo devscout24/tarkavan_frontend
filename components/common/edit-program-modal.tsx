@@ -11,14 +11,13 @@ import { Textarea } from "../ui/textarea"
 import CommonBtn from "@/components/common/common-btn"
 import UploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
-import { createProgram } from "@/app/(dashboards)/club/action"
-import { createCoachProgram } from "@/app/(dashboards)/coach/action"
+import { updateCoachProgram, getCoachProgramDetails } from "@/app/(dashboards)/coach/action"
 import { toast } from "sonner"
 import { getSportOptions } from "@/app/(dashboards)/action"
 import useModal from "./modal/useModal"
 import { usePathname } from "next/navigation"
 
-interface AddProgramPageProps {
+interface EditProgramPageProps {
   onSave?: (data: unknown) => void
 }
 
@@ -54,41 +53,124 @@ const isSportOptionsSuccessResponse = (
   return value.success === true
 }
 
-const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
+const EditProgramPage: React.FC<EditProgramPageProps> = ({ onSave }) => {
   const { close } = useModal()
   const pathname = usePathname()
   const isCoach = pathname?.includes("/coach")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [sportOptions, setSportOptions] = useState<TSportOption[]>([])
-  const [form, setForm] = useState(() => {
-    // Try to load photo from sessionStorage (better size limits than localStorage)
-    let photo = null
-    if (typeof window !== "undefined") {
-      try {
-        const saved = sessionStorage.getItem("add-program-photo")
-        if (saved) {
-          photo = saved
-        }
-      } catch {
-        // Ignore storage access errors
-      }
-    }
-    return {
-      sport: "",
-      name: "",
-      ageGroup: "",
-      price: "",
-      discountPrice: "",
-      location: "",
-      start: "",
-      end: "",
-      times: ["", "", ""],
-      about: "",
-      goals: [""],
-      photo,
-      type: "one_one",
-    }
+  
+  const [programId, setProgramId] = useState<number | null>(null)
+
+  const [form, setForm] = useState({
+    sport: "",
+    name: "",
+    ageGroup: "",
+    price: "",
+    discountPrice: "",
+    location: "",
+    start: "",
+    end: "",
+    times: ["", "", ""],
+    about: "",
+    goals: [""],
+    photo: null as string | null,
+    type: "one_one",
   })
+
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem("edit-program-data")
+      if (saved) {
+        const editData = JSON.parse(saved)
+        if (editData?.id) {
+          setProgramId(editData.id)
+          
+          let photo = null
+          const savedPhoto = sessionStorage.getItem("edit-program-photo")
+          if (savedPhoto) {
+            photo = savedPhoto
+          }
+          
+          const timesList = Array.isArray(editData?.times) && editData.times.length > 0 
+            ? editData.times.map((t: any) => {
+                const timeStr = String(t.time || "")
+                let firstPart = timeStr.split("-")[0].trim()
+                const timeRegex = /^([0-9]{1,2}):([0-9]{2})$/
+                const match = firstPart.match(timeRegex)
+                if (match) {
+                  let hours = match[1]
+                  if (hours.length === 1) hours = "0" + hours
+                  firstPart = `${hours}:${match[2]}`
+                }
+                return firstPart
+              }) 
+            : ["", "", ""]
+          while (timesList.length < 3) timesList.push("")
+      
+          const goalsList = Array.isArray(editData?.goals) && editData.goals.length > 0
+            ? editData.goals.map((g: any) => g.goal)
+            : [""]
+
+          setForm({
+            sport: editData?.sport || editData?.sport_option?.name || "",
+            name: editData?.program_name || "",
+            ageGroup: editData?.upto_age ? String(editData.upto_age) : "",
+            price: editData?.program_price ? String(editData.program_price) : "",
+            discountPrice: editData?.discount_price ? String(editData.discount_price) : "",
+            location: editData?.program_location || "",
+            start: editData?.program_start ? editData.program_start.split("T")[0] : "",
+            end: editData?.program_end ? editData.program_end.split("T")[0] : "",
+            times: timesList,
+            about: editData?.about_program || "",
+            goals: goalsList,
+            photo: photo || editData?.program_photo || null,
+            type: editData?.program_type || "one_one",
+          })
+
+          // Fetch full details including about_program
+          getCoachProgramDetails(editData.id).then((response) => {
+            const res = response as any
+            if (res && res.success && res.data?.data?.program) {
+              const fullData = res.data.data.program
+              
+              const fullTimesList = Array.isArray(fullData?.times) && fullData.times.length > 0 
+                ? fullData.times.map((t: any) => {
+                    const timeStr = String(t.time || "")
+                    let firstPart = timeStr.split("-")[0].trim()
+                    const timeRegex = /^([0-9]{1,2}):([0-9]{2})$/
+                    const match = firstPart.match(timeRegex)
+                    if (match) {
+                      let hours = match[1]
+                      if (hours.length === 1) hours = "0" + hours
+                      firstPart = `${hours}:${match[2]}`
+                    }
+                    return firstPart
+                  }) 
+                : ["", "", ""]
+              while (fullTimesList.length < 3) fullTimesList.push("")
+          
+              const fullGoalsList = Array.isArray(fullData?.goals) && fullData.goals.length > 0
+                ? fullData.goals.map((g: any) => g.goal)
+                : [""]
+
+              setForm(prev => ({
+                ...prev,
+                about: fullData?.about_program || prev.about,
+                times: fullTimesList,
+                goals: fullGoalsList,
+                sport: fullData?.sport || fullData?.sport_option?.name || prev.sport,
+                type: fullData?.program_type || prev.type,
+                ageGroup: fullData?.upto_age ? String(fullData.upto_age) : prev.ageGroup,
+              }))
+            }
+          }).catch(console.error)
+        }
+      }
+    } catch {
+      // Ignore
+    }
+  }, [])
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -111,6 +193,17 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
     })
   }
 
+  const addTime = () => {
+    setForm((prev) => ({ ...prev, times: [...prev.times, ""] }))
+  }
+
+  const removeTime = (idx: number) => {
+    setForm((prev) => {
+      const times = prev.times.filter((_: string, i: number) => i !== idx)
+      return { ...prev, times }
+    })
+  }
+
   const handleGoalChange = (idx: number, value: string) => {
     setForm((prev) => {
       const goals = [...prev.goals]
@@ -125,7 +218,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
 
   const removeGoal = (idx: number) => {
     setForm((prev) => {
-      const goals = prev.goals.filter((_, i) => i !== idx)
+      const goals = prev.goals.filter((_: string, i: number) => i !== idx)
       return { ...prev, goals }
     })
   }
@@ -184,14 +277,14 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
       // }
 
       form.times
-        .filter((time) => Boolean(time.trim()))
-        .forEach((time, index) => {
+        .filter((time: string) => Boolean(time.trim()))
+        .forEach((time: string, index: number) => {
           formData.append(`program_times[${index}]`, time)
         })
 
       form.goals
-        .filter((goal) => Boolean(goal.trim()))
-        .forEach((goal, index) => {
+        .filter((goal: string) => Boolean(goal.trim()))
+        .forEach((goal: string, index: number) => {
           formData.append(`goals[${index}]`, goal)
         })
 
@@ -205,20 +298,29 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
         formData.append("program_photo", file)
       }
 
+      if (!programId) {
+        toast.error("Program ID is missing.")
+        setIsSubmitting(false)
+        return
+      }
+
       let res: any;
       if (isCoach) {
-        res = await createCoachProgram(formData)
+        res = await updateCoachProgram(programId, formData)
       } else {
-        res = await createProgram(formData) 
+        toast.error("Editing club programs is not supported in this modal yet.")
+        setIsSubmitting(false)
+        return
       }
 
       // Check success correctly based on our generic action response pattern
       if (res && (res.success === true || res.status === true)) {
-        toast.success("Program created successfully!")
-        close("add-new", ["program"])
+        toast.success("Program updated successfully!")
+        close("edit-program", ["program"])
 
         try {
-          sessionStorage.removeItem("add-program-photo")
+          sessionStorage.removeItem("edit-program-photo")
+          sessionStorage.removeItem("edit-program-data")
         } catch {
           // Ignore storage removal errors
         }
@@ -226,7 +328,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
       }
 
       const fallbackMessage =
-        "Failed to create program. Please check your inputs."
+        "Failed to update program. Please check your inputs."
       const message =
         typeof res === "object" &&
         res !== null &&
@@ -236,7 +338,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
           : fallbackMessage
       toast.error(message)
     } catch {
-      toast.error("Failed to create program. Please try again.")
+      toast.error("Failed to update program. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
@@ -245,7 +347,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
   return (
     <div className="mx-auto w-full p-0">
       <div className="flex flex-col gap-4 rounded-2xl bg-neutral-900 p-8 text-white">
-        <h2 className="mb-2 text-2xl font-semibold">Add Program</h2>
+        <h2 className="mb-2 text-2xl font-semibold">Edit Program</h2>
 
         {/* Photo Upload */}
         <div className="mb-2">
@@ -257,7 +359,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
                 const dataUrl = reader.result as string
                 setForm((prev) => ({ ...prev, photo: dataUrl }))
                 try {
-                  sessionStorage.setItem("add-program-photo", dataUrl)
+                  sessionStorage.setItem("edit-program-photo", dataUrl)
                 } catch {
                   // If sessionStorage is full, keep in memory only
                   console.warn("sessionStorage full, keeping image in memory")
@@ -284,7 +386,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
                 onClick={() => {
                   setForm((prev) => ({ ...prev, photo: null }))
                   try {
-                    sessionStorage.removeItem("add-program-photo")
+                    sessionStorage.removeItem("edit-program-photo")
                   } catch {
                     // Ignore removal errors
                   }
@@ -300,6 +402,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
         <div className="flex flex-col">
           <span className="text-sm">Program Type</span>
           <Select
+            key={form.type}
             value={form.type}
             onValueChange={(v) => handleSelect("type", v)}
           >
@@ -322,6 +425,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
           <div className="flex flex-col">
             <span className="text-sm">Sport Selection</span>
             <Select
+              key={sportOptions.length + "-" + form.sport}
               value={form.sport}
               onValueChange={(v) => handleSelect("sport", v)}
             >
@@ -355,6 +459,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
           <div className="flex flex-col">
             <span className="text-sm">Age Group</span>
             <Select
+              key={form.ageGroup}
               value={form.ageGroup}
               onValueChange={(v) => handleSelect("ageGroup", v)}
             >
@@ -429,17 +534,34 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
           </div>
           <div className="flex flex-col">
             <span className="text-sm">Add Program Time</span>
-            <div className="mt-1 flex gap-2">
+            <div className="mt-1 flex flex-col gap-2">
               {form.times.map((time, idx) => (
-                <Input
-                  key={idx}
-                  value={time}
-                  onChange={(e) => handleTimeChange(idx, e.target.value)}
-                  placeholder="HH:MM"
-                  className="border-neutral-700 bg-neutral-800 py-5"
-                  type="time"
-                />
+                <div key={idx} className="flex items-center gap-2">
+                  <Input
+                    value={time}
+                    onChange={(e) => handleTimeChange(idx, e.target.value)}
+                    placeholder="HH:MM"
+                    className="flex-1 border-neutral-700 bg-neutral-800 py-5"
+                    type="time"
+                  />
+                  {form.times.length > 1 && (
+                    <CommonBtn
+                      text="✕"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => removeTime(idx)}
+                      className="hover:border-brand hover:bg-brand hover:text-primary"
+                    />
+                  )}
+                </div>
               ))}
+              <CommonBtn
+                text="+ Add Time"
+                size="sm"
+                variant="outline"
+                className="mt-2 w-full py-5! hover:border-brand hover:bg-brand hover:text-primary"
+                onClick={addTime}
+              />
             </div>
           </div>
         </div>
@@ -492,7 +614,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
             onClick={() => {}}
           />
           <CommonBtn
-            text={isSubmitting ? "Saving..." : "Save Program"}
+            text={isSubmitting ? "Updating..." : "Update Program"}
             size="lg"
             variant="default"
             className="w-fit bg-brand px-10 text-black hover:border hover:bg-transparent hover:text-white"
@@ -504,4 +626,4 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
   )
 }
 
-export default AddProgramPage
+export default EditProgramPage

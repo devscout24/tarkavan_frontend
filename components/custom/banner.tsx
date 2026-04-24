@@ -55,7 +55,7 @@ export default function Banner() {
             className="inline-flex min-h-14 w-full max-w-70 items-center justify-center gap-2 rounded-full border border-[#D8FFB1]/60 bg-[linear-gradient(135deg,#09302D_0%,#065A4A_45%,#1DAE75_100%)] px-8 text-base font-medium text-white shadow-[0_0_30px_rgba(23,180,109,0.35)] transition-transform duration-300 hover:scale-[1.02]"
             // onClick={() => router.push("/auth?auth-tab=register&user-type=player")}
           >
-            Join as Player
+            Join as Player/Athlete
             <ChevronRight className="size-4" />
           </Link>
 
@@ -64,7 +64,7 @@ export default function Banner() {
             className="inline-flex min-h-14 w-full max-w-70 items-center justify-center gap-2 rounded-full border border-[#A5CEE3]/45 bg-[linear-gradient(135deg,#00101A_0%,#012739_55%,#016465_100%)] px-8 text-base font-medium text-white shadow-[0_0_28px_rgba(1,85,90,0.28)] transition-transform duration-300 hover:scale-[1.02]"
             // onClick={() => router.push("/auth?auth-tab=register&user-type=coach")}
           >
-            Join as Coach
+            Join as Coach/Mentor
             <ChevronRight className="size-4" />
           </Link>
 
@@ -73,7 +73,7 @@ export default function Banner() {
             className="inline-flex min-h-14 w-full max-w-70 items-center justify-center gap-2 rounded-full border border-[#D8FFB1]/60 bg-[linear-gradient(135deg,#09302D_0%,#086547_45%,#20B46B_100%)] px-8 text-base font-medium text-white shadow-[0_0_30px_rgba(23,180,109,0.35)] transition-transform duration-300 hover:scale-[1.02]"
             // onClick={() => router.push("/auth?auth-tab=register&user-type=club")}
           >
-            Join as Club
+            Join as Club/Team
             <ChevronRight className="size-4" />
           </Link>
         </div>
@@ -109,7 +109,7 @@ export default function Banner() {
               href="/auth?auth-tab=register&user-type=player"
               className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full border border-[#D8FFB1]/60 bg-[linear-gradient(135deg,#09302D_0%,#065A4A_45%,#1DAE75_100%)] px-8 text-base font-medium text-white shadow-[0_0_30px_rgba(23,180,109,0.35)] transition-transform duration-300 hover:scale-[1.02] sm:px-10 sm:text-lg"
             >
-              Join as Player
+              Join as Player/Athlete
               <ChevronRight className="size-4 sm:size-5" />
             </Link>
           </div>
@@ -119,7 +119,7 @@ export default function Banner() {
               href="/auth?auth-tab=register&user-type=coach"
               className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full border border-[#A5CEE3]/45 bg-[linear-gradient(135deg,#00101A_0%,#012739_55%,#016465_100%)] px-8 text-base font-medium text-white shadow-[0_0_28px_rgba(1,85,90,0.28)] transition-transform duration-300 hover:scale-[1.02] sm:px-10 sm:text-lg"
             >
-              Join as Coach
+              Join as Coach/Mentor
               <ChevronRight className="size-4 sm:size-5" />
             </Link>
           </div>
@@ -129,7 +129,7 @@ export default function Banner() {
               href="/auth?auth-tab=register&user-type=club"
               className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full border border-[#D8FFB1]/60 bg-[linear-gradient(135deg,#09302D_0%,#086547_45%,#20B46B_100%)] px-8 text-base font-medium text-white shadow-[0_0_30px_rgba(23,180,109,0.35)] transition-transform duration-300 hover:scale-[1.02] sm:px-10 sm:text-lg"
             >
-              Join as Club
+              Join as Club/Team
               <ChevronRight className="size-4 sm:size-5" />
             </Link>
           </div>

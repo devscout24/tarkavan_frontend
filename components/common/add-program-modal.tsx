@@ -12,9 +12,11 @@ import CommonBtn from "@/components/common/common-btn"
 import UploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
 import { createProgram } from "@/app/(dashboards)/club/action"
+import { createCoachProgram } from "@/app/(dashboards)/coach/action"
 import { toast } from "sonner"
 import { getSportOptions } from "@/app/(dashboards)/action"
 import useModal from "./modal/useModal"
+import { usePathname } from "next/navigation"
 
 interface AddProgramPageProps {
   onSave?: (data: unknown) => void
@@ -54,6 +56,8 @@ const isSportOptionsSuccessResponse = (
 
 const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
   const { close } = useModal()
+  const pathname = usePathname()
+  const isCoach = pathname?.includes("/coach")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [sportOptions, setSportOptions] = useState<TSportOption[]>([])
   const [form, setForm] = useState(() => {
@@ -197,15 +201,16 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
         formData.append("program_photo", file)
       }
 
-      const res = await createProgram(formData) 
+      let res: any;
+      if (isCoach) {
+        res = await createCoachProgram(formData)
+      } else {
+        res = await createProgram(formData) 
+      }
 
-      if (
-        typeof res === "object" &&
-        res !== null &&
-        "success" in res &&
-        res.success
-      ) {
-        toast.success("Program added successfully")
+      // Check success correctly based on our generic action response pattern
+      if (res && (res.success === true || res.status === true)) {
+        toast.success("Program created successfully!")
         close("add-new", ["program"])
 
         try {

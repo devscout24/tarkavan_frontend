@@ -1,25 +1,23 @@
 import Image from "next/image"
-import { Edit2, MoreHorizontal, Trash2 } from "lucide-react"
+import { Edit2 , Trash2 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
+  DropdownMenuItem, 
+  DropdownMenuShortcut, 
   DropdownMenuTrigger,
 } from "@/components/animate-ui/components/radix/dropdown-menu"
 import { BsThreeDots } from "react-icons/bs"
+import { deleteTeam } from "../../action"
 
 type TeamCardProps = {
   teamName?: string
@@ -35,6 +33,9 @@ type TeamCardProps = {
   className?: string
   onViewTeam?: () => void
   onMoreClick?: () => void
+  onRefresh?: () => void
+  teamId: string
+  onDeleteTeam?: () => void
 }
 
 export default function TeamCard({
@@ -42,14 +43,46 @@ export default function TeamCard({
   ageGroup = "U16",
   competitionLevel = "Development",
   playersCount = 18,
-  playersLimit = 24,
+  playersLimit,
   coachCount = 2,
   visibility = "PUBLIC", 
   imageAlt = "Team photo",
   viewTeamLabel = "View Team",
   className,
-  onViewTeam, 
+  imageSrc ,
+  onViewTeam,  
+  onDeleteTeam,
+  teamId,
 }: TeamCardProps) {
+  const router = useRouter()
+
+  const handleDeleteTeam = async ()=> {
+    try{
+      const res = await deleteTeam(teamId) 
+      
+      if (typeof res === "object" && res !== null && "success" in res && res.success) {
+        toast.success("Team deleted successfully") 
+        router.refresh()
+        onDeleteTeam?.()
+      } else {
+        const fallbackMessage = "Failed to delete team. Please try again."
+        const message = 
+          typeof res === "object" && 
+          res !== null && 
+          "message" in res && 
+          typeof res.message === "string"
+            ? res.message
+            : fallbackMessage
+        toast.error(message)
+      }
+    }catch(error){
+      console.error(error)
+      toast.error("Failed to delete team. Please try again.")
+    }
+  }
+
+
+
   return (
     <Card
       className={cn(
@@ -58,7 +91,7 @@ export default function TeamCard({
       )}
     >
       <div className="relative h-48 w-full">
-        <Image src={"/images/player1.png"} alt={imageAlt} fill className="object-cover" />
+        <Image src={imageSrc?.includes("http") ? imageSrc : "/images/player1.png"} alt={imageAlt} fill className="object-cover" />
         <Badge className="absolute top-3 right-3 h-9 rounded-full bg-[#0ea54b] px-4 text-sm font-medium text-white hover:bg-[#0ea54b]">
           {visibility}
         </Badge>
@@ -115,7 +148,7 @@ export default function TeamCard({
                   <span>Edit</span>
                   <DropdownMenuShortcut><Edit2/></DropdownMenuShortcut>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="hover:bg-brand cursor-pointer">
+                <DropdownMenuItem onClick={handleDeleteTeam} className="hover:bg-brand cursor-pointer">
                   <span>Delete</span>
                   <DropdownMenuShortcut><Trash2/></DropdownMenuShortcut>
                 </DropdownMenuItem>

@@ -14,6 +14,7 @@ import Image from "next/image"
 import { createProgram } from "@/app/(dashboards)/club/action"
 import { toast } from "sonner"
 import { getSportOptions } from "@/app/(dashboards)/action"
+import useModal from "./modal/useModal"
 
 interface AddProgramPageProps {
   onSave?: (data: unknown) => void
@@ -52,6 +53,7 @@ const isSportOptionsSuccessResponse = (
 }
 
 const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
+  const { close } = useModal()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [sportOptions, setSportOptions] = useState<TSportOption[]>([])
   const [form, setForm] = useState(() => {
@@ -195,8 +197,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
         formData.append("program_photo", file)
       }
 
-      const res = await createProgram(formData)
-      console.log(res)
+      const res = await createProgram(formData) 
 
       if (
         typeof res === "object" &&
@@ -205,9 +206,8 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
         res.success
       ) {
         toast.success("Program added successfully")
-        if (onSave) {
-          onSave(form)
-        }
+        close("add-new", ["program"])
+
         try {
           sessionStorage.removeItem("add-program-photo")
         } catch {

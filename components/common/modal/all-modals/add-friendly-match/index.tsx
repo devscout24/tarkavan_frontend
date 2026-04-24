@@ -24,10 +24,42 @@ import {
 import { Calendar } from "@/components/ui/calendar"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
+import { addUpdateMatch } from "@/app/(dashboards)/club/matches/action"
+import { getTeams } from "@/app/(dashboards)/club/teams/action"
+import { toast } from "sonner"
+import useModal from "../../useModal"
 
 type TeamOption = {
   label: string
   value: string
+}
+
+type Team = {
+  id: number
+  club_id: number
+  name: string
+  age_group: string
+  image: string
+  competition_level_id: number
+  created_at: string
+  updated_at: string
+  total_players: number
+  total_coaches: number
+}
+
+type GetTeamsResponse = {
+  success: true
+  data: {
+    status: boolean
+    message: string
+    data: Team[]
+    meta: {
+      current_page: number
+      last_page: number
+      per_page: number
+      total: number
+    }
+  }
 }
 
 type FieldOpportunity =
@@ -96,12 +128,14 @@ export default function AddFriendlyMatch({
   onCancel,
   onSubmit,
 }: AddFriendlyMatchProps) {
+  const { close } = useModal()
   const [team, setTeam] = React.useState(defaultTeam)
   const [date, setDate] = React.useState<Date | undefined>(defaultDate)
   const [location, setLocation] = React.useState(defaultLocation)
   const [fieldOpportunity, setFieldOpportunity] =
     React.useState<FieldOpportunity>(defaultFieldOpportunity)
   const [dateOpen, setDateOpen] = React.useState(false)
+  const [availableTeams, setAvailableTeams] = React.useState<TeamOption[]>(teams)
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
@@ -119,14 +153,68 @@ export default function AddFriendlyMatch({
       nextParams.toString() ? `${pathname}?${nextParams.toString()}` : pathname
     )
   }
+  
+    React.useEffect(() => {
+      const getData = async () => {
+        try{
+          const res = await getTeams()
+          console.log("Teams data:", res)
+          
+          if (res && typeof res === "object" && "success" in res && res.success && "data" in res) {
+            const typedRes = res as GetTeamsResponse
+            if (typedRes.data && typedRes.data.data) {
+              const teamOptions: TeamOption[] = typedRes.data.data.map((team: Team) => ({
+                label: team.name,
+                value: team.id.toString(),
+              }))
+              setAvailableTeams(teamOptions)
+            }
+          }
+        }catch(err){
+          console.error("Error fetching teams data:", err)
+        }
+      }
+      getData()
+    }, [])
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     onSubmit?.({
       team,
       date,
       location: location.trim(),
       fieldOpportunity,
     })
+
+    const formData = new FormData()
+    formData.append("club_team_id", team)
+    formData.append("available_date", date ? date.toISOString().split('T')[0] : "")
+    formData.append("location", location.trim())
+    formData.append("field_opportunity", fieldOpportunity)
+
+    try{
+      const res = await addUpdateMatch(formData)
+      
+      if (typeof res === "object" && res !== null && "success" in res && res.success) {
+        toast.success("Match created successfully")
+        close("add-new", ["friendly-match"])
+        return
+      }
+      
+      const fallbackMessage = "Failed to create match. Please check your inputs."
+      const message = 
+        typeof res === "object" && 
+        res !== null && 
+        "message" in res && 
+        typeof res.message === "string"
+          ? res.message
+          : fallbackMessage
+      toast.error(message)
+    } catch (error) {
+      console.error("Error submitting friendly match:", error)
+      toast.error("Failed to create match. Please try again.")
+    }
+
+
   }
 
   return (
@@ -156,7 +244,7 @@ export default function AddFriendlyMatch({
               className="border-white/10 bg-secondary text-white"
               position="popper"
             >
-              {teams.map((option) => (
+              {availableTeams.map((option) => (
                 <SelectItem key={option.value} value={option.value} className="hover:bg-brand!  "  >
                   {option.label}
                 </SelectItem>

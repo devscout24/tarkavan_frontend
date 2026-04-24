@@ -3,6 +3,7 @@
 import api from "@/lib/api-fetcher"
 import { TApiError } from "@/types"
 import axios from "axios"
+import { revalidatePath } from "next/cache"
 
 export async function clubProfileSetup(data: FormData) {
   try {
@@ -151,6 +152,8 @@ export async function createTeam(data: FormData) {
   
   try {
     const res = await api.post("/club/team/add", data)
+    // revalidatePath 
+    revalidatePath("/club/teams", "page")
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {
@@ -168,7 +171,8 @@ export async function createTeam(data: FormData) {
 export async function deleteTeam(team_id: string) {
   
   try {
-    const res = await api.get(`/club/team/delete/${team_id}`)
+    const res = await api.delete(`/club/team/delete/${team_id}`)
+    revalidatePath("/club/teams", "page")
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {

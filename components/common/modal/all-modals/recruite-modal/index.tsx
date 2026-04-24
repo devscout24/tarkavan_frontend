@@ -14,6 +14,9 @@ import {
 } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { DatePickerDemo } from "@/components/common/date-picker"
+import { addRecruitment } from "@/app/(dashboards)/club/recruitment/action"
+import { toast } from "sonner"
+import useModal from "../../useModal"
 
 type Option = {
   label: string
@@ -70,6 +73,7 @@ export default function RecruitmentForm({
   onCancel,
   onSubmit,
 }: RecruitmentFormProps) {
+  const { close } = useModal()
   const [recruitType, setRecruitType] = useState<RecruitType>(
     defaultValues?.recruitType ?? "coach"
   )
@@ -81,15 +85,37 @@ export default function RecruitmentForm({
     defaultValues?.description ?? ""
   )
 
-  const handleSubmit = () => {
-    onSubmit?.({
-      recruitType,
-      position,
-      team,
-      experience: experience.trim(),
-      tryoutDates: tryoutDates.trim(),
-      description: description.trim(),
-    })
+  const handleSubmit = async () => {
+    try {
+      const formData = new FormData()
+      formData.append("recruitment_type", recruitType)
+      formData.append("coach_position_id", position)
+      formData.append("team_id", team)
+      formData.append("experience", experience.trim())
+      formData.append("tryout_dates", tryoutDates.trim())
+      formData.append("description", description.trim())
+
+      const res = await addRecruitment(formData)
+      
+      if (typeof res === "object" && res !== null && "success" in res && res.success) {
+        toast.success("Recruitment created successfully")
+        close("add-new", ["recruitment"])
+        return
+      }
+      
+      const fallbackMessage = "Failed to create recruitment. Please check your inputs."
+      const message = 
+        typeof res === "object" && 
+        res !== null && 
+        "message" in res && 
+        typeof res.message === "string"
+          ? res.message
+          : fallbackMessage
+      toast.error(message)
+    } catch (error) {
+      console.error("Error submitting recruitment:", error)
+      toast.error("Failed to create recruitment. Please try again.")
+    }
   }
 
   return (

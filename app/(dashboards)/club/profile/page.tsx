@@ -9,15 +9,16 @@ import { IoLogoInstagram, IoLogoWhatsapp } from "react-icons/io"
 import { getClubProfile } from "../action"
 
 export default async function page() {
-
-  let data 
-  try{
-
+  let clubProfile = null
+  try {
     const res = await getClubProfile()
     console.log(res)
-
-  }catch(err){
-
+    
+    if (res && typeof res === "object" && "success" in res && res.success && "data" in res) {
+      clubProfile = res.data.data
+    }
+  } catch(err) {
+    console.error("Error fetching club profile:", err)
   }
 
 
@@ -39,8 +40,12 @@ export default async function page() {
         <div className="flex-1">
           <ProgramCoachCard
             showMessageButton={false}
-            location="Chicago,Illinois,USA "
-            tags={["ACADEMY", "HIGH PERFORMANCE PROGRAM"]}
+            location={clubProfile ? `${clubProfile.city}, ${clubProfile.state}, ${clubProfile.country}` : "Location not available"}
+            tags={clubProfile?.organization_types?.map((org: { name: string }) => org.name.toUpperCase()) || []}
+            name={clubProfile?.club_name || "Club Name"}
+            bio={clubProfile?.club_description || "Club description not available"}
+            imageUrl={clubProfile?.club_logo_url}
+            role={clubProfile?.sports_name || "Sports Club"}
           />
 
           <div className="mt-6 flex items-center flex-wrap justify-between rounded-2xl border border-secondary p-7">
@@ -91,19 +96,10 @@ export default async function page() {
           <Card className="rounded-2xl border border-white/15 bg-[#050716] p-6 text-white">
             <h3 className="mb-4 text-2xl font-semibold">Bio</h3>
             <p className="mb-6 text-base leading-8 text-white/85">
-              {`My philosophy centers on mental resilience and technical
-              precision. I believe that greatness is not just about physical
-              ability, but the relentless pursuit of perfection in the
-              fundamentals. Whether working with professional athletes or youth
-              prospects, my approach is tailored to the individual&apos;s unique
-              psychological profile and athletic goals.`}
+              {clubProfile?.club_description || "Club description not available."}
             </p>
             <p className="text-base leading-8 text-white/85">
-              {`I focus on a &quot;Player-centric approach&quot; where athlete
-              development is tracked through data-driven training metrics. Every
-              session is designed to push limits while ensuring a deep
-              understanding of the &quot;why&quot; behind every movement on the
-              court.`}
+              {clubProfile?.sports_name ? `Specializing in ${clubProfile.sports_name}` : "Sport specialization not specified."}
             </p>
           </Card>
         </div>

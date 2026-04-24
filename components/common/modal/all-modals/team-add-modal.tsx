@@ -11,8 +11,13 @@ import CommonBtn from "@/components/common/common-btn"
 import UploadPhoto from "@/components/common/upload-photo"
 import { createTeam } from "@/app/(dashboards)/club/action"
 import { getCompetitionLabel } from "@/app/(dashboards)/action"
+import { toast } from "sonner"
+import useModal from "../useModal"
+import { useRouter } from "next/navigation"
 
 export default function TeamAddModal() {
+  const { close } = useModal()
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [form, setForm] = useState({
     sport: "",
     name: "",
@@ -42,38 +47,9 @@ export default function TeamAddModal() {
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setForm((prev) => ({ ...prev, photo: e.target.files![0] }))
-    }
-  }
-
-  const handleTimeChange = (idx: number, value: string) => {
-    setForm((prev) => {
-      const times = [...prev.times]
-      times[idx] = value
-      return { ...prev, times }
-    })
-  }
-
-  const handleGoalChange = (idx: number, value: string) => {
-    setForm((prev) => {
-      const goals = [...prev.goals]
-      goals[idx] = value
-      return { ...prev, goals }
-    })
-  }
-
-  const addGoal = () => {
-    setForm((prev) => ({ ...prev, goals: [...prev.goals, ""] }))
-  }
-
-  const removeGoal = (idx: number) => {
-    setForm((prev) => {
-      const goals = prev.goals.filter((_, i) => i !== idx)
-      return { ...prev, goals }
-    })
-  }
+ 
+  
+  const router = useRouter()
 
   useEffect(() => {
     const getData = async () => {
@@ -89,14 +65,47 @@ export default function TeamAddModal() {
     getData()
   }, [])
 
-  // const getData = async () => {
-  //   try {
-  //     const res = await createTeam()
-  //     console.log(res)
-  //   } catch (err) {
-  //     console.error("Error fetching subscription data:", err)
-  //   }
-  // }
+  const handleCreateTeam = async () => {
+    if (isSubmitting) return
+    
+    try {
+      setIsSubmitting(true)
+      
+      const formData = new FormData()
+      formData.append("name", form.location) // Using form.location as team name based on the input field
+      formData.append("age_group", form.ageGroup)
+      formData.append("competition_level_id", form.sport) // Using form.sport as competition level ID
+      
+      if (form.photo) {
+        formData.append("image", form.photo)
+      }
+      
+      const res = await createTeam(formData)
+      
+      if (typeof res === "object" && res !== null && "success" in res && res.success) {
+        toast.success("Team created successfully")
+        window.dispatchEvent(new Event("refetch:teams"))
+        close("add-new", ["team"])
+        router.refresh()  
+        return
+      }
+      
+      const fallbackMessage = "Failed to create team. Please check your inputs."
+      const message = 
+        typeof res === "object" && 
+        res !== null && 
+        "message" in res && 
+        typeof res.message === "string"
+          ? res.message
+          : fallbackMessage
+      toast.error(message)
+    } catch (err) {
+      console.error("Error creating team:", err)
+      toast.error("Failed to create team. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <div className=" ">
@@ -188,14 +197,15 @@ export default function TeamAddModal() {
             size="lg"
             variant="outline"
             className="w-fit px-10 hover:border-brand hover:text-white"
-            onClick={() => {}}
+            onClick={() => close("add-new", ["team"])}
           />
           <CommonBtn
-            text="Save Program"
+            text={isSubmitting ? "Creating..." : "Create Team"}
             size="lg"
             variant="default"
             className="w-fit bg-brand px-10 text-black hover:bg-brand"
-            onClick={() => {}}
+            onClick={handleCreateTeam}
+            disabled={isSubmitting}
           />
         </div>
       </div>

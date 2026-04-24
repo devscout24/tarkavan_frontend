@@ -1,6 +1,6 @@
 "use client"
 
-import type { ParentPaymentItem } from "@/components/parentApi/type/parent-payments"
+import type { ParentPaymentItem } from "@/components/parentAndCoachApi/type/parent-payments"
 import {
   Select,
   SelectContent,

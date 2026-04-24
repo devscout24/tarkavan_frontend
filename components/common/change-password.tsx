@@ -4,8 +4,8 @@ import { useState } from "react"
 import { toast } from "sonner"
 import CommonBtn from "@/components/common/common-btn"
 import UiInput from "@/components/common/ui-input"
-import { changePassword } from "@/components/parentApi"
-import type { ChangePasswordData } from "@/components/parentApi"
+import { changePassword } from "@/components/parentAndCoachApi"
+import type { ChangePasswordData } from "@/components/parentAndCoachApi"
 
 export default function ChangePassword() {
   const [formData, setFormData] = useState<ChangePasswordData>({

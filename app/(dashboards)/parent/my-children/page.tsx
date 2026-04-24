@@ -5,8 +5,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { buildAddAthleteModalParams } from "../component/build-add-athlete-modal-params"
 import { useEffect, useState } from "react"
-import { fetchParentChildList } from "@/components/parentApi/api/child-list"
-import { Child } from "@/components/parentApi/type/child-list.type"
+import { fetchParentChildList } from "@/components/parentAndCoachApi/api/child-list"
+import { Child } from "@/components/parentAndCoachApi/type/child-list.type"
 
 function MyChildrenPage() {
   const searchParams = useSearchParams()

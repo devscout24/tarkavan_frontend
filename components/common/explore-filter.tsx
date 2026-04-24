@@ -29,8 +29,8 @@ import { cn } from "@/lib/utils"
 import CommonBtn from "@/components/common/common-btn"
 import UiInput from "./ui-input"
 import { TbPlayFootball } from "react-icons/tb"
-import { fetchSportOptions } from "@/components/parentApi/api/sport-options"
-import { SportOption } from "@/components/parentApi/type/sport-options.type"
+import { fetchSportOptions } from "@/components/parentAndCoachApi/api/sport-options"
+import { SportOption } from "@/components/parentAndCoachApi/type/sport-options.type"
 
 type ExploreFilterState = {
   category: string

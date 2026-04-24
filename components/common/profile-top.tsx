@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 // import CommonBtn from "@/components/common/common-btn"
 import Image from "next/image"
-import { getProfile, type ParentProfile } from "@/components/parentApi"
+import { getProfile, type ParentProfile } from "@/components/parentAndCoachApi"
 
 export default function ProfileTop() {
   const [profile, setProfile] = useState<ParentProfile | null>(null)

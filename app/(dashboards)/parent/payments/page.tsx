@@ -5,7 +5,7 @@ import {
   fetchParentPayments,
   type ParentPaymentItem,
   type PaymentSummary,
-} from "@/components/parentApi"
+} from "@/components/parentAndCoachApi"
 import { useEffect, useState } from "react"
 import { FaRegCreditCard } from "react-icons/fa"
 import { MdOutlinePending } from "react-icons/md"

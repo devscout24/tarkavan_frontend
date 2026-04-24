@@ -8,8 +8,8 @@ import advertisementImage from "@/public/images/advertisementImage.png"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Icon } from "@/components/custom/Icon"
-import { getDashboard } from "@/components/parentApi"
-import type { DashboardData, DashboardApiResult } from "@/components/parentApi"
+import { getDashboard } from "@/components/parentAndCoachApi"
+import type { DashboardData, DashboardApiResult } from "@/components/parentAndCoachApi"
 
 const ChildrenIcon = () => (
   <Icon width="18" height="14" viewBox="0 0 18 14">

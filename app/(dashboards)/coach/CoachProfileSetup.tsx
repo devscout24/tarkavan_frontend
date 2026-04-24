@@ -7,8 +7,8 @@ import SportsAndSpecialties from "@/components/custom/coach-profile-setup/Sports
 import UploadPhoto from "@/components/custom/coach-profile-setup/UploadPhoto"
 import React, { useState, useEffect, useCallback, useRef } from "react"
 import { toast } from "sonner"
-import { createOrUpdateCoachProfile, convertToFormData } from "@/components/parentApi/api/coachProfile"
-import type { CoachProfileFormData, CoachProfileApiResult } from "@/components/parentApi/type/coachProfileTypes"
+import { createOrUpdateCoachProfile, convertToFormData } from "@/components/parentAndCoachApi/api/coachProfile"
+import type { CoachProfileFormData, CoachProfileApiResult } from "@/components/parentAndCoachApi/type/coachProfileTypes"
 
 interface CoachProfileSetupProps {
   currentStep?: number

@@ -9,22 +9,12 @@ import {
   PlatformFeeIcon, 
   UpcomingProgramsIcon,
 } from "@/components/custom/coach-dashboard-icons" 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import PlusIcon from "@/components/icons/plus-icon"
-
-const stats = [
-  { icon: <ActiveProgramsIcon />, title: "Active Programs", text: "05" },
-  { icon: <UpcomingProgramsIcon />, title: "My Upcoming Programs", text: "01" },
-  { icon: <NetEarningsIcon />, title: "Net Earnings (Month)", text: "$360.00" },
-  {
-    icon: <PlatformFeeIcon />,
-    title: "10% Platform Fee (Month)",
-    text: "$60.00",
-  },
-]
-
- 
+import { getCoachDashboard } from "@/components/parentAndCoachApi/api/coachDashboardApi"
+import type { CoachDashboardData } from "@/components/parentAndCoachApi/type/coachDashboardTypes"
+import Loader from "@/components/common/loader"
 
 const quickActions = [
   {
@@ -58,6 +48,9 @@ const quickActions = [
 ]
 
 export default function CoachDashboardPage() {
+  const [dashboardData, setDashboardData] = useState<CoachDashboardData | null>(null)
+  const [loading, setLoading] = useState(true)
+
   const [appliedAdvertisements, setAppliedAdvertisements] = useState<string[]>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('coachAppliedAdvertisements')
@@ -65,6 +58,25 @@ export default function CoachDashboardPage() {
     }
     return []
   })
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const result = await getCoachDashboard()
+        if (result.success && result.data) {
+          setDashboardData(result.data)
+        } else {
+          toast.error(result.message || "Failed to fetch dashboard data")
+        }
+      } catch (error) {
+        toast.error("An unexpected error occurred while fetching dashboard data")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchDashboardData()
+  }, [])
 
   const handleApplyAdvertisement = (teamName: string) => {
     if (!appliedAdvertisements.includes(teamName)) {
@@ -79,11 +91,26 @@ export default function CoachDashboardPage() {
     }
   }
 
+  if (loading) {
+    return <Loader />
+  }
+
+  const stats = [
+    { icon: <ActiveProgramsIcon />, title: "Active Programs", text: dashboardData?.summary?.active_programs?.toString().padStart(2, '0') || "00" },
+    { icon: <UpcomingProgramsIcon />, title: "My Upcoming Programs", text: dashboardData?.summary?.upcoming_programs?.toString().padStart(2, '0') || "00" },
+    { icon: <NetEarningsIcon />, title: "Net Earnings (Month)", text: `$${dashboardData?.summary?.net_earnings_month?.toFixed(2) || "0.00"}` },
+    {
+      icon: <PlatformFeeIcon />,
+      title: `${dashboardData?.summary?.platform_fee_rate || 0}% Platform Fee (Month)`,
+      text: `$${dashboardData?.summary?.platform_fee_month?.toFixed(2) || "0.00"}`,
+    },
+  ]
+
   return (
     <section>
       <div className="mb-4">
         <h4 className="mb-1 leading-[150%] font-bold text-white">
-          Welcome, Daniel
+          Welcome, {dashboardData?.coach_info?.name || "Coach"}
         </h4>
         <p className="leading-[150%] font-normal text-white">
           {`Here's what's happening with your coaching business today.`}
@@ -109,44 +136,26 @@ export default function CoachDashboardPage() {
 
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-4 pb-2">
-              <div className="min-w-[320px] max-w-[320px]  shrink-0">
-                <Advertisement
-                  imageUrl={"/images/advertisementImage.png"}
-                  positions="Assistant Coach"
-                  teamName="Elite U16"
-                  ageGroup="3+ years"
-                  tryoutDate="March 15-18, 2026"
-                  description="Looking for experienced assistant coach."
-                  onApply={() => handleApplyAdvertisement("Elite U16")}
-                  isApplied={appliedAdvertisements.includes("Elite U16")}
-                />
-              </div>
-              
-              <div className="min-w-[320px] max-w-[320px]  shrink-0">
-                <Advertisement
-                  imageUrl={"/images/advertisementImage.png"}
-                  positions="Head Coach"
-                  teamName="Academy Select"
-                  ageGroup="U18"
-                  tryoutDate="April 20-23, 2026"
-                  description="Seeking experienced head coach for elite academy program."
-                  onApply={() => handleApplyAdvertisement("Academy Select")}
-                  isApplied={appliedAdvertisements.includes("Academy Select")}
-                />
-              </div>
-              
-              <div className="min-w-[320px] max-w-[320px]  shrink-0">
-                <Advertisement
-                  imageUrl={"/images/advertisementImage.png"}
-                  positions="Goalkeeper Coach"
-                  teamName="Premier FC"
-                  ageGroup="U14"
-                  tryoutDate="May 10-13, 2026"
-                  description="Specialized goalkeeper coach needed for competitive team."
-                  onApply={() => handleApplyAdvertisement("Premier FC")}
-                  isApplied={appliedAdvertisements.includes("Premier FC")}
-                />
-              </div>
+              {dashboardData?.recent_opportunities && dashboardData.recent_opportunities.length > 0 ? (
+                dashboardData.recent_opportunities.map((opportunity, index) => (
+                  <div key={opportunity.id || index} className="min-w-[320px] max-w-[320px] shrink-0">
+                    <Advertisement
+                      imageUrl={opportunity.image_url || "/images/advertisementImage.png"}
+                      positions={opportunity.positions || "Coach"}
+                      teamName={opportunity.team_name || "Unknown Team"}
+                      ageGroup={opportunity.age_group || "All ages"}
+                      tryoutDate={opportunity.tryout_date || "TBA"}
+                      description={opportunity.description || "No description provided."}
+                      onApply={() => handleApplyAdvertisement(opportunity.team_name || `Team ${index}`)}
+                      isApplied={appliedAdvertisements.includes(opportunity.team_name || `Team ${index}`)}
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="text-white/60 text-[32px] py-8 px-4">
+                  No recent opportunities found.
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -158,17 +167,6 @@ export default function CoachDashboardPage() {
 
           <div className="rounded-[16px] border border-secondary/65 bg-white/10 p-4">
             <CoachQuickActions actions={quickActions} />
-
-            <div className="mt-4">
-              <Advertisement
-                imageUrl={"/images/advertisementImage.png"}
-                positions="Assistant Coach"
-                teamName="Elite U16"
-                ageGroup="3+ years"
-                tryoutDate="March 15-18, 2026"
-                description="Looking for experienced assistant coach."
-              />
-            </div>
           </div>
         </aside>
       </div>

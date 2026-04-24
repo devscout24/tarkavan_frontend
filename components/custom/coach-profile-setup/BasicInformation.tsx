@@ -4,8 +4,8 @@ import { useState, useEffect } from "react"
 import DatepickerField from "@/components/common/datepicker-field"
 import InputField from "@/components/common/input-field"
 import SelectField from "@/components/common/select-field"
-import { getCountries, getCities } from "@/components/parentApi/api/locations"
-import type { Country, City } from "@/components/parentApi/type"
+import { getCountries, getCities } from "@/components/parentAndCoachApi/api/locations"
+import type { Country, City } from "@/components/parentAndCoachApi/type"
 
 const controlClassName =
   "h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"

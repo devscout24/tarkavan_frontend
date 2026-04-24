@@ -10,9 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { getCoachPositions } from "@/components/parentApi/api/coachPositions"
-import { getSportOptions } from "@/components/parentApi/api/sportOptions"
-import type { CoachPosition, SportOption } from "@/components/parentApi/type"
+import { getCoachPositions } from "@/components/parentAndCoachApi/api/coachPositions"
+import { getSportOptions } from "@/components/parentAndCoachApi/api/sportOptions"
+import type { CoachPosition, SportOption } from "@/components/parentAndCoachApi/type"
 
 const triggerClassName =
   "h-11 w-full rounded-xl border-white/10 bg-secondary/10 px-3 text-sm text-white data-placeholder:text-white/50"

@@ -1,5 +1,5 @@
 "use client"
-import React from "react"
+import React, { useEffect, useState } from "react"
 
 import AboutProgram from "@/components/common/about-program"
 import CommonBtn from "@/components/common/common-btn"
@@ -12,34 +12,75 @@ import ProgramReview from "@/components/common/program-review"
 import { Button } from "@/components/ui/button"
 import { eachDayOfInterval, format } from "date-fns"
 import { ArrowLeftIcon } from "lucide-react"
+import Loader from "@/components/common/loader"
 
 import AddProgramPage from "@/components/common/add-program-modal"
-import { useRouter, useSearchParams, usePathname } from "next/navigation"
+import { useRouter, useSearchParams, usePathname, useParams } from "next/navigation"
+import { getCoachProgramDetails } from "../../action"
 
 export default function ProgramDetails() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const pathname = usePathname()
-  const programStartDate = new Date(2026, 3, 1)
-  const programEndDate = new Date(2026, 3, 15)
+  const params = useParams()
+  const [programData, setProgramData] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const timeSlotsByDate = eachDayOfInterval({
-    start: programStartDate,
-    end: programEndDate,
-  }).reduce<Record<string, string[]>>((acc, date) => {
-    acc[format(date, "yyyy-MM-dd")] = [
-      "09:00 AM",
-      "11:00 AM",
-      "02:00 PM",
-      "05:00 PM",
-    ]
-    return acc
-  }, {})
+  // Fetch program details
+  useEffect(() => {
+    const fetchProgramDetails = async () => {
+      try {
+        setIsLoading(true)
+        const programId = params.detailsID as string
+        console.log("Fetching program details for ID:", programId)
+        if (programId) {
+          const response = await getCoachProgramDetails(programId)
+          console.log("Full API Response:", JSON.stringify(response, null, 2))
+          if (response && 'success' in response && response.success) {
+            console.log("Program Data being set:", JSON.stringify(response.data, null, 2))
+            setProgramData(response.data)
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching program details:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchProgramDetails()
+  }, [params.detailsID])
+
+  // Generate time slots from API data
+  const timeSlotsByDate = programData?.program ? 
+    eachDayOfInterval({
+      start: new Date(programData.program.program_start),
+      end: new Date(programData.program.program_end),
+    }).reduce<Record<string, string[]>>((acc, date) => {
+      acc[format(date, "yyyy-MM-dd")] = programData.program.times.map((time: any) => time.time)
+      return acc
+    }, {}) : {}
 
   // Handler for saving the new program (implement logic as needed)
   const handleSaveProgram = (data: any) => {
     // TODO: Add your save logic here (API call, state update, etc.)
     console.log("Saved program:", data)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader />
+      </div>
+    )
+  }
+
+  if (!programData) {
+    return (
+      <div className="flex items-center justify-center py-20 text-white">
+        Program not found.
+      </div>
+    )
   }
 
   return (
@@ -72,50 +113,62 @@ export default function ProgramDetails() {
 
       {/* Add Program Modal handled by Modals component and URL param */}
 
-      {/* program details banner */}
+      {/* program details banner - using hardcoded values until API data issue is fixed */}
       <ProgramDetailsBanner
-        title="Varsity Prep Mentorship"
-        category="Football"
-        duration="12 Weeks Duration"
-        dateRange="01-04-2026 to 15-04-2026"
-        location="GoElite Sports Complex, Toronto"
-        ageRange="Ages 8-14"
+        title="Dekhi try kore"
+        category="Football (Soccer)"
+        duration="3 Days Duration"
+        dateRange="4/11/2026 to 4/14/2026"
+        location="Badda"
+        ageRange="Ages up to 15"
       />
 
       {/* layout */}
       <div className="mt-5 flex flex-col-reverse gap-6 lg:flex-row">
         {/* left side */}
         <div className="flex-2">
+          {/* Debug display to see what's actually being fetched */}
+          <div className="mb-4 p-4 bg-red-900/50 border border-red-500 rounded-lg text-white text-sm">
+            <h3 className="font-bold mb-2">Current Fetch Debug Info:</h3>
+            <p><strong>Program ID from URL:</strong> {params.detailsID}</p>
+            <p><strong>Full URL:</strong> {window.location.href}</p>
+            <p><strong>Has programData:</strong> {programData ? 'Yes' : 'No'}</p>
+            {programData && (
+              <>
+                <p><strong>Program ID from API:</strong> {programData?.program?.id}</p>
+                <p><strong>Program Name:</strong> {programData?.program?.program_name}</p>
+                <p><strong>about_program:</strong> {JSON.stringify(programData?.program?.about_program)}</p>
+                <p><strong>goals:</strong> {JSON.stringify(programData?.program?.goals)}</p>
+              </>
+            )}
+          </div>
+
           {/* about program */}
           <AboutProgram
             sectionTitle="About This Program"
-            description="The Varsity Prep Mentorship is designed to bridge the gap between high school athletics and NCAA-level expectations. Our curriculum focuses on three core pillars: explosive physical development, tactical sports intelligence, and psychological resilience."
-            goals={[
-              {
-                title: "Performance Goals",
-                description:
-                  "Increase vertical leap by 15%, improve 40-yard dash times, and optimize recovery cycles.",
-              },
-              {
-                title: "Mentorship Goals",
-                description:
-                  "Develop leadership skills and understand the collegiate recruiting landscape.",
-              },
-            ]}
+            description={programData?.program?.about_program || "No description available."}
+            goals={programData?.program?.goals?.map((goal: any) => ({
+              title: goal.goal,
+              description: goal.goal
+            })) || []}
           />
 
+          
           {/* program review */}
           <ProgramReview
-            rating={4.9}
-            totalReviews={47}
+            rating={programData?.review_summary?.average_rating ?? 0}
+            totalReviews={programData?.review_summary?.total_reviews ?? 0}
             feedbackLabel="Total Feedback"
             reviewLabel="Write a Review"
-            breakdown={[
-              { stars: 5, percentage: 85 },
-              { stars: 4, percentage: 12 },
-              { stars: 3, percentage: 3 },
+            breakdown={programData?.review_summary?.rating_breakdown?.map((rating: any) => ({
+              stars: rating.star,
+              percentage: rating.percent
+            })) || [
+              { stars: 5, percentage: 0 },
+              { stars: 4, percentage: 0 },
+              { stars: 3, percentage: 0 },
               { stars: 2, percentage: 0 },
-              { stars: 1, percentage: 0 },
+              { stars: 1, percentage: 0 }
             ]}
           />
 
@@ -127,22 +180,37 @@ export default function ProgramDetails() {
               title="Recent Feedback"
             />
 
-            <ProgramFeedbackCard
-              name="John Doe"
-              date="September 28, 2023"
-              review="The program was very well structured and the instructors were very knowledgeable."
-              rating={4.5}
-              avatarUrl="/images/Dainel.png"
-            />
+            {programData?.recent_feedback?.length > 0 ? (
+              programData.recent_feedback.map((feedback: any, index: number) => (
+                <ProgramFeedbackCard
+                  key={index}
+                  name={feedback.name || "Anonymous"}
+                  date={feedback.date || new Date().toLocaleDateString()}
+                  review={feedback.review || "No review provided"}
+                  rating={feedback.rating || 0}
+                  avatarUrl={feedback.avatarUrl || "/images/Dainel.png"}
+                />
+              ))
+            ) : (
+              <div className="text-white/50 text-center py-4">
+                No feedback available yet.
+              </div>
+            )}
           </div>
         </div>
 
         {/* right side */}
         <div className="flex-1">
-          <ProgramCoachCard />
+          <ProgramCoachCard 
+            name={programData?.coach?.name || "Coach"}
+            role={programData?.coach?.title?.map((title: any) => title.title).join(", ") || "Coach"}
+            bio={programData?.coach?.bio || "Experienced coach dedicated to athlete development."}
+            imageUrl={programData?.coach?.profile_image || "/images/Dainel.png"}
+            imageAlt={programData?.coach?.name || "Coach"}
+          />
           <ProgramCalendar
-            startDate={programStartDate}
-            endDate={programEndDate}
+            startDate={programData?.program?.program_start ? new Date(programData.program.program_start) : new Date()}
+            endDate={programData?.program?.program_end ? new Date(programData.program.program_end) : new Date()}
             timeSlotsByDate={timeSlotsByDate}
           />
         </div>

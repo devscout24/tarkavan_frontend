@@ -3,7 +3,7 @@
 import { Calendar } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import { format, isSameDay } from "date-fns"
+import { format, isSameDay, eachDayOfInterval } from "date-fns"
 
 const timeSlots = [
   "12:15 PM",
@@ -23,11 +23,72 @@ const availableDates = [
   new Date(2026, 3, 25),
 ]
 
-export default function ProgramDateTimeSelector() {
-  const [date, setDate] = useState<Date | undefined>()
+type ProgramDateTimeSelectorProps = {
+  role?: "coach" | "player" | "parent" | "club"
+  programStartDate?: Date
+  programEndDate?: Date
+  programTimes?: Array<{ id: number; time: string; is_available: boolean }>
+}
+
+export default function ProgramDateTimeSelector({ 
+  role = "player", 
+  programStartDate, 
+  programEndDate,
+  programTimes = []
+}: ProgramDateTimeSelectorProps) {
+  const [date, setDate] = useState<Date | undefined>(programStartDate)
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
 
-  const dateLabel = date ? format(date, "EEEE d MMMM") : "Select a date"
+  // Use program times if available, otherwise fallback to hardcoded times
+  let displayTimes: string[] = []
+  
+  console.log("Raw programTimes prop:", programTimes)
+  console.log("programTimes type:", typeof programTimes)
+  
+  if (programTimes && programTimes.length > 0) {
+    // Get the time strings from the program times
+    const timeStrings = programTimes.map(t => t.time).filter(Boolean)
+    console.log("Extracted timeStrings:", timeStrings)
+    
+    // Check if any of the time strings contain commas (indicating they're joined)
+    const allTimes = timeStrings.flatMap(timeStr => {
+      if (typeof timeStr === 'string' && timeStr.includes(',')) {
+        // Split comma-separated times
+        return timeStr.split(',').map(t => t.trim()).filter(t => t !== '')
+      }
+      return timeStr
+    })
+    
+    displayTimes = allTimes
+  } else {
+    displayTimes = timeSlots
+  }
+
+  console.log("After processing displayTimes:", displayTimes)
+  console.log("displayTimes is array:", Array.isArray(displayTimes))
+  
+  // Extra safety: ensure we have an array of strings
+  const normalizedTimes = displayTimes.map(time => String(time)).filter(time => time.trim() !== '')
+  
+  console.log("Final normalizedTimes:", normalizedTimes)
+  console.log("normalizedTimes length:", normalizedTimes.length)
+
+  const dateLabel = date ? format(date, "EEEE d MMMM") : role === "coach" ? "Program Schedule" : "Select a date"
+
+  // Generate program date range for coach
+  const programDates = programStartDate && programEndDate 
+    ? eachDayOfInterval({ start: programStartDate, end: programEndDate })
+    : []
+
+  // Check if a date is a program date
+  const isProgramDate = (day: Date) => {
+    return programDates.some(d => isSameDay(d, day))
+  }
+
+  // Check if a date is available (for non-coach roles)
+  const isAvailableDate = (day: Date) => {
+    return availableDates.some(d => isSameDay(d, day))
+  }
 
   return (
     <div className="space-y-6 rounded-2xl bg-white p-4 sm:p-6 mt-4    ">
@@ -37,11 +98,28 @@ export default function ProgramDateTimeSelector() {
         mode="single"
         buttonVariant="ghost"
         selected={date}
+        defaultMonth={programStartDate}
         onSelect={(d) => {
-          setDate(d)
-          setSelectedTime(null) // date change হলে time reset
+          if (d) {
+            setDate(d)
+            setSelectedTime(null) // date change হলে time reset
+          }
         }}
-        disabled={(day) => !availableDates.some((d) => isSameDay(d, day))}
+        disabled={(day) => {
+          if (role === "coach") {
+            // For coach, only program dates are selectable
+            return !isProgramDate(day)
+          } else {
+            // For other roles, use available dates logic
+            return !isAvailableDate(day)
+          }
+        }}
+        modifiers={{
+          program_date: programDates
+        }}
+        modifiersClassNames={{
+          program_date: "bg-brand/40 text-brand hover:bg-brand/20"
+        }}
         classNames={{
           root: "w-full",
           month: "w-full gap-5",
@@ -57,15 +135,14 @@ export default function ProgramDateTimeSelector() {
           weekday: "text-sm font-normal text-[#7A7A7A]",
           week: "mt-1",
           day: "aspect-square",
-          day_button:
-            "size-11 rounded-xl text-lg font-normal text-[#232323] hover:bg-[#F5F5F5]",
+          day_button: "size-11 rounded-xl text-lg font-normal text-[#232323] hover:bg-[#F5F5F5]",
           selected:
             "bg-brand! text-white hover:bg-brand/70 hover:text-primary rounded-xl  ",
           today:
             "bg-[#ECECEC] text-[#272727] rounded-xl data-[selected=true]:bg-[#101010] data-[selected=true]:text-white",
           outside:
             "text-[#B7B7B7] line-through opacity-100 aria-selected:text-[#B7B7B7]",
-          disabled: "text-[#C0C0C0] line-through opacity-100",
+          disabled: role === "coach" ? "text-[#C0C0C0] opacity-50" : "text-[#C0C0C0] line-through opacity-100",
         }}
       />
 
@@ -94,30 +171,42 @@ export default function ProgramDateTimeSelector() {
       </div>
 
       {/* Time slots */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4">
-        {timeSlots.map((time) => (
-          <Button
-            key={time}
-            variant="outline"
-            className={
-              selectedTime === time
-                ? "h-10 rounded-xl border-brand bg-brand text-lg font-medium text-primary hover:bg-brand/70  hover:text-primary"
-                : "h-10 rounded-xl border-[#DEDEDE] bg-white text-lg font-medium text-[#202020] hover:bg-[#F8F8F8]"
-            }
-            onClick={() => setSelectedTime(time)}
-          >
-            {time}
-          </Button>
-        ))}
-      </div>
+      {date && normalizedTimes.length > 0 && (
+        <>
+          <div className="mb-2 text-sm font-medium text-[#191919]">
+            Available Times:
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            {normalizedTimes.map((time, index) => {
+              console.log(`Rendering time ${index}:`, time, typeof time)
+              return (
+                <Button
+                  key={`time-${index}`}
+                  variant="outline"
+                  className={
+                    selectedTime === time
+                      ? "h-10 rounded-xl border-brand bg-brand text-lg font-medium text-primary hover:bg-brand/70  hover:text-primary"
+                      : "h-10 rounded-xl border-[#DEDEDE] bg-white text-lg font-medium text-[#202020] hover:bg-[#F8F8F8]"
+                  }
+                  onClick={() => setSelectedTime(time)}
+                >
+                  {time}
+                </Button>
+              )
+            })}
+          </div>
+        </>
+      )}
 
       {/* payment */}
-      <div className="flex items-center justify-between gap-4 border-t border-[#DEDEDE] pt-4">
-        <p className="text-lg font-medium text-[#191919]">Total: $100.00</p>
-        <Button className="h-10 rounded-xl bg-brand text-lg font-medium text-primary hover:bg-brand/80 hover:text-primary cursor-pointer  ">
-          Proceed to Payment
-        </Button>
-      </div>
+      {role !== "coach" && (
+        <div className="flex items-center justify-between gap-4 border-t border-[#DEDEDE] pt-4">
+          <p className="text-lg font-medium text-[#191919]">Total: $100.00</p>
+          <Button className="h-10 rounded-xl bg-brand text-lg font-medium text-primary hover:bg-brand/80 hover:text-primary cursor-pointer  ">
+            Proceed to Payment
+          </Button>
+        </div>
+      )}
 
 
     </div>

@@ -63,14 +63,12 @@ export default function ProgramDetails() {
             description="The Varsity Prep Mentorship is designed to bridge the gap between high school athletics and NCAA-level expectations. Our curriculum focuses on three core pillars: explosive physical development, tactical sports intelligence, and psychological resilience."
             goals={[
               {
-                title: "Performance Goals",
-                description:
-                  "Increase vertical leap by 15%, improve 40-yard dash times, and optimize recovery cycles.",
+                id: 1,
+                goal: "Performance Goals: Increase vertical leap by 15%, improve 40-yard dash times, and optimize recovery cycles.",
               },
               {
-                title: "Mentorship Goals",
-                description:
-                  "Develop leadership skills and understand the collegiate recruiting landscape.",
+                id: 2,
+                goal: "Mentorship Goals: Develop leadership skills and understand the collegiate recruiting landscape.",
               },
             ]}
           />

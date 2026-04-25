@@ -1,22 +1,24 @@
 "use client"
+
 import React, { useEffect, useState } from "react"
 
 import AboutProgram from "@/components/common/about-program"
 import CommonBtn from "@/components/common/common-btn"
-import { ProgramCalendar } from "@/components/common/program-calendar"
 import ProgramCoachCard from "@/components/common/program-coach-card"
 import ProgramDetailsBanner from "@/components/common/program-details-banner"
 import ProgramFeedbackCard from "@/components/common/program-feedback-card"
 import ProgramHead from "@/components/common/program-head"
 import ProgramReview from "@/components/common/program-review"
 import { Button } from "@/components/ui/button"
-import { eachDayOfInterval, format } from "date-fns"
+import { format } from "date-fns"
 import { ArrowLeftIcon } from "lucide-react"
 import Loader from "@/components/common/loader"
 
-import AddProgramPage from "@/components/common/add-program-modal"
 import { useRouter, useSearchParams, usePathname, useParams } from "next/navigation"
 import { getCoachProgramDetails } from "../../action"
+import ProgramDateTimeSelector from "@/components/common/program-date-time-selector"
+import Modals from "@/components/common/modal"
+import { ProgramUpdateProvider } from "@/components/common/program-update-context"
 
 export default function ProgramDetails() {
   const router = useRouter()
@@ -27,44 +29,34 @@ export default function ProgramDetails() {
   const [isLoading, setIsLoading] = useState(true)
 
   // Fetch program details
-  useEffect(() => {
-    const fetchProgramDetails = async () => {
-      try {
-        setIsLoading(true)
-        const programId = params.detailsID as string
-        console.log("Fetching program details for ID:", programId)
-        if (programId) {
-          const response = await getCoachProgramDetails(programId)
-          console.log("Full API Response:", JSON.stringify(response, null, 2))
-          if (response && 'success' in response && response.success) {
-            console.log("Program Data being set:", JSON.stringify(response.data, null, 2))
-            setProgramData(response.data)
-          }
+  const fetchProgramDetails = async () => {
+    try {
+      setIsLoading(true)
+      const programId = params.detailsID as string
+      console.log("Fetching program details for ID:", programId)
+      if (programId) {
+        const response = await getCoachProgramDetails(programId)
+        console.log("Full API Response:", JSON.stringify(response, null, 2))
+        if (response && 'success' in response && response.success) {
+          console.log("Program Data being set:", JSON.stringify(response.data, null, 2))
+          setProgramData(response.data)
         }
-      } catch (error) {
-        console.error("Error fetching program details:", error)
-      } finally {
-        setIsLoading(false)
       }
+    } catch (error) {
+      console.error("Error fetching program details:", error)
+    } finally {
+      setIsLoading(false)
     }
+  }
 
+  useEffect(() => {
     fetchProgramDetails()
   }, [params.detailsID])
 
-  // Generate time slots from API data
-  const timeSlotsByDate = programData?.program ? 
-    eachDayOfInterval({
-      start: new Date(programData.program.program_start),
-      end: new Date(programData.program.program_end),
-    }).reduce<Record<string, string[]>>((acc, date) => {
-      acc[format(date, "yyyy-MM-dd")] = programData.program.times.map((time: any) => time.time)
-      return acc
-    }, {}) : {}
-
-  // Handler for saving the new program (implement logic as needed)
-  const handleSaveProgram = (data: any) => {
-    // TODO: Add your save logic here (API call, state update, etc.)
-    console.log("Saved program:", data)
+  // Handle program update
+  const handleProgramUpdated = () => {
+    console.log("Program updated, refreshing data...")
+    fetchProgramDetails()
   }
 
   if (isLoading) {
@@ -84,7 +76,8 @@ export default function ProgramDetails() {
   }
 
   return (
-    <section className="text-white">
+    <ProgramUpdateProvider onProgramUpdated={handleProgramUpdated}>
+      <section className="text-white">
       {/* BACK BUTTON */}
       <div className="mb-5 flex items-center justify-between px-2 py-2">
         <Button
@@ -100,8 +93,12 @@ export default function ProgramDetails() {
           size="sm"
           variant="default"
           onClick={() => {
+            // Set program data in sessionStorage for edit modal
+            if (programData?.data?.program) {
+              sessionStorage.setItem("edit-program-data", JSON.stringify(programData.data.program))
+            }
             const nextParams = new URLSearchParams(searchParams.toString())
-            nextParams.set("add-new", "program")
+            nextParams.set("edit-program", "program")
             router.replace(
               nextParams.toString()
                 ? `${pathname}?${nextParams.toString()}`
@@ -111,55 +108,42 @@ export default function ProgramDetails() {
         />
       </div>
 
-      {/* Add Program Modal handled by Modals component and URL param */}
-
-      {/* program details banner - using hardcoded values until API data issue is fixed */}
+      {/* program details banner - using dynamic API data */}
       <ProgramDetailsBanner
-        title="Dekhi try kore"
-        category="Football (Soccer)"
-        duration="3 Days Duration"
-        dateRange="4/11/2026 to 4/14/2026"
-        location="Badda"
-        ageRange="Ages up to 15"
+        title={programData?.data?.program?.program_name || "Program Name"}
+        category={programData?.data?.program?.sport || "Sport"}
+        duration={programData?.data?.program?.program_start && programData?.data?.program?.program_end 
+          ? `${Math.ceil((new Date(programData.data.program.program_end).getTime() - new Date(programData.data.program.program_start).getTime()) / (1000 * 60 * 60 * 24))} Days Duration`
+          : "Duration"
+        }
+        dateRange={programData?.data?.program?.program_start && programData?.data?.program?.program_end
+          ? `${new Date(programData.data.program.program_start).toLocaleDateString()} to ${new Date(programData.data.program.program_end).toLocaleDateString()}`
+          : "Date Range"
+        }
+        location={programData?.data?.program?.program_location || "Location"}
+        ageRange={programData?.data?.program?.upto_age ? `Ages up to ${programData.data.program.upto_age}` : "Age Range"}
+        program_photo={programData?.data?.program?.program_photo || "/images/programsBannerImg.png"}
       />
 
       {/* layout */}
       <div className="mt-5 flex flex-col-reverse gap-6 lg:flex-row">
         {/* left side */}
         <div className="flex-2">
-          {/* Debug display to see what's actually being fetched */}
-          <div className="mb-4 p-4 bg-red-900/50 border border-red-500 rounded-lg text-white text-sm">
-            <h3 className="font-bold mb-2">Current Fetch Debug Info:</h3>
-            <p><strong>Program ID from URL:</strong> {params.detailsID}</p>
-            <p><strong>Full URL:</strong> {window.location.href}</p>
-            <p><strong>Has programData:</strong> {programData ? 'Yes' : 'No'}</p>
-            {programData && (
-              <>
-                <p><strong>Program ID from API:</strong> {programData?.program?.id}</p>
-                <p><strong>Program Name:</strong> {programData?.program?.program_name}</p>
-                <p><strong>about_program:</strong> {JSON.stringify(programData?.program?.about_program)}</p>
-                <p><strong>goals:</strong> {JSON.stringify(programData?.program?.goals)}</p>
-              </>
-            )}
-          </div>
 
           {/* about program */}
           <AboutProgram
             sectionTitle="About This Program"
-            description={programData?.program?.about_program || "No description available."}
-            goals={programData?.program?.goals?.map((goal: any) => ({
-              title: goal.goal,
-              description: goal.goal
-            })) || []}
+            description={programData?.data?.program?.about_program || "No description available."}
+            goals={programData?.data?.program?.goals || []}
           />
 
-          
           {/* program review */}
           <ProgramReview
             rating={programData?.review_summary?.average_rating ?? 0}
             totalReviews={programData?.review_summary?.total_reviews ?? 0}
             feedbackLabel="Total Feedback"
             reviewLabel="Write a Review"
+            writeReview={false}
             breakdown={programData?.review_summary?.rating_breakdown?.map((rating: any) => ({
               stars: rating.star,
               percentage: rating.percent
@@ -202,19 +186,25 @@ export default function ProgramDetails() {
         {/* right side */}
         <div className="flex-1">
           <ProgramCoachCard 
-            name={programData?.coach?.name || "Coach"}
-            role={programData?.coach?.title?.map((title: any) => title.title).join(", ") || "Coach"}
-            bio={programData?.coach?.bio || "Experienced coach dedicated to athlete development."}
-            imageUrl={programData?.coach?.profile_image || "/images/Dainel.png"}
-            imageAlt={programData?.coach?.name || "Coach"}
+            name={programData?.data?.coach?.name || "Coach"}
+            role={programData?.data?.coach?.title?.map((title: any) => title.title).join(", ") || "Coach"}
+            bio={programData?.data?.coach?.bio || "Experienced coach dedicated to athlete development."}
+            imageUrl={programData?.data?.coach?.profile_image || "/images/Dainel.png"}
+            imageAlt={programData?.data?.coach?.name || "Coach"}
+            showMessageButton={false}
           />
-          <ProgramCalendar
-            startDate={programData?.program?.program_start ? new Date(programData.program.program_start) : new Date()}
-            endDate={programData?.program?.program_end ? new Date(programData.program.program_end) : new Date()}
-            timeSlotsByDate={timeSlotsByDate}
+          <ProgramDateTimeSelector
+            role="coach"
+            programStartDate={programData?.data?.program?.program_start ? new Date(programData.data.program.program_start) : new Date()}
+            programEndDate={programData?.data?.program?.program_end ? new Date(programData.data.program.program_end) : new Date()}
+            programTimes={programData?.data?.program?.times || []}
           />
         </div>
       </div>
+
+      {/* Modals Component */}
+      <Modals />
     </section>
+    </ProgramUpdateProvider>
   )
 }

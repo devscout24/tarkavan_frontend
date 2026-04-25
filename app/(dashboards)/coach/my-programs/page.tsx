@@ -109,13 +109,13 @@ export default function UpcomingEventPage() {
       {latestUpcomingProgram ? (
         <article className="overflow-hidden rounded-2xl border border-white/10 bg-brand">
           <div className="lg:flex">
-            <div className="relative min-h-44 md:min-h-full">
+            <div className="relative min-h-44 md:min-h-full w-[200px] lg:w-[250px]">
               <Image
                 width={1000}
                 height={1000}
                 src={latestUpcomingProgram.program_photo || "/images/player1.png"}
                 alt={latestUpcomingProgram.program_name || "Program photo"}
-                className="h-full max-h-55 w-full object-fill lg:max-w-[288px]"
+                className="h-full max-h-55 w-full object-fill"
               />
   
               <span className="absolute bottom-3 left-3 rounded-full bg-[#16A34A] px-3 py-1 text-[10px] font-bold tracking-[0.08em] text-white uppercase">

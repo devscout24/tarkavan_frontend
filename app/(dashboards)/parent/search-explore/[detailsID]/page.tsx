@@ -63,14 +63,12 @@ export default function SearchExploreDetails() {
             description="The Elite Soccer Academy is designed to develop young players' technical skills, tactical understanding, and physical fitness. Our comprehensive curriculum focuses on ball control, passing accuracy, shooting techniques, and game intelligence through structured drills and competitive match play."
             goals={[
               {
-                title: "Technical Goals",
-                description:
-                  "Master ball control techniques, improve passing accuracy, and develop shooting skills from various positions.",
+                id: 1,
+                goal: "Technical Goals: Master ball control techniques, improve passing accuracy, and develop shooting skills from various positions.",
               },
               {
-                title: "Tactical Goals",
-                description:
-                  "Enhance spatial awareness, improve decision-making under pressure, and understand positioning strategies.",
+                id: 2,
+                goal: "Tactical Goals: Enhance spatial awareness, improve decision-making under pressure, and understand positioning strategies.",
               },
             ]}
           />

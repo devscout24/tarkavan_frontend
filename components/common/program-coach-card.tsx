@@ -23,11 +23,10 @@ type ProgramCoachCardProps = {
   className?: string
 }
 
-const defaultTags = ["NCSF CERTIFIED", "SPRINT BIOMECHANICS"]
+const defaultTags: string[] = []
 
 export default function ProgramCoachCard({
   name = "SHAHIN",
-  highlightedName = "TARKAVAN",
   role = "Head Performance Coach",
   bio,
   tags = defaultTags,
@@ -68,7 +67,7 @@ export default function ProgramCoachCard({
         <div className="absolute inset-x-0 bottom-0 p-4">
           <h3 className="text-[32px]! leading-[0.95] font-extrabold text-white">
             {name}
-            <span className="block text-[32px]! leading-[0.95] font-extrabold text-[#B6EE6B]">{highlightedName}</span>
+            
           </h3>
 
           <p className="mt-1 text-base font-medium text-white">{role}</p>

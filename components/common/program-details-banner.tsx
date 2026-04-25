@@ -10,7 +10,7 @@ type ProgramDetailsBannerProps = {
   dateRange?: string
   location?: string
   ageRange?: string
-  imageUrl?: string
+  program_photo?: string
   className?: string
 }
 
@@ -21,7 +21,7 @@ export default function ProgramDetailsBanner({
   dateRange = "01-03-2026 to 15-05-2026",
   location = "GoElite Sports Complex, Toronto",
   ageRange = "Ages 8-14",
-  imageUrl = "/images/programsBannerImg.png",
+  program_photo = "/images/programsBannerImg.png",
   className,
 }: ProgramDetailsBannerProps) {
   return (
@@ -33,7 +33,7 @@ export default function ProgramDetailsBanner({
       aria-label={title}
     >
       <Image
-        src={imageUrl}
+        src={program_photo}
         alt={title}
         width={1000}
         height={1000}

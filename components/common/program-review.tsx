@@ -17,6 +17,7 @@ type ProgramReviewProps = {
   feedbackLabel?: string
   reviewLabel?: string
   onWriteReview?: () => void
+  writeReview?: boolean
   className?: string
 }
 
@@ -59,6 +60,7 @@ export default function ProgramReview({
   feedbackLabel = "Total Feedback",
   reviewLabel = "Write a Review",
   onWriteReview,
+  writeReview = true,
   className,
 }: ProgramReviewProps) {
   const sectionRef = useRef<HTMLDivElement>(null)
@@ -111,15 +113,17 @@ export default function ProgramReview({
         ))}
       </div>
 
-      <Button
-        type="button"
-        variant="secondary"
-        onClick={onWriteReview}
-        className="mt-6 h-16 w-full rounded-2xl border border-white/40 bg-white/10 text-base font-semibold text-white hover:bg-white/15 md:mt-8"
-      >
-        <Pencil className="size-4" />
-        {reviewLabel}
-      </Button>
+      {writeReview && (
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={onWriteReview}
+          className="mt-6 h-16 w-full rounded-2xl border border-white/40 bg-white/10 text-base font-semibold text-white hover:bg-white/15 md:mt-8"
+        >
+          <Pencil className="size-4" />
+          {reviewLabel}
+        </Button>
+      )}
     </section>
   )
 }

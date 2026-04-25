@@ -63,14 +63,12 @@ export default function UpcomingEventDetails() {
             description="The Elite Technical Clinic is a one-day intensive training program focused on developing advanced technical skills for competitive players. Participants will work on ball control, passing accuracy, shooting techniques, and tactical awareness through specialized drills and game scenarios."
             goals={[
               {
-                title: "Technical Goals",
-                description:
-                  "Improve first touch, master passing techniques, and develop shooting accuracy from various positions.",
+                id: 1,
+                goal: "Technical Goals: Improve first touch, master passing techniques, and develop shooting accuracy from various positions.",
               },
               {
-                title: "Tactical Goals",
-                description:
-                  "Enhance spatial awareness, improve decision-making under pressure, and understand positioning strategies.",
+                id: 2,
+                goal: "Tactical Goals: Enhance spatial awareness, improve decision-making under pressure, and understand positioning strategies.",
               },
             ]}
           />

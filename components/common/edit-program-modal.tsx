@@ -16,9 +16,11 @@ import { toast } from "sonner"
 import { getSportOptions } from "@/app/(dashboards)/action"
 import useModal from "./modal/useModal"
 import { usePathname } from "next/navigation"
+import { useProgramUpdate } from "./program-update-context"
 
 interface EditProgramPageProps {
   onSave?: (data: unknown) => void
+  onProgramUpdated?: () => void
 }
 
 type TSportOption = {
@@ -53,10 +55,14 @@ const isSportOptionsSuccessResponse = (
   return value.success === true
 }
 
-const EditProgramPage: React.FC<EditProgramPageProps> = ({ onSave }) => {
+const EditProgramPage: React.FC<EditProgramPageProps> = ({
+  onSave,
+  onProgramUpdated,
+}) => {
   const { close } = useModal()
   const pathname = usePathname()
   const isCoach = pathname?.includes("/coach")
+  const { onProgramUpdated: contextOnProgramUpdated } = useProgramUpdate()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [sportOptions, setSportOptions] = useState<TSportOption[]>([])
   
@@ -112,10 +118,13 @@ const EditProgramPage: React.FC<EditProgramPageProps> = ({ onSave }) => {
             ? editData.goals.map((g: any) => g.goal)
             : [""]
 
+          // Find matching sport or use empty string
+          const sportValue = editData?.sport || editData?.sport_option?.name || ""
+          
           setForm({
-            sport: editData?.sport || editData?.sport_option?.name || "",
+            sport: sportValue,
             name: editData?.program_name || "",
-            ageGroup: editData?.upto_age ? String(editData.upto_age) : "",
+            ageGroup: editData?.upto_age ? String(editData.upto_age) : "15",
             price: editData?.program_price ? String(editData.program_price) : "",
             discountPrice: editData?.discount_price ? String(editData.discount_price) : "",
             location: editData?.program_location || "",
@@ -252,6 +261,27 @@ const EditProgramPage: React.FC<EditProgramPageProps> = ({ onSave }) => {
     getSportData()
   }, [isCoach])
 
+  // Update sport value when sport options are loaded to ensure it matches available options
+  useEffect(() => {
+    if (sportOptions.length > 0 && form.sport) {
+      const matchingSport = sportOptions.find(sport => sport.name === form.sport)
+      if (!matchingSport) {
+        // If current sport value doesn't match any option, clear it or find closest match
+        console.log("Sport not found in options:", form.sport, "Available:", sportOptions.map(s => s.name))
+        // You could optionally set it to the first available option
+        // setForm(prev => ({ ...prev, sport: sportOptions[0]?.name || "" }))
+      } else {
+        console.log("Sport found and matches:", matchingSport.name)
+      }
+    }
+  }, [sportOptions, form.sport])
+
+  // Debug logging for form values
+  useEffect(() => {
+    console.log("Form values:", form)
+    console.log("Sport options:", sportOptions)
+  }, [form, sportOptions])
+
   const handleAddProgram = async () => {
     if (isSubmitting) {
       return
@@ -316,14 +346,27 @@ const EditProgramPage: React.FC<EditProgramPageProps> = ({ onSave }) => {
       // Check success correctly based on our generic action response pattern
       if (res && (res.success === true || res.status === true)) {
         toast.success("Program updated successfully!")
-        close("edit-program", ["program"])
-
+        
+        // Clean up sessionStorage first
         try {
           sessionStorage.removeItem("edit-program-photo")
           sessionStorage.removeItem("edit-program-data")
         } catch {
           // Ignore storage removal errors
         }
+
+        // Close modal
+        close("edit-program", ["program"])
+
+        // Notify parent component to refresh data after modal closes
+        setTimeout(() => {
+          if (onProgramUpdated) {
+            onProgramUpdated()
+          } else if (contextOnProgramUpdated) {
+            contextOnProgramUpdated()
+          }
+        }, 100)
+
         return
       }
 
@@ -425,7 +468,7 @@ const EditProgramPage: React.FC<EditProgramPageProps> = ({ onSave }) => {
           <div className="flex flex-col">
             <span className="text-sm">Sport Selection</span>
             <Select
-              key={sportOptions.length + "-" + form.sport}
+              key={`sport-${sportOptions.length}-${form.sport}`}
               value={form.sport}
               onValueChange={(v) => handleSelect("sport", v)}
             >

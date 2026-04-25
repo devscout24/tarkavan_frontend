@@ -156,22 +156,6 @@ export default function CoachProfileSetup({
         toast.success(result.message || 'Coach profile created successfully!')
         localStorage.removeItem(STORAGE_KEY)
 
-        // Mark the user as approved so AuthCheckPoint never redirects
-        // to profile-setup again on future logins or page refreshes
-        try {
-          const rawUser = localStorage.getItem('go_elite_user')
-          if (rawUser) {
-            const parsedUser = JSON.parse(rawUser)
-            localStorage.setItem(
-              'go_elite_user',
-              JSON.stringify({ ...parsedUser, status: 'approved' })
-            )
-            localStorage.setItem(`profile_completed_${parsedUser.id}`, "true")
-          }
-        } catch {
-          // ignore
-        }
-
         setFormData(getInitialFormData())
         // Redirect to clean dashboard URL (no query params → modal won't reopen)
         window.location.replace('/coach')

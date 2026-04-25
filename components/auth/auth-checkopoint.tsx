@@ -43,29 +43,22 @@ export default function AuthCheckPoint({ children, role }: Props) {
 
         const pendingRedirect =
           requiredRole === "coach"
-            ? `/coach?coach=profile-setup`
+            ? "/coach?coach=profile-setup"
             : requiredRole === "club"
-              ? `/club?club=profile-setup`
+              ? "/club?club=profile-setup"
               : null
 
-        const hasCompletedSetup = window.localStorage.getItem(`profile_completed_${user.id}`) === "true"
-
-        if (user.status === "pending" && pendingRedirect && !hasCompletedSetup) {
+        if (user.status === "pending" && pendingRedirect) {
+          const isAllowedPath = pathname === `/${requiredRole}`
           const queryParams = new URLSearchParams(window.location.search)
-          const hasProfileSetupQuery =
+          const hasRequiredQuery =
             queryParams.get(requiredRole) === "profile-setup"
 
-          // Only redirect if:
-          // 1. We're on the root dashboard page AND
-          // 2. The profile-setup query param is not already present
-          const isRootPage = pathname === `/${requiredRole}`
-          if (isRootPage && !hasProfileSetupQuery) {
+          // Pending coach/club users can only continue on their profile-setup route.
+          if (!isAllowedPath || !hasRequiredQuery) {
             router.replace(pendingRedirect)
             return
           }
-
-          // If profile-setup query is already present, allow rendering
-          // (modal will open via URL). Sub-pages are allowed through normally.
         }
 
         setIsChecking(false)

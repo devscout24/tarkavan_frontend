@@ -1,5 +1,5 @@
 import ModalStepHeader from "@/components/common/modal-header"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import StrengthsSelectedSlot from "./strengths-selected-slot"
 import StrengthCategorySidebar from "./strength-category-sidebar"
 import StrengthItemCheckbox from "./strength-item-checkbox"
@@ -97,6 +97,12 @@ export default function Strengths({
     Record<string, string>
   >(draft.selectedByCategory)
   const [validationMessage, setValidationMessage] = useState("")
+
+  // Sync local state with wizard state draft
+  useEffect(() => {
+    setActiveCategoryId(draft.activeCategoryId || strengthCategories[0].id)
+    setSelectedByCategory(draft.selectedByCategory || {})
+  }, [draft.activeCategoryId, draft.selectedByCategory])
 
   const selectedStrengths = useMemo(
     () => Object.values(selectedByCategory),

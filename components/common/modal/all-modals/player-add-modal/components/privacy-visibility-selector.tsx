@@ -1,17 +1,14 @@
 "use client"
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { TbPlayFootball } from "react-icons/tb";
 
-type PrivacyValue = "public" | "coaches-teams" | "private"
+type PrivacyValue = string
 
-const privacyOptions: {
-  value: PrivacyValue
-  title: string
-  description: string
-  icon: React.ReactNode
-}[] = [
+// Privacy options for different user roles
+const playerPrivacyOptions = [
   {
-    value: "public",
+    value: "public" ,
     title: "Public",
     description:
       "Visible to everyone on the platform. Recommended for maximizing exposure to college recruiters and scouts. Profile appears in search results.",
@@ -32,10 +29,10 @@ const privacyOptions: {
     ),
   },
   {
-    value: "coaches-teams",
-    title: "Coaches & Teams Only",
+    value: "coach_and_team",
+    title: "Coach & Team Only",
     description:
-      "Only verified coaches, recruiters, and registered team members can view the full profile. Casual users will see a limited profile.",
+      "Only verified coaches and registered team members can view the full profile. Casual users will see a limited profile.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -73,15 +70,186 @@ const privacyOptions: {
       </svg>
     ),
   },
+  {
+    value: "only_player",
+    title: "Only Player",
+    description:
+      "Profile is visible only to the player themselves. Completely private from all other users.",
+    icon: (<TbPlayFootball className="text-xl" />),
+  },
+]
+
+const coachPrivacyOptions = [
+  {
+    value: "public",
+    title: "Public",
+    description:
+      "Visible to everyone on the platform. Recommended for maximizing exposure to college recruiters and scouts. Profile appears in search results.",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="17"
+        height="17"
+        viewBox="0 0 17 17"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M8.33333 16.6667C7.18056 16.6667 6.09722 16.4479 5.08333 16.0104C4.06944 15.5729 3.1875 14.9792 2.4375 14.2292C1.6875 13.4792 1.09375 12.5972 0.65625 11.5833C0.21875 10.5694 0 9.48611 0 8.33333C0 7.18056 0.21875 6.09722 0.65625 5.08333C1.09375 4.06944 1.6875 3.1875 2.4375 2.4375C3.1875 1.6875 4.06944 1.09375 5.08333 0.65625C6.09722 0.21875 7.18056 0 8.33333 0C9.48611 0 10.5694 0.21875 11.5833 0.65625C12.5972 1.09375 13.4792 1.6875 14.2292 2.4375C14.9792 3.1875 15.5729 4.06944 16.0104 5.08333C16.4479 6.09722 16.6667 7.18056 16.6667 8.33333C16.6667 9.48611 16.4479 10.5694 16.0104 11.5833C15.5729 12.5972 14.9792 13.4792 14.2292 14.2292C13.4792 14.9792 12.5972 15.5729 11.5833 16.0104C10.5694 16.4479 9.48611 16.6667 8.33333 16.6667ZM7.5 14.9583V13.3333C7.04167 13.3333 6.64931 13.1701 6.32292 12.8438C5.99653 12.5174 5.83333 12.125 5.83333 11.6667V10.8333L1.83333 6.83333C1.79167 7.08333 1.75347 7.33333 1.71875 7.58333C1.68403 7.83333 1.66667 8.08333 1.66667 8.33333C1.66667 10.0139 2.21875 11.4861 3.32292 12.75C4.42708 14.0139 5.81944 14.75 7.5 14.9583ZM13.25 12.8333C13.8194 12.2083 14.2535 11.5104 14.5521 10.7396C14.8507 9.96875 15 9.16667 15 8.33333C15 6.97222 14.6215 5.72917 13.8646 4.60417C13.1076 3.47917 12.0972 2.66667 10.8333 2.16667V2.5C10.8333 2.95833 10.6701 3.35069 10.3438 3.67708C10.0174 4.00347 9.625 4.16667 9.16667 4.16667H7.5V5.83333C7.5 6.06944 7.42014 6.26736 7.26042 6.42708C7.10069 6.58681 6.90278 6.66667 6.66667 6.66667H5V8.33333H10C10.2361 8.33333 10.434 8.41319 10.5938 8.57292C10.7535 8.73264 10.8333 8.93056 10.8333 9.16667V11.6667H11.6667C12.0278 11.6667 12.3542 11.7743 12.6458 11.9896C12.9375 12.2049 13.1389 12.4861 13.25 12.8333Z"
+          fill="white"
+        />
+      </svg>
+    ),
+  },
+  {
+    value: "players_and_teams",
+    title: "Players & Teams Only",
+    description:
+      "Only verified players and registered team members can view the full profile. Casual users will see a limited profile.",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="14"
+        height="17"
+        viewBox="0 0 14 17"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M5.79167 11.2917L10.5 6.58333L9.3125 5.39583L5.79167 8.91667L4.04167 7.16667L2.85417 8.35417L5.79167 11.2917ZM6.66667 16.6667C4.73611 16.1806 3.14236 15.0729 1.88542 13.3438C0.628472 11.6146 0 9.69444 0 7.58333V2.5L6.66667 0L13.3333 2.5V7.58333C13.3333 9.69444 12.7049 11.6146 11.4479 13.3438C10.191 15.0729 8.59722 16.1806 6.66667 16.6667ZM6.66667 14.9167C8.11111 14.4583 9.30556 13.5417 10.25 12.1667C11.1944 10.7917 11.6667 9.26389 11.6667 7.58333V3.64583L6.66667 1.77083L1.66667 3.64583V7.58333C1.66667 9.26389 2.13889 10.7917 3.08333 12.1667C4.02778 13.5417 5.22222 14.4583 6.66667 14.9167Z"
+          fill="white"
+        />
+      </svg>
+    ),
+  },
+  {
+    value: "private",
+    title: "Private",
+    description:
+      "Profile is hidden from all search results. Only you and those you explicitly share a direct link with can view the athlete's details.",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="14"
+        height="18"
+        viewBox="0 0 14 18"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M1.66667 17.5C1.20833 17.5 0.815972 17.3368 0.489583 17.0104C0.163194 16.684 0 16.2917 0 15.8333V7.5C0 7.04167 0.163194 6.64931 0.489583 6.32292C0.815972 5.99653 1.20833 5.83333 1.66667 5.83333H2.5V4.16667C2.5 3.01389 2.90625 2.03125 3.71875 1.21875C4.53125 0.40625 5.51389 0 6.66667 0C7.81944 0 8.80208 0.40625 9.61458 1.21875C10.4271 2.03125 10.8333 3.01389 10.8333 4.16667V5.83333H11.6667C12.125 5.83333 12.5174 5.99653 12.8438 6.32292C13.1701 6.64931 13.3333 7.04167 13.3333 7.5V15.8333C13.3333 16.2917 13.1701 16.684 12.8438 17.0104C12.5174 17.3368 12.125 17.5 11.6667 17.5H1.66667ZM1.66667 15.8333H11.6667V7.5H1.66667V15.8333ZM6.66667 13.3333C7.125 13.3333 7.51736 13.1701 7.84375 12.8438C8.17014 12.5174 8.33333 12.125 8.33333 11.6667C8.3333 11.2083 8.17014 10.816 7.84375 10.4896C7.51736 10.1632 7.125 10 6.66667 10C6.20833 10 5.81597 10.1632 5.48958 10.4896C5.16319 10.816 5 11.2083 5 11.6667C5 12.125 5.16319 12.5174 5.48958 12.8438C5.81597 13.1701 6.20833 13.3333 6.66667 13.3333ZM4.16667 5.83333H9.16667V4.16667C9.16667 3.47222 8.92361 2.88194 8.4375 2.39583C7.95139 1.90972 7.36111 1.66667 6.66667 1.66667C5.97222 1.66667 5.38194 1.90972 4.89583 2.39583C4.40972 2.88194 4.16667 3.47222 4.16667 4.16667V5.83333ZM1.66667 15.8333V7.5V15.8333Z"
+          fill="white"
+        />
+      </svg>
+    ),
+  },
+]
+
+const othersPrivacyOptions = [
+  {
+    value: "public",
+    title: "Public",
+    description:
+      "Visible to everyone on the platform. Recommended for maximizing exposure to college recruiters and scouts. Profile appears in search results.",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="17"
+        height="17"
+        viewBox="0 0 17 17"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M8.33333 16.6667C7.18056 16.6667 6.09722 16.4479 5.08333 16.0104C4.06944 15.5729 3.1875 14.9792 2.4375 14.2292C1.6875 13.4792 1.09375 12.5972 0.65625 11.5833C0.21875 10.5694 0 9.48611 0 8.33333C0 7.18056 0.21875 6.09722 0.65625 5.08333C1.09375 4.06944 1.6875 3.1875 2.4375 2.4375C3.1875 1.6875 4.06944 1.09375 5.08333 0.65625C6.09722 0.21875 7.18056 0 8.33333 0C9.48611 0 10.5694 0.21875 11.5833 0.65625C12.5972 1.09375 13.4792 1.6875 14.2292 2.4375C14.9792 3.1875 15.5729 4.06944 16.0104 5.08333C16.4479 6.09722 16.6667 7.18056 16.6667 8.33333C16.6667 9.48611 16.4479 10.5694 16.0104 11.5833C15.5729 12.5972 14.9792 13.4792 14.2292 14.2292C13.4792 14.9792 12.5972 15.5729 11.5833 16.0104C10.5694 16.4479 9.48611 16.6667 8.33333 16.6667ZM7.5 14.9583V13.3333C7.04167 13.3333 6.64931 13.1701 6.32292 12.8438C5.99653 12.5174 5.83333 12.125 5.83333 11.6667V10.8333L1.83333 6.83333C1.79167 7.08333 1.75347 7.33333 1.71875 7.58333C1.68403 7.83333 1.66667 8.08333 1.66667 8.33333C1.66667 10.0139 2.21875 11.4861 3.32292 12.75C4.42708 14.0139 5.81944 14.75 7.5 14.9583ZM13.25 12.8333C13.8194 12.2083 14.2535 11.5104 14.5521 10.7396C14.8507 9.96875 15 9.16667 15 8.33333C15 6.97222 14.6215 5.72917 13.8646 4.60417C13.1076 3.47917 12.0972 2.66667 10.8333 2.16667V2.5C10.8333 2.95833 10.6701 3.35069 10.3438 3.67708C10.0174 4.00347 9.625 4.16667 9.16667 4.16667H7.5V5.83333C7.5 6.06944 7.42014 6.26736 7.26042 6.42708C7.10069 6.58681 6.90278 6.66667 6.66667 6.66667H5V8.33333H10C10.2361 8.33333 10.434 8.41319 10.5938 8.57292C10.7535 8.73264 10.8333 8.93056 10.8333 9.16667V11.6667H11.6667C12.0278 11.6667 12.3542 11.7743 12.6458 11.9896C12.9375 12.2049 13.1389 12.4861 13.25 12.8333Z"
+          fill="white"
+        />
+      </svg>
+    ),
+  },
+  {
+    value: "private",
+    title: "Private",
+    description:
+      "Profile is hidden from all search results. Only you and those you explicitly share a direct link with can view the athlete's details.",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="14"
+        height="18"
+        viewBox="0 0 14 18"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M1.66667 17.5C1.20833 17.5 0.815972 17.3368 0.489583 17.0104C0.163194 16.684 0 16.2917 0 15.8333V7.5C0 7.04167 0.163194 6.64931 0.489583 6.32292C0.815972 5.99653 1.20833 5.83333 1.66667 5.83333H2.5V4.16667C2.5 3.01389 2.90625 2.03125 3.71875 1.21875C4.53125 0.40625 5.51389 0 6.66667 0C7.81944 0 8.80208 0.40625 9.61458 1.21875C10.4271 2.03125 10.8333 3.01389 10.8333 4.16667V5.83333H11.6667C12.125 5.83333 12.5174 5.99653 12.8438 6.32292C13.1701 6.64931 13.3333 7.04167 13.3333 7.5V15.8333C13.3333 16.2917 13.1701 16.684 12.8438 17.0104C12.5174 17.3368 12.125 17.5 11.6667 17.5H1.66667ZM1.66667 15.8333H11.6667V7.5H1.66667V15.8333ZM6.66667 13.3333C7.125 13.3333 7.51736 13.1701 7.84375 12.8438C8.17014 12.5174 8.33333 12.125 8.33333 11.6667C8.3333 11.2083 8.17014 10.816 7.84375 10.4896C7.51736 10.1632 7.125 10 6.66667 10C6.20833 10 5.81597 10.1632 5.48958 10.4896C5.16319 10.816 5 11.2083 5 11.6667C5 12.125 5.16319 12.5174 5.48958 12.8438C5.81597 13.1701 6.20833 13.3333 6.66667 13.3333ZM4.16667 5.83333H9.16667V4.16667C9.16667 3.47222 8.92361 2.88194 8.4375 2.39583C7.95139 1.90972 7.36111 1.66667 6.66667 1.66667C5.97222 1.66667 5.38194 1.90972 4.89583 2.39583C4.40972 2.88194 4.16667 3.47222 4.16667 4.16667V5.83333ZM1.66667 15.8333V7.5V15.8333Z"
+          fill="white"
+        />
+      </svg>
+    ),
+  },
+  {
+    value: "players",
+    title: "Players Only",
+    description:
+      "Profile is visible only to players. Coaches and other users cannot view the profile.",
+    icon: (<TbPlayFootball className="text-xl" />),
+  },
+  {
+    value: "coach_and_players",
+    title: "Coach & Players Only",
+    description:
+      "Profile is visible only to coaches and players. Other users cannot view the profile.",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="14"
+        height="17"
+        viewBox="0 0 14 17"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M5.79167 11.2917L10.5 6.58333L9.3125 5.39583L5.79167 8.91667L4.04167 7.16667L2.85417 8.35417L5.79167 11.2917ZM6.66667 16.6667C4.73611 16.1806 3.14236 15.0729 1.88542 13.3438C0.628472 11.6146 0 9.69444 0 7.58333V2.5L6.66667 0L13.3333 2.5V7.58333C13.3333 9.69444 12.7049 11.6146 11.4479 13.3438C10.191 15.0729 8.59722 16.1806 6.66667 16.6667ZM6.66667 14.9167C8.11111 14.4583 9.30556 13.5417 10.25 12.1667C11.1944 10.7917 11.6667 9.26389 11.6667 7.58333V3.64583L6.66667 1.77083L1.66667 3.64583V7.58333C1.66667 9.26389 2.13889 10.7917 3.08333 12.1667C4.02778 13.5417 5.22222 14.4583 6.66667 14.9167Z"
+          fill="white"
+        />
+      </svg>
+    ),
+  },
 ]
 
 export default function PrivacyVisibilitySelector({
   value,
   onChange,
+  userRole,
 }: {
   value: PrivacyValue
   onChange: (value: PrivacyValue) => void
+  userRole?: string
 }) {
+
+  // Define the type for privacy options
+  type PrivacyOption = {
+    value: PrivacyValue
+    title: string
+    description: string
+    icon: React.ReactNode
+  }
+
+  // Get privacy options based on user role
+  const getPrivacyOptions = (): PrivacyOption[] => {
+    switch (userRole) {
+      case 'player':
+        return playerPrivacyOptions
+      case 'coach':
+        return coachPrivacyOptions
+      default:
+        return othersPrivacyOptions
+    }
+  }
+
+  const privacyOptions = getPrivacyOptions()
+
   return (
     <div className="mt-6 space-y-3">
       <RadioGroup
@@ -89,7 +257,7 @@ export default function PrivacyVisibilitySelector({
         onValueChange={(nextValue) => onChange(nextValue as PrivacyValue)}
         className="space-y-3"
       >
-        {privacyOptions.map((option) => (
+        {privacyOptions.map((option: PrivacyOption) => (
           <label
             key={option.value}
             className="group block cursor-pointer"
@@ -137,9 +305,9 @@ export default function PrivacyVisibilitySelector({
             />
           </svg>
           <p className="max-w-161.5 text-[14px] leading-[150%] font-normal text-white/70">
-            You can change these settings at any time from your child's profile
+            {`You can change these settings at any time from your child's profile
             dashboard. Information like GPA and contact numbers are always
-            hidden by default.
+            hidden by default.`}
           </p>
         </div>
       </div>

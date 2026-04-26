@@ -1,18 +1,18 @@
 import DatepickerField from "@/components/common/datepicker-field"
-import InputField from "@/components/common/input-field"
 import ModalStepHeader from "@/components/common/modal-header"
 import SelectField from "@/components/common/select-field"
 import UploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import type { WizardState } from "../types"
+import UiInput from "@/components/common/ui-input"
 
 const controlClassName =
   "h-11 rounded-xl border border-white/10 bg-[#0F1117] px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
 
 const triggerClassName =
-  "h-11 w-full rounded-xl border-white/10 bg-[#0F1117] px-3 text-sm text-white data-placeholder:text-white/50"
+  "h-11 w-full rounded-xl border-white/10 bg-[#0F1117] px-3 text-sm text-white data-placeholder:text-white/50 py-5! "
 
 interface CoreIdentityFormData {
   profilePhotos: File[]
@@ -48,6 +48,7 @@ export default function CoreIdentity({
   const [openDatePicker, setOpenDatePicker] = useState(false)
   const [photoPreviews, setPhotoPreviews] = useState<PhotoPreview[]>([])
   const previewUrlsRef = useRef<string[]>([])
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const {
     register,
@@ -87,10 +88,12 @@ export default function CoreIdentity({
   const sport = watch("sport")
   const dominantFoot = watch("dominantFoot")
 
-  useEffect(() => {
-    const subscription = watch((values) => {
+  // Memoize the handler to prevent it from being recreated on every render
+  const handleDraftChange = useCallback(
+    (values: CoreIdentityFormData) => {
       onDraftChange({
         profilePhotoNames: photoPreviews.map((item) => item.file.name),
+        profilePhotos: photoPreviews.map((item) => item.file),
         firstName: values.firstName ?? "",
         lastName: values.lastName ?? "",
         dateOfBirth: values.dateOfBirth
@@ -104,45 +107,76 @@ export default function CoreIdentity({
         dominantFoot: values.dominantFoot ?? "",
         clubTeam: values.clubTeam ?? "",
       })
-    })
+    },
+    [onDraftChange, photoPreviews]
+  )
 
-    return () => subscription.unsubscribe()
-  }, [watch, onDraftChange, photoPreviews])
-
-  const handlePhotoSelect = (files: File[]) => {
-    const nextPreviews = files.map((file, index) => ({
-      id: `${file.name}-${file.size}-${Date.now()}-${index}`,
-      file,
-      url: URL.createObjectURL(file),
-    }))
-
-    setPhotoPreviews((prev) => {
-      const merged = [...prev, ...nextPreviews]
-      setValue(
-        "profilePhotos",
-        merged.map((item) => item.file),
-        { shouldValidate: true }
-      )
-      return merged
-    })
-  }
-
-  const handlePhotoRemove = (id: string) => {
-    setPhotoPreviews((prev) => {
-      const target = prev.find((item) => item.id === id)
-      if (target) {
-        URL.revokeObjectURL(target.url)
+  // Use a debounced approach to avoid updating during render phase
+  useEffect(() => {
+    const subscription = watch((values) => {
+      // Clear any pending timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
       }
 
-      const next = prev.filter((item) => item.id !== id)
-      setValue(
-        "profilePhotos",
-        next.map((item) => item.file),
-        { shouldValidate: true }
-      )
-      return next
+      // Schedule update outside render phase using setTimeout
+      timeoutRef.current = setTimeout(() => {
+        handleDraftChange(values as CoreIdentityFormData)
+      }, 0)
     })
-  }
+
+    return () => {
+      subscription.unsubscribe()
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [watch, handleDraftChange])
+
+  const handlePhotoSelect = useCallback(
+    (files: File[]) => {
+      const nextPreviews = files.map((file, index) => ({
+        id: `${file.name}-${file.size}-${Date.now()}-${index}`,
+        file,
+        url: URL.createObjectURL(file),
+      }))
+
+      setPhotoPreviews((prev) => {
+        const merged = [...prev, ...nextPreviews]
+        // Only update form value, don't call onDraftChange here
+        // It will be handled by the watch subscription
+        setValue(
+          "profilePhotos",
+          merged.map((item) => item.file),
+          { shouldValidate: true }
+        )
+
+        return merged
+      })
+    },
+    [setValue]
+  )
+
+  const handlePhotoRemove = useCallback(
+    (id: string) => {
+      setPhotoPreviews((prev) => {
+        const target = prev.find((item) => item.id === id)
+        if (target) {
+          URL.revokeObjectURL(target.url)
+        }
+
+        const next = prev.filter((item) => item.id !== id)
+        setValue(
+          "profilePhotos",
+          next.map((item) => item.file),
+          { shouldValidate: true }
+        )
+
+        return next
+      })
+    },
+    [setValue]
+  )
 
   useEffect(() => {
     previewUrlsRef.current = photoPreviews.map((item) => item.url)
@@ -208,24 +242,32 @@ export default function CoreIdentity({
         </div>
 
         <div className="grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-2">
-          <InputField
+          <UiInput
             label="First Name"
             placeholder="Enter First Name"
             className={controlClassName}
-            {...register("firstName", {
-              required: "First name is required",
-            })}
-            error={errors.firstName?.message}
+            value={draft.firstName || ""}
+            onChange={(e) => {
+              setValue("firstName", e.target.value, { shouldValidate: true })
+              onDraftChange({
+                ...draft,
+                firstName: e.target.value,
+              })
+            }}
           />
 
-          <InputField
+          <UiInput
             label="Last Name"
             placeholder="Enter Last Name"
             className={controlClassName}
-            {...register("lastName", {
-              required: "Last name is required",
-            })}
-            error={errors.lastName?.message}
+            value={draft.lastName || ""}
+            onChange={(e) => {
+              setValue("lastName", e.target.value, { shouldValidate: true })
+              onDraftChange({
+                ...draft,
+                lastName: e.target.value,
+              })
+            }}
           />
 
           <DatepickerField
@@ -255,29 +297,33 @@ export default function CoreIdentity({
             error={errors.gender?.message}
           />
 
-          <InputField
+          <UiInput
             label="Nationality"
             placeholder="Canada"
             className={controlClassName}
-            {...register("nationality", {
-              required: "Nationality is required",
-            })}
-            error={errors.nationality?.message}
+            value={draft.nationality || ""}
+            onChange={(e) => {
+              setValue("nationality", e.target.value, { shouldValidate: true })
+              onDraftChange({
+                ...draft,
+                nationality: e.target.value,
+              })
+            }}
           />
 
-          <InputField
+          <UiInput
             label="Email Address"
             type="email"
             placeholder="example@email.com"
             className={controlClassName}
-            {...register("email", {
-              required: "Email is required",
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: "Invalid email address",
-              },
-            })}
-            error={errors.email?.message}
+            value={draft.email || ""}
+            onChange={(e) => {
+              setValue("email", e.target.value, { shouldValidate: true })
+              onDraftChange({
+                ...draft,
+                email: e.target.value,
+              })
+            }}
           />
 
           <SelectField
@@ -292,14 +338,19 @@ export default function CoreIdentity({
             error={errors.sport?.message}
           />
 
-          <InputField
+          <UiInput
             label="Jersey Number"
             placeholder="#"
             className={controlClassName}
-            {...register("jerseyNumber", {
-              required: "Jersey number is required",
-            })}
-            error={errors.jerseyNumber?.message}
+            value={draft.jerseyNumber || ""}
+            onChange={(e) => {
+              setValue("jerseyNumber", e.target.value, { shouldValidate: true })
+              onDraftChange({
+                ...draft,
+                jerseyNumber: e.target.value,
+              })
+            }}
+            type="number"
           />
 
           <SelectField
@@ -317,14 +368,18 @@ export default function CoreIdentity({
             error={errors.dominantFoot?.message}
           />
 
-          <InputField
+          <UiInput
             label="Club / Team"
             placeholder="e.g. Toronto United"
             className={controlClassName}
-            {...register("clubTeam", {
-              required: "Club/Team is required",
-            })}
-            error={errors.clubTeam?.message}
+            value={draft.clubTeam || ""}
+            onChange={(e) => {
+              setValue("clubTeam", e.target.value, { shouldValidate: true })
+              onDraftChange({
+                ...draft,
+                clubTeam: e.target.value,
+              })
+            }}
           />
         </div>
       </div>

@@ -33,11 +33,13 @@ export default function AuthCheckPoint({ children, role }: Props) {
           !userRole
         ) {
           router.replace("/auth")
+          setIsChecking(false)
           return
         }
 
         if (userRole !== requiredRole) {
           router.replace(`/${userRole}`)
+          setIsChecking(false)
           return
         }
 
@@ -46,21 +48,26 @@ export default function AuthCheckPoint({ children, role }: Props) {
             ? `/coach?coach=profile-setup`
             : requiredRole === "club"
               ? `/club?club=profile-setup`
-              : null
+              : requiredRole === "player"
+                ? `/player?add-new=player`
+                : null
 
         const hasCompletedSetup = window.localStorage.getItem(`profile_completed_${user.id}`) === "true"
 
         if (user.status === "pending" && pendingRedirect && !hasCompletedSetup) {
           const queryParams = new URLSearchParams(window.location.search)
           const hasProfileSetupQuery =
-            queryParams.get(requiredRole) === "profile-setup"
+            requiredRole === "player" 
+              ? queryParams.get("add-new") === "player"
+              : queryParams.get(requiredRole) === "profile-setup"
 
           // Only redirect if:
           // 1. We're on the root dashboard page AND
-          // 2. The profile-setup query param is not already present
+          // 2. The profile-setup/add-new query param is not already present
           const isRootPage = pathname === `/${requiredRole}`
           if (isRootPage && !hasProfileSetupQuery) {
             router.replace(pendingRedirect)
+            setIsChecking(false)
             return
           }
 
@@ -71,15 +78,15 @@ export default function AuthCheckPoint({ children, role }: Props) {
         setIsChecking(false)
       } catch (error) {
         console.error("Auth check error:", error)
+        setIsChecking(false)
         router.replace("/auth")
       }
     }
     check()
-  }, [pathname, router, role])
-
+  }, [pathname, router, role]) 
   if (isChecking) {
     return <Loader />
   }
-
+ 
   return <>{children}</>
 }

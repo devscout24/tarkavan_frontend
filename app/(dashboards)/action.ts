@@ -100,6 +100,40 @@ export async function getSearchList(data: FormData) {
   }
 }
 
+
+export async function addChildOrPlayer(data: FormData) {
+  try {
+    const res = await api.post(`/player/profile/add` , data)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+
+ 
+export async function getPlayerPosition() {
+  try {
+    const res = await api.get(`/player/positions`)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+
  
 
 

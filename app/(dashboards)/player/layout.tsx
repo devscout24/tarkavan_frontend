@@ -34,6 +34,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { RiLogoutCircleRLine } from "react-icons/ri"
 import AuthCheckPoint from "@/components/auth/auth-checkopoint"
+import Modals from "@/components/common/modal"
 
 export default function PlayerDashboardLayout({
   children,
@@ -95,6 +96,7 @@ export default function PlayerDashboardLayout({
   return (
     <TooltipProvider>
       <AuthCheckPoint role="player">
+      <Modals/>
         <SidebarProvider className="h-screen overflow-hidden" >
           <Sidebar collapsible="icon" className="relative border-secondary">
             <Image

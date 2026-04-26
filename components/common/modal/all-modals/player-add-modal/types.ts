@@ -18,6 +18,7 @@ export type WizardState = {
   forms: {
     coreIdentity: {
       profilePhotoNames: string[]
+      profilePhotos: File[] // Store actual File objects for backend upload
       firstName: string
       lastName: string
       dateOfBirth?: string
@@ -52,6 +53,7 @@ export type WizardState = {
         title: string
         type: "video" | "link"
         source?: "youtube" | "hudl" | "vimeo"
+        file?: File
       }>
     }
     achievements: {
@@ -59,13 +61,14 @@ export type WizardState = {
         id: string
         name: string
         type: string
+        file?: File
       }>
       title: string
       dateEarned?: string
       description: string
     }
     privacySettings: {
-      visibility: "public" | "coaches-teams" | "private"
+      visibility: string
     }
   }
 }
@@ -75,6 +78,7 @@ export const defaultWizardState: WizardState = {
   forms: {
     coreIdentity: {
       profilePhotoNames: [],
+      profilePhotos: [], // Store actual File objects for backend upload
       firstName: "",
       lastName: "",
       dateOfBirth: undefined,

@@ -38,7 +38,7 @@ export default function AchievementDetailsForm({
       dateEarned: dateEarnedIso,
       description,
     })
-  }, [title, dateEarnedIso, description, onChange])
+  }, [title, dateEarnedIso, description])
 
   return (
     <div className="mt-4 space-y-4">

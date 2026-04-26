@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useForm, useWatch } from "react-hook-form"
 import type { WizardState } from "../types"
@@ -8,6 +8,7 @@ import type { WizardState } from "../types"
 import ModalStepHeader from "@/components/common/modal-header"
 import SoccerField from "./soccer-field"
 import PositionDropdowns from "./position-dropdowns"
+import { getPlayerPosition } from "@/app/(dashboards)/action"
 
 const MODAL_ROLE_QUERY_KEY = "role"
 
@@ -39,12 +40,17 @@ type Position = {
   y: number
 }
 
+type ApiPlayerPosition = {
+  id: number
+  name: string
+}
+
 interface PositionMapFormData {
   primaryPosition: string
   secondaryPosition: string
 }
 
-const positions: Position[] = [
+const fallbackPositions: Position[] = [
   { id: "GK", short: "GK", name: "Goalkeeper", x: 85, y: 48 },
   { id: "RB", short: "RB", name: "Right Back", x: 70, y: 12 },
   { id: "RCB", short: "RCB", name: "Right Center Back", x: 71, y: 30 },
@@ -54,9 +60,22 @@ const positions: Position[] = [
   { id: "CM", short: "CM", name: "Central Midfielder", x: 52, y: 49 },
   { id: "CAM", short: "CAM", name: "Attacking Midfielder", x: 38, y: 47 },
   { id: "RW", short: "RW", name: "Right Wing", x: 37, y: 12 },
-  { id: "ST", short: "ST", name: "Striker", x: 29, y: 49},
+  { id: "ST", short: "ST", name: "Striker", x: 29, y: 49 },
   { id: "LW", short: "LW", name: "Left Wing", x: 37, y: 82 },
 ]
+
+const fallbackByShort = fallbackPositions.reduce<Record<string, Position>>(
+  (acc, position) => {
+    acc[position.short] = position
+    return acc
+  },
+  {}
+)
+
+const extractShortCode = (name: string) => {
+  const match = name.match(/\(([^)]+)\)\s*$/)
+  return match?.[1]?.trim().toUpperCase() ?? ""
+}
 
 // Initial positions visible on field load
 const initialPositions = ["LW", "ST", "GK", "RCB", "RW"]
@@ -76,27 +95,56 @@ export default function PositionMap({
   draft: WizardState["forms"]["positionMap"]
   onDraftChange: (value: WizardState["forms"]["positionMap"]) => void
 }) {
+  const [positions, setPositions] = useState<Position[]>(fallbackPositions)
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
   const roleHeaderCopy = getAddAthleteRoleHeaderCopy(
     searchParams.get(MODAL_ROLE_QUERY_KEY)
   )
-  const isValidPosition = (value: string | null) =>
-    Boolean(value && positions.some((position) => position.id === value))
-
-  const initialPrimaryPosition = isValidPosition(
-    draft.primaryPosition || searchParams.get("primaryPosition")
+  const positionById = useMemo(
+    () =>
+      positions.reduce<Record<string, Position>>((acc, position) => {
+        acc[position.id] = position
+        return acc
+      }, {}),
+    [positions]
   )
-    ? ((draft.primaryPosition || searchParams.get("primaryPosition")) as string)
-    : "LW"
 
-  const initialSecondaryPosition = isValidPosition(
-    draft.secondaryPosition || searchParams.get("secondaryPosition")
+  const positionByShort = useMemo(
+    () =>
+      positions.reduce<Record<string, Position>>((acc, position) => {
+        acc[position.short] = position
+        return acc
+      }, {}),
+    [positions]
   )
-    ? ((draft.secondaryPosition ||
-        searchParams.get("secondaryPosition")) as string)
-    : "RCB"
+
+  const resolvePositionId = useCallback(
+    (value: string | null) => {
+      if (!value) {
+        return ""
+      }
+
+      if (positionById[value]) {
+        return value
+      }
+
+      const normalized = value.toUpperCase()
+      return positionByShort[normalized]?.id ?? ""
+    },
+    [positionById, positionByShort]
+  )
+
+  const initialPrimaryPosition =
+    resolvePositionId(
+      draft.primaryPosition || searchParams.get("primaryPosition")
+    ) || ""
+
+  const initialSecondaryPosition =
+    resolvePositionId(
+      draft.secondaryPosition || searchParams.get("secondaryPosition")
+    ) || ""
 
   const {
     register,
@@ -113,9 +161,7 @@ export default function PositionMap({
 
   useEffect(() => {
     register("primaryPosition", { required: "Primary position is required" })
-    register("secondaryPosition", {
-      required: "Secondary position is required",
-    })
+    register("secondaryPosition")
   }, [register])
 
   const primaryPosition = useWatch({ control, name: "primaryPosition" })
@@ -187,8 +233,75 @@ export default function PositionMap({
     )
   }
 
+  useEffect(() => {
+    const getPositions = async () => {
+      try {
+        const res = await getPlayerPosition()
+        const rows = (res as { data?: { data?: ApiPlayerPosition[] } })?.data
+          ?.data
+
+        if (!Array.isArray(rows) || rows.length === 0) {
+          return
+        }
+
+        const mapped = rows
+          .map((item) => {
+            const short = extractShortCode(item.name)
+            const fallback = fallbackByShort[short]
+
+            if (!short || !fallback) {
+              return null
+            }
+
+            return {
+              id: String(item.id),
+              short,
+              name: item.name.replace(/\s*\([^)]+\)\s*$/, ""),
+              x: fallback.x,
+              y: fallback.y,
+            } satisfies Position
+          })
+          .filter((item): item is Position => item !== null)
+
+        if (mapped.length > 0) {
+          setPositions(mapped)
+        }
+      } catch {
+        // Keep fallback positions when API fails.
+      }
+    }
+
+    getPositions()
+  }, [])
+
+  useEffect(() => {
+    const nextPrimary = resolvePositionId(primaryPosition || "")
+    const nextSecondary = resolvePositionId(secondaryPosition || "")
+
+    if (nextPrimary !== (primaryPosition || "")) {
+      setValue("primaryPosition", nextPrimary, { shouldValidate: true })
+    }
+
+    if (nextSecondary !== (secondaryPosition || "")) {
+      setValue("secondaryPosition", nextSecondary, { shouldValidate: true })
+    }
+  }, [
+    positions,
+    primaryPosition,
+    secondaryPosition,
+    resolvePositionId,
+    setValue,
+  ])
+
+  const selectedPrimaryShort = primaryPosition
+    ? positionById[primaryPosition]?.short
+    : undefined
+  const selectedSecondaryShort = secondaryPosition
+    ? positionById[secondaryPosition]?.short
+    : undefined
+
   return (
-    <div className="w-full max-w-4xl mx-auto rounded-2xl bg-[#090B10] p-4 text-white">
+    <div className="mx-auto w-full max-w-4xl rounded-2xl bg-[#090B10] p-4 text-white">
       <ModalStepHeader
         title={roleHeaderCopy.title}
         subtitle={roleHeaderCopy.subtitle}
@@ -208,11 +321,14 @@ export default function PositionMap({
           <div className="rounded-xl">
             <div className="relative w-full overflow-hidden rounded-md border border-white/20 bg-white/5">
               <SoccerField
-                positions={positions.map(p => ({ ...p, isVisible: isPositionVisible(p.id) }))}
+                positions={positions.map((p) => ({
+                  ...p,
+                  isVisible: isPositionVisible(p.id),
+                }))}
                 onPositionClick={(positionId) => {
                   const isPrimary = primaryPosition === positionId
                   const isSecondary = secondaryPosition === positionId
-                  
+
                   if (isPrimary) {
                     onSecondarySelect("")
                   } else if (isSecondary) {
@@ -223,8 +339,8 @@ export default function PositionMap({
                     onSecondarySelect(positionId)
                   }
                 }}
-                primaryPosition={primaryPosition}
-                secondaryPosition={secondaryPosition}
+                primaryPosition={selectedPrimaryShort}
+                secondaryPosition={selectedSecondaryShort}
               />
             </div>
           </div>
@@ -237,7 +353,7 @@ export default function PositionMap({
             onSecondarySelect={onSecondarySelect}
             errors={{
               primaryPosition: errors.primaryPosition?.message,
-              secondaryPosition: errors.secondaryPosition?.message
+              secondaryPosition: errors.secondaryPosition?.message,
             }}
           />
         </div>

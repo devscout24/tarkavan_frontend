@@ -3,8 +3,8 @@ import AddChildCard from "@/components/custom/add-child-card"
 import TeamCard from "./components/team-card"
 import CommonBtn from "@/components/common/common-btn"
 import { Plus } from "lucide-react"
-import { useRouter } from "next/navigation" 
-import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useCallback, useEffect, useState } from "react"
 import { getTeams } from "./action"
 
 type Team = {
@@ -28,31 +28,37 @@ export default function Page() {
   const [teams, setTeams] = useState<Team[]>([])
   const router = useRouter()
 
-
-
-  useEffect(() => {
-      const fetchTeams = async () => {
+  const fetchTeams = useCallback(async () => {
     try {
-      const res = await getTeams() 
+      const res = await getTeams()
       console.log(res)
-      
-      if (res && typeof res === "object" && "success" in res && res.success && "data" in res) {
+
+      if (
+        res &&
+        typeof res === "object" &&
+        "success" in res &&
+        res.success &&
+        "data" in res
+      ) {
         const typedRes = res as { success: true; data: { data: Team[] } }
         if (typedRes.data && typedRes.data.data) {
           setTeams(typedRes.data.data)
         }
       }
-    } catch(err) {
+    } catch (err) {
       console.error("Error fetching teams data:", err)
     }
-  }
-  fetchTeams()
-
-    window.addEventListener("refetch:teams", fetchTeams)
-  return () => window.removeEventListener("refetch:teams", fetchTeams)
   }, [])
 
- 
+  useEffect(() => {
+    const loadInitialTeams = async () => {
+      await fetchTeams()
+    }
+    loadInitialTeams()
+
+    window.addEventListener("refetch:teams", fetchTeams)
+    return () => window.removeEventListener("refetch:teams", fetchTeams)
+  }, [fetchTeams])
 
   return (
     <section>
@@ -66,7 +72,7 @@ export default function Page() {
           onClick={() => router.push("?add-new=team")}
         />
       </div>
-      <div className="flex flex-wrap gap-6 mt-4  ">
+      <div className="mt-4 flex flex-wrap gap-6">
         {teams.map((team) => (
           <TeamCard
             key={team.id}
@@ -79,24 +85,10 @@ export default function Page() {
             playersLimit={24}
             coachCount={team.total_coaches}
             imageSrc={team.image}
-            onViewTeam={() => router.push(`/club/teams/${team.id}`)} 
-            onDeleteTeam={async () =>  {
-                  try {
-      const res = await getTeams() 
-      console.log(res)
-      
-      if (res && typeof res === "object" && "success" in res && res.success && "data" in res) {
-        const typedRes = res as { success: true; data: { data: Team[] } }
-        if (typedRes.data && typedRes.data.data) {
-          setTeams(typedRes.data.data)
-        }
-      }
-    } catch(err) {
-      console.error("Error fetching teams data:", err)
-    }
-            }
-               
-            } 
+            onViewTeam={() => router.push(`/club/teams/${team.id}`)}
+            onDeleteTeam={() => {
+              fetchTeams()
+            }}
           />
         ))}
 

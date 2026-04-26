@@ -110,12 +110,19 @@ export default function ClubProfileSetup() {
       }
 
       const res = await clubProfileSetup(formData)
-      console.log(res)
+      
 
       if (!res.success) {
         toast.error(res.message)
         return
       }
+      
+      const user = localStorage.getItem("go_elite_user") ? JSON.parse(localStorage.getItem("go_elite_user") as string) : null;
+      if (user) {
+        user.status = "approve";
+        localStorage.setItem("go_elite_user", JSON.stringify(user));
+      }
+
 
       toast.success("Club profile submitted successfully")
 
@@ -126,7 +133,6 @@ export default function ClubProfileSetup() {
         localStorage.setItem(`profile_completed_${parsedUser.id}`, "true")
       } 
       router.replace("/club")
-      window.location.reload()
 
     } catch (err) {
       console.error(err)

@@ -79,7 +79,6 @@ export async function generateMetadata({
   const { profileID } = await params
   const baseUrl = await getBaseUrl()
   const profileUrl = `${baseUrl}/profile/${profileID}`
-  const fallback = `${baseUrl}/images/program_details_bg.png`
   const ogRouteImage = `${baseUrl}/api/og?${new URLSearchParams({ url: profileUrl }).toString()}`
   const res = await getPublicProfile({ id: profileID })
   const rootData = extractRootData(res)

@@ -8,22 +8,76 @@ import {
 } from "@/components/common/friendly-match-card"
 import { useRouter } from "next/navigation"
 import MatchTable from "./components/match-table"
+import { useEffect, useState } from "react"
+import { getMatchList } from "./action"
 
-const matches = [
-  {
-    clubName: "CANADA STRIKERS FC",
-    title: "Friendly Match Available",
-    teamName: "U16 Elite Academy",
-    date: "Saturday, Oct 14th",
-    location: "Central Park Complex",
-    note: "We have a field",
-    actionLabel: "View Details",
-  },
-]
+type Match = {
+  id: number
+  club_team_id: number
+  available_date: string
+  status: string
+  opponent_club_id: null | number
+  location: string
+  field_opportunity: string
+  created_at: string
+  updated_at: string
+  club_team: {
+    id: number
+    name: string
+  }
+}
 
 export default function Page() {
+  const route = useRouter()
+  const [matches, setMatches] = useState<Match[]>([])
 
-    const route = useRouter()
+  useEffect(() => {
+    const getMatchData = async () => {
+      try {
+        const res = await getMatchList()
+        console.log(res)
+
+        if (
+          res &&
+          typeof res === "object" &&
+          "success" in res &&
+          res.success &&
+          "data" in res
+        ) {
+          const typedRes = res as {
+            success: true
+            data: { data: Match[] }
+          }
+          if (typedRes.data && typedRes.data.data) {
+            setMatches(typedRes.data.data)
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching match data:", err)
+      }
+    }
+    getMatchData()
+  }, [])
+
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString)
+      return date.toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "short",
+        day: "numeric",
+      })
+    } catch {
+      return dateString
+    }
+  }
+
+  const formatFieldOpportunity = (fieldOpp: string) => {
+    return fieldOpp
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ")
+  }
 
   return (
     <section className="space-y-6 text-white">
@@ -32,7 +86,7 @@ export default function Page() {
 
         <Button
           type="button"
-          onClick={()=> route.push("?add-new=friendly-match") }
+          onClick={() => route.push("?add-new=friendly-match")}
           className="h-11 rounded-xl bg-brand px-4 text-sm font-semibold text-[#111111] shadow-none hover:bg-brand/95"
         >
           <Plus className="size-4" />
@@ -42,17 +96,25 @@ export default function Page() {
 
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-[repeat(2,minmax(0,320px))]">
         {matches.map((match) => (
-          <FriendlyMatchCard key={match.title} {...match} />
+          <FriendlyMatchCard
+            key={match.id}
+            clubName={match.club_team.name}
+            title="Friendly Match Available"
+            teamName={match.club_team.name}
+            date={formatDate(match.available_date)}
+            location={
+              match.location.charAt(0).toUpperCase() + match.location.slice(1)
+            }
+            note={formatFieldOpportunity(match.field_opportunity)}
+            actionLabel="View Details"
+          />
         ))}
 
         <MatchPlaceholderCard />
       </div>
 
-
-       {/* table */}
-       <MatchTable/>
-
-
+      {/* table */}
+      <MatchTable />
     </section>
   )
 }

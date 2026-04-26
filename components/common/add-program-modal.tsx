@@ -54,10 +54,24 @@ const isSportOptionsSuccessResponse = (
   return value.success === true
 }
 
-const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
+const isActionSuccess = (
+  value: unknown
+): value is { success?: boolean; status?: boolean } => {
+  if (typeof value !== "object" || value === null) {
+    return false
+  }
+
+  return "success" in value || "status" in value
+}
+
+const AddProgramPage: React.FC<AddProgramPageProps> = () => {
   const { close } = useModal()
   const pathname = usePathname()
   const isCoach = pathname?.includes("/coach")
+  const fieldClassName =
+    "border-neutral-700 bg-neutral-800 py-5 placeholder:text-neutral-300 placeholder:opacity-100"
+  const selectTriggerClassName =
+    "mt-1 w-full border-neutral-700 bg-neutral-800 py-5 text-white data-[placeholder]:text-neutral-300"
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [sportOptions, setSportOptions] = useState<TSportOption[]>([])
   const [form, setForm] = useState(() => {
@@ -144,13 +158,11 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
           return
         }
 
-        const activeSportOptions = payload.data.filter(
-          (sport) => {
-            if (sport.status !== "active") return false
-            if (isCoach && sport.audience !== "coach") return false
-            return true
-          }
-        )
+        const activeSportOptions = payload.data.filter((sport) => {
+          if (sport.status !== "active") return false
+          if (isCoach && sport.audience !== "coach") return false
+          return true
+        })
         setSportOptions(activeSportOptions)
       } catch (err) {
         console.error("Error fetching sport data:", err)
@@ -205,16 +217,22 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
         formData.append("program_photo", file)
       }
 
-      let res: any;
+      let res: unknown
       if (isCoach) {
         res = await createCoachProgram(formData)
       } else {
-        res = await createProgram(formData) 
+        res = await createProgram(formData)
       }
 
       // Check success correctly based on our generic action response pattern
-      if (res && (res.success === true || res.status === true)) {
+      if (
+        isActionSuccess(res) &&
+        (res.success === true || res.status === true)
+      ) {
         toast.success("Program created successfully!")
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("dashboard:data-refresh"))
+        }
         close("add-new", ["program"])
 
         try {
@@ -303,7 +321,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
             value={form.type}
             onValueChange={(v) => handleSelect("type", v)}
           >
-            <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5">
+            <SelectTrigger className={selectTriggerClassName}>
               <SelectValue placeholder="Select Program Type" />
             </SelectTrigger>
             <SelectContent position="popper">
@@ -325,7 +343,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
               value={form.sport}
               onValueChange={(v) => handleSelect("sport", v)}
             >
-              <SelectTrigger className="p mt-1 w-full border-neutral-700 bg-neutral-800 py-5">
+              <SelectTrigger className={selectTriggerClassName}>
                 <SelectValue placeholder="Select Sport" />
               </SelectTrigger>
               <SelectContent position="popper">
@@ -348,7 +366,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
               value={form.name}
               onChange={handleChange}
               placeholder="Program Name"
-              className="mt-1 border-neutral-700 bg-neutral-800 py-5"
+              className={`mt-1 ${fieldClassName}`}
             />
           </div>
           {/* Second row: Age Group & Program Price */}
@@ -358,7 +376,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
               value={form.ageGroup}
               onValueChange={(v) => handleSelect("ageGroup", v)}
             >
-              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5">
+              <SelectTrigger className={selectTriggerClassName}>
                 <SelectValue placeholder="Select Age Group" />
               </SelectTrigger>
               <SelectContent position="popper">
@@ -384,7 +402,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
               value={form.price}
               onChange={handleChange}
               placeholder="Program Price ($)"
-              className="mt-1 border-neutral-700 bg-neutral-800 py-5"
+              className={`mt-1 ${fieldClassName}`}
               type="number"
             />
           </div>
@@ -393,7 +411,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
             value={form.discountPrice}
             onChange={handleChange}
             placeholder="Program Discount Price ($)"
-            className="border-neutral-700 bg-neutral-800 py-5"
+            className={fieldClassName}
             type="number"
           />
           <Input
@@ -401,7 +419,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
             value={form.location}
             onChange={handleChange}
             placeholder="Program Location"
-            className="border-neutral-700 bg-neutral-800 py-5"
+            className={fieldClassName}
           />
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col">
@@ -411,7 +429,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
                 value={form.start}
                 onChange={handleChange}
                 placeholder="Program Start (mm/dd/yyyy)"
-                className="mt-1 border-neutral-700 bg-neutral-800 py-5"
+                className={`mt-1 ${fieldClassName}`}
                 type="date"
               />
             </div>
@@ -422,7 +440,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
                 value={form.end}
                 onChange={handleChange}
                 placeholder="Program End (mm/dd/yyyy)"
-                className="mt-1 border-neutral-700 bg-neutral-800 py-5"
+                className={`mt-1 ${fieldClassName}`}
                 type="date"
               />
             </div>
@@ -436,7 +454,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
                   value={time}
                   onChange={(e) => handleTimeChange(idx, e.target.value)}
                   placeholder="HH:MM"
-                  className="border-neutral-700 bg-neutral-800 py-5"
+                  className={fieldClassName}
                   type="time"
                 />
               ))}
@@ -449,7 +467,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
           value={form.about}
           onChange={handleChange}
           placeholder="About This Program"
-          className="mt-2 border-neutral-700 bg-neutral-800"
+          className="mt-2 border-neutral-700 bg-neutral-800 placeholder:text-neutral-300 placeholder:opacity-100"
         />
 
         <div className="mt-2 rounded-lg border border-dashed border-neutral-700 p-3">
@@ -460,7 +478,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = ({ onSave }) => {
                   value={goal}
                   onChange={(e) => handleGoalChange(idx, e.target.value)}
                   placeholder={`Goal ${idx + 1}`}
-                  className="mx-auto w-97/100 border-neutral-700 bg-neutral-800 py-5"
+                  className={`mx-auto w-97/100 ${fieldClassName}`}
                 />
                 {form.goals.length > 1 && (
                   <CommonBtn

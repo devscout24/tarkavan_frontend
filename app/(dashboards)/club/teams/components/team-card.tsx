@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { Edit2 , Trash2 } from "lucide-react"
+import { Edit2, Trash2 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -12,8 +12,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem, 
-  DropdownMenuShortcut, 
+  DropdownMenuItem,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/animate-ui/components/radix/dropdown-menu"
 import { BsThreeDots } from "react-icons/bs"
@@ -45,43 +45,47 @@ export default function TeamCard({
   playersCount = 18,
   playersLimit,
   coachCount = 2,
-  visibility = "PUBLIC", 
+  visibility = "PUBLIC",
   imageAlt = "Team photo",
   viewTeamLabel = "View Team",
   className,
-  imageSrc ,
-  onViewTeam,  
+  imageSrc,
+  onViewTeam,
   onDeleteTeam,
   teamId,
 }: TeamCardProps) {
   const router = useRouter()
 
-  const handleDeleteTeam = async ()=> {
-    try{
-      const res = await deleteTeam(teamId) 
-      
-      if (typeof res === "object" && res !== null && "success" in res && res.success) {
-        toast.success("Team deleted successfully") 
+  const handleDeleteTeam = async () => {
+    try {
+      const res = await deleteTeam(teamId)
+
+      if (
+        typeof res === "object" &&
+        res !== null &&
+        "success" in res &&
+        res.success
+      ) {
+        toast.success("Team deleted successfully")
+        window.dispatchEvent(new Event("refetch:teams"))
         router.refresh()
         onDeleteTeam?.()
       } else {
         const fallbackMessage = "Failed to delete team. Please try again."
-        const message = 
-          typeof res === "object" && 
-          res !== null && 
-          "message" in res && 
+        const message =
+          typeof res === "object" &&
+          res !== null &&
+          "message" in res &&
           typeof res.message === "string"
             ? res.message
             : fallbackMessage
         toast.error(message)
       }
-    }catch(error){
+    } catch (error) {
       console.error(error)
       toast.error("Failed to delete team. Please try again.")
     }
   }
-
-
 
   return (
     <Card
@@ -91,7 +95,12 @@ export default function TeamCard({
       )}
     >
       <div className="relative h-48 w-full">
-        <Image src={imageSrc?.includes("http") ? imageSrc : "/images/player1.png"} alt={imageAlt} fill className="object-cover" />
+        <Image
+          src={imageSrc?.includes("http") ? imageSrc : "/images/player1.png"}
+          alt={imageAlt}
+          fill
+          className="object-cover"
+        />
         <Badge className="absolute top-3 right-3 h-9 rounded-full bg-[#0ea54b] px-4 text-sm font-medium text-white hover:bg-[#0ea54b]">
           {visibility}
         </Badge>
@@ -135,22 +144,32 @@ export default function TeamCard({
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Button
-                type="button" 
-                className="h-12  rounded-lg bg-transparent border border-brand text-brand hover:text-brand text-sm font-semibold px-5 "
+                type="button"
+                className="h-12 rounded-lg border border-brand bg-transparent px-5 text-sm font-semibold text-brand hover:text-brand"
               >
-                <BsThreeDots/>
+                <BsThreeDots />
               </Button>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent>
               <DropdownMenuGroup>
-                <DropdownMenuItem onClick={onViewTeam} className="hover:bg-brand cursor-pointer ">
+                <DropdownMenuItem
+                  onClick={onViewTeam}
+                  className="cursor-pointer hover:bg-brand"
+                >
                   <span>Edit</span>
-                  <DropdownMenuShortcut><Edit2/></DropdownMenuShortcut>
+                  <DropdownMenuShortcut>
+                    <Edit2 />
+                  </DropdownMenuShortcut>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleDeleteTeam} className="hover:bg-brand cursor-pointer">
+                <DropdownMenuItem
+                  onClick={handleDeleteTeam}
+                  className="cursor-pointer hover:bg-brand"
+                >
                   <span>Delete</span>
-                  <DropdownMenuShortcut><Trash2/></DropdownMenuShortcut>
+                  <DropdownMenuShortcut>
+                    <Trash2 />
+                  </DropdownMenuShortcut>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>

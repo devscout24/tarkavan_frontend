@@ -48,7 +48,7 @@ export default function Advertisement({
   isApplied = false,
 }: AdvertisementProps) {
   return (
-    <section className="flex h-[400px] flex-col overflow-hidden rounded-[24px] bg-primary">
+    <div className="flex  h-100  w-full  flex-col overflow-hidden rounded-[24px] bg-primary">
       {/* Image Section */}
       <div className="h-39 w-full flex-shrink-0">
         <Image
@@ -101,6 +101,6 @@ export default function Advertisement({
           disabled={isApplied}
         />
       </div>
-    </section>
+    </div>
   )
 }

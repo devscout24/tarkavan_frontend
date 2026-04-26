@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -14,6 +15,7 @@ import { getCompetitionLabel } from "@/app/(dashboards)/action"
 import { toast } from "sonner"
 import useModal from "../useModal"
 import { useRouter } from "next/navigation"
+import { handleLogout } from "@/lib/helpers"
 
 export default function TeamAddModal() {
   const { close } = useModal()
@@ -47,8 +49,6 @@ export default function TeamAddModal() {
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
- 
-  
   const router = useRouter()
 
   useEffect(() => {
@@ -67,41 +67,79 @@ export default function TeamAddModal() {
 
   const handleCreateTeam = async () => {
     if (isSubmitting) return
-    
+
     try {
       setIsSubmitting(true)
-      
+
       const formData = new FormData()
       formData.append("name", form.location) // Using form.location as team name based on the input field
       formData.append("age_group", form.ageGroup)
       formData.append("competition_level_id", form.sport) // Using form.sport as competition level ID
-      
+
       if (form.photo) {
         formData.append("image", form.photo)
       }
-      
+
       const res = await createTeam(formData)
-      
-      if (typeof res === "object" && res !== null && "success" in res && res.success) {
+
+      if (
+        typeof res === "object" &&
+        res !== null &&
+        "success" in res &&
+        res.success
+      ) {
         toast.success("Team created successfully")
         window.dispatchEvent(new Event("refetch:teams"))
         close("add-new", ["team"])
-        router.refresh()  
+        router.push("/club/teams")
+        router.refresh()
         return
       }
-      
+
       const fallbackMessage = "Failed to create team. Please check your inputs."
-      const message = 
-        typeof res === "object" && 
-        res !== null && 
-        "message" in res && 
+      const message =
+        typeof res === "object" &&
+        res !== null &&
+        "message" in res &&
         typeof res.message === "string"
           ? res.message
           : fallbackMessage
+
+      // Check for authentication errors
+      const isUnauthorized =
+        (typeof res === "object" &&
+          res !== null &&
+          "status" in res &&
+          (res.status === 401 || res.status === 403)) ||
+        message.toLowerCase().includes("unauthorized") ||
+        message.toLowerCase().includes("unauthenticated")
+
+      if (isUnauthorized) {
+        toast.error("Session expired. Please log in again.")
+        handleLogout(router)
+        return
+      }
+
       toast.error(message)
     } catch (err) {
       console.error("Error creating team:", err)
-      toast.error("Failed to create team. Please try again.")
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to create team. Please try again."
+
+      // Check if error message indicates authentication issue
+      if (
+        errorMessage.toLowerCase().includes("unauthorized") ||
+        errorMessage.toLowerCase().includes("unauthenticated") ||
+        errorMessage.toLowerCase().includes("token")
+      ) {
+        toast.error("Session expired. Please log in again.")
+        handleLogout(router)
+        return
+      }
+
+      toast.error(errorMessage)
     } finally {
       setIsSubmitting(false)
     }
@@ -121,9 +159,19 @@ export default function TeamAddModal() {
             subtitle="JPG or PNG, max 5MB. Headshots preferred."
           />
           {form.photo && (
-            <span className="mt-2 block text-xs text-white/70">
-              {form.photo.name}
-            </span>
+            <div className="mt-4 space-y-2">
+              <span className="block text-xs text-white/70">
+                Selected: {form.photo.name}
+              </span>
+              <div className="relative h-32 w-32 rounded-lg border border-white/20 bg-white/5 p-2">
+                <Image
+                  src={URL.createObjectURL(form.photo)}
+                  alt="Team preview"
+                  fill
+                  className="rounded object-cover"
+                />
+              </div>
+            </div>
           )}
         </div>
 
@@ -138,7 +186,7 @@ export default function TeamAddModal() {
             value={form.location}
             onChange={handleChange}
             placeholder="e. g. Elite U16"
-            className="border-neutral-700 bg-neutral-800 py-5"
+            className="border-neutral-700 bg-neutral-800 py-5 placeholder:font-medium placeholder:text-white/60 focus:placeholder:text-white/40"
           />
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -148,7 +196,7 @@ export default function TeamAddModal() {
               value={form.ageGroup}
               onValueChange={(v) => handleSelect("ageGroup", v)}
             >
-              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5">
+              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white/60">
                 <SelectValue placeholder="Select Age Group" />
               </SelectTrigger>
               <SelectContent position="popper">
@@ -173,7 +221,7 @@ export default function TeamAddModal() {
               value={form.sport}
               onValueChange={(v) => handleSelect("sport", v)}
             >
-              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5">
+              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white/60">
                 <SelectValue placeholder="Select Competition Level" />
               </SelectTrigger>
               <SelectContent position="popper">

@@ -52,7 +52,7 @@ export type TSubscriptionStatus = {
     name: string
     price: string
   }
-  current_period_end: string
+  current_period_end: string | null
 }
 
 export type TDashboardSummary = {
@@ -63,12 +63,23 @@ export type TDashboardSummary = {
   programs: number
 }
 
+export type TClubRecentProgram = {
+  id: number
+  sport: string
+  program_name: string
+  program_start: string
+  program_end: string
+  about_program: string
+  upto_age: number
+  program_photo: string | null
+}
+
 export type TClubDashboardData = {
   club_info: TClubInfo
   subscription: TSubscriptionStatus
   summary: TDashboardSummary
   recent_opportunities: unknown[]
-  recent_programs: unknown[]
+  recent_programs: TClubRecentProgram[]
 }
 
 export type TClubDashboardResponse = {

@@ -27,9 +27,9 @@ export default function PlayerDashboardPage() {
       <PlayerStats />
 
       {/* activity and action  */}
-      <div className="mt-6 flex w-full flex-col-reverse gap-6 text-white md:flex-row">
+      <div className="mt-6 flex w-full flex-col-reverse gap-6 text-white lg:flex-row">
         {/* recent activity */}
-        <div className="rounded-[24px]">
+        <div className="rounded-[24px] w-full lg:w-[60%]   ">
           <h5 className="mb-4 text-[18px] leading-[150%] font-semibold text-white">
             Recent Opportunities
           </h5>
@@ -79,7 +79,7 @@ export default function PlayerDashboardPage() {
         </div>
 
         {/* quick actions */}
-        <div className="md:flex-2 xl:flex-3">
+        <div className="w-full lg:w-[40%] ">
           <h3 className="mb-2 text-base font-semibold">Quick Actions</h3>
 
           {/* actions */}

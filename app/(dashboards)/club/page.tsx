@@ -2,18 +2,19 @@
 
 import CommonBtn from "@/components/common/common-btn"
 import StatCard from "@/components/common/stat-card"
+import { LayoutGrid } from "lucide-react"
 import { GrGroup } from "react-icons/gr"
 import { RiUserSearchLine } from "react-icons/ri"
 import EducateIcon from "@/components/icons/EducateIcon"
 import { IoIosFootball } from "react-icons/io"
 import { useRouter } from "next/navigation"
-import Advertisement from "@/components/custom/advertisement"
 import PlusIcon from "@/components/icons/plus-icon"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { getClubDashboard } from "./action"
 import ClubDashboardSubscription from "@/components/custom/club-dashboard-subscription"
 import { toast } from "sonner"
 import { type TClubDashboardData } from "@/types"
+import ClubOpurtunityCard from "./components/recent-opurtunity-card"
 
 type TClubDashboardSuccessResponse = {
   success: true
@@ -34,6 +35,45 @@ const isClubDashboardSuccessResponse = (
   return value.success === true
 }
 
+const formatProgramDateRange = (start: string, end: string): string => {
+  const startDate = new Date(start)
+  const endDate = new Date(end)
+
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+    return "Date not available"
+  }
+
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  })
+
+  return `${formatter.format(startDate)} - ${formatter.format(endDate)}`
+}
+
+const resolveProgramImage = (programPhoto: string | null): string => {
+  if (!programPhoto) {
+    return "/images/advertisementImage.png"
+  }
+
+  if (/^https?:\/\//i.test(programPhoto)) {
+    return programPhoto
+  }
+
+  const apiBase = process.env.NEXT_PUBLIC_API_URL
+  if (!apiBase) {
+    return "/images/advertisementImage.png"
+  }
+
+  try {
+    const origin = new URL(apiBase).origin
+    return `${origin}/${programPhoto.replace(/^\/+/, "")}`
+  } catch {
+    return "/images/advertisementImage.png"
+  }
+}
+
 export default function ClubDashboardPage() {
   const router = useRouter()
   const [dashboardData, setDashboardData] = useState<TClubDashboardData | null>(
@@ -41,6 +81,35 @@ export default function ClubDashboardPage() {
   )
   const [isError, setIsError] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
+  const recentPrograms = dashboardData?.recent_programs ?? []
+
+  const fetchDashboardData = useCallback(async () => {
+    try {
+      const res = await getClubDashboard()
+      if (!isClubDashboardSuccessResponse(res)) {
+        setIsError(true)
+        setErrorMessage(
+          "May be you are not logged in or not authenticated subscription."
+        )
+        toast.error(
+          "May be you are not logged in or not authenticated subscription."
+        )
+        return
+      }
+
+      setIsError(false)
+      setErrorMessage("")
+      setDashboardData(res.data)
+    } catch {
+      setIsError(true)
+      setErrorMessage(
+        "An error occurred while fetching dashboard data. Please try again later."
+      )
+      toast.error(
+        "An error occurred while fetching dashboard data. Please try again later."
+      )
+    }
+  }, [])
 
   const stats = dashboardData
     ? [
@@ -64,43 +133,38 @@ export default function ClubDashboardPage() {
           text: String(dashboardData.summary.upcoming_matches),
           icon: <IoIosFootball />,
         },
+        {
+          title: "Programs",
+          text: String(dashboardData.summary.programs),
+          icon: <LayoutGrid />,
+        },
       ]
     : [
         { title: "Active Teams", text: "0", icon: <GrGroup /> },
         { title: "Player Applications", text: "0", icon: <RiUserSearchLine /> },
         { title: "Coach Applications", text: "0", icon: <EducateIcon /> },
         { title: "Upcoming Matches", text: "0", icon: <IoIosFootball /> },
+        { title: "Programs", text: "0", icon: <LayoutGrid /> },
       ]
 
   useEffect(() => {
-    const getDashboardData = async () => {
-      try {
-        const res = await getClubDashboard()
-        if (!isClubDashboardSuccessResponse(res)) {
-          setIsError(true)
-          setErrorMessage(
-            "May be you are not logged in or not authenticated subscription."
-          )
-          toast.error(
-            "May be you are not logged in or not authenticated subscription."
-          )
-          return
-        }
+    const initialFetchTimer = window.setTimeout(() => {
+      void fetchDashboardData()
+    }, 0)
 
-        setDashboardData(res.data)
-      } catch (err) {
-        setIsError(true)
-        setErrorMessage(
-          "An error occurred while fetching dashboard data. Please try again later."
-        )
-        toast.error(
-          "An error occurred while fetching dashboard data. Please try again later."
-        )
-      }
+    const handleDashboardRefresh = () => {
+      void fetchDashboardData()
     }
 
-    getDashboardData()
-  }, [])
+    window.addEventListener("dashboard:data-refresh", handleDashboardRefresh)
+    return () => {
+      window.clearTimeout(initialFetchTimer)
+      window.removeEventListener(
+        "dashboard:data-refresh",
+        handleDashboardRefresh
+      )
+    }
+  }, [fetchDashboardData])
 
   if (isError) {
     return (
@@ -118,10 +182,12 @@ export default function ClubDashboardPage() {
         Welcome, {dashboardData?.club_info.club_name || "Club"}
       </h2>
       <p className="mt-1 text-base text-white">
-        {"Here is a summary of your club's recent activity and upcoming  sessions."}
+        {
+          "Here is a summary of your club's recent activity and upcoming  sessions."
+        }
       </p>
 
-      {/* stats */}
+      {/* stats / all summery */}
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {stats.map((stat) => (
           <StatCard
@@ -138,49 +204,35 @@ export default function ClubDashboardPage() {
         {/* recent activity */}
         <div className="flex-2 rounded-[24px]">
           <h5 className="mb-4 text-[18px] leading-[150%] font-semibold text-white">
-            Recent Opportunities
+            Recent Programs
           </h5>
 
           <div className="scrollbar-hide overflow-x-auto">
             <div className="flex flex-wrap gap-4 pb-2">
-              <div className="min-w-[320px] flex-1 shrink-0">
-                <Advertisement
-                  imageUrl={"/images/advertisementImage.png"}
-                  positions="Defender, Winger"
-                  teamName="Elite U16"
-                  ageGroup="U16"
-                  tryoutDate="March 15-18, 2026"
-                  description="Looking for skilled defenders for upcoming season."
-                  onApply={() => {}}
-                  isApplied={true}
-                />
-              </div>
-
-              <div className="min-w-[320px] flex-1 shrink-0">
-                <Advertisement
-                  imageUrl={"/images/advertisementImage.png"}
-                  positions="Goalkeeper, Midfielder"
-                  teamName="Academy Select"
-                  ageGroup="U18"
-                  tryoutDate="April 20-23, 2026"
-                  description="Join our elite academy program for professional development."
-                  onApply={() => {}}
-                  isApplied={false}
-                />
-              </div>
-
-              <div className="min-w-[320px] flex-1 shrink-0">
-                <Advertisement
-                  imageUrl={"/images/advertisementImage.png"}
-                  positions="Striker, Attacker"
-                  teamName="Premier FC"
-                  ageGroup="U14"
-                  tryoutDate="May 10-13, 2026"
-                  description="Seeking talented forwards for competitive league play."
-                  onApply={() => {}}
-                  isApplied={true}
-                />
-              </div>
+              {recentPrograms.length > 0 ? (
+                recentPrograms.map((program) => (
+                  <div
+                    key={program.id}
+                    className="min-w-[320px] flex-1 shrink-0"
+                  >
+                    <ClubOpurtunityCard
+                      imageUrl={resolveProgramImage(program.program_photo)}
+                      positions={program.program_name}
+                      teamName={program.sport}
+                      ageGroup={String(program.upto_age)}
+                      tryoutDate={formatProgramDateRange(
+                        program.program_start,
+                        program.program_end
+                      )}
+                      description={program.about_program}
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="w-full rounded-2xl border border-white/20 bg-secondary/20 p-6 text-sm text-white/80">
+                  No recent programs available.
+                </div>
+              )}
             </div>
           </div>
         </div>

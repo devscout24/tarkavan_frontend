@@ -1,8 +1,11 @@
 import type { Metadata } from "next"
 import ProfilePage from "./components/main-page"
-import { getPublicProfile } from "../../action"
-
-export const revalidate = 60
+import {
+  getPublicProfile,
+  type GetPublicProfileResult,
+  type ProfileApiResponse,
+  type PlayerRootData,
+} from "../../action"
 
 type ProfilePageProps = {
   params: Promise<{
@@ -10,157 +13,117 @@ type ProfilePageProps = {
   }>
 }
 
+function isProfileSuccess(res: GetPublicProfileResult): res is {
+  success: true
+  data: ProfileApiResponse
+} {
+  return (
+    res != null &&
+    "success" in res &&
+    res.success === true &&
+    "data" in res &&
+    res.data != null &&
+    typeof res.data === "object" &&
+    "data" in (res.data as object)
+  )
+}
+
+function extractRootData(res: GetPublicProfileResult): PlayerRootData | null {
+  if (!isProfileSuccess(res)) {
+    return null
+  }
+
+  const rootData = res.data?.data
+  if (rootData == null || typeof rootData !== "object") {
+    return null
+  }
+
+  if (!("basic_info" in rootData) || rootData.basic_info == null) {
+    return null
+  }
+
+  return rootData as PlayerRootData
+}
+
+async function getBaseUrl() {
+  const configuredBase = process.env.NEXT_PUBLIC_BASE_URL?.trim()
+  if (configuredBase) {
+    return configuredBase.replace(/\/$/, "")
+  }
+
+  const productionHost =
+    process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL?.trim() ??
+    process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim()
+  if (productionHost) {
+    return `https://${productionHost.replace(/^https?:\/\//, "").replace(/\/$/, "")}`
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    return "https://tarkavan.vercel.app"
+  }
+
+  return "http://localhost:3000"
+}
+
 export default async function ProfilePageFinal({ params }: ProfilePageProps) {
-  return <ProfilePage />
+  const { profileID } = await params
+  const res = await getPublicProfile({ id: profileID })
+  const data = extractRootData(res)
+
+  return <ProfilePage data={data} />
 }
 
 export async function generateMetadata({
   params,
 }: ProfilePageProps): Promise<Metadata> {
   const { profileID } = await params
-
+  const baseUrl = await getBaseUrl()
+  const profileUrl = `${baseUrl}/profile/${profileID}`
+  const fallback = `${baseUrl}/images/program_details_bg.png`
+  const ogRouteImage = `${baseUrl}/api/og?${new URLSearchParams({ url: profileUrl }).toString()}`
   const res = await getPublicProfile({ id: profileID })
+  const rootData = extractRootData(res)
 
-  const profile =
-    res && "success" in res && res.success ? res.data : null
+  console.log(ogRouteImage)
 
-  const title = profile?.name
-    ? `${profile.name} — Go Elite Profile`
+  const basic = rootData?.basic_info
+  const title = basic?.full_name
+    ? `${basic.full_name} - Go Elite Profile`
     : "Go Elite Player Profile"
-
-  const description = profile?.bio
-    ? profile.bio.slice(0, 160)
-    : "View this player's profile on Go Elite."
-
-  const profileUrl = `https://tarkavan.vercel.app/profile/${profileID}`
-
-  const ogImage = "https://tarkavan.vercel.app/images/program_details_bg.png"
+  const description =
+    basic?.biography?.slice(0, 160) || "View this player's profile on Go Elite."
 
   return {
-    metadataBase: new URL("https://tarkavan.vercel.app"),
+    metadataBase: new URL(baseUrl),
+    title,
+    description,
     alternates: {
       canonical: profileUrl,
     },
-    title,
-    description,
-
     openGraph: {
-      type: "profile",
+      type: "website",
+      url: profileUrl,
       siteName: "Go Elite",
       title,
       description,
-      url: profileUrl,
       images: [
         {
-          url: ogImage,
+          url: ogRouteImage,
           width: 1200,
           height: 630,
-          alt: `${title} preview`,
-          type: "image/png",
+          alt: `${basic?.full_name ?? basic?.name ?? "Player"} profile preview`,
         },
       ],
     },
-
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [ogImage],
+      images: [ogRouteImage],
+    },
+    other: {
+      "twitter:domain": new URL(baseUrl).hostname,
+      "twitter:url": profileUrl,
     },
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import type { Metadata } from "next"
-// import ProfilePage from "./components/main-page"
-
-// export const dynamic = "force-dynamic"
-// export const revalidate = 0
-// export const fetchCache = "force-no-store"
-
-// type ProfilePageProps = {
-//   params: Promise<{
-//     profileID: string
-//   }>
-// }
-
-// export default async function ProfilePageFinal({ params }: ProfilePageProps) {
-//   await params
-
-//   return (
-//     <>
-//       <ProfilePage />
-//     </>
-//   )
-// }
-
-// export async function generateMetadata({
-//   params,
-// }: ProfilePageProps): Promise<Metadata> {
-//   const { profileID } = await params
-
-//   // Cache-busting for social crawlers so previews can refresh on re-share.
-//   const cacheBuster = Date.now().toString()
-//   const profileUrl = `https://tarkavan.vercel.app/profile/${profileID}`
-//   const ogImageUrl = new URL(
-//     "/images/program_details_bg.png",
-//     "https://tarkavan.vercel.app"
-//   )
-//   ogImageUrl.searchParams.set("v", cacheBuster)
-//   const ogImage = ogImageUrl.toString()
-
-//   return {
-//     metadataBase: new URL("https://tarkavan.vercel.app"),
-//     alternates: {
-//       canonical: profileUrl,
-//     },
-//     title: "post.title",
-//     description: "post.excerpt",
-//     openGraph: {
-//       type: "article",
-//       siteName: "Go Elite",
-//       title: "post.title",
-//       description: "post.excerpt",
-//       url: profileUrl,
-//       images: [
-//         {
-//           url: ogImage,
-//           width: 1200,
-//           height: 630,
-//           alt: "Go Elite player profile preview",
-//         },
-//       ],
-//     },
-//     twitter: {
-//       card: "summary_large_image",
-//       title: "post.title",
-//       description: "post.excerpt",
-//       images: [ogImage],
-//     },
-//     other: {
-//       "og:image": ogImage,
-//       "og:image:secure_url": ogImage,
-//       "twitter:image": ogImage,
-//     },
-//   }
-// }

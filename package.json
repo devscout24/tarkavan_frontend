@@ -15,7 +15,7 @@
   "dependencies": {
     "@ark-ui/react": "^5.35.0",
     "@floating-ui/react": "^0.27.19",
-    "@vercel/og": "^0.11.1",
+    "@sparticuz/chromium": "^147.0.2",
     "axios": "^1.15.0",
     "chart.js": "^4.5.1",
     "class-variance-authority": "^0.7.1",
@@ -29,6 +29,7 @@
     "motion": "^12.38.0",
     "next": "16.2.4",
     "next-themes": "^0.4.6",
+    "playwright": "^1.59.1",
     "qrcode.react": "^4.2.0",
     "radix-ui": "^1.4.3",
     "react": "^19.2.4",

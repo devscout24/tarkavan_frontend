@@ -33,11 +33,13 @@ export default function AuthCheckPoint({ children, role }: Props) {
           !userRole
         ) {
           router.replace("/auth")
+          setIsChecking(false)
           return
         }
 
         if (userRole !== requiredRole) {
           router.replace(`/${userRole}`)
+          setIsChecking(false)
           return
         }
 
@@ -45,18 +47,26 @@ export default function AuthCheckPoint({ children, role }: Props) {
           requiredRole === "coach"
             ? "/coach?coach=profile-setup"
             : requiredRole === "club"
-              ? "/club?club=profile-setup"
-              : null
+              ? `/club?club=profile-setup`
+              : requiredRole === "player"
+                ? `/player?add-new=player`
+                : null
 
         if (user.status === "pending" && pendingRedirect) {
           const isAllowedPath = pathname === `/${requiredRole}`
           const queryParams = new URLSearchParams(window.location.search)
-          const hasRequiredQuery =
-            queryParams.get(requiredRole) === "profile-setup"
+          const hasProfileSetupQuery =
+            requiredRole === "player" 
+              ? queryParams.get("add-new") === "player"
+              : queryParams.get(requiredRole) === "profile-setup"
 
-          // Pending coach/club users can only continue on their profile-setup route.
-          if (!isAllowedPath || !hasRequiredQuery) {
+          // Only redirect if:
+          // 1. We're on the root dashboard page AND
+          // 2. The profile-setup/add-new query param is not already present
+          const isRootPage = pathname === `/${requiredRole}`
+          if (isRootPage && !hasProfileSetupQuery) {
             router.replace(pendingRedirect)
+            setIsChecking(false)
             return
           }
         }
@@ -64,15 +74,15 @@ export default function AuthCheckPoint({ children, role }: Props) {
         setIsChecking(false)
       } catch (error) {
         console.error("Auth check error:", error)
+        setIsChecking(false)
         router.replace("/auth")
       }
     }
     check()
-  }, [pathname, router, role])
-
+  }, [pathname, router, role]) 
   if (isChecking) {
     return <Loader />
   }
-
+ 
   return <>{children}</>
 }

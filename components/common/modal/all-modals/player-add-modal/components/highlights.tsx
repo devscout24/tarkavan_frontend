@@ -13,6 +13,7 @@ type UploadedItem = {
   title: string
   type: "video" | "link"
   source?: "youtube" | "hudl" | "vimeo"
+  file?: File
 }
 
 type ShowcaseOption = {
@@ -77,6 +78,7 @@ export default function Highlights({
       id: `uploaded-${Date.now()}-${index}`,
       title: file.name,
       type: "video" as const,
+      file,
     }))
 
     setUploadedItems((prev) => [...nextItems, ...prev])

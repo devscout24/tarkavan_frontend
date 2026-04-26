@@ -54,147 +54,278 @@ export default function RegisterForm() {
     }
   }, [role, isParentAgreementAgreed, router])
 
+  // const handleRegister = async () => {
+  //   setLoading(true)
+
+  //   // parent register
+  //   if (role === "parent" && isParentAgreementAgreed) {
+  //     const data = {
+  //       name: fullName,
+  //       email,
+  //       password,
+  //       password_confirmation: password,
+  //       role,
+  //     }
+
+  //     try {
+  //       const formData = new FormData()
+
+  //       Object.entries(data).forEach(([key, value]) => {
+  //         formData.append(key, value)
+  //       })
+
+  //       const res = await registerUser(formData)
+
+  //       if (!res.success) {
+  //         setLoading(false)
+  //         toast.error(res.message)
+  //         return
+  //       }
+
+  //       if (res.data.data.token) {
+  //         localStorage.setItem("go_elite_token", res.data.data.token)
+  //         setAuthCookie(res.data.data.token)
+  //         localStorage.setItem(
+  //           "go_elite_user",
+  //           JSON.stringify(res.data.data.user)
+  //         )
+  //         setLoading(false)
+  //         toast.success("Registration successful! Welcome to GoElite.")
+  //         router.push(`${res.data.data.user.role}`)
+  //       }
+  //     } catch (error) {
+  //       setLoading(false)
+  //       // toast.error("Registration failed. Please try again.")
+  //       console.error("Registration error:", error)
+  //       return
+  //     }
+  //   } else if (role === "parent" && !isParentAgreementAgreed) {
+  //     setLoading(false)
+  //     router.push("/auth?auth-tab=register&parent=agreement")
+  //     return
+  //   }
+
+  //   // coach register
+  //   if (role === "coach") {
+  //     const data = {
+  //       name: fullName,
+  //       email,
+  //       password,
+  //       password_confirmation: password,
+  //       role,
+  //     }
+
+  //     try {
+  //       const formData = new FormData()
+
+  //       Object.entries(data).forEach(([key, value]) => {
+  //         formData.append(key, value)
+  //       })
+
+  //       const res = await registerUser(formData)
+
+  //       if (!res.success) {
+  //         setLoading(false)
+  //         toast.error(res.message)
+  //         return
+  //       }
+
+  //       if (res.data.data.token) {
+  //         localStorage.setItem("go_elite_token", res.data.data.token)
+  //         setAuthCookie(res.data.data.token)
+  //         localStorage.setItem(
+  //           "go_elite_user",
+  //           JSON.stringify(res.data.data.user)
+  //         )
+  //         setLoading(false)
+  //         toast.success("Registration successful! Welcome to GoElite.")
+  //         router.push(
+  //           `/${res.data.data.user.role}?coach=profile-setup` ||
+  //             "/coach?coach=profile-setup"
+  //         )
+  //         return
+  //       }
+  //     } catch (error) {
+  //       setLoading(false)
+  //       // toast.error("Registration failed. Please try again.")
+  //       console.error("Registration error:", error)
+  //       return
+  //     }
+  //   }
+
+  //   // club register
+  //   if (role === "club") {
+  //     const data = {
+  //       name: fullName,
+  //       email,
+  //       password,
+  //       password_confirmation: password,
+  //       role,
+  //     }
+
+  //     try {
+  //       const formData = new FormData()
+
+  //       Object.entries(data).forEach(([key, value]) => {
+  //         formData.append(key, value)
+  //       })
+
+  //       const res = await registerUser(formData)
+
+  //       if (!res.success) {
+  //         setLoading(false)
+  //         toast.error(res.message)
+  //         return
+  //       }
+
+  //       if (res.data.data.token) {
+  //         localStorage.setItem("go_elite_token", res.data.data.token)
+  //         setAuthCookie(res.data.data.token)
+  //         localStorage.setItem(
+  //           "go_elite_user",
+  //           JSON.stringify(res.data.data.user)
+  //         )
+  //         setLoading(false)
+  //         toast.success("Registration successful! Welcome to GoElite.")
+  //         router.push(`/${res.data.data.user.role}/?club=profile-setup` || "/club?club=profile-setup")
+  //       }
+  //     } catch (error) {
+  //       setLoading(false)
+  //       // toast.error("Registration failed. Please try again.")
+  //       console.error("Registration error:", error)
+  //       return
+  //     }
+  //   }
+
+  //   // player register
+  //   if (role === "player") {
+  //     const data = {
+  //       name: fullName,
+  //       email,
+  //       password,
+  //       password_confirmation: password,
+  //       date_of_birth: dateOfBirth,
+  //       role,
+  //     }
+  //     console.log(data)
+  //     try {
+  //       const formData = new FormData()
+
+  //       Object.entries(data).forEach(([key, value]) => {
+  //         formData.append(key, value)
+  //       })
+
+  //       const res = await registerUser(formData)
+
+  //       console.log(res)
+
+  //       if (!res.success) {
+  //         setLoading(false)
+  //         toast.error(res.message)
+  //         return
+  //       }
+
+  //       if (res.data.data.token) {
+  //         localStorage.setItem("go_elite_token", res.data.data.token)
+  //         setAuthCookie(res.data.data.token)
+  //         localStorage.setItem(
+  //           "go_elite_user",
+  //           JSON.stringify(res.data.data.user)
+  //         )
+  //         setLoading(false)
+  //         toast.success("Registration successful! Welcome to GoElite.")
+  //         router.push(`/${res.data.data.user.role}/?player=profile-setup` || "/player?player=profile-setup")
+  //       }
+  //     } catch (error) {
+  //       setLoading(false)
+  //       // toast.error("Registration failed. Please try again.")
+  //       console.error("Registration error:", error)
+  //       return
+  //     }
+  //   }
+
+  // }
+
   const handleRegister = async () => {
-    setLoading(true)
-
-    // parent register
-    if (role === "parent" && isParentAgreementAgreed) {
-      const data = {
-        name: fullName,
-        email,
-        password,
-        password_confirmation: password,
-        role,
-      }
-
-      try {
-        const formData = new FormData()
-
-        Object.entries(data).forEach(([key, value]) => {
-          formData.append(key, value)
-        })
-
-        const res = await registerUser(formData)
-
-        if (!res.success) {
-          setLoading(false)
-          toast.error(res.message)
-          return
-        }
-
-        if (res.data.data.token) {
-          localStorage.setItem("go_elite_token", res.data.data.token)
-          setAuthCookie(res.data.data.token)
-          localStorage.setItem(
-            "go_elite_user",
-            JSON.stringify(res.data.data.user)
-          )
-          setLoading(false)
-          toast.success("Registration successful! Welcome to GoElite.")
-          router.push(`${res.data.data.user.role}`)
-        }
-      } catch (error) {
-        setLoading(false)
-        // toast.error("Registration failed. Please try again.")
-        console.error("Registration error:", error)
-        return
-      }
-    } else if (role === "parent" && !isParentAgreementAgreed) {
-      setLoading(false)
+    if (role === "parent" && !isParentAgreementAgreed) {
       router.push("/auth?auth-tab=register&parent=agreement")
       return
     }
 
-    // coach register
-    if (role === "coach") {
-      const data = {
-        name: fullName,
-        email,
-        password,
-        password_confirmation: password,
-        role,
-      }
+    setLoading(true)
 
-      try {
-        const formData = new FormData()
-
-        Object.entries(data).forEach(([key, value]) => {
-          formData.append(key, value)
-        })
-
-        const res = await registerUser(formData)
-
-        if (!res.success) {
-          setLoading(false)
-          toast.error(res.message)
-          return
-        }
-
-        if (res.data.data.token) {
-          localStorage.setItem("go_elite_token", res.data.data.token)
-          setAuthCookie(res.data.data.token)
-          localStorage.setItem(
-            "go_elite_user",
-            JSON.stringify(res.data.data.user)
-          )
-          setLoading(false)
-          toast.success("Registration successful! Welcome to GoElite.")
-          router.push(
-            `/${res.data.data.user.role}?coach=profile-setup` ||
-              "/coach?coach=profile-setup"
-          )
-          return
-        }
-      } catch (error) {
-        setLoading(false)
-        // toast.error("Registration failed. Please try again.")
-        console.error("Registration error:", error)
-        return
-      }
+    const redirectMap: Record<string, string> = {
+      parent: `/${role}`,
+      coach: `/${role}?coach=profile-setup`,
+      club: `/${role}?club=profile-setup`,
+      player: `/${role}?player=profile-setup`,
     }
 
-    // club register
-    if (role === "club") {
-      const data = {
-        name: fullName,
-        email,
-        password,
-        password_confirmation: password,
-        role,
-      }
+    const data: Record<string, string> = {
+      name: fullName,
+      email,
+      password,
+      password_confirmation: password,
+      role,
+      ...(role === "player" && { date_of_birth: dateOfBirth }),
+    }
 
-      try {
-        const formData = new FormData()
+    try {
+      const formData = new FormData()
+      Object.entries(data).forEach(([key, value]) =>
+        formData.append(key, value)
+      )
 
-        Object.entries(data).forEach(([key, value]) => {
-          formData.append(key, value)
-        })
+      const res = await registerUser(formData)
+      console.log(res)
 
-        const res = await registerUser(formData)
-
-        if (!res.success) {
-          setLoading(false)
-          toast.error(res.message)
-          return
-        }
-
-        if (res.data.data.token) {
-          localStorage.setItem("go_elite_token", res.data.data.token)
-          setAuthCookie(res.data.data.token)
-          localStorage.setItem(
-            "go_elite_user",
-            JSON.stringify(res.data.data.user)
-          )
-          setLoading(false)
-          toast.success("Registration successful! Welcome to GoElite.")
-          router.push(`/${res.data.data.user.role}/?club=profile-setup` || "/club?club=profile-setup")
-        }
-      } catch (error) {
-        setLoading(false)
-        // toast.error("Registration failed. Please try again.")
-        console.error("Registration error:", error)
+      if (!res) {
+        toast.error("Registration failed. Please try again.")
         return
       }
+
+      // Type guard — TApiError has no `success` field
+      if (!("success" in res)) {
+        // Extract first error message from errors object if present
+        const firstError = res.errors ? Object.values(res.errors)[0]?.[0] : null
+
+        toast.error(
+          firstError ??
+            (typeof res.message === "string"
+              ? res.message
+              : "Registration failed. Please try again.")
+        )
+        return
+      }
+
+      if (!res.success) {
+        toast.error(res.message ?? "Registration failed. Please try again.")
+        return
+      }
+
+      if (!res.data?.status) {
+        toast.error(
+          res.data?.message ?? "Registration failed. Please try again."
+        )
+        return
+      }
+
+      const { token, user } = res.data.data
+
+      if (token) {
+        
+        user.profile_id = res.data.data.profile_id 
+        localStorage.setItem("go_elite_token", token)
+        setAuthCookie(token)
+        localStorage.setItem("go_elite_user", JSON.stringify(user))
+        toast.success("Registration successful! Welcome to GoElite.")
+        router.push(redirectMap[user.role] ?? "/")
+      }
+    } catch (error) {
+      console.error("Registration error:", error)
+      toast.error("Something went wrong. Please try again.")
+    } finally {
+      setLoading(false)
     }
   }
 

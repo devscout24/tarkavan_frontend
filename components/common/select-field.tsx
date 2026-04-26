@@ -48,11 +48,11 @@ export default function SelectField({
       </label>
       <Select value={value} onValueChange={onValueChange}>
         <SelectTrigger
-          className={cn(error && "border-red-500", triggerClassName)}
+          className={cn(error && "border-red-500", triggerClassName)  }
         >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
-        <SelectContent className="bg-secondary/90 text-white">
+        <SelectContent position="popper" className="bg-secondary/90 text-white   ">
           {options.map((option) => (
             <SelectItem
               key={option.value}

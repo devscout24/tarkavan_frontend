@@ -30,7 +30,7 @@ export default function PositionDropdowns({
   secondaryPosition,
   onPrimarySelect,
   onSecondarySelect,
-  errors
+  errors,
 }: PositionDropdownsProps) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-2">
@@ -38,7 +38,10 @@ export default function PositionDropdowns({
         <p className="text-[14px] leading-[150%] font-semibold text-white">
           Primary Position
         </p>
-        <Select value={primaryPosition} onValueChange={onPrimarySelect}>
+        <Select
+          value={primaryPosition || undefined}
+          onValueChange={onPrimarySelect}
+        >
           <SelectTrigger
             className={`mt-2.5 h-12 w-full rounded-xl border border-secondary px-4 text-[14px] leading-[150%] ${
               primaryPosition
@@ -46,14 +49,14 @@ export default function PositionDropdowns({
                 : "bg-secondary text-white"
             }`}
           >
-            <SelectValue placeholder="Select primary position" />
+            <SelectValue placeholder="Select position" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent position="popper">
             {positions.map((position) => (
               <SelectItem
                 key={position.id}
                 value={position.id}
-                className="bg-secondary text-white hover:bg-brand hover:text-gray-800 focus:bg-brand focus:text-gray-800 rounded-none"
+                className="rounded-none bg-secondary text-white hover:bg-brand hover:text-gray-800 focus:bg-brand focus:text-gray-800"
               >
                 {position.name} ({position.short})
               </SelectItem>
@@ -61,9 +64,7 @@ export default function PositionDropdowns({
           </SelectContent>
         </Select>
         {errors?.primaryPosition && (
-          <p className="mt-2 text-xs text-red-500">
-            {errors.primaryPosition}
-          </p>
+          <p className="mt-2 text-xs text-red-500">{errors.primaryPosition}</p>
         )}
         <p className="mt-2.5 text-[14px] leading-[150%] font-normal text-white/70">
           Most active position on the field.
@@ -75,7 +76,7 @@ export default function PositionDropdowns({
           Secondary Position
         </p>
         <Select
-          value={secondaryPosition}
+          value={secondaryPosition || undefined}
           onValueChange={onSecondarySelect}
         >
           <SelectTrigger
@@ -92,7 +93,7 @@ export default function PositionDropdowns({
               <SelectItem
                 key={position.id}
                 value={position.id}
-                className="bg-secondary text-white hover:bg-brand hover:text-gray-500 focus:bg-brand focus:text-gray-500 rounded-none"
+                className="rounded-none bg-secondary text-white hover:bg-brand hover:text-gray-500 focus:bg-brand focus:text-gray-500"
               >
                 {position.name} ({position.short})
               </SelectItem>

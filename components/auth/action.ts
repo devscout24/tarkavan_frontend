@@ -12,18 +12,8 @@ export async function registerUser(data: FormData) {
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {
-      const errors = err.response?.data?.errors
-
-      const message =
-        errors
-          ? Object.values(errors).flat().join(", ")
-          : "Something went wrong"
-
-      const status = err.response?.status || 500
-
-      return { success: false, message, status }
+      return err?.response?.data
     }
-
     return {
       success: false,
       message: "Unexpected error",

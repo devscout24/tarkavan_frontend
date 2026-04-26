@@ -11,6 +11,7 @@ type UploadedAchievementAsset = {
   id: string
   name: string
   type: string
+  file?: File
 }
 
 export default function AchievementUploadPanel({
@@ -41,6 +42,7 @@ export default function AchievementUploadPanel({
         id: `${file.name}-${file.size}-${Date.now()}-${index}`,
         name: file.name,
         type: file.type || "file",
+        file,
       })),
     ])
 

@@ -23,8 +23,98 @@ import ProfileCard from "../../components/profile-card"
 import Achievement from "../../components/achivement" 
 import BIO from "../../components/bio"
 import StatCard from "../../components/stat-card"
+// Inline type definitions for profile data
+interface BasicInfo {
+  id: number
+  name: string
+  last_name: string
+  full_name: string
+  dob: string
+  age: number
+  gender: string
+  nationality: string
+  email: string
+  image: string | null
+  biography: string
+  privacy_settings: string
+  sports: string
+  sport_option_id: number | null
+  sport_option: unknown
+}
 
-export default function ProfilePage() {
+interface PositionInfo {
+  primary_position: string | null
+  secondary_position: string | null
+  jersey_number: number
+  dominant_foot: string
+  club_team: string
+  sports_selection: string
+}
+
+interface PlayerStats {
+  total_matches: number
+  total_played_time: number
+  goals: number
+  assists: number
+  yellow_cards: number
+  red_cards: number
+  clean_sheets: number
+  total_saves: number
+}
+
+interface Strength {
+  id: number
+  strength_type: string
+  strength_name: string
+  endorse_count: number
+  endorsed: boolean
+}
+
+interface Achievement {
+  id: number
+  title: string
+  description: string
+  date_earned: string
+  image: string | null
+}
+
+interface Video {
+  id: number
+  video_url: string
+  status: string
+  uploaded_at: string
+}
+
+interface SeasonStats {
+  season_year: number
+  total_played_games: number
+  total_played_time: number
+  goals: number
+  assist: number
+  yellow_cards: number
+  red_cards: number
+  clean_sheets: number
+  total_saves: number
+  penalty_saves: number
+}
+
+interface ProfileData {
+  basic_info: BasicInfo
+  position_info: PositionInfo
+  player_stats: PlayerStats
+  strengths: Strength[]
+  achievements: Achievement[]
+  gallery: string[]
+  videos: Video[]
+  media_links: string[]
+  season_stats_last_five_years: SeasonStats[]
+}
+
+interface ProfilePageProps {
+  data: ProfileData | null
+}
+
+export default function ProfilePage({ data }: ProfilePageProps) {
   const [teamVoted, setTeamVoted] = useState(false)
   const [academyVoted, setAcademyVoted] = useState(false)
   const [loading, setLoading] = useState({
@@ -33,6 +123,7 @@ export default function ProfilePage() {
   })
   const provincialVotes = 7
   const academyVotes = 12
+ 
 
   return (
     <>
@@ -52,7 +143,7 @@ export default function ProfilePage() {
           <div className="mt-8 grid w-full grid-cols-1 gap-6 md:grid-cols-2">
             {/* left */}
             <div className="">
-              <ProfileCard academyVotes={12} provincialVotes={7} />
+              <ProfileCard academyVotes={12} provincialVotes={7} basic_info={data?.basic_info}  />
               <Achievement />
 
               <div className="mt-6 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-brand p-7">

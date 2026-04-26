@@ -12,9 +12,12 @@ import {
 export default function ProfileCard({
   provincialVotes = 0,
   academyVotes = 0,
+  basic_info
 }: {
   provincialVotes?: number
   academyVotes?: number
+  basic_info: unknown
+
 }) {
   return (
     <div className="relative overflow-hidden rounded-[22px] border border-brand/80 bg-[#0d0f16] shadow-[0_0_0_1px_rgba(178,246,111,0.2),0_18px_45px_rgba(0,0,0,0.5)]">

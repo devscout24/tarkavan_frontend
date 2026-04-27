@@ -74,6 +74,41 @@ const resolveProgramImage = (programPhoto: string | null): string => {
   }
 }
 
+type RecentOpportunity = {
+  id: number;
+  headline: string;
+  club: {
+    id: number;
+    club_name: string;
+    club_logo: string;
+    city: string | null;
+    state: string | null;
+    country: string | null;
+  } | null;
+  team: {
+    id: number;
+    name: string;
+    age_group: string;
+    image: string;
+    competition_level: string;
+    formatted_age: string;
+  };
+  available_date: string;
+  location: string;
+  field_opportunity: string;
+  opponent_club: {
+    id: number | null;
+    club_name: string | null;
+    club_logo: string | null;
+    city: string | null;
+    state: string | null;
+    country: string | null;
+  };
+  status: string;
+  is_requested: boolean;
+  action_label: string;
+}
+
 export default function ClubDashboardPage() {
   const router = useRouter()
   const [dashboardData, setDashboardData] = useState<TClubDashboardData | null>(
@@ -81,11 +116,11 @@ export default function ClubDashboardPage() {
   )
   const [isError, setIsError] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
-  const recentPrograms = dashboardData?.recent_programs ?? []
-
+  const recentOpportunities: RecentOpportunity[] = dashboardData?.recent_opportunities as RecentOpportunity[] ?? []
+  
   const fetchDashboardData = useCallback(async () => {
     try {
-      const res = await getClubDashboard()
+      const res = await getClubDashboard() 
       if (!isClubDashboardSuccessResponse(res)) {
         setIsError(true)
         setErrorMessage(
@@ -204,33 +239,30 @@ export default function ClubDashboardPage() {
         {/* recent activity */}
         <div className="flex-2 rounded-[24px]">
           <h5 className="mb-4 text-[18px] leading-[150%] font-semibold text-white">
-            Recent Programs
+            Recent Opportunities
           </h5>
 
           <div className="scrollbar-hide overflow-x-auto">
             <div className="flex flex-wrap gap-4 pb-2">
-              {recentPrograms.length > 0 ? (
-                recentPrograms.map((program) => (
+              {recentOpportunities.length > 0 ? (
+                recentOpportunities.map((opportunity: RecentOpportunity) => (
                   <div
-                    key={program.id}
+                    key={opportunity.id}
                     className="min-w-[320px] flex-1 shrink-0"
                   >
                     <ClubOpurtunityCard
-                      imageUrl={resolveProgramImage(program.program_photo)}
-                      positions={program.program_name}
-                      teamName={program.sport}
-                      ageGroup={String(program.upto_age)}
-                      tryoutDate={formatProgramDateRange(
-                        program.program_start,
-                        program.program_end
-                      )}
-                      description={program.about_program}
+                      ClubName={opportunity.club?.club_name || "Unknown Club"}
+                      date={opportunity.available_date}
+                      location={opportunity.location}
+                      opurtunity={opportunity.field_opportunity}
+                      matchId={String(opportunity.id)}
+                      action_label={opportunity.action_label}
                     />
                   </div>
                 ))
               ) : (
                 <div className="w-full rounded-2xl border border-white/20 bg-secondary/20 p-6 text-sm text-white/80">
-                  No recent programs available.
+                  No recent opportunities available.
                 </div>
               )}
             </div>

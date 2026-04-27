@@ -78,9 +78,9 @@ export default function MatchTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {demoMatches.map((match) => (
+            {demoMatches.map((match , idx) => (
               <TableRow
-                key={match.id}
+                key={idx}
                 className="border-t border-white/20 hover:bg-transparent"
               >
                 <TableCell

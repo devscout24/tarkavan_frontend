@@ -298,7 +298,29 @@ export async function getProgramDetails(program_id: string) {
 
 export async function deleteProgram(program_id: string) {
     try {
-    const res = await api.post(` /club/program/delete/${program_id}`)
+    const res = await api.post(`/club/program/delete/${program_id}`)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+  
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+
+
+
+export async function requestMatch({match_id , requested_club_id }: {match_id: string, requested_club_id: string}) {
+    try {
+    const res = await api.post(`/match/bid`, {
+        match_id,
+        requested_club_id
+    })
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {

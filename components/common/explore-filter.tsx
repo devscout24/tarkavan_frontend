@@ -28,9 +28,8 @@ import {
 import { cn } from "@/lib/utils"
 import CommonBtn from "@/components/common/common-btn"
 import UiInput from "./ui-input"
-import { TbPlayFootball } from "react-icons/tb"
-import { fetchSportOptions } from "@/components/parentAndCoachApi/api/sport-options"
-import { SportOption } from "@/components/parentAndCoachApi/type/sport-options.type"
+import { TbPlayFootball } from "react-icons/tb" 
+import { getSportOptions } from "@/app/(dashboards)/action"
 
 type ExploreFilterState = {
   category: string
@@ -76,8 +75,7 @@ const selectOptions = {
     "United States": ["New York", "Los Angeles", "Chicago", "Austin"],
   },
   // sports will be loaded dynamically
-  // trainingArea: ["Training Area", "Indoor", "Outdoor", "Strength", "Speed"],
-  ageGroup: ["Age Group", "U12", "U14", "U16", "U18"],
+  // trainingArea: ["Training Area", "Indoor", "Outdoor", "Strength", "Speed"], 
   priceRange: ["Price Range", "$0 - $50", "$50 - $100", "$100 - $250"],
 } as const
 
@@ -91,24 +89,28 @@ const initialState: ExploreFilterState = {
 }
 
 function ExploreFilter() {
-  const [filters, setFilters] = useState<ExploreFilterState>(initialState)
-  const [sportsOptions, setSportsOptions] = useState<SportOption[]>([])
-  const [sportsLoading, setSportsLoading] = useState(false)
-  const [sportsError, setSportsError] = useState<string | null>(null)
+  const [filters, setFilters] = useState<ExploreFilterState>(initialState) 
+  const [sportsOptions, setSportsOptions] = useState<{id: number, name: string}[]>([])
+
+ 
+
 
   useEffect(() => {
-    setSportsLoading(true)
-    setSportsError(null)
-    fetchSportOptions()
-      .then((res) => {
-        if (res.status) setSportsOptions(res.data)
-        else setSportsError(res.message || "Failed to fetch sports options.")
-      })
-      .catch((err) =>
-        setSportsError(err?.message || "Failed to fetch sports options.")
-      )
-      .finally(() => setSportsLoading(false))
+    
+    const getSports = async () => {
+      const res = await getSportOptions() 
+      console.log(res)
+      
+      if (res && 'success' in res && res.success && res.data) {
+        setSportsOptions(res.data)
+      }
+    }
+
+    getSports()
+
   }, [])
+
+
 
   const updateFilter = <K extends keyof ExploreFilterState>(
     key: K,
@@ -119,8 +121,7 @@ function ExploreFilter() {
 
   const selectItemClassName =
     "text-white data-[highlighted]:bg-brand data-[highlighted]:text-primary focus:bg-brand focus:text-primary text-white py-2! px-4! rounded-0! "
-
-  // --- Render ---
+ 
   return (
     <section className="w-full text-white">
       <div className="grid gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
@@ -219,18 +220,11 @@ function ExploreFilter() {
               value={filters.sports || "all"}
               onValueChange={(value) =>
                 updateFilter("sports", value === "all" ? "" : value)
-              }
-              disabled={sportsLoading || !!sportsError}
+              } 
             >
               <SelectTrigger className="h-11 w-full rounded-xl border-white/15 bg-transparent text-white">
                 <SelectValue
-                  placeholder={
-                    sportsLoading
-                      ? "Loading sports..."
-                      : sportsError
-                        ? "Failed to load sports"
-                        : "All Sports"
-                  }
+                  placeholder={"Select an sports"}
                 />
               </SelectTrigger>
               <SelectContent
@@ -241,7 +235,7 @@ function ExploreFilter() {
                 {sportsOptions.map((option) => (
                   <SelectItem
                     key={option.id}
-                    value={option.name}
+                    value={String(option.id)}
                     className={selectItemClassName}
                   >
                     {option.name}
@@ -250,38 +244,30 @@ function ExploreFilter() {
               </SelectContent>
             </Select>
 
-            {/* Other selects remain static */}
-            {(
-              [
-                // ["trainingArea", selectOptions.trainingArea],
-                ["ageGroup", selectOptions.ageGroup],
-                ["priceRange", selectOptions.priceRange],
-              ] as const
-            ).map(([key, options]) => (
-              <Select
-                key={key}
-                value={filters[key]}
-                onValueChange={(value) => updateFilter(key, value)}
-              >
-                <SelectTrigger className="h-11 w-full rounded-xl border-white/15 bg-transparent text-white">
-                  <SelectValue placeholder={options[0]} />
-                </SelectTrigger>
-                <SelectContent
-                  position="popper"
-                  className="border-white/10 bg-secondary text-white!"
-                >
-                  {options.map((option) => (
-                    <SelectItem
-                      key={option}
-                      value={option}
-                      className={selectItemClassName}
-                    >
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ))}
+            {/* Other selects remain static */} 
+            <Select 
+            >
+              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white/60">
+                <SelectValue placeholder="Select Age Group" />
+              </SelectTrigger>
+              <SelectContent position="popper">
+                <SelectItem value="13" className="hover:bg-brand!">
+                  U13
+                </SelectItem>
+                <SelectItem value="15" className="hover:bg-brand!">
+                  U15
+                </SelectItem>
+                <SelectItem value="17" className="hover:bg-brand!">
+                  U17
+                </SelectItem>
+                <SelectItem value="18" className="hover:bg-brand!">
+                  18-plus
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+
+
           </div>
         </div>
       </div>

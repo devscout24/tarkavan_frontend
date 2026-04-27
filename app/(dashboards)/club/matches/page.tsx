@@ -55,8 +55,18 @@ export default function Page() {
       } catch (err) {
         console.error("Error fetching match data:", err)
       }
-    }
+    } 
     getMatchData()
+
+    const handleMatchAdd = () => {
+      getMatchData()
+    }
+
+    window.addEventListener('matchAdd', handleMatchAdd)
+
+    return () => {
+      window.removeEventListener('matchAdd', handleMatchAdd)
+    }
   }, [])
 
   const formatDate = (dateString: string) => {
@@ -94,7 +104,7 @@ export default function Page() {
         </Button>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-[repeat(2,minmax(0,320px))]">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4   ">
         {matches.map((match) => (
           <FriendlyMatchCard
             key={match.id}

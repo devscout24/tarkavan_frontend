@@ -28,6 +28,7 @@ import { addUpdateMatch } from "@/app/(dashboards)/club/matches/action"
 import { getTeams } from "@/app/(dashboards)/club/teams/action"
 import { toast } from "sonner"
 import useModal from "../../useModal"
+import CommonBtn from "@/components/common/common-btn"
 
 type TeamOption = {
   label: string
@@ -139,6 +140,7 @@ export default function AddFriendlyMatch({
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
+  const [loading, setLoading] = React.useState(false)
 
   const handleCancel = () => {
     if (onCancel) {
@@ -157,7 +159,7 @@ export default function AddFriendlyMatch({
     React.useEffect(() => {
       const getData = async () => {
         try{
-          const res = await getTeams()
+          const res = await getTeams() 
           console.log("Teams data:", res)
           
           if (res && typeof res === "object" && "success" in res && res.success && "data" in res) {
@@ -178,12 +180,7 @@ export default function AddFriendlyMatch({
     }, [])
 
   const handleSubmit = async () => {
-    onSubmit?.({
-      team,
-      date,
-      location: location.trim(),
-      fieldOpportunity,
-    })
+    setLoading(true)
 
     const formData = new FormData()
     formData.append("club_team_id", team)
@@ -196,6 +193,8 @@ export default function AddFriendlyMatch({
       
       if (typeof res === "object" && res !== null && "success" in res && res.success) {
         toast.success("Match created successfully")
+        setLoading(false)
+        window.dispatchEvent(new CustomEvent('matchAdd'))
         close("add-new", ["friendly-match"])
         return
       }
@@ -210,6 +209,7 @@ export default function AddFriendlyMatch({
           : fallbackMessage
       toast.error(message)
     } catch (error) {
+      setLoading(false)
       console.error("Error submitting friendly match:", error)
       toast.error("Failed to create match. Please try again.")
     }
@@ -357,14 +357,18 @@ export default function AddFriendlyMatch({
           >
             {cancelLabel}
           </Button>
-
-          <Button
-            type="button"
+ 
+          <CommonBtn
+            variant="default"
+            size="default"
             onClick={handleSubmit}
-            className="h-11  rounded-xl bg-brand px-6 text-[15px] font-semibold text-primary hover:bg-brand/95"
-          >
-            {submitLabel}
-          </Button>
+            text={submitLabel}
+            isLoading={loading}
+            className="h-11 w-fit  rounded-xl bg-brand px-6 text-[15px] font-semibold text-primary hover:bg-brand/95"
+           />
+
+
+
         </div>
       </CardContent>
     </Card>

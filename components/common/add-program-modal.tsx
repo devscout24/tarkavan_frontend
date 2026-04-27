@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useState } from "react"
 import { Input } from "../ui/input"
 import {
@@ -73,7 +74,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
   const selectTriggerClassName =
     "mt-1 w-full border-neutral-700 bg-neutral-800 py-5 text-white data-[placeholder]:text-neutral-300"
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [sportOptions, setSportOptions] = useState<TSportOption[]>([]) 
+  const [sportOptions, setSportOptions] = useState<TSportOption[]>([])  
   const [form, setForm] = useState(() => {
     // Try to load photo from sessionStorage (better size limits than localStorage)
     let photo = null
@@ -235,9 +236,15 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
       ) {
         toast.success("Program created successfully!")
         if (typeof window !== "undefined") {
-          window.dispatchEvent(new CustomEvent("dashboard:data-refresh"))
+          window.dispatchEvent(new CustomEvent("programCreated"))
         }
         close("add-new", ["program"])
+        // remove add new param from url
+        if (typeof window !== "undefined") {
+          const url = new URL(window.location.href)
+          url.searchParams.delete("add-new")
+          window.history.replaceState({}, "", url.toString())
+        }
 
         try {
           sessionStorage.removeItem("add-program-photo")

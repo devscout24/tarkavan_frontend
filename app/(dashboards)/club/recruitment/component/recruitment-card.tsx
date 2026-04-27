@@ -9,11 +9,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
+  DropdownMenuItem, 
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { deleteRecruitment } from "../action"
+import { toast } from "sonner"
 
 export type RecruitmentCardData = {
   id: string
@@ -36,6 +36,35 @@ export default function RecruitmentCard({
 }: RecruitmentCardProps) {
 
   const router = useRouter()
+
+
+  const handleDeleteRecruitment = async () => { 
+    try{
+      const res = await deleteRecruitment(item.id)
+      console.log(res)
+      
+      if (res && 'success' in res && res.success) {
+        toast.success("Recruitment deleted successfully")
+        // Dispatch custom event to refresh recruitment data without page reload
+        window.dispatchEvent(new CustomEvent('recruitmentDeleted'))
+      } else {
+        const message = 
+          typeof res === "object" && 
+          res !== null && 
+          "message" in res && 
+          typeof res.message === "string"
+            ? res.message
+            : "Failed to delete recruitment"
+        toast.error(message)
+      }
+
+    }catch(error){
+      console.error("Error deleting recruitment:", error)
+      toast.error("Failed to delete recruitment. Please try again.")
+    }
+
+  }
+
 
   return (
     <Card className="max-w-86 gap-0 rounded-xl border border-white/15 bg-[#050816] p-0 text-white">
@@ -86,7 +115,7 @@ export default function RecruitmentCard({
                   <span>Edit</span>
                   <Edit2/>
                 </DropdownMenuItem>
-                <DropdownMenuItem className=" hover:bg-brand!  justify-between ">
+                <DropdownMenuItem onClick={handleDeleteRecruitment} className=" hover:bg-brand!  justify-between ">
                   <span>Delete</span>
                   <Trash2/>
                 </DropdownMenuItem>

@@ -1,16 +1,10 @@
-"use client"
+"use server"
 
 import api from "@/lib/api-fetcher"
-import type { AxiosError } from "axios"
-import type { 
-  CoachPositionsResponse, 
-  CoachPositionsApiResult 
-} from "../type/coachPositionsTypes"
-
-/**
- * Fetch coach positions
- */
-export async function getCoachPositions(): Promise<CoachPositionsApiResult> {
+import { TApiError } from "@/types" 
+import axios from "axios"
+ 
+export async function getCoachPositions()  {
   try {
     const res = await api.get("/coach/positions")
     
@@ -23,23 +17,14 @@ export async function getCoachPositions(): Promise<CoachPositionsApiResult> {
         status: res.status
       }
     }
-  } catch (err: unknown) {
-    const error = err as AxiosError<{ message?: string; errors?: any }>
-    
-    let message = "Error loading coach positions"
-    if (error.response?.data?.message) {
-      message = error.response.data.message
-    } else if (error.response?.data?.errors) {
-      const errors = error.response.data.errors
-      message = typeof errors === 'string' 
-        ? errors 
-        : Object.values(errors).flat().join(", ")
-    } else if (error.message) {
-      message = error.message
+  }  catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
     }
-    
-    const status = error.response?.status || 500
-
-    return { success: false, message, status }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
   }
 }

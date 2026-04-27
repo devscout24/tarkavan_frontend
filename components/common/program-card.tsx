@@ -1,5 +1,5 @@
 "use client"
-import { Calendar, Clock3, UserRound } from "lucide-react"
+import { Calendar, Clock3, Edit2, ThermometerIcon, Trash2, UserRound } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -7,9 +7,21 @@ import { cn } from "@/lib/utils"
 import CommonBtn from "./common-btn"
 import ThreeDotsMenu, { type ThreeDotsMenuItem } from "./three-dots-menu"
 import Image, { StaticImageData } from "next/image"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { BsThreeDots } from "react-icons/bs"
+import { deleteProgram } from "@/app/(dashboards)/club/action"
+import { toast } from "sonner"
 
-type ProgramCardProps = {
-  id?: string | number
+type ProgramCardProps = { 
   title?: string
   coachName?: string
   schedule?: string
@@ -24,6 +36,7 @@ type ProgramCardProps = {
   onClick?: () => void
   showThreeDotsMenu?: boolean
   threeDotsItems?: ThreeDotsMenuItem[]
+  id?: string | number
 }
 
 export default function ProgramCard({
@@ -38,11 +51,24 @@ export default function ProgramCard({
   imageAlt,
   buttonLabel,
   className,
-  onClick,
-  showThreeDotsMenu,
-  threeDotsItems = [],
-}: ProgramCardProps) {
-  const shouldShowThreeDotsMenu = showThreeDotsMenu ?? threeDotsItems.length > 0
+  onClick, 
+  id
+}: ProgramCardProps) { 
+
+  const handleDelete = async () => { 
+    try {
+      const res = await deleteProgram(id as string)
+      console.log(res)
+      if(res && 'success' in res && res.success) {
+        toast.success("Program deleted successfully")
+        window.dispatchEvent(new CustomEvent('programDeleted'))
+      }
+    } catch (err) {
+      console.log(err)
+      toast.error("Failed to delete program")
+    }
+  }
+
 
   return (
     <Card
@@ -99,9 +125,19 @@ export default function ProgramCard({
         </div> 
         <div className="flex gap-4">
           <CommonBtn text={buttonLabel}  className="flex-1 h-11 rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90   " size={"lg"} variant={"default"} onClick={onClick} />
-          {shouldShowThreeDotsMenu && (
-            <ThreeDotsMenu items={threeDotsItems} />
-          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className=" border-brand! py-5     ">
+                <BsThreeDots/>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuGroup> 
+                <DropdownMenuItem onClick={() => onClick?.()} className=" hover:bg-brand! justify-between   " >Edit <Edit2/></DropdownMenuItem>
+                <DropdownMenuItem onClick={handleDelete} className=" hover:bg-brand! justify-between    " >Delete <Trash2/></DropdownMenuItem>
+              </DropdownMenuGroup> 
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardContent>
     </Card>

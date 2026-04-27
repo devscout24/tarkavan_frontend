@@ -100,15 +100,7 @@ export default function UpcomingEventPage() {
             : pathname
         )
       }
-    },
-    {
-      label: "Active Programs",
-      onSelect: () => console.log("Active Programs"),
-    },
-    {
-      label: "Deactive Programs",
-      onSelect: () => console.log("Deactive Programs"),
-    },
+    }, 
     {
       label: "Delete Programs",
       onSelect: () => console.log("Delete Programs"),
@@ -132,7 +124,6 @@ export default function UpcomingEventPage() {
     }
 
     getPrograms()
-
   }, [refreshKey])  
 
   // Function to refresh programs list
@@ -145,12 +136,18 @@ export default function UpcomingEventPage() {
     const handleProgramCreated = () => {
       refreshPrograms()
     }
+ 
+    const handleDashboardRefresh = () => {
+      refreshPrograms()
+    }
 
-    // Listen for custom event from program creation modal/form
+    // Listen for custom events
     window.addEventListener('programCreated', handleProgramCreated)
+    window.addEventListener('programDeleted', handleDashboardRefresh)
     
     return () => {
-      window.removeEventListener('programCreated', handleProgramCreated)
+      window.removeEventListener('programCreated', handleProgramCreated) 
+      window.removeEventListener('programDeleted', handleDashboardRefresh)
     }
   }, [])
 

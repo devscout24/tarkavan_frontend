@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-export function DatePickerDemo() {
+export function DatePickerDemo({ onDateChange }: { onDateChange?: (date: string) => void }) {
   const [date, setDate] = React.useState<Date>()
 
   return (
@@ -31,8 +31,15 @@ export function DatePickerDemo() {
         <Calendar
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={(selectedDate) => {
+            setDate(selectedDate)
+            if (selectedDate && onDateChange) {
+              const formattedDate = format(selectedDate, "yyyy-MM-dd")
+              onDateChange(formattedDate)
+            }
+          }}
           defaultMonth={date}
+          disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
           className={`bg-transparent`}
         />
       </PopoverContent>

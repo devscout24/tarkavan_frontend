@@ -1,49 +1,66 @@
- 
-import { Icon } from "@/components/custom/Icon"
-import Image, { StaticImageData } from "next/image"
 
-interface ClubOpurtunityCardProps {
-  imageUrl: string | StaticImageData
-  positions?: string
-  teamName?: string
-  ageGroup?: string
-  tryoutDate?: string
-  description?: string
-  hideDetails?: boolean
+import CommonBtn from "@/components/common/common-btn"
+import { Calendar, MapPin } from "lucide-react"
+import Image from "next/image"
+import { requestMatch } from "../action"
+import { toast } from "sonner"
+
+interface ClubOpurtunityCardProps { 
+  ClubName: string
+  date: string
+  location: string
+  opurtunity: string
+  matchId: string
+  action_label: string 
 }
 
-const TimerIcon = () => (
-  <Icon width="14" height="14" viewBox="0 0 14 14">
-    <g clipPath="url(#clip0_2718_10035)">
-      <path
-        d="M6.95278 12.7481C10.153 12.7481 12.7474 10.1538 12.7474 6.95351C12.7474 3.75325 10.153 1.15894 6.95278 1.15894C3.75252 1.15894 1.1582 3.75325 1.1582 6.95351C1.1582 10.1538 3.75252 12.7481 6.95278 12.7481Z"
-        stroke="white"
-        strokeWidth="0.869186"
-      />
-      <path
-        d="M6.95508 4.05615V6.95344L8.40372 8.40208"
-        stroke="white"
-        strokeWidth="0.869186"
-      />
-    </g>
-  </Icon>
-)
+ 
 
-export default function ClubOpurtunityCard({
-  imageUrl,
-  positions,
-  teamName,
-  ageGroup,
-  tryoutDate,
-  description,
-  hideDetails = false,
+export default function ClubOpurtunityCard({ 
+  ClubName ,
+  location ,
+  date,
+  matchId ,
+  action_label ,
+  opurtunity
 }: ClubOpurtunityCardProps) {
+
+
+  const user = localStorage.getItem("go_elite_user") ? JSON.parse(localStorage.getItem("go_elite_user")!) : null
+  const handleRequestMatch = async () => {
+
+    try{
+      const res = await requestMatch({match_id: matchId, requested_club_id: user?.id})
+      console.log(res)
+            if(!res?.status){
+        toast.error(res?.message)
+      }
+
+      
+      if(res && 'success' in res && res.success && res.data && 'status' in res.data && res.data.status) {
+        toast.success("Match requested successfully!")
+      } else if(res && 'data' in res && res.data && 'message' in res.data) {
+        toast.error(res.data.message)
+      }  else     if(!res?.status){
+        toast.error(res?.message)
+      }
+
+
+
+
+    } catch (error) {
+      console.error(error)
+      toast.error("Failed to request match")
+    }
+    
+  };
+
   return (
-    <div className="flex w-full flex-col overflow-hidden rounded-2xl bg-primary">
+    <div className="flex max-w-[320px] flex-col overflow-hidden rounded-2xl bg-primary border border-secondary    ">
       {/* Image */}
       <div className="h-40 w-full">
         <Image
-          src={imageUrl}
+          src={"/images/advertisementImage.png"}
           alt="Advertisement"
           width={1000}
           height={1000}
@@ -51,39 +68,50 @@ export default function ClubOpurtunityCard({
         />
       </div>
 
-      {/* Content */}
-      {!hideDetails && (
-        <div className="flex flex-col gap-3 p-5">
-          {/* Positions */}
-          {positions && (
-            <p className="text-lg font-medium text-white">{positions}</p>
-          )}
+      <div className="p-5">
 
-          {/* Team + Age */}
-          {(teamName || ageGroup) && (
-            <p className="text-xs text-white/80">
-              {teamName}
-              {teamName && ageGroup && " | "}
-              {ageGroup && `Age: ${ageGroup}`}
-            </p>
-          )}
+        {/*  */}
+        <h2 className="text-lg font-bold text-white pb-3  ">{ClubName}</h2>
 
-          {/* Tryout Date */}
-          {tryoutDate && (
-            <div className="flex items-center gap-1.5 text-white/80">
-              <TimerIcon />
-              <p className="text-xs">Tryouts: {tryoutDate}</p>
-            </div>
-          )}
-
-          {/* Description */}
-          {description && (
-            <p className="text-xs leading-relaxed text-white/80 line-clamp-4">
-              {description}
-            </p>
-          )}
+        <div className="flex">
+          <Calendar className="text-base" />
+          <p className="text-sm text-white ml-2 ">{date}</p>
         </div>
-      )}
+        <div className="flex mt-5  ">
+          <MapPin className="text-base"  />
+          <p className="text-sm text-white ml-2">{location}</p>
+        </div>
+
+
+        <div className="p-5 bg-white/20 rounded-md mt-5   ">{opurtunity}</div>
+
+        <div className="flex mt-4 justify-between flex-wrap    ">
+          <CommonBtn
+            size={"lg"}
+            variant={"default"}
+            text="View Details"
+            className="border border-brand px-5  text-brand bg-transparent hover:bg-transparent w-fit     "
+          />
+
+
+          <CommonBtn
+            size={"lg"}
+            variant={"default"}
+            text={action_label}
+            onClick={handleRequestMatch}
+            disabled={action_label !== "Request Match"}
+            className={` border border-brand px-2  text-primary  bg-brand  hover:bg-brand w-fit    `}
+          />
+
+
+
+        </div>
+
+
+
+      </div>
+
+ 
     </div>
   )
 }

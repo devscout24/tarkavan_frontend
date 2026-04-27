@@ -23,6 +23,7 @@ type ThreeDotsMenuProps = {
   triggerClassName?: string
   menuClassName?: string
   itemClassName?: string
+  id?: string | number
 }
 
 function ThreeDotsIcon({ className }: { className?: string }) {
@@ -51,6 +52,7 @@ export default function ThreeDotsMenu({
   triggerClassName,
   menuClassName,
   itemClassName,
+  id,
 }: ThreeDotsMenuProps) {
   if (!isVisible) {
     return null

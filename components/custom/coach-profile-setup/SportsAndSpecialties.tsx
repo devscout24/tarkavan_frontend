@@ -54,8 +54,8 @@ export default function SportsAndSpecialties({ updateSports }: SportsAndSpecialt
           setFormattedSportOptions(formattedSports)
         }
 
-        if (positionsResult.success && positionsResult.data) {
-          const formattedPositions = positionsResult.data.map(position => ({
+        if (positionsResult && 'success' in positionsResult && positionsResult.success && positionsResult.data) {
+          const formattedPositions = positionsResult?.data?.map((position: {id: number, name: string}) => ({
             value: position.id.toString(),
             label: position.name
           }))

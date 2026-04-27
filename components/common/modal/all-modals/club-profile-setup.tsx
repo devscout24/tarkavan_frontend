@@ -57,12 +57,12 @@ export default function ClubProfileSetup() {
         getOrganizationsTypes(), // organization types 1 idx
       ])
 
-      if (results[0].status === "fulfilled") {
-        setSports(results[0].value?.data?.data ?? [])
+      if (results[0].status === "fulfilled" && results[0].value && 'data' in results[0].value) {
+        setSports(results[0].value.data?.data ?? [])
       }
 
-      if (results[1].status === "fulfilled") {
-        setOrganizationTypes(results[1].value?.data?.data ?? [])
+      if (results[1].status === "fulfilled" && results[1].value && 'data' in results[1].value) {
+        setOrganizationTypes(results[1].value.data?.data ?? [])
       }
     }
 

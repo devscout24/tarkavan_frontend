@@ -6,6 +6,8 @@ import { UserRound } from "lucide-react"
 import Image from "next/image"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { Icon } from "@/components/custom/Icon"
+import { useEffect, useState } from "react"
+import { getProgramList } from "../action"
 
 function PlusIcon() {
   return (
@@ -15,10 +17,76 @@ function PlusIcon() {
   )
 }
 
+// Define types for the API response
+interface ProgramTime {
+  id: number
+  time: string
+  slot_date: string | null
+  start_time: string | null
+  end_time: string | null
+  is_available: boolean
+}
+
+interface ProgramGoal {
+  id: number
+  goal: string
+}
+
+interface Program {
+  id: number
+  program_name: string
+  program_type: string
+  sport_option_id: number | null
+  sport_option: string | null
+  sport: string
+  program_price: number
+  discount_price: number
+  upto_age: number
+  program_location: string
+  program_start: string
+  program_end: string
+  program_photo: string
+  status: string
+  club_name: string
+  coach_name: string
+  time: string
+  times: ProgramTime[]
+  goals: ProgramGoal[]
+}
+
+interface ProgramsData {
+  latest_upcoming_program: Program | null
+  programs: Program[]
+  pagination: {
+    current_page: number
+    last_page: number
+    per_page: number
+    total: number
+    first_page_url: string
+    last_page_url: string
+    next_page_url: string | null
+    prev_page_url: string | null
+  }
+  filters: {
+    filter: string
+    search: string
+  }
+  counts: {
+    all: number
+    upcoming: number
+    active: number
+    inactive: number
+  }
+}
+
 export default function UpcomingEventPage() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+
+  const [programsData, setProgramsData] = useState<ProgramsData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   const programActions = [
     { 
@@ -47,42 +115,44 @@ export default function UpcomingEventPage() {
     },
   ]
 
-  const programs = [
-    {
-      id: "1",
-      title: "Elite Hoops Leadership Academy",
-      coachName: "Elena Rodriguez",
-      schedule: "Tuesdays, 6:00 PM",
-      duration: "8 Weeks Program",
-      currentPrice: "$249",
-      imageSrc: "/images/player1.png",
-      imageAlt: "Program image",
-      buttonLabel: "View Details",
-    },
-    {
-      id: "2",
-      title: "Premier Soccer Striker Clinic",
-      coachName: "David Chen",
-      schedule: "Weekends, 10:00 AM",
-      duration: "4 Weeks Program",
-      currentPrice: "$199",
-      imageSrc: "/images/player2.png",
-      imageAlt: "Program image",
-      buttonLabel: "View Details",
-    },
-    {
-      id: "3",
-      title: "Mindset & Performance Coaching",
-      coachName: "Sarah Jenkins",
-      schedule: "Thursdays, 5:00 PM",
-      duration: "12 Weeks Program",
-      currentPrice: "$269",
-      previousPrice: "$299",
-      imageSrc: "/images/player3.png",
-      imageAlt: "Program image",
-      buttonLabel: "View Details",
-    },
-  ]
+  useEffect(() => {
+    
+    const getPrograms = async () => {
+      try{
+        setLoading(true)
+        const res = await getProgramList() 
+        if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
+          setProgramsData(res.data.data)
+        }
+      }catch(error){
+        console.log(error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    getPrograms()
+
+  }, [refreshKey])  
+
+  // Function to refresh programs list
+  const refreshPrograms = () => {
+    setRefreshKey(prev => prev + 1)
+  }
+
+  // Listen for program creation success events
+  useEffect(() => {
+    const handleProgramCreated = () => {
+      refreshPrograms()
+    }
+
+    // Listen for custom event from program creation modal/form
+    window.addEventListener('programCreated', handleProgramCreated)
+    
+    return () => {
+      window.removeEventListener('programCreated', handleProgramCreated)
+    }
+  }, [])
 
   return (
     <section>
@@ -107,81 +177,83 @@ export default function UpcomingEventPage() {
       </div>
 
       {/* Upcoming Program Card */}
-      <article className="overflow-hidden rounded-2xl border border-white/10 bg-brand">
-        <div className="lg:flex">
-          <div className="relative min-h-44 md:min-h-full">
-            <Image
-              width={1000}
-              height={1000}
-              src={"/images/player1.png"}
-              alt="Varsity Prep Mentorship"
-              className="h-full max-h-55 w-full object-fill lg:max-w-[288px]"
-            />
+      {programsData?.latest_upcoming_program && (
+        <article className="overflow-hidden rounded-2xl border border-white/10 bg-brand">
+          <div className="lg:flex">
+            <div className="relative min-h-44 md:min-h-full">
+              <Image
+                width={1000}
+                height={1000}
+                src={programsData.latest_upcoming_program.program_photo || "/images/player1.png"}
+                alt={programsData.latest_upcoming_program.program_name}
+                className="h-full max-h-55 w-full object-fill lg:max-w-[288px]"
+              />
 
-            <span className="absolute bottom-3 left-3 rounded-full bg-[#16A34A] px-3 py-1 text-[10px] font-bold tracking-[0.08em] text-white uppercase">
-              In Progress
-            </span>
-          </div>
+              <span className="absolute bottom-3 left-3 rounded-full bg-[#16A34A] px-3 py-1 text-[10px] font-bold tracking-[0.08em] text-white uppercase">
+                In Progress
+              </span>
+            </div>
 
-          <div className="flex-1 px-4 py-5 text-primary sm:px-6 md:py-6 lg:py-7">
-            <h3 className="text-[22px] leading-tight font-bold sm:text-[24px] lg:text-[28px]">
-              Varsity Prep Mentorship
-            </h3>
+            <div className="flex-1 px-4 py-5 text-primary sm:px-6 md:py-6 lg:py-7">
+              <h3 className="text-[22px] leading-tight font-bold sm:text-[24px] lg:text-[28px]">
+                {programsData.latest_upcoming_program.program_name}
+              </h3>
 
-            <p className="mt-2 flex items-center gap-2 text-sm font-normal text-primary sm:text-base">
-              <UserRound className="size-4" />
-              Coach: Marcus Thompson
-            </p>
+              <p className="mt-2 flex items-center gap-2 text-sm font-normal text-primary sm:text-base">
+                <UserRound className="size-4" />
+                Coach: {programsData.latest_upcoming_program.coach_name}
+              </p>
 
-            <div className="mt-4 flex gap-3 text-primary md:mt-5 md:gap-8">
-              <div>
-                <p className="text-sm font-normal text-primary/50 sm:text-base">
-                  Schedule
+              <div className="mt-4 flex gap-3 text-primary md:mt-5 md:gap-8">
+                <div>
+                  <p className="text-sm font-normal text-primary/50 sm:text-base">
+                    Schedule
+                  </p>
+                  <p className="text-sm font-normal text-primary sm:text-base lg:text-lg">
+                    {programsData.latest_upcoming_program.time}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-sm font-normal text-primary/50 sm:text-base">
+                    Next Session
+                  </p>
+                  <p className="text-sm font-normal text-primary sm:text-base lg:text-lg">
+                    {programsData.latest_upcoming_program.program_start}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4 px-4 pb-5 sm:flex-row sm:items-end sm:justify-between sm:px-6 md:flex-col md:items-end md:justify-center md:px-6 md:py-6">
+              <div className="w-full rounded-xl border border-primary/35 px-4 py-2 text-right text-primary sm:w-auto">
+                <p className="text-xs font-medium opacity-75 sm:text-sm">
+                  Sport
                 </p>
-                <p className="text-sm font-normal text-primary sm:text-base lg:text-lg">
-                  Mon & Wed, 5:00 PM
+                <p className="text-[14px] font-medium text-primary sm:text-base lg:text-lg">
+                  {programsData.latest_upcoming_program.sport}
                 </p>
               </div>
 
-              <div>
-                <p className="text-sm font-normal text-primary/50 sm:text-base">
-                  Next Session
-                </p>
-                <p className="text-sm font-normal text-primary sm:text-base lg:text-lg">
-                  Oct 24, 2023
-                </p>
-              </div>
+              <CommonBtn
+                text="Edit Details"
+                className="h-11 w-full rounded-xl bg-primary px-5 text-sm font-medium text-white hover:bg-primary/90 sm:w-auto md:w-full"
+                size="sm"
+                variant="default"
+                onClick={() => {
+                  const nextParams = new URLSearchParams(searchParams.toString())
+                  nextParams.set("add-new", "program")
+                  router.replace(
+                    nextParams.toString()
+                      ? `${pathname}?${nextParams.toString()}`
+                      : pathname
+                  )
+                }}
+              />
             </div>
           </div>
-
-          <div className="flex flex-col gap-4 px-4 pb-5 sm:flex-row sm:items-end sm:justify-between sm:px-6 md:flex-col md:items-end md:justify-center md:px-6 md:py-6">
-            <div className="w-full rounded-xl border border-primary/35 px-4 py-2 text-right text-primary sm:w-auto">
-              <p className="text-xs font-medium opacity-75 sm:text-sm">
-                Current Focus
-              </p>
-              <p className="text-[14px] font-medium text-primary sm:text-base lg:text-lg">
-                Speed & Agility
-              </p>
-            </div>
-
-            <CommonBtn
-              text="Edit Details"
-              className="h-11 w-full rounded-xl bg-primary px-5 text-sm font-medium text-white hover:bg-primary/90 sm:w-auto md:w-full"
-              size="sm"
-              variant="default"
-              onClick={() => {
-                const nextParams = new URLSearchParams(searchParams.toString())
-                nextParams.set("add-new", "program")
-                router.replace(
-                  nextParams.toString()
-                    ? `${pathname}?${nextParams.toString()}`
-                    : pathname
-                )
-              }}
-            />
-          </div>
-        </div>
-      </article>
+        </article>
+      )}
 
       {/* upcoming events content */}
      <div className="flex justify-between items-center">
@@ -192,14 +264,29 @@ export default function UpcomingEventPage() {
      </div>
       {/* programs cards */}
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {programs.map((program, index) => (
-          <ProgramCard
-            key={index}
-            {...program}
-            onClick={() => router.push(`/coach/my-programs/${program.id}`)}
-            threeDotsItems={programActions}
-          />
-        ))}
+        {loading ? (
+          <div className="col-span-full text-center text-primary">Loading programs...</div>
+        ) : programsData && programsData.programs.length > 0 ? (
+          programsData.programs.map((program: Program) => (
+            <ProgramCard
+              key={program.id}
+              id={program.id.toString()}
+              title={program.program_name}
+              coachName={program.coach_name}
+              schedule={program.time}
+              duration={`${program.program_start} - ${program.program_end}`}
+              currentPrice={program.discount_price ? `$${program.discount_price}` : `$${program.program_price}`}
+              previousPrice={program.discount_price ? `$${program.program_price}` : undefined}
+              imageSrc={program.program_photo}
+              imageAlt={program.program_name}
+              buttonLabel="View Details"
+              onClick={() => router.push(`/club/my-programs/${program.id}`)}
+              threeDotsItems={programActions}
+            />
+          ))
+        ) : (
+          <div className="col-span-full text-center text-primary">No programs available</div>
+        )}
       </div>
     </section>
   )

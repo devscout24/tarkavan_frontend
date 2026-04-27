@@ -167,13 +167,13 @@ export default async function page() {
           </Card>
 
           {/* programs */}
-          <div className="mx-2 mt-10">
+          {/* <div className="mx-2 mt-10">
             <h3 className="pb-5 text-xl font-semibold text-white">
               Social Media
             </h3>
 
             <AddSocialClub />
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

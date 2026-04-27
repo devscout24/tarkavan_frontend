@@ -73,7 +73,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
   const selectTriggerClassName =
     "mt-1 w-full border-neutral-700 bg-neutral-800 py-5 text-white data-[placeholder]:text-neutral-300"
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [sportOptions, setSportOptions] = useState<TSportOption[]>([])
+  const [sportOptions, setSportOptions] = useState<TSportOption[]>([]) 
   const [form, setForm] = useState(() => {
     // Try to load photo from sessionStorage (better size limits than localStorage)
     let photo = null
@@ -101,6 +101,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
       goals: [""],
       photo,
       type: "one_one",
+      sportOptionId: "",
     }
   })
 
@@ -190,6 +191,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
       formData.append("about_program", form.about)
       formData.append("discount_price", form.discountPrice || "0")
       formData.append("upto_age", form.ageGroup)
+      formData.append("sport_option_id", form.sportOptionId)
 
       // if (form.type) {
       //   formData.append("program_type", form.type)
@@ -221,7 +223,9 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
       if (isCoach) {
         res = await createCoachProgram(formData)
       } else {
-        res = await createProgram(formData)
+ 
+
+        res = await createProgram(formData) 
       }
 
       // Check success correctly based on our generic action response pattern
@@ -341,7 +345,15 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
             <span className="text-sm">Sport Selection</span>
             <Select
               value={form.sport}
-              onValueChange={(v) => handleSelect("sport", v)}
+              onValueChange={(v) => {
+                // Set sport name
+                handleSelect("sport", v)
+                // Find and set sport ID
+                const selectedSport = sportOptions.find(sport => sport.name === v)
+                if (selectedSport) {
+                  handleSelect("sportOptionId", String(selectedSport.id))
+                }
+              }}
             >
               <SelectTrigger className={selectTriggerClassName}>
                 <SelectValue placeholder="Select Sport" />

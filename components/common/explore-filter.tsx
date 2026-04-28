@@ -28,16 +28,32 @@ import {
 import { cn } from "@/lib/utils"
 import CommonBtn from "@/components/common/common-btn"
 import UiInput from "./ui-input"
-import { TbPlayFootball } from "react-icons/tb" 
-import { getSportOptions } from "@/app/(dashboards)/action"
+import { TbPlayFootball } from "react-icons/tb"
+import { getCities, getCountries, getSportOptions } from "@/app/(dashboards)/action"
+
+
+
+type LocationOption = {
+  id: number
+  name: string
+  cities: {
+    id: number
+    country_id: number
+    name: string
+  }[]
+}
+
 
 type ExploreFilterState = {
-  category: string
+  button_type: string
   location: string
   sports: string
-  // trainingArea: string
   ageGroup: string
   priceRange: string
+  selectedCountry_id: string
+  selectedCity_id: string
+  max_price: string
+  min_price: string
 }
 
 const categories = [
@@ -68,49 +84,51 @@ const categories = [
   },
 ]
 
-const selectOptions = {
-  countries: ["Canada", "United States"],
-  citiesByCountry: {
-    Canada: ["Toronto", "Vancouver", "Calgary", "Ottawa"],
-    "United States": ["New York", "Los Angeles", "Chicago", "Austin"],
-  },
-  // sports will be loaded dynamically
-  // trainingArea: ["Training Area", "Indoor", "Outdoor", "Strength", "Speed"], 
-  priceRange: ["Price Range", "$0 - $50", "$50 - $100", "$100 - $250"],
-} as const
-
-const initialState: ExploreFilterState = {
-  category: "",
-  location: "",
-  sports: "",
-  // trainingArea: "",
-  ageGroup: "",
-  priceRange: "",
-}
-
-function ExploreFilter() {
-  const [filters, setFilters] = useState<ExploreFilterState>(initialState) 
-  const [sportsOptions, setSportsOptions] = useState<{id: number, name: string}[]>([])
-
- 
 
 
+function ExploreFilter({ filters, setFilters, initialState }: { filters: ExploreFilterState; setFilters: React.Dispatch<React.SetStateAction<ExploreFilterState>>; initialState: ExploreFilterState }) {
+  
+  const [sportsOptions, setSportsOptions] = useState<{ id: number; name: string }[]>([])
+  const [countriesOptions, setCountriesOptions] = useState<{ id: number; name: string }[]>([])
+  const [citiesOptions, setCitiesOptions] = useState<{ id: number; country_id: number; name: string }[]>([])
+  
   useEffect(() => {
-    
     const getSports = async () => {
-      const res = await getSportOptions() 
-      console.log(res)
-      
-      if (res && 'success' in res && res.success && res.data) {
-        setSportsOptions(res.data)
+      const res = await getSportOptions()
+      if (res && "success" in res && res.success && res.data) {
+        setSportsOptions(res.data.data)
       }
     }
-
     getSports()
-
   }, [])
 
+  useEffect(() => {
+    const getCountry = async () => {
+      const res = await getCountries()
+      if (res && "success" in res && res.success && res.data) {
+        setCountriesOptions(res.data.data)
+      }
+    }
+    getCountry()
+  }, [])
 
+  useEffect(() => {
+    const getCity = async () => {
+      const res = await getCities()
+      if (res && "success" in res && res.success && res.data) {
+        setCitiesOptions(res.data.data)
+      }
+    }
+    getCity()
+  }, [])
+
+  const locationOptions: LocationOption[] = React.useMemo(() => {
+    return countriesOptions.map((country) => ({
+      id: country.id,
+      name: country.name,
+      cities: citiesOptions.filter((city) => city.country_id === country.id),
+    }))
+  }, [countriesOptions, citiesOptions])
 
   const updateFilter = <K extends keyof ExploreFilterState>(
     key: K,
@@ -119,19 +137,40 @@ function ExploreFilter() {
     setFilters((prev) => ({ ...prev, [key]: value }))
   }
 
+  const handleSelectCountry = (country: LocationOption) => {
+    setFilters((prev) => ({
+      ...prev,
+      location: country.name,
+      selectedCountry_id: String(country.id),
+      selectedCity_id: "",
+    }))
+  }
+
+  const handleSelectCity = (
+    country: LocationOption,
+    city: LocationOption["cities"][number]
+  ) => {
+    setFilters((prev) => ({
+      ...prev,
+      location: `${country.name}, ${city.name}`,
+      selectedCountry_id: String(country.id),
+      selectedCity_id: String(city.id),
+    }))
+  }
+
   const selectItemClassName =
-    "text-white data-[highlighted]:bg-brand data-[highlighted]:text-primary focus:bg-brand focus:text-primary text-white py-2! px-4! rounded-0! "
- 
+    "text-white data-[highlighted]:bg-brand data-[highlighted]:text-primary focus:bg-brand focus:text-primary py-2! px-4! rounded-0!"
+
   return (
     <section className="w-full text-white">
       <div className="grid gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {categories.map(({ value, label, icon: Icon }) => {
-          const isActive = filters.category === value
+          const isActive = filters.button_type === value
           return (
             <button
               key={value}
               type="button"
-              onClick={() => updateFilter("category", isActive ? "" : value)}
+              onClick={() => updateFilter("button_type", isActive ? "" : value)}
               className={cn(
                 "flex min-h-28 flex-col items-center justify-center rounded-2xl border px-4 py-5 text-center transition-all duration-200",
                 isActive
@@ -153,9 +192,9 @@ function ExploreFilter() {
       <div className="mt-5 rounded-xl bg-[#2B2E36]/80 p-5">
         <div className="flex">
           <UiInput
-            placeholder="Search players , coaches, teams, programs..."
-            value={filters.category}
-            onChange={(e) => updateFilter("category", e.target.value)}
+            placeholder="Search players, coaches, teams, programs..."
+            value={filters.button_type}
+            onChange={(e) => updateFilter("button_type", e.target.value)}
           />
           <CommonBtn
             variant="default"
@@ -172,6 +211,7 @@ function ExploreFilter() {
           </div>
 
           <div className="grid max-w-6/10 flex-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+
             {/* Location Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -188,30 +228,39 @@ function ExploreFilter() {
                 className="w-60 border-white/10 bg-secondary text-white"
                 align="start"
               >
-                {selectOptions.countries.map((country) => (
-                  <DropdownMenuSub key={country}>
-                    <DropdownMenuSubTrigger className="focus:bg-brand focus:text-primary data-[state=open]:bg-brand data-[state=open]:text-primary">
-                      {country}
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuPortal>
-                      <DropdownMenuSubContent className="min-w-52 border-white/10 bg-secondary text-white">
-                        {selectOptions.citiesByCountry[
-                          country as keyof typeof selectOptions.citiesByCountry
-                        ].map((city) => (
+                {locationOptions.length > 0 ? (
+                  locationOptions.map((country) => (
+                    <DropdownMenuSub key={country.id}>
+                      <DropdownMenuSubTrigger className="focus:bg-brand focus:text-primary data-[state=open]:bg-brand data-[state=open]:text-primary">
+                        {country.name}
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuPortal>
+                        <DropdownMenuSubContent className="min-w-52 border-white/10 bg-secondary text-white">
+                          {/* Country-level selection (no specific city) */}
                           <DropdownMenuItem
-                            key={`${country}-${city}`}
-                            onClick={() =>
-                              updateFilter("location", `${country}, ${city}`)
-                            }
+                            onClick={() => handleSelectCountry(country)}
                             className="focus:bg-brand focus:text-primary"
                           >
-                            {city}
+                            All cities in {country.name}
                           </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuSubContent>
-                    </DropdownMenuPortal>
-                  </DropdownMenuSub>
-                ))}
+                          {country.cities.map((city) => (
+                            <DropdownMenuItem
+                              key={city.id}
+                              onClick={() => handleSelectCity(country, city)}
+                              className="focus:bg-brand focus:text-primary"
+                            >
+                              {city.name}
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuSubContent>
+                      </DropdownMenuPortal>
+                    </DropdownMenuSub>
+                  ))
+                ) : (
+                  <DropdownMenuItem disabled className="text-white/40">
+                    Loading locations...
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -220,53 +269,69 @@ function ExploreFilter() {
               value={filters.sports || "all"}
               onValueChange={(value) =>
                 updateFilter("sports", value === "all" ? "" : value)
-              } 
+              }
             >
-              <SelectTrigger className="h-11 w-full rounded-xl border-white/15 bg-transparent text-white">
-                <SelectValue
-                  placeholder={"Select an sports"}
-                />
+              <SelectTrigger className="h-11 w-full rounded-xl border-white/15 bg-transparent text-white py-5">
+                <SelectValue placeholder="Select a sport" />
               </SelectTrigger>
               <SelectContent
                 position="popper"
                 className="border-white/10 bg-secondary text-white!"
               >
                 <SelectItem value="all">All Sports</SelectItem>
-                {sportsOptions.map((option) => (
-                  <SelectItem
-                    key={option.id}
-                    value={String(option.id)}
-                    className={selectItemClassName}
-                  >
-                    {option.name}
-                  </SelectItem>
-                ))}
+                {sportsOptions.length > 0 &&
+                  sportsOptions.map((option) => (
+                    <SelectItem
+                      key={option.id}
+                      value={String(option.id)}
+                      className={selectItemClassName}
+                    >
+                      {option.name}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
 
-            {/* Other selects remain static */} 
-            <Select 
+            {/* Age Group Select */}
+            <Select
+              value={filters.ageGroup}
+              onValueChange={(value) => updateFilter("ageGroup", value)}
             >
-              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white/60">
+              <SelectTrigger className="w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white ">
                 <SelectValue placeholder="Select Age Group" />
               </SelectTrigger>
               <SelectContent position="popper">
-                <SelectItem value="13" className="hover:bg-brand!">
-                  U13
-                </SelectItem>
-                <SelectItem value="15" className="hover:bg-brand!">
-                  U15
-                </SelectItem>
-                <SelectItem value="17" className="hover:bg-brand!">
-                  U17
-                </SelectItem>
-                <SelectItem value="18" className="hover:bg-brand!">
-                  18-plus
-                </SelectItem>
+                <SelectItem value="13">U13</SelectItem>
+                <SelectItem value="15">U15</SelectItem>
+                <SelectItem value="17">U17</SelectItem>
+                <SelectItem value="18">18+</SelectItem>
               </SelectContent>
             </Select>
 
 
+            {/* Price Range Select */}
+            <Select
+              value={filters.priceRange}
+              onValueChange={(value) => updateFilter("priceRange", value)}
+            >
+              <SelectTrigger className="w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white ">
+                <SelectValue placeholder="Select Price Range" />
+              </SelectTrigger>
+              <SelectContent position="popper"> 
+                <div className="flex flex-col gap-2 p-2 bg-primary border border-secondary    ">
+                  <UiInput 
+                    type="number"
+                    placeholder="Type minimum price" 
+                    onChange={(e) => updateFilter("min_price", e.target.value)}
+                  />
+                  <UiInput 
+                    type="number"
+                    placeholder="Type maximum price" 
+                    onChange={(e) => updateFilter("max_price", e.target.value)}
+                  />
+                </div>
+              </SelectContent>
+            </Select>
 
           </div>
         </div>

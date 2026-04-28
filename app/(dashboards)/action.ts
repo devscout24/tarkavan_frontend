@@ -40,6 +40,43 @@ export async function getCompetitionLabel() {
 
 
 
+export async function getCities() {
+    try {
+    const res = await api.get(`/locations/cities`)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+  
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+
+
+export async function getCountries() {
+    try {
+    const res = await api.get(`/locations/countries`)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+  
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+
+
+
 
 
 

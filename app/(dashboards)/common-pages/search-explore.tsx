@@ -1,12 +1,70 @@
 "use client"
 import ExploreFilter from "@/components/common/explore-filter" 
 import ExploreCard from "@/components/common/explore-card"
+import { useEffect, useState } from "react"
+import { getSearchList } from "../action"
+
+
+type ExploreFilterState = {
+  button_type: string
+  location: string
+  sports: string
+  ageGroup: string
+  priceRange: string
+  selectedCountry_id: string
+  selectedCity_id: string
+  max_price: string
+  min_price: string
+}
+
+const initialState: ExploreFilterState = {
+  button_type: "",
+  location: "",
+  sports: "",
+  ageGroup: "",
+  priceRange: "",
+  selectedCountry_id: "",
+  selectedCity_id: "",
+  max_price: "",
+  min_price: "",
+}
 
 export default function SearchExplore() { 
 
+  const [filters, setFilters] = useState<ExploreFilterState>(initialState)
+
+  useEffect(() => { 
+
+    const getFilterdData = async () => {
+
+      try{
+
+        const formData = new FormData()
+
+        // convert filters to formdata
+        Object.entries(filters).forEach(([key, value]) => {
+          formData.append(key, value)
+        })
+
+        const res = await getSearchList(formData)
+        console.log(res)
+
+      }catch(error){
+        console.log(error)
+        console.error("Error fetching filtered data:", error)
+      }
+      
+    }
+
+    getFilterdData()
+
+  }, [filters])
+
+
+
   return (
     <section>
-      <ExploreFilter />
+      <ExploreFilter filters={filters} setFilters={setFilters} initialState={initialState} />
 
       {/* programs cards */}
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

@@ -9,6 +9,13 @@ import { TExploreItem } from "@/types"
 import moment from "moment"
 import PlayerCard from "../components/player-card"
 import CoachCard from "../components/coach-card"
+import Lottie from "lottie-react"
+import animationData from "@/public/searching.json"
+import SearchExploreSkeleton from "../components/skeleton-search-program"
+
+
+
+
 
 
 
@@ -16,7 +23,7 @@ type ExploreFilterState = {
   button_type: string
   location: string
   sports: string
-  ageGroup: string
+  age_group: string
   priceRange: string
   country_id: string
   city_id: string
@@ -29,7 +36,7 @@ const initialState: ExploreFilterState = {
   button_type: "",
   location: "",
   sports: "",
-  ageGroup: "",
+  age_group: "",
   priceRange: "",
   country_id: "",
   city_id: "",
@@ -42,11 +49,13 @@ export default function SearchExplore() {
 
   const [filters, setFilters] = useState<ExploreFilterState>(initialState)
   const [searchResults, setSearchResults] = useState<TExploreItem[]>([])
-  const [totalPage, setTotalPage] = useState(4)
+  const [totalPage, setTotalPage] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
+  const [loading , setLoading] = useState(false)
    
   const getFilteredData = async () => {
     try {
+      setLoading(true)
       const formData = new FormData() 
 
       Object.entries(filters).forEach(([key, value]) => {
@@ -58,13 +67,17 @@ export default function SearchExplore() {
         currentPage: String(currentPage),
       })
 
+      
       if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) { 
+        console.log(res?.data)
         setSearchResults(res?.data?.data?.data) 
-         setTotalPage(res.data.data.pagination.last_page)
+        setLoading(false)
+        setTotalPage(res.data.data.pagination.last_page)
       }
 
     } catch (error) {
       console.error("Error fetching filtered data:", error)
+      setLoading(false)
     }
   }
 
@@ -82,11 +95,11 @@ export default function SearchExplore() {
       <ExploreFilter filters={filters} setFilters={setFilters} initialState={initialState} />
 
       {/* programs cards */}
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         
         {/* coach type card  */}
         {searchResults.length > 0 ? 
-          searchResults.map((item, index) => {
+      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {searchResults.map((item, index) => {
 
             if(item.type === "club_program"){
               return (
@@ -116,45 +129,67 @@ export default function SearchExplore() {
               )
             }
             if(item.type === "player"){
-              return ( "")
+              return ( 
+                <PlayerCard
+                key={index}
+                image={item?.profile_image as string || "/images/player1.png"}
+                name={item?.name}
+                age={String(item?.age)}
+                position={item?.position as string}
+                jerseyNumber={String(item?.jersey_number)}  
+                location={item?.location as string}
+                parental_control={item?.parental_control}
+                assists={String(item?.assists)} 
+                games={String(item?.games)}
+                goals={String(item?.goals)}
+                /> 
+              )
+            }
+
+            if(item.type === "coach"){
+              return ( 
+                <CoachCard 
+                key={index}
+                image={item?.profile_image as string || "/images/player1.png"}
+                name={item?.name}
+                type={item?.type}
+                age={String(item?.age)}
+                experience={item?.years_of_experience}
+                location={item?.location as string}
+                head={item?.coaching_title}
+                award={item?.coaching_philosophy}
+                /> 
+              )
             }
 
 
 
-          })
-        : 
-        ""
-      }
-
- 
-{/* 
-        <CoachCard
-        image="/images/player1.png"
-        name="Martinez" 
-        type={"Coach"}
-        age={"45"}
-        experience={"10+"}
-        location="Torento, Canada"
-        head="Head Coach"
-        award="Champion"
-        />
-
-        <PlayerCard
-        image="/images/player1.png"
-        name="Martinez" 
-        age={"25"}
-        position={"Forward"}
-        jerseyNumber={"10"}  
-        location="Torento, Canada"
-        head="Head Coach"
-        asists="21" 
-        games="10"
-        goals="15"
-        /> */}
-
-
-
+          })}
       </div>
+        : 
+
+        loading ? 
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5    ">
+        {Array(3).fill(0).map((_, index) => (
+            <SearchExploreSkeleton key={index} />
+        ))}
+        </div>
+        : 
+
+          <div className="bg-white rounded-lg mt-5    ">
+
+          <h2 className="text-center text-2xl font-bold text-gray-800 mb-4 pt-10  ">No results found</h2>
+
+          <div className="max-w-md mx-auto   "> 
+            <Lottie animationData={animationData} loop />
+          </div>
+
+
+        </div>
+        
+      }
+ 
       
       {totalPage > 1 && 
       <div className="mt-5 sticky bottom-0 backdrop-blur-xl py-2 rounded-tl-lg rounded-tr-lg   "> 

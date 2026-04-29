@@ -75,7 +75,7 @@ export default function CoachCard({
                     <TfiLayoutLineSolid className="rotate-90 text-white" /> 
                     <p className="text-xs  ">{type}</p> 
                     <TfiLayoutLineSolid className="rotate-90 text-white" />
-                    <p className="text-xs  ">Age : {experience}</p>
+                    <p className="text-xs  ">Experience : {experience}</p>
                 </div>
             </div>
             <div className="w-9 h-9 bg-secondary rounded-md grid place-items-center   "> 

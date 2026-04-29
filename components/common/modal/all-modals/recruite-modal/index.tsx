@@ -18,7 +18,7 @@ import { DatePickerDemo } from "@/components/common/date-picker"
 import { addRecruitment, updateRecruitment } from "@/app/(dashboards)/club/recruitment/action"
 import { toast } from "sonner"
 import useModal from "../../useModal" 
-import { getPlayerPosition } from "@/app/(dashboards)/action"
+import { getCoachPositions, getPlayerPosition } from "@/app/(dashboards)/action"
 import { getTeams } from "@/app/(dashboards)/club/teams/action"
 import { getRecruitmentDetails } from "@/app/(dashboards)/club/recruitment/action"
 import CommonBtn from "@/components/common/common-btn"
@@ -78,12 +78,15 @@ export default function RecruitmentForm({
   const [team, setTeam] = useState(defaultValues?.team ?? "")
   const [positions, setPositions] = useState<Option[]>([])
   const [teams, setTeams] = useState<Option[]>([])
+  const [coachPositions, setCoachPositions] = useState<Option[]>([])
+  const [coachPosition, setCoachPosition] = useState<string>("")
   const [experience, setExperience] = useState(defaultValues?.experience ?? "")
   const [tryoutDates, setTryoutDates] = useState(defaultValues?.tryoutDates ?? "")
   const [ageGroup, setAgeGroup] = useState("13")
     const [description, setDescription] = useState(
     defaultValues?.description ?? ""
   )
+  
 
   useEffect(() => {
     
@@ -126,6 +129,29 @@ export default function RecruitmentForm({
 
   }, [])
 
+  useEffect(() => {
+    
+    const getCoachPosition = async () => {
+      try{
+        const res = await getCoachPositions() 
+        if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
+          const teamsData = res.data.data.map((team: { id: number; name: string }) => ({
+            label: team.name,
+            value: String(team.id)
+          }))
+          setCoachPositions(teamsData)
+        }
+      }catch(error){
+        console.error("Error fetching teams:", error)
+      }
+    }
+    getCoachPosition()
+
+  }, [])
+
+
+
+
 // get edit-id from params
   useEffect(() => {
     
@@ -162,6 +188,7 @@ export default function RecruitmentForm({
       const formData = new FormData()
       formData.append("recruitment_type", recruitType)
       formData.append("player_position", position)
+      formData.append("coach_position_id", coachPosition)
       formData.append("team_id", team)
       formData.append("experience", experience.trim())
       formData.append("end_date", tryoutDates.trim())
@@ -196,10 +223,14 @@ export default function RecruitmentForm({
 
 
   const handleUpdate = async () => {
+
+ 
+
     try {
       const formData = new FormData()
       formData.append("recruitment_type", recruitType)
       formData.append("player_position", position)
+      formData.append("coach_position_id", coachPosition)
       formData.append("team_id", team)
       formData.append("experience", experience.trim())
       formData.append("end_date", tryoutDates.trim())
@@ -283,6 +314,28 @@ export default function RecruitmentForm({
               </SelectTrigger>
               <SelectContent position="popper" className="bg-[#1a1c23] text-white">
                 {positions.map((option) => (
+                  <SelectItem
+                    key={option.value}
+                    value={option.value}
+                    className="hover:bg-brand!"
+                  >
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
+        {recruitType === "coach" && (
+          <div className="space-y-2">
+            <label className="text-base text-white">Position</label>
+            <Select value={coachPosition} onValueChange={setCoachPosition}>
+              <SelectTrigger className="mt-1 h-12 w-full border-white/15 bg-transparent px-3 py-6 text-base text-white data-placeholder:text-white/40">
+                <SelectValue placeholder={positionPlaceholder} />
+              </SelectTrigger>
+              <SelectContent position="popper" className="bg-[#1a1c23] text-white">
+                {coachPositions.map((option) => (
                   <SelectItem
                     key={option.value}
                     value={option.value}

@@ -64,11 +64,12 @@ export default function RecruitmentCard({
     }
 
   }
+ 
 
 
   return (
     <Card className="max-w-86 gap-0 rounded-xl border border-white/15 bg-[#050816] p-0 text-white">
-      <div className="h-full max-h-50 bg-linear-to-r from-[#073f57] to-[#00a66f]">
+      <div className="h-full max-h-50 bg-linear-to-r from-[#073f57] to-[#00a66f] relative   ">
         <Image
           width={1000}
           height={1000}
@@ -76,11 +77,20 @@ export default function RecruitmentCard({
           alt={`${item.clubName} logo`}
           className="h-full w-full object-cover"
         />
+        <div className="absolute top-1/2 -translate-y-1/2  left-0 w-full "> 
+          <h2 className="text-center text-white text-xl font-bold    ">
+            {item.role}
+          </h2>
+          <h2 className=" w-full text-center text-white text-xl font-bold    ">
+            {item.role}
+          </h2>
+        </div>
+
       </div>
 
       <CardContent className="space-y-3 px-5 pt-4 pb-2">
         <div className="space-y-1">
-          <h4 className="text-2xl font-medium text-white">{item.role}</h4>
+          <h4 className="text-2xl font-medium text-white">{item.clubName}</h4>
           <p className="text-sm text-white/75">{item.meta}</p>
         </div>
 

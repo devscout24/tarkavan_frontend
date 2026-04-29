@@ -84,7 +84,27 @@ export type TPlayerItem = {
   goals: number;
   assists: number;
   profile_image: Nullable<string>;
+  parental_control: boolean;
 }
+
+export type TCoachItem = {
+  type: "coach";
+  coach_id: number;
+  user_id: number;
+  name: string;
+  age: number;
+  age_group: string;
+  location: string;
+  coaching_title: string;
+  years_of_experience: string; // you can change to number if needed
+  sports: string;
+  city_id: number | null;
+  country_id: number | null;
+  coaching_philosophy: string;
+  player_centric_approach: boolean;
+  data_driving_training: boolean;
+  profile_image: string | null;
+};
 
 
 
@@ -93,4 +113,5 @@ export type TExploreItem =
   | TClubProgramItem
   | TUpcomingEventItem
   | TPlayerItem
+  | TCoachItem
 

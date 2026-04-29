@@ -17,10 +17,10 @@ export type PlayerCardProps = {
   onClick?: () => void
   className?: string   
   location: string ,
-  head: string ,  
+  parental_control: boolean ,  
   games: string ,
   goals: string ,
-  asists: string ,
+  assists: string ,
 }
 
 export default function PlayerCard({
@@ -32,11 +32,14 @@ export default function PlayerCard({
   onClick,
   className,    
   location,
-  head,   
+  parental_control,   
   games , 
   goals , 
-  asists
+  assists
 }: PlayerCardProps) {
+
+  console.log(image);
+  
   return (
     <Card
       className={cn(
@@ -53,7 +56,7 @@ export default function PlayerCard({
         {image && (
           <Image
             src={image}
-            alt={name || "Coach Image"}
+            alt={name || "Player Image"}
             fill
             className="object-cover"  
           />
@@ -76,7 +79,7 @@ export default function PlayerCard({
                 <div className="text-sm text-white flex gap-2  "> 
                     <p className="text-xs  ">Age: {age}</p>   
                     <TfiLayoutLineSolid className="rotate-90 text-white" />
-                    <p className="text-xs  ">{position}</p>
+                    <p className="text-xs  ">{position ? position : "Not Specified"}</p>
                     <TfiLayoutLineSolid className="rotate-90 text-white" />
                     <p className="text-xs  ">Jersey: {jerseyNumber}</p>
                 </div>
@@ -91,11 +94,11 @@ export default function PlayerCard({
  
             <p className="text-sm text-white flex items-center  ">
                 <CiLocationOn className="text-xl mr-2  " />
-                <span>{location}</span>
+                <span>{location ? location : "Not Specified"}</span>
             </p>
             <p className="text-sm text-white flex items-center  ">
                 <TbCurrentLocation className="text-xl mr-2  " /> 
-                <span>{head}</span>
+                <span>{parental_control ? "Parental Control Enabled" : "No Parental Control"}</span>
             </p> 
         </div>
 
@@ -111,8 +114,8 @@ export default function PlayerCard({
            </div>
            <TfiLayoutLineSolid className="rotate-90 text-white" />
            <div className="flex items-center gap-2">
-            <span>Asists:</span>
-            <span>{asists}</span>
+            <span>Assists:</span>
+            <span>{assists}</span>
            </div>
         </div>
 

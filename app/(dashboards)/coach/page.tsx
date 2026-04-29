@@ -11,10 +11,11 @@ import {
 } from "@/components/custom/coach-dashboard-icons" 
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import PlusIcon from "@/components/icons/plus-icon"
-import { getCoachDashboard } from "@/components/parentAndCoachApi/api/coachDashboardApi"
-import type { CoachDashboardData } from "@/components/parentAndCoachApi/type/coachDashboardTypes"
+import PlusIcon from "@/components/icons/plus-icon" 
 import Loader from "@/components/common/loader"
+import { getCoachDashboard } from "./action"
+import { TDashboardResponse } from "@/types"
+import moment from "moment"
 
 const quickActions = [
   {
@@ -48,25 +49,18 @@ const quickActions = [
 ]
 
 export default function CoachDashboardPage() {
-  const [dashboardData, setDashboardData] = useState<CoachDashboardData | null>(null)
+  const [dashboardData, setDashboardData] = useState<TDashboardResponse | null>(null)
   const [loading, setLoading] = useState(true)
-
-  const [appliedAdvertisements, setAppliedAdvertisements] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('coachAppliedAdvertisements')
-      return saved ? JSON.parse(saved) : []
-    }
-    return []
-  })
+ 
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const result = await getCoachDashboard()
-        if (result.success && result.data) {
-          setDashboardData(result.data)
+        const res = await getCoachDashboard() 
+        if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
+          setDashboardData(res.data.data)
         } else {
-          toast.error(result.message || "Failed to fetch dashboard data")
+          toast.error(res?.message || "Failed to fetch dashboard data")
         }
       } catch (error) {
         toast.error("An unexpected error occurred while fetching dashboard data")
@@ -75,21 +69,22 @@ export default function CoachDashboardPage() {
       }
     }
 
+  fetchDashboardData()
+
+  const handleReload = () => {
     fetchDashboardData()
+  }
+
+  window.addEventListener("load_coach_dashboard", handleReload)
+
+  return () => {
+    window.removeEventListener("load_coach_dashboard", handleReload)
+  }
+
+
   }, [])
 
-  const handleApplyAdvertisement = (teamName: string) => {
-    if (!appliedAdvertisements.includes(teamName)) {
-      const newApplied = [...appliedAdvertisements, teamName]
-      setAppliedAdvertisements(newApplied)
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('coachAppliedAdvertisements', JSON.stringify(newApplied))
-      }
-      toast.success(`Successfully applied to ${teamName}!`)
-    } else {
-      toast.info(`You have already applied to ${teamName}`)
-    }
-  }
+ 
 
   if (loading) {
     return <Loader />
@@ -137,17 +132,18 @@ export default function CoachDashboardPage() {
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-4 pb-2">
               {dashboardData?.recent_opportunities && dashboardData.recent_opportunities.length > 0 ? (
-                dashboardData.recent_opportunities.map((opportunity, index) => (
+                dashboardData.recent_opportunities.map((opportunity , index) => (
                   <div key={opportunity.id || index} className="min-w-[320px] max-w-[320px] shrink-0">
                     <Advertisement
-                      imageUrl={opportunity.image_url || "/images/advertisementImage.png"}
-                      positions={opportunity.positions || "Coach"}
-                      teamName={opportunity.team_name || "Unknown Team"}
-                      ageGroup={opportunity.age_group || "All ages"}
-                      tryoutDate={opportunity.tryout_date || "TBA"}
+                      imageUrl={opportunity?.club?.club_logo || "/images/advertisementImage.png"}
+                      positions={opportunity.position.name || "Coach"}
+                      teamName={opportunity.team.name || "Unknown Team"}
+                      ageGroup={opportunity.team.age_group || "All ages"}
+                      tryoutDate={moment(opportunity.tryout_date).format("MMM Do YY") || "TBA"}
                       description={opportunity.description || "No description provided."}
-                      onApply={() => handleApplyAdvertisement(opportunity.team_name || `Team ${index}`)}
-                      isApplied={appliedAdvertisements.includes(opportunity.team_name || `Team ${index}`)}
+                      headline={opportunity.headline } 
+                      is_applied={opportunity.is_applied} 
+                      recruitId={String(opportunity.id)}
                     />
                   </div>
                 ))

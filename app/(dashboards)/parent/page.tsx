@@ -248,15 +248,7 @@ export default function Page() {
                       tryoutDate={opportunity.tryout_date || "TBD"}
                       description={
                         opportunity.description || "Opportunity available."
-                      }
-                      onApply={() =>
-                        handleApplyAdvertisement(
-                          opportunity.team_name || "Team"
-                        )
-                      }
-                      isApplied={appliedAdvertisements.includes(
-                        opportunity.team_name || ""
-                      )}
+                      }  
                     />
                   </div>
                 ))

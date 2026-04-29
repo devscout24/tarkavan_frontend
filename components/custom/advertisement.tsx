@@ -1,6 +1,9 @@
+"use client"
 import { Icon } from "./Icon"
 import CommonBtn from "../common/common-btn"
 import Image, { StaticImageData } from "next/image"
+import { toast } from "sonner"
+import { applyRecruitment } from "@/app/(dashboards)/coach/action"
 
 interface AdvertisementProps {
   imageUrl: string | StaticImageData
@@ -9,9 +12,10 @@ interface AdvertisementProps {
   ageGroup?: string
   tryoutDate?: string
   description?: string
-  onApply?: () => void
+  headline?: string 
   hideDetails?: boolean
-  isApplied?: boolean
+  is_applied?: boolean 
+  recruitId?: string
 }
 
 const TimerIcon = () => (
@@ -43,14 +47,41 @@ export default function Advertisement({
   ageGroup,
   tryoutDate,
   description,
-  onApply,
+  headline, 
   hideDetails = false,
-  isApplied = false,
+  is_applied , 
+  recruitId,
 }: AdvertisementProps) {
+
+
+  const handleApply = async () => { 
+   try{
+
+    const formData = new FormData () ;
+    formData.append("recruitment_id", recruitId || "");
+
+    const res = await applyRecruitment(formData)
+    if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
+      toast.success("Application submitted successfully") 
+      window.dispatchEvent(new Event("load_coach_dashboard"))
+    } else {
+      toast.error("Failed to submit application")
+    }
+
+   }catch(error){
+    console.error("Error applying:", error)
+    toast.error("Error applying , Please try again")
+   }
+
+
+  }
+
+
+
   return (
     <div className="flex  h-100  w-full  flex-col overflow-hidden rounded-[24px] bg-primary">
       {/* Image Section */}
-      <div className="h-39 w-full flex-shrink-0">
+      <div className="h-39 w-full  shrink-0 relative ">
         <Image
           width={1000}
           height={1000}
@@ -58,22 +89,25 @@ export default function Advertisement({
           alt="Advertisement"
           className="block h-full w-full object-cover"
         />
+
+        <p className="absolute top-1/2 -translate-y-1/2  left-0 w-full text-center text-xl font-semibold text-white ">{headline}</p>
+
       </div>
 
       {/* Content Section */}
       <div className={`flex flex-1 flex-col space-y-3 p-5 ${hideDetails ? "hidden" : "block"}`}>
         {/* Positions */}
-        <p className="font-weight-500 text-[18px] leading-[120%] font-normal text-white flex-shrink-0">
+        <p className="font-weight-500 text-[18px] leading-[120%] font-normal text-white  shrink-0">
           {positions}
         </p>
 
         {/* Team Name and Age Group */}
-        <p className="font-weight-400 text-xs leading-[150%] font-normal text-white flex-shrink-0">
+        <p className="font-weight-400 text-xs leading-[150%] font-normal text-white  shrink-0">
           {teamName} | Age: {ageGroup}
         </p>
 
         {/* Tryout Date */}
-        <div className="flex items-center gap-1.5 flex-shrink-0">
+        <div className="flex items-center gap-1.5  shrink-0">
           <div className="h-3.5 w-3.5 text-white">
             <TimerIcon />
           </div>
@@ -91,14 +125,14 @@ export default function Advertisement({
         <CommonBtn
           variant="default"
           size="lg"
-          text={isApplied ? "Applied" : "Apply"}
-          className={`h-10 w-full cursor-pointer text-base font-medium transition-all flex-shrink-0 ${
-            isApplied 
-              ? "bg-white text-black cursor-default" 
+          text={is_applied ? "Applied" : "Apply"}
+          className={`h-10 w-full cursor-pointer text-base font-medium transition-all  shrink-0 ${
+            is_applied 
+              ? "bg-transparent text-brand border border-brand cursor-default" 
               : "bg-brand text-zinc-950 hover:bg-brand/90"
           }`}
-          onClick={isApplied ? undefined : onApply}
-          disabled={isApplied}
+          onClick={handleApply}
+          // disabled={is_applied}
         />
       </div>
     </div>

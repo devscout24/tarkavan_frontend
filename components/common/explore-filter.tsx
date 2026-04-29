@@ -48,7 +48,7 @@ type ExploreFilterState = {
   button_type: string
   location: string
   sports: string
-  ageGroup: string
+  age_group: string
   priceRange: string
   country_id: string
   city_id: string
@@ -69,7 +69,7 @@ const categories = [
     icon: Users,
   },
   {
-    value: "teams",
+    value: "clubs",
     label: "Find Teams & Clubs",
     icon: UsersRound,
   },
@@ -282,8 +282,8 @@ function ExploreFilter({ filters, setFilters, initialState }: { filters: Explore
 
             {/* Age Group Select */}
             <Select
-              value={filters.ageGroup}
-              onValueChange={(value) => updateFilter("ageGroup", value)}
+              value={filters.age_group}
+              onValueChange={(value) => updateFilter("age_group", value)}
             >
               <SelectTrigger className="w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white ">
                 <SelectValue placeholder="Select Age Group" />

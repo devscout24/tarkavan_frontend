@@ -43,9 +43,8 @@ export default function PlayerDashboardPage() {
                   teamName="Elite U16"
                   ageGroup="U16"
                   tryoutDate="March 15-18, 2026"
-                  description="Looking for skilled defenders for upcoming season."
-                  onApply={() => {}}
-                  isApplied={true}
+                  description="Looking for skilled defenders for upcoming season." 
+                   
                 />
               </div>
 
@@ -57,8 +56,7 @@ export default function PlayerDashboardPage() {
                   ageGroup="U18"
                   tryoutDate="April 20-23, 2026"
                   description="Join our elite academy program for professional development."
-                  onApply={() => {}}
-                  isApplied={false}
+                  
                 />
               </div>
 
@@ -70,8 +68,7 @@ export default function PlayerDashboardPage() {
                   ageGroup="U14"
                   tryoutDate="May 10-13, 2026"
                   description="Seeking talented forwards for competitive league play."
-                  onApply={() => {}}
-                  isApplied={true}
+                   
                 />
               </div>
             </div>

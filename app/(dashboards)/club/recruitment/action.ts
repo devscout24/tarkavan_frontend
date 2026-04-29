@@ -86,6 +86,22 @@ export async function getRecruitmentList( ) {
   }
 }
 
+export async function changeStatus({ applicantId, status }: { applicantId: string, status: FormData }) {
+  try {
+    const res = await api.post(`/recruitment/apply/update/${applicantId}`, status)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+
 
 
 

@@ -77,9 +77,9 @@ export default function RecruitmentCard({
           alt={`${item.clubName} logo`}
           className="h-full w-full object-cover"
         />
-        <div className="absolute top-1/2 -translate-y-1/2  left-0 w-full "> 
-          <h2 className="text-center text-white text-xl font-bold    ">
-            {item.role}
+        <div className="absolute top-1/2 -translate-y-1/2  left-0 w-full px-2  "> 
+          <h2 className="text-center text-white text-base font-medium    ">
+            {item.title}
           </h2>
           <h2 className=" w-full text-center text-white text-xl font-bold    ">
             {item.role}

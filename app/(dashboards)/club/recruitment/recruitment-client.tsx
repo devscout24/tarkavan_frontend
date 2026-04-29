@@ -5,8 +5,7 @@ import RecruitmentSection from "./component/recruitment-section"
 import { type RecruitmentCardData } from "./component/recruitment-card" 
 import Link from "next/link"
 import { Plus } from "lucide-react"
-import { getRecruitmentList } from "./action"
-import { Button } from "@/components/ui/button"
+import { getRecruitmentList } from "./action" 
 import Image from "next/image"
 
 export default function RecruitmentClient() {

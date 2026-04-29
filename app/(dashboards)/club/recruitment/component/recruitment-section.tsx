@@ -14,6 +14,8 @@ export default function RecruitmentSection({
   items,
   className,
 }: RecruitmentSectionProps) {
+
+  console.log("items", items)
  
 
   return (

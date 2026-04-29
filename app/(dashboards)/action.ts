@@ -101,9 +101,9 @@ export async function getOrganizationsTypes() {
 
 
 
-export async function getSearchList(data: FormData) {
+export async function getSearchList({data , currentPage}: {data: FormData, currentPage: string}) {
   try {
-    const res = await api.post(`/search/explore/list` , data)
+    const res = await api.post(`/search/explore/list?page=${currentPage}` , data)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {

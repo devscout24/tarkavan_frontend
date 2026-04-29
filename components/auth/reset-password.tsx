@@ -19,7 +19,7 @@ export default function ResetPassForm({setEmail , email} : {setEmail: React.Disp
      try{
 
       const res = await getForgetPassCode(email as string)
-      console.log(res)
+       
       if(res.data.data.otp ){
         setIsLoading(false)
         // localStorage.setItem("reset_password_token" ,  res.data.data.reset_password_token)

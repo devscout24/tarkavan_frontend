@@ -12,13 +12,11 @@ const ConfirmPayModal = () => {
     total: "$337.87"
   }
 
-  const handleConfirmPay = () => {
-    console.log("Payment confirmed:", orderDetails)
+  const handleConfirmPay = () => { 
     // Handle payment logic here
   }
 
-  const handleCancel = () => {
-    console.log("Payment cancelled")
+  const handleCancel = () => { 
     // Close the modal and remove URL params
     close("confirm-pay", ["program"])
   }

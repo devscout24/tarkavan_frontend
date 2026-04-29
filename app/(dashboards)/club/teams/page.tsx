@@ -31,7 +31,7 @@ export default function Page() {
   const fetchTeams = useCallback(async () => {
     try {
       const res = await getTeams()
-      console.log(res)
+      
 
       if (
         res &&

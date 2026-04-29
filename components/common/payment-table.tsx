@@ -105,7 +105,7 @@ export default function PaymentTable({ payments = [] }: PaymentTableProps) {
 
         {/* Export Component on Right */}
         <Export
-          onExport={() => console.log("Export clicked")}
+          onExport={() =>  {}}
           className="flex-shrink-0"
         />
       </div>

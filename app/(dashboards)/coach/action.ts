@@ -9,8 +9,7 @@ export async function createCoachProgram(data: FormData) {
     const res = await api.post(`/coach/program/add`, data)
     return { success: true, data: res.data }
   } catch (err: unknown) {
-    if (axios.isAxiosError<TApiError>(err)) {
-      console.log("Error creating coach program:", err?.response?.data)
+    if (axios.isAxiosError<TApiError>(err)) { 
       return err?.response?.data
     }
   
@@ -44,8 +43,7 @@ export async function updateCoachProgram(programId: number | string, data: FormD
     const res = await api.post(`/coach/program/update/${programId}`, data)
     return { success: true, data: res.data }
   } catch (err: unknown) {
-    if (axios.isAxiosError<TApiError>(err)) {
-      console.log(`Error updating coach program ${programId}:`, err?.response?.data)
+    if (axios.isAxiosError<TApiError>(err)) { 
       return err?.response?.data
     }
   
@@ -62,8 +60,7 @@ export async function getCoachProgramDetails(programId: number | string) {
     const res = await api.get(`/coach/program/view/${programId}`)
     return { success: true, data: res.data }
   } catch (err: unknown) {
-    if (axios.isAxiosError<TApiError>(err)) {
-      console.log(`Error fetching coach program details ${programId}:`, err?.response?.data)
+    if (axios.isAxiosError<TApiError>(err)) { 
       return err?.response?.data
     }
   

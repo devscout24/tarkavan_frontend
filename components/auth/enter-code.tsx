@@ -17,7 +17,7 @@ export default function EnterCode({ email }: { email: string }) {
     setLoading(true)
     try {
       const res = await verifyOPT({ email, otp: Number(code) })
-      console.log(res)
+       
       if (res.data.status) {
         setLoading(false)
         toast.success("Code verified successfully!")
@@ -37,7 +37,7 @@ export default function EnterCode({ email }: { email: string }) {
     setResendLoading(true)
     try {
       const res = await getForgetPassCode(email as string) 
-      console.log(res)
+       
       if (res.data.data.otp) { 
         setResendLoading(false)  
         toast.success("Code resent successfully!")

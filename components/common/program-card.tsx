@@ -58,13 +58,12 @@ export default function ProgramCard({
   const handleDelete = async () => { 
     try {
       const res = await deleteProgram(id as string)
-      console.log(res)
+       
       if(res && 'success' in res && res.success) {
         toast.success("Program deleted successfully")
         window.dispatchEvent(new CustomEvent('programDeleted'))
       }
-    } catch (err) {
-      console.log(err)
+    } catch (err) { 
       toast.error("Failed to delete program")
     }
   }

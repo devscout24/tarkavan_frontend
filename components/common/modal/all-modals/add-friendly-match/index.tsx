@@ -159,8 +159,7 @@ export default function AddFriendlyMatch({
     React.useEffect(() => {
       const getData = async () => {
         try{
-          const res = await getTeams() 
-          console.log("Teams data:", res)
+          const res = await getTeams()  
           
           if (res && typeof res === "object" && "success" in res && res.success && "data" in res) {
             const typedRes = res as GetTeamsResponse

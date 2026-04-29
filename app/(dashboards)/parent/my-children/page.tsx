@@ -63,10 +63,10 @@ function MyChildrenPage() {
     <ChildrenSection
       items={children}
       onAddChild={openAddNewChildrenModal}
-      onViewProfile={(id) => console.log("View profile:", id)}
-      onInvite={(id) => console.log("Invite:", id)}
-      onBlock={(id) => console.log("Block:", id)}
-      onRemove={(id) => console.log("Remove:", id)}
+      onViewProfile={(id) => { }}
+      onInvite={(id) =>  {}}
+      onBlock={(id) =>  {}}
+      onRemove={(id) =>  {}}
       onGetStarted={openAddNewChildrenModal}
       emptyText="No children found. Add your first child to get started!"
     />

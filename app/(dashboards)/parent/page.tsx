@@ -343,8 +343,7 @@ export default function Page() {
                     : { month: "TBD", day: 1 }
                 }
                 time={reminder.reminder_date || "TBD"}
-                location={reminder.description || "Location TBD"}
-                // onClick={() => console.log("View location clicked")}
+                location={reminder.description || "Location TBD"} 
               />
             ))
           ) : (

@@ -1,20 +1,14 @@
 import CommonBtn from "@/components/common/common-btn"
 import ProgramCoachCard from "@/components/common/program-coach-card"
 import { Card } from "@/components/ui/card"
-import { Globe, Lock, Shield } from "lucide-react"
-import { FaFacebookF, FaTiktok } from "react-icons/fa"
-import { FaXTwitter } from "react-icons/fa6"
-import { IoLogoInstagram, IoLogoWhatsapp } from "react-icons/io"
+import { Globe, Lock, Shield } from "lucide-react" 
 import { getClubProfile } from "../action"
-import Link from "next/link"
-import AddSocialClub from "../components/add-social"
-import ProfileShareButton from "../components/profile-share-button"
+import Link from "next/link" 
 
 export default async function page() {
   let clubProfile = null
   try {
-    const res = await getClubProfile()
-    console.log(res)
+    const res = await getClubProfile() 
 
     if (
       res &&

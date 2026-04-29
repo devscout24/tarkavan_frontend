@@ -78,9 +78,7 @@ export function ProgramCalendar({
   const activeSelectedSlot = selectedSlots.find(
     (slot) => slot.date === activeDateKey
   )?.time
-
-  console.log(selectedSlots)
-
+ 
   return (
     <Card className="mx-auto mt-6 w-full border border-white/15 bg-white/10 p-0 text-white **:data-[disabled='true']:border **:data-[disabled='true']:border-white/10 **:data-[disabled='true']:bg-white/20 **:data-[disabled='true']:text-white **:data-[disabled='true']:opacity-100 **:data-[selected-single=true]:bg-brand **:data-[selected-single=true]:text-primary **:data-[slot='calendar']:w-full [&_[data-disabled=true][data-outside=true]]:border-0 [&_[data-disabled=true][data-outside=true]]:text-white!">
       <CardContent className="p-0">

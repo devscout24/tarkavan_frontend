@@ -8,7 +8,7 @@ import axios from "axios"
 export async function registerUser(data: FormData) {
   try {
     const res = await api.post("/parent/register", data)
-    console.log(res)
+    
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {

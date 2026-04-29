@@ -12,13 +12,11 @@ const ReviewModal = () => {
   }
 
   const handleSubmit = () => {
-    // Handle submit logic here
-    console.log("Review submitted:", { rating, review })
+    // Handle submit logic here 
   }
 
   const handleCancel = () => {
-    // Handle cancel logic here
-    console.log("Review cancelled")
+    // Handle cancel logic here 
   }
 
   const starPath = "M18.1659 11.4219L15 3.125L11.8342 11.4219L3.125 11.8478L9.72223 17.6389L7.31117 26.875L15 21.5972L22.6889 26.875L20.2778 17.6389L26.875 11.8478L18.1659 11.4219Z"

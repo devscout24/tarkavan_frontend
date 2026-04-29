@@ -41,7 +41,7 @@ export default function RecruitmentCard({
   const handleDeleteRecruitment = async () => { 
     try{
       const res = await deleteRecruitment(item.id)
-      console.log(res)
+       
       
       if (res && 'success' in res && res.success) {
         toast.success("Recruitment deleted successfully")

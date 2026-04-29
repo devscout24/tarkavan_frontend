@@ -17,7 +17,7 @@ export default function RecruitmentClient() {
   const fetchRecruitments = async () => {
     try{
       const res = await getRecruitmentList()
-      console.log(res)
+      
       
       if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
         const recruitments = res.data.data

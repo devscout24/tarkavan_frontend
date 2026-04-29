@@ -41,15 +41,15 @@ export default function UpcomingEventPage() {
     },
     {
       label: "Active Programs",
-      onSelect: () => console.log("Active Programs"),
+      onSelect: () => {},
     },
     {
       label: "Deactive Programs",
-      onSelect: () => console.log("Deactive Programs"),
+      onSelect: () => {},
     },
     {
       label: "Delete Programs",
-      onSelect: () => console.log("Delete Programs"),
+      onSelect: () => {},
     },
   ]
 

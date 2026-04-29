@@ -1,4 +1,4 @@
-
+"use client"
 import CommonBtn from "@/components/common/common-btn"
 import { Calendar, MapPin } from "lucide-react"
 import Image from "next/image"
@@ -12,6 +12,8 @@ interface ClubOpurtunityCardProps {
   opurtunity: string
   matchId: string
   action_label: string 
+  openerClubName: string
+  headline: string
 }
 
  
@@ -22,16 +24,17 @@ export default function ClubOpurtunityCard({
   date,
   matchId ,
   action_label ,
-  opurtunity
+  opurtunity , 
+  openerClubName ,
+  headline
 }: ClubOpurtunityCardProps) {
 
 
   const user = localStorage.getItem("go_elite_user") ? JSON.parse(localStorage.getItem("go_elite_user")!) : null
   const handleRequestMatch = async () => {
-
     try{
       const res = await requestMatch({match_id: matchId, requested_club_id: user?.id})
-      console.log(res)
+       
             if(!res?.status){
         toast.error(res?.message)
       }
@@ -39,6 +42,9 @@ export default function ClubOpurtunityCard({
       
       if(res && 'success' in res && res.success && res.data && 'status' in res.data && res.data.status) {
         toast.success("Match requested successfully!")
+
+        window.dispatchEvent(new CustomEvent('matchApplied')) 
+
       } else if(res && 'data' in res && res.data && 'message' in res.data) {
         toast.error(res.data.message)
       }  else     if(!res?.status){
@@ -58,7 +64,7 @@ export default function ClubOpurtunityCard({
   return (
     <div className="flex max-w-[320px] flex-col overflow-hidden rounded-2xl bg-primary border border-secondary    ">
       {/* Image */}
-      <div className="h-40 w-full">
+      <div className="h-40 w-full relative  ">
         <Image
           src={"/images/advertisementImage.png"}
           alt="Advertisement"
@@ -66,6 +72,12 @@ export default function ClubOpurtunityCard({
           height={1000}
           className="h-full w-full object-cover"
         />
+
+        <div className="absolute top-10 left-0 w-full h-full text-center   ">
+          <h2 className="text-2xl font-bold text-white">{openerClubName}</h2>
+          <p className="text-lg text-white">{headline}</p> 
+        </div>
+
       </div>
 
       <div className="p-5">

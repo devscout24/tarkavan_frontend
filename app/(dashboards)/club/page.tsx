@@ -120,7 +120,7 @@ export default function ClubDashboardPage() {
   
   const fetchDashboardData = useCallback(async () => {
     try {
-      const res = await getClubDashboard() 
+      const res = await getClubDashboard()  
       if (!isClubDashboardSuccessResponse(res)) {
         setIsError(true)
         setErrorMessage(
@@ -191,11 +191,11 @@ export default function ClubDashboardPage() {
       void fetchDashboardData()
     }
 
-    window.addEventListener("dashboard:data-refresh", handleDashboardRefresh)
+    window.addEventListener("matchApplied", handleDashboardRefresh)
     return () => {
       window.clearTimeout(initialFetchTimer)
       window.removeEventListener(
-        "dashboard:data-refresh",
+        "matchApplied",
         handleDashboardRefresh
       )
     }
@@ -257,6 +257,8 @@ export default function ClubDashboardPage() {
                       opurtunity={opportunity.field_opportunity}
                       matchId={String(opportunity.id)}
                       action_label={opportunity.action_label}
+                      headline={opportunity.headline}
+                      openerClubName={opportunity.club?.club_name || "Unknown Club"}
                     />
                   </div>
                 ))

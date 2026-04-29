@@ -261,26 +261,9 @@ const EditProgramPage: React.FC<EditProgramPageProps> = ({
     getSportData()
   }, [isCoach])
 
-  // Update sport value when sport options are loaded to ensure it matches available options
-  useEffect(() => {
-    if (sportOptions.length > 0 && form.sport) {
-      const matchingSport = sportOptions.find(sport => sport.name === form.sport)
-      if (!matchingSport) {
-        // If current sport value doesn't match any option, clear it or find closest match
-        console.log("Sport not found in options:", form.sport, "Available:", sportOptions.map(s => s.name))
-        // You could optionally set it to the first available option
-        // setForm(prev => ({ ...prev, sport: sportOptions[0]?.name || "" }))
-      } else {
-        console.log("Sport found and matches:", matchingSport.name)
-      }
-    }
-  }, [sportOptions, form.sport])
+ 
 
-  // Debug logging for form values
-  useEffect(() => {
-    console.log("Form values:", form)
-    console.log("Sport options:", sportOptions)
-  }, [form, sportOptions])
+ 
 
   const handleAddProgram = async () => {
     if (isSubmitting) {

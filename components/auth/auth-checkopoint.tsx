@@ -1,8 +1,9 @@
 "use client"
+
 import Loader from "@/components/common/loader"
 import isValidToken from "@/lib/isValid-token"
 import { TUser } from "@/types"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import React, { useEffect, useState } from "react"
 
 type Props = {
@@ -13,76 +14,99 @@ type Props = {
 export default function AuthCheckPoint({ children, role }: Props) {
   const router = useRouter()
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   const [isChecking, setIsChecking] = useState(true)
 
   useEffect(() => {
-    const check = () => {
+    const checkAuth = () => {
       try {
-        const token = window.localStorage.getItem("go_elite_token")
-        const rawUser = window.localStorage.getItem("go_elite_user")
-        const user: TUser | null = rawUser ? JSON.parse(rawUser) : null
+        const token = localStorage.getItem("go_elite_token")
+        const rawUser = localStorage.getItem("go_elite_user")
+
+        // No token or user → auth
+        if (!token || !rawUser) {
+          router.replace("/auth")
+          return
+        }
+
+        const user: TUser = JSON.parse(rawUser)
 
         const requiredRole = role.trim().toLowerCase()
         const userRole = user?.role?.trim().toLowerCase()
 
-        if (
-          !token ||
-          !isValidToken(token) ||
-          !user ||
-          !user.email ||
-          !userRole
-        ) {
+        // invalid token
+        if (!isValidToken(token)) {
           router.replace("/auth")
-          setIsChecking(false)
           return
         }
 
+        // invalid user data
+        if (!user || !user.email || !userRole) {
+          router.replace("/auth")
+          return
+        }
+
+        // role mismatch → redirect to correct dashboard
         if (userRole !== requiredRole) {
-          router.replace(`/${userRole}`)
-          setIsChecking(false)
+          if (pathname !== `/${userRole}`) {
+            router.replace(`/${userRole}`)
+          }
           return
         }
 
-        const pendingRedirect =
-          requiredRole === "coach"
-            ? "/coach?coach=profile-setup"
-            : requiredRole === "club"
-              ? `/club?club=profile-setup`
-              : requiredRole === "player"
-                ? `/player?add-new=player`
-                : null
+        // Pending profile setup handling
+        if (user.status === "pending") {
+          let expectedQueryKey = ""
+          let expectedQueryValue = ""
 
-        if (user.status === "pending" && pendingRedirect) {
-          const isAllowedPath = pathname === `/${requiredRole}`
-          const queryParams = new URLSearchParams(window.location.search)
-          const hasProfileSetupQuery =
-            requiredRole === "player" 
-              ? queryParams.get("add-new") === "player"
-              : queryParams.get(requiredRole) === "profile-setup"
+          if (requiredRole === "player") {
+            expectedQueryKey = "add-new"
+            expectedQueryValue = "player"
+          } else {
+            expectedQueryKey = requiredRole
+            expectedQueryValue = "profile-setup"
+          }
 
-          // Only redirect if:
-          // 1. We're on the root dashboard page AND
-          // 2. The profile-setup/add-new query param is not already present
-          const isRootPage = pathname === `/${requiredRole}`
-          if (isRootPage && !hasProfileSetupQuery) {
-            router.replace(pendingRedirect)
+          const currentValue = searchParams.get(expectedQueryKey)
+
+          // More flexible check for setup page - allow if on correct path with any query
+          const isAlreadyOnSetupPage =
+            pathname === `/${requiredRole}` &&
+            currentValue === expectedQueryValue
+
+           
+
+          // Only redirect if not already on the correct setup page
+          if (!isAlreadyOnSetupPage) {
+            const redirectUrl =
+              requiredRole === "player"
+                ? "/player?add-new=player"
+                : `/${requiredRole}?${requiredRole}=profile-setup`
+ 
+            router.replace(redirectUrl)
+            return
+          } else { 
             setIsChecking(false)
             return
           }
         }
-
+ 
         setIsChecking(false)
-      } catch (error) {
-        console.error("Auth check error:", error)
-        setIsChecking(false)
+      } catch (err) {
+        console.error("Auth error:", err)
         router.replace("/auth")
       }
     }
-    check()
-  }, [pathname, router, role]) 
+
+    // small delay prevents hydration/localStorage glitch
+    const timer = setTimeout(checkAuth, 50)
+    return () => clearTimeout(timer)
+  }, [pathname, role, router, searchParams])
+
   if (isChecking) {
     return <Loader />
   }
- 
+
   return <>{children}</>
 }

@@ -35,7 +35,7 @@ export default function Page() {
     const getMatchData = async () => {
       try {
         const res = await getMatchList()
-        console.log(res)
+         
 
         if (
           res &&

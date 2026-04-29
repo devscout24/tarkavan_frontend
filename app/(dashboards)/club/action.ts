@@ -32,12 +32,10 @@ export async function clubProfileSetup(data: FormData) {
 
 export async function getClubDashboard() {
   try {
-    const res = await api.get("/club/dashboard")
-    console.log(res)
+    const res = await api.get("/club/dashboard") 
     return { success: true, data: res.data.data }
   } catch (err: unknown) {
-    if (axios.isAxiosError<TApiError>(err)) {
-      console.log(err?.response?.data)
+    if (axios.isAxiosError<TApiError>(err)) { 
       return err?.response?.data
     }
 

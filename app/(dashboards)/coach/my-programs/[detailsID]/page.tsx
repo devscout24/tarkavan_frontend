@@ -32,13 +32,10 @@ export default function ProgramDetails() {
   const fetchProgramDetails = async () => {
     try {
       setIsLoading(true)
-      const programId = params.detailsID as string
-      console.log("Fetching program details for ID:", programId)
+      const programId = params.detailsID as string 
       if (programId) {
-        const response = await getCoachProgramDetails(programId)
-        console.log("Full API Response:", JSON.stringify(response, null, 2))
-        if (response && 'success' in response && response.success) {
-          console.log("Program Data being set:", JSON.stringify(response.data, null, 2))
+        const response = await getCoachProgramDetails(programId) 
+        if (response && 'success' in response && response.success) { 
           setProgramData(response.data)
         }
       }
@@ -54,8 +51,7 @@ export default function ProgramDetails() {
   }, [params.detailsID])
 
   // Handle program update
-  const handleProgramUpdated = () => {
-    console.log("Program updated, refreshing data...")
+  const handleProgramUpdated = () => { 
     fetchProgramDetails()
   }
 

@@ -89,8 +89,7 @@ export default function RecruitmentForm({
     
     const getPositions = async () => {
       try{
-        const res = await getPlayerPosition()
-        console.log(res)
+        const res = await getPlayerPosition() 
         if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
           const positionsData = res.data.data.map((position: { id: number; name: string }) => ({
             label: position.name,
@@ -111,8 +110,7 @@ export default function RecruitmentForm({
     
     const getTeam = async () => {
       try{
-        const res = await getTeams()
-        console.log(res)
+        const res = await getTeams() 
         if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
           const teamsData = res.data.data.map((team: { id: number; name: string }) => ({
             label: team.name,
@@ -136,7 +134,7 @@ export default function RecruitmentForm({
       
       try{
         const res = await getRecruitmentDetails(editId)
-        console.log(res)
+        
         
         if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
           const recruitment = res.data.data
@@ -171,7 +169,7 @@ export default function RecruitmentForm({
       formData.append("upto_age", ageGroup)
 
       const res = await addRecruitment(formData)
-      console.log(res)
+   
       
       if (typeof res === "object" && res !== null && "success" in res && res.success) {
         toast.success("Recruitment created successfully")
@@ -209,7 +207,7 @@ export default function RecruitmentForm({
       formData.append("upto_age", ageGroup)
 
       const res = await updateRecruitment({ data: formData, recruitment_id: editId as string })
-      console.log(res)
+       
       
       if (typeof res === "object" && res !== null && "success" in res && res.success) {
         toast.success("Recruitment updated successfully")

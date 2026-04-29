@@ -36,7 +36,7 @@ export default function EnterCode({ email }: { email: string }) {
 
     }catch(error){
         toast.error("Failed to reset password. Please try again.")
-        console.log(error)
+         
     }
 
   }

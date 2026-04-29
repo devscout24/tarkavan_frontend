@@ -431,8 +431,7 @@ export default function PlayerAddModal() {
         sport: completeData.sport,
         profilePhotos: wizardState.forms.coreIdentity.profilePhotos,
       }
-
-      console.log("Parent profile payload ready:", parentData)
+ 
 
       try {
         // TODO: Call API to save parent profile data

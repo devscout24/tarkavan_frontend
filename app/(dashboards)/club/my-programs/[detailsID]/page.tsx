@@ -36,12 +36,7 @@ export default function ProgramDetails() {
     return acc
   }, {})
 
-  // Handler for saving the new program (implement logic as needed)
-  const handleSaveProgram = (data: any) => {
-    // TODO: Add your save logic here (API call, state update, etc.)
-    console.log("Saved program:", data)
-  }
-
+ 
   return (
     <section className="text-white">
       {/* BACK BUTTON */}

@@ -83,7 +83,7 @@ export async function generateMetadata({
   const res = await getPublicProfile({ id: profileID })
   const rootData = extractRootData(res)
 
-  console.log(ogRouteImage)
+  
 
   const basic = rootData?.basic_info
   const title = basic?.full_name

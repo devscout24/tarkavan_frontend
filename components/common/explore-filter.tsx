@@ -50,15 +50,16 @@ type ExploreFilterState = {
   sports: string
   ageGroup: string
   priceRange: string
-  selectedCountry_id: string
-  selectedCity_id: string
+  country_id: string
+  city_id: string
   max_price: string
   min_price: string
+  per_page: string
 }
 
 const categories = [
   {
-    value: "Players",
+    value: "players",
     label: "Find Players",
     icon: TbPlayFootball,
   },
@@ -92,35 +93,22 @@ function ExploreFilter({ filters, setFilters, initialState }: { filters: Explore
   const [countriesOptions, setCountriesOptions] = useState<{ id: number; name: string }[]>([])
   const [citiesOptions, setCitiesOptions] = useState<{ id: number; country_id: number; name: string }[]>([])
   
-  useEffect(() => {
-    const getSports = async () => {
-      const res = await getSportOptions()
-      if (res && "success" in res && res.success && res.data) {
-        setSportsOptions(res.data.data)
-      }
-    }
-    getSports()
-  }, [])
+ 
+
 
   useEffect(() => {
-    const getCountry = async () => {
-      const res = await getCountries()
-      if (res && "success" in res && res.success && res.data) {
-        setCountriesOptions(res.data.data)
-      }
-    }
-    getCountry()
-  }, [])
-
-  useEffect(() => {
-    const getCity = async () => {
-      const res = await getCities()
-      if (res && "success" in res && res.success && res.data) {
-        setCitiesOptions(res.data.data)
-      }
-    }
-    getCity()
-  }, [])
+  const init = async () => {
+    const [sports, countries, cities] = await Promise.all([
+      getSportOptions(),
+      getCountries(),
+      getCities(),
+    ])
+    if (sports && 'success' in sports && sports.success && sports.data) setSportsOptions(sports.data.data)
+    if (countries && 'success' in countries && countries.success && countries.data) setCountriesOptions(countries.data.data)
+    if (cities && 'success' in cities && cities.success && cities.data) setCitiesOptions(cities.data.data)
+  }
+  init()
+}, [])
 
   const locationOptions: LocationOption[] = React.useMemo(() => {
     return countriesOptions.map((country) => ({
@@ -141,8 +129,8 @@ function ExploreFilter({ filters, setFilters, initialState }: { filters: Explore
     setFilters((prev) => ({
       ...prev,
       location: country.name,
-      selectedCountry_id: String(country.id),
-      selectedCity_id: "",
+      country_id: String(country.id),
+      city_id: "",
     }))
   }
 
@@ -153,8 +141,8 @@ function ExploreFilter({ filters, setFilters, initialState }: { filters: Explore
     setFilters((prev) => ({
       ...prev,
       location: `${country.name}, ${city.name}`,
-      selectedCountry_id: String(country.id),
-      selectedCity_id: String(city.id),
+      country_id: String(country.id),
+      city_id: String(city.id),
     }))
   }
 
@@ -321,11 +309,13 @@ function ExploreFilter({ filters, setFilters, initialState }: { filters: Explore
                 <div className="flex flex-col gap-2 p-2 bg-primary border border-secondary    ">
                   <UiInput 
                     type="number"
+                    value={filters.min_price}
                     placeholder="Type minimum price" 
                     onChange={(e) => updateFilter("min_price", e.target.value)}
                   />
                   <UiInput 
                     type="number"
+                    value={filters.max_price}
                     placeholder="Type maximum price" 
                     onChange={(e) => updateFilter("max_price", e.target.value)}
                   />

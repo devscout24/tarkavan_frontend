@@ -57,7 +57,7 @@ export default function UpcomingEventPage() {
           <ProgramCard
             key={index}
             {...program}
-            onClick={() => console.log("object") }
+            onClick={() =>  {} }
           />
         ))}
       </div>

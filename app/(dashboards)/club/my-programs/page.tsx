@@ -103,7 +103,7 @@ export default function UpcomingEventPage() {
     }, 
     {
       label: "Delete Programs",
-      onSelect: () => console.log("Delete Programs"),
+      onSelect: () => {},
     },
   ]
 
@@ -117,10 +117,9 @@ export default function UpcomingEventPage() {
           setProgramsData(res.data.data)
         }
       }catch(error){
-        console.log(error)
-      } finally {
+        console.error(error)
         setLoading(false)
-      }
+      }  
     }
 
     getPrograms()

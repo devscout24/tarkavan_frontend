@@ -17,7 +17,7 @@ const ProgramFilterDropdown = () => {
     setSelectedOption(option)
     setIsOpen(false)
     // Handle filter logic here
-    console.log("Selected:", option)
+ 
   }
 
   useEffect(() => {

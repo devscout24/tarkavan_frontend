@@ -31,8 +31,7 @@ export default function AddSocialClub() {
       formData.append("whatsapp_link", socialLinks.whatsapp_link)
       formData.append("club_name", user?.name)
 
-      const response = await clubProfileSetup(formData)
-      console.log(response)
+      const response = await clubProfileSetup(formData) 
       if (
         response &&
         typeof response === "object" &&

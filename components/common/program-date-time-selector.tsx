@@ -41,14 +41,11 @@ export default function ProgramDateTimeSelector({
 
   // Use program times if available, otherwise fallback to hardcoded times
   let displayTimes: string[] = []
-  
-  console.log("Raw programTimes prop:", programTimes)
-  console.log("programTimes type:", typeof programTimes)
+   
   
   if (programTimes && programTimes.length > 0) {
     // Get the time strings from the program times
-    const timeStrings = programTimes.map(t => t.time).filter(Boolean)
-    console.log("Extracted timeStrings:", timeStrings)
+    const timeStrings = programTimes.map(t => t.time).filter(Boolean) 
     
     // Check if any of the time strings contain commas (indicating they're joined)
     const allTimes = timeStrings.flatMap(timeStr => {
@@ -64,14 +61,12 @@ export default function ProgramDateTimeSelector({
     displayTimes = timeSlots
   }
 
-  console.log("After processing displayTimes:", displayTimes)
-  console.log("displayTimes is array:", Array.isArray(displayTimes))
+ 
   
   // Extra safety: ensure we have an array of strings
   const normalizedTimes = displayTimes.map(time => String(time)).filter(time => time.trim() !== '')
   
-  console.log("Final normalizedTimes:", normalizedTimes)
-  console.log("normalizedTimes length:", normalizedTimes.length)
+ 
 
   const dateLabel = date ? format(date, "EEEE d MMMM") : role === "coach" ? "Program Schedule" : "Select a date"
 
@@ -178,7 +173,7 @@ export default function ProgramDateTimeSelector({
           </div>
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {normalizedTimes.map((time, index) => {
-              console.log(`Rendering time ${index}:`, time, typeof time)
+ 
               return (
                 <Button
                   key={`time-${index}`}

@@ -16,8 +16,7 @@ export default function ProfileSettingPage() {
 
 // <StripeAccount
 //   title="Stripe Account"
-//   description="Connect and manage your Stripe account for payments and earnings."
-//   onClick={() => console.log('Navigate to Stripe account settings')}
+//   description="Connect and manage your Stripe account for payments and earnings." 
 // />
 
 

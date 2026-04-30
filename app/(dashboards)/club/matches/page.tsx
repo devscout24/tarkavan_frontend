@@ -9,7 +9,8 @@ import {
 import { useRouter } from "next/navigation"
 import MatchTable from "./components/match-table"
 import { useEffect, useState } from "react"
-import { getMatchList } from "./action"
+import { getMatchList, getMatchRechuestedByOtherClub } from "./action"
+import { TMatchRequestByOthersClub } from "@/types"
 
 type Match = {
   id: number
@@ -30,12 +31,14 @@ type Match = {
 export default function Page() {
   const route = useRouter()
   const [matches, setMatches] = useState<Match[]>([])
+  const [matchRequests, setMatchRequests] = useState<
+    TMatchRequestByOthersClub[]
+  >([])
 
   useEffect(() => {
     const getMatchData = async () => {
       try {
         const res = await getMatchList()
-         
 
         if (
           res &&
@@ -55,18 +58,40 @@ export default function Page() {
       } catch (err) {
         console.error("Error fetching match data:", err)
       }
-    } 
+    }
     getMatchData()
 
     const handleMatchAdd = () => {
       getMatchData()
     }
 
-    window.addEventListener('matchAdd', handleMatchAdd)
+    window.addEventListener("matchAdd", handleMatchAdd)
 
     return () => {
-      window.removeEventListener('matchAdd', handleMatchAdd)
+      window.removeEventListener("matchAdd", handleMatchAdd)
     }
+  }, [])
+
+  useEffect(() => {
+    const getMatchRechuestedByOtherClubData = async () => {
+      try {
+        const res = await getMatchRechuestedByOtherClub()
+
+        if (
+          res &&
+          "success" in res &&
+          res.success &&
+          res.data &&
+          "data" in res.data &&
+          res.data.data
+        ) {
+          setMatchRequests(res.data.data)
+        }
+      } catch (err) {
+        console.error("Error fetching match request data:", err)
+      }
+    }
+    getMatchRechuestedByOtherClubData()
   }, [])
 
   const formatDate = (dateString: string) => {
@@ -89,10 +114,22 @@ export default function Page() {
       .join(" ")
   }
 
+  console.log(matchRequests)
+
   return (
     <section className="space-y-6 text-white">
+      {matchRequests.length > 0 && (
+        <div className="">
+          <h2 className="text-lg font-medium text-white">
+            Others match requests
+          </h2>
+          {/* table */}
+          <MatchTable matchRequests={matchRequests} />
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-lg font-medium text-white">Professional Coaches</h1>
+        <h2 className="text-lg font-medium text-white">Professional Coaches</h2>
 
         <Button
           type="button"
@@ -104,7 +141,7 @@ export default function Page() {
         </Button>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4   ">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {matches.map((match) => (
           <FriendlyMatchCard
             key={match.id}
@@ -122,9 +159,6 @@ export default function Page() {
 
         <MatchPlaceholderCard />
       </div>
-
-      {/* table */}
-      <MatchTable />
     </section>
   )
 }

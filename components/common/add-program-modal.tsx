@@ -12,12 +12,14 @@ import { Textarea } from "../ui/textarea"
 import CommonBtn from "@/components/common/common-btn"
 import UploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
-import { createProgram } from "@/app/(dashboards)/club/action"
+import { createProgram, getProgramDetails, updateProgram } from "@/app/(dashboards)/club/action"
 import { createCoachProgram } from "@/app/(dashboards)/coach/action"
 import { toast } from "sonner"
 import { getSportOptions } from "@/app/(dashboards)/action"
 import useModal from "./modal/useModal"
 import { usePathname } from "next/navigation"
+import { useSearchParams } from "next/navigation"
+
 
 interface AddProgramPageProps {
   onSave?: (data: unknown) => void
@@ -105,6 +107,8 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
       sportOptionId: "",
     }
   })
+  const searchParams = useSearchParams()
+  const editId = searchParams.get("edit-id")
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -173,6 +177,56 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
     getSportData()
   }, [isCoach])
 
+
+
+
+  useEffect(() => { 
+
+    const getEditProgramData = async () => {
+      if (!editId) return
+      
+      try {
+        const res = await getProgramDetails(String(editId))
+
+        console.log(res)
+        
+        if(res?.status === false) {
+          toast.error(res.message || "Failed to load program data")
+          return
+        }
+
+        // Check if response has the expected structure
+        if (res && typeof res === 'object' && 'success' in res && res.success === true && 
+            'data' in res && res.data && typeof res.data === 'object' && 
+            'data' in res.data && res.data.data && typeof res.data.data === 'object' && 
+            'program' in res.data.data && res.data.data.program) {
+          const program = res.data.data.program as any
+          
+          setForm({
+            sport: program.sport || "",
+            name: program.program_name || "",
+            ageGroup: program.upto_age ? String(program.upto_age) : "",
+            price: program.program_price ? String(program.program_price) : "",
+            discountPrice: program.discount_price ? String(program.discount_price) : "",
+            location: program.program_location || "",
+            start: program.program_start || "",
+            end: program.program_end || "",
+            times: program.times && program.times.length > 0 ? program.times : ["", "", ""],
+            about: program.about_program || "",
+            goals: program.goals && program.goals.length > 0 ? program.goals : [""],
+            photo: program.program_photo || null,
+            type: program.program_type || "one_one",
+            sportOptionId: program.sport_option_id ? String(program.sport_option_id) : "",
+          })
+        }
+      } catch (err) {
+        console.error("Error fetching program data:", err)
+      }
+    }
+    getEditProgramData()
+    
+  }, [editId])
+
   const handleAddProgram = async () => {
     if (isSubmitting) {
       return
@@ -224,9 +278,11 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
       if (isCoach) {
         res = await createCoachProgram(formData)
       } else {
- 
-
-        res = await createProgram(formData) 
+        if (editId) {
+          res = await updateProgram({ program_id: editId, data: formData })
+        } else {
+          res = await createProgram(formData) 
+        }
       }
 
       // Check success correctly based on our generic action response pattern
@@ -234,7 +290,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
         isActionSuccess(res) &&
         (res.success === true || res.status === true)
       ) {
-        toast.success("Program created successfully!")
+        toast.success(editId ? "Program updated successfully!" : "Program created successfully!")
         if (typeof window !== "undefined") {
           window.dispatchEvent(new CustomEvent("programCreated"))
         }
@@ -274,7 +330,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
   return (
     <div className="mx-auto w-full p-0">
       <div className="flex flex-col gap-4 rounded-2xl bg-neutral-900 p-8 text-white">
-        <h2 className="mb-2 text-2xl font-semibold">Add Program</h2>
+        <h2 className="mb-2 text-2xl font-semibold">{editId ? "Edit Program" : "Add Program"}</h2>
 
         {/* Photo Upload */}
         <div className="mb-2">
@@ -529,7 +585,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
             onClick={() => {}}
           />
           <CommonBtn
-            text={isSubmitting ? "Saving..." : "Save Program"}
+            text={isSubmitting ? "Saving..." : (editId ? "Update Program" : "Save Program")}
             size="lg"
             variant="default"
             className="w-fit bg-brand px-10 text-black hover:border hover:bg-transparent hover:text-white"

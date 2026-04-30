@@ -19,6 +19,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { TMatchRequestByOthersClub } from "@/types"
+import moment from "moment"
+import { updateMatchStatusRechuestedByOtherClub } from "../action"
+import { toast } from "sonner"
 
 // Demo Booking type
 interface Booking {
@@ -57,8 +61,31 @@ const demoMatches: Booking[] = [
   },
 ]
 
-export default function MatchTable() {
+export default function MatchTable({ matchRequests }: { matchRequests: TMatchRequestByOthersClub[] }) {
   const columnBorderClass = "border-r border-white/15 last:border-r-0"
+
+  const handleUpdateMatchStatus = async (bid_id: string, status: string) => {
+    try{
+
+      const formData = new FormData() 
+      formData.append("status", status)
+
+      const res = await updateMatchStatusRechuestedByOtherClub({
+        bid_id,
+        status: formData,
+      })
+
+      if(res?.status === false){
+        toast.error(res.message)
+        return
+      }
+
+      console.log(res)
+
+    }catch(error){
+      console.error(error)
+    }
+  }
 
   return (
     <div className="mx-1 mt-6 text-white">
@@ -78,7 +105,7 @@ export default function MatchTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {demoMatches.map((match , idx) => (
+            {matchRequests.map((match , idx) => (
               <TableRow
                 key={idx}
                 className="border-t border-white/20 hover:bg-transparent"
@@ -88,20 +115,20 @@ export default function MatchTable() {
                 >
                   <div className="flex items-center gap-3">
                     <Image
-                      src={match.clubImage}
-                      alt={match.clubName}
+                      src={match.requested_club.team.image || ""}
+                      alt={match.requested_club.club_name}
                       width={50}
                       height={50}
                       className="h-12.5 w-12.5 rounded-full"
                     />
-                    <span>{match.clubName}</span>
+                    <span>{match.requested_club.club_name}</span>
                   </div>
                 </TableCell>
                 <TableCell className={columnBorderClass}>
-                  {match.teamName}
+                  {match.requested_club.team.name}
                 </TableCell>
                 <TableCell className={columnBorderClass}>
-                  {match.date}
+                  {moment(match.match.available_date).format("MMM Do YY")}
                 </TableCell>
                 <TableCell className={columnBorderClass}>
                   {match.status}
@@ -118,8 +145,8 @@ export default function MatchTable() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
                         <DropdownMenuGroup> 
-                          <DropdownMenuItem className="hover:bg-brand!">Accept</DropdownMenuItem>
-                          <DropdownMenuItem className="hover:bg-brand!">Reject</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleUpdateMatchStatus(String(match.id), "accepted")} className="hover:bg-brand!">Accept</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleUpdateMatchStatus(String(match.id), "rejected")} className="hover:bg-brand!">Reject</DropdownMenuItem>
                         </DropdownMenuGroup>  
                       </DropdownMenuContent>
                     </DropdownMenu>

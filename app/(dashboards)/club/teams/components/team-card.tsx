@@ -25,8 +25,7 @@ type TeamCardProps = {
   competitionLevel?: string
   playersCount?: number
   playersLimit?: number
-  coachCount?: number
-  visibility?: string
+  coachCount?: number 
   imageSrc?: string
   imageAlt?: string
   viewTeamLabel?: string
@@ -44,8 +43,7 @@ export default function TeamCard({
   competitionLevel = "Development",
   playersCount = 18,
   playersLimit,
-  coachCount = 2,
-  visibility = "PUBLIC",
+  coachCount = 2, 
   imageAlt = "Team photo",
   viewTeamLabel = "View Team",
   className,
@@ -100,10 +98,7 @@ export default function TeamCard({
           alt={imageAlt}
           fill
           className="object-cover"
-        />
-        <Badge className="absolute top-3 right-3 h-9 rounded-full bg-[#0ea54b] px-4 text-sm font-medium text-white hover:bg-[#0ea54b]">
-          {visibility}
-        </Badge>
+        /> 
       </div>
 
       <CardContent className="space-y-5 px-5 py-4">

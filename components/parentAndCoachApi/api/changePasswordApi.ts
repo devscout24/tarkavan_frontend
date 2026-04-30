@@ -2,12 +2,12 @@
 
 import api from "@/lib/api-fetcher"
 import type { AxiosError } from "axios"
-import type { ChangePasswordData, ChangePasswordResponse, ChangePasswordApiResult } from "../type/changePassword"
+import type {  ChangePasswordResponse, ChangePasswordApiResult } from "../type/changePassword"
 
 /**
  * Change user password
  */
-export async function changePassword(passwordData: ChangePasswordData): Promise<ChangePasswordApiResult> {
+export async function changePassword(passwordData: any): Promise<ChangePasswordApiResult> {
   try {
     const res = await api.post("/change/password", passwordData)
     

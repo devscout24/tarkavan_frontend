@@ -3,40 +3,25 @@
 import { useState } from "react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { TPrivacyOption } from "@/types"
 
-type PrivacyOption = {
-  value: string
-  title: string
-  description: string
-}
 
-const PRIVACY_OPTIONS: PrivacyOption[] = [
-  {
-    value: "public",
-    title: "Public Profile",
-    description: "Visible to all GoElite members",
-  },
-  {
-    value: "players-athletes-only",
-    title: "Players/Athletes Only",
-    description: "Restricted to verified athletes and peers",
-  },
-  {
-    value: "coaches-team-only",
-    title: "Coaches and Team Only",
-    description: "Private professional view for your staff",
-  },
-  {
-    value: "private",
-    title: "Private",
-    description: "Unable to get endorsements from fellow athletes",
-  },
-]
 
-export default function PrivacySetting() {
+
+export default function PrivacySetting({privacyOptions , onChange}: {
+  privacyOptions: TPrivacyOption[]
+  onChange?: (value: string) => void
+}) {
   const [selectedPrivacy, setSelectedPrivacy] = useState(
-    PRIVACY_OPTIONS[0].value
+    privacyOptions[0].value
   )
+
+
+  const handlePrivacyChange = (value: string) => {
+    setSelectedPrivacy(value)
+    onChange?.(value) 
+  }
+
 
   return (
     <Card className="mt-6 gap-0 rounded-2xl border border-white/12 bg-primary py-0 text-white ring-0">
@@ -52,7 +37,7 @@ export default function PrivacySetting() {
           role="radiogroup"
           aria-label="Privacy settings"
         >
-          {PRIVACY_OPTIONS.map((option) => {
+          {privacyOptions.map((option) => {
             const isSelected = selectedPrivacy === option.value
 
             return (
@@ -61,7 +46,7 @@ export default function PrivacySetting() {
                 type="button"
                 role="radio"
                 aria-checked={isSelected}
-                onClick={() => setSelectedPrivacy(option.value)}
+                onClick={() => handlePrivacyChange(option.value)}
                 className="flex w-full cursor-pointer items-start gap-3 text-left focus-visible:outline-none"
               >
                 <span

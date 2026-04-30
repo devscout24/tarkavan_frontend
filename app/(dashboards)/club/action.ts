@@ -336,3 +336,18 @@ export async function requestMatch({match_id , requested_club_id }: {match_id: s
 
 
 
+export async function updateClubSetting(data: FormData) {
+  try {
+    const res = await api.post(`/club/settings/update`, data)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}

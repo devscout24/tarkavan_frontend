@@ -31,7 +31,6 @@ export default function Page() {
   const fetchTeams = useCallback(async () => {
     try {
       const res = await getTeams()
-      
 
       if (
         res &&
@@ -77,8 +76,7 @@ export default function Page() {
           <TeamCard
             key={team.id}
             teamId={team.id.toString()}
-            teamName={team.name}
-            visibility="PUBLIC"
+            teamName={team.name} 
             ageGroup={`U${team.age_group}`}
             competitionLevel={team.competition_level.name}
             playersCount={team.total_players}

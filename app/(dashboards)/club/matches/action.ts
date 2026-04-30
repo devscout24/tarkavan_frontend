@@ -69,6 +69,40 @@ export async function deleteMatch(match_id: string) {
 }
 
 
+export async function getMatchRechuestedByOtherClub() {
+  try {
+    const res = await api.get(`/match/bids/list`)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+ 
+
+export async function updateMatchStatusRechuestedByOtherClub({bid_id, status}: {bid_id: string, status: FormData}) {
+  try {
+    const res = await api.post(`/match/bid/update/${bid_id}`, status)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+
+
 
 
 

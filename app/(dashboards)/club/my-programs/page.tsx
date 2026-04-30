@@ -8,6 +8,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { Icon } from "@/components/custom/Icon"
 import { useEffect, useState } from "react"
 import { getProgramList } from "../action"
+import moment from "moment"
 
 function PlusIcon() {
   return (
@@ -113,6 +114,7 @@ export default function UpcomingEventPage() {
       try{
         setLoading(true)
         const res = await getProgramList() 
+        console.log(res)
         if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
           setProgramsData(res.data.data)
         }
@@ -206,7 +208,7 @@ export default function UpcomingEventPage() {
                     Schedule
                   </p>
                   <p className="text-sm font-normal text-primary sm:text-base lg:text-lg">
-                    {programsData.latest_upcoming_program.time}
+                    {moment(programsData.latest_upcoming_program.program_start).format("MMM Do YY")}
                   </p>
                 </div>
 
@@ -215,7 +217,7 @@ export default function UpcomingEventPage() {
                     Next Session
                   </p>
                   <p className="text-sm font-normal text-primary sm:text-base lg:text-lg">
-                    {programsData.latest_upcoming_program.program_start}
+                    {moment(programsData.latest_upcoming_program.program_end).format("MMM Do YY")}
                   </p>
                 </div>
               </div>
@@ -237,13 +239,10 @@ export default function UpcomingEventPage() {
                 size="sm"
                 variant="default"
                 onClick={() => {
-                  const nextParams = new URLSearchParams(searchParams.toString())
+                  const nextParams = new URLSearchParams()
                   nextParams.set("add-new", "program")
-                  router.replace(
-                    nextParams.toString()
-                      ? `${pathname}?${nextParams.toString()}`
-                      : pathname
-                  )
+                  nextParams.set("edit-id", String(programsData?.latest_upcoming_program?.id || ""))
+                  router.replace(`${pathname}?${nextParams.toString()}`)
                 }}
               />
             </div>

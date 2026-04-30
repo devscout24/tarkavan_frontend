@@ -4,6 +4,7 @@ import { Calendar, MapPin } from "lucide-react"
 import Image from "next/image"
 import { requestMatch } from "../action"
 import { toast } from "sonner"
+import { useState } from "react"
 
 interface ClubOpurtunityCardProps { 
   ClubName: string
@@ -29,33 +30,38 @@ export default function ClubOpurtunityCard({
   headline
 }: ClubOpurtunityCardProps) {
 
+  const [requesting, setRequesting] = useState(false)
+
 
   const user = localStorage.getItem("go_elite_user") ? JSON.parse(localStorage.getItem("go_elite_user")!) : null
   const handleRequestMatch = async () => {
     try{
+      setRequesting(true)
       const res = await requestMatch({match_id: matchId, requested_club_id: user?.id})
        
-            if(!res?.status){
-        toast.error(res?.message)
-      }
+        if(!res?.status){
+          toast.error(res?.message)
+          setRequesting(false) 
+        }
 
       
       if(res && 'success' in res && res.success && res.data && 'status' in res.data && res.data.status) {
         toast.success("Match requested successfully!")
+        setRequesting(false)
 
         window.dispatchEvent(new CustomEvent('matchApplied')) 
 
       } else if(res && 'data' in res && res.data && 'message' in res.data) {
         toast.error(res.data.message)
-      }  else     if(!res?.status){
-        toast.error(res?.message)
-      }
+        setRequesting(false)
+      } 
 
 
 
 
     } catch (error) {
       console.error(error)
+      setRequesting(false)
       toast.error("Failed to request match")
     }
     
@@ -97,7 +103,7 @@ export default function ClubOpurtunityCard({
 
         <div className="p-5 bg-white/20 rounded-md mt-5   ">{opurtunity}</div>
 
-        <div className="flex mt-4 justify-between flex-wrap    ">
+        <div className="flex mt-4 justify-between flex-wrap gap-2    ">
           <CommonBtn
             size={"lg"}
             variant={"default"}
@@ -109,10 +115,11 @@ export default function ClubOpurtunityCard({
           <CommonBtn
             size={"lg"}
             variant={"default"}
-            text={action_label}
+            isLoading={requesting} 
+            text={action_label === "Request Match" ? "Request" : "Requested"}
             onClick={handleRequestMatch}
             disabled={action_label !== "Request Match"}
-            className={` border border-brand px-2  text-primary  bg-brand  hover:bg-brand w-fit    `}
+            className={` border border-brand px-2  text-primary  bg-brand  hover:bg-brand flex-1      `}
           />
 
 

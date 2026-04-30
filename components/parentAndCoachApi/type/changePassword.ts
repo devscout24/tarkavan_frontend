@@ -1,10 +1,6 @@
 // Change Password Types
 
-export interface ChangePasswordData {
-  current_password: string
-  new_password: string
-  new_password_confirmation: string
-}
+
 
 export interface ChangePasswordResponse {
   status: boolean

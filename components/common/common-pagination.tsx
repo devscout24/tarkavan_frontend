@@ -54,7 +54,7 @@ export default function CommonPagination({
   if (totalPages <= 1) return null
 
   return (
-    <div className={`flex justify-center ${className}`}>
+    <div className={`flex justify-center text-white ${className} `}>
       <Pagination>
         <PaginationContent>
           <PaginationItem>

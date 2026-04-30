@@ -35,44 +35,9 @@ const isClubDashboardSuccessResponse = (
   return value.success === true
 }
 
-const formatProgramDateRange = (start: string, end: string): string => {
-  const startDate = new Date(start)
-  const endDate = new Date(end)
+ 
 
-  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-    return "Date not available"
-  }
-
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  })
-
-  return `${formatter.format(startDate)} - ${formatter.format(endDate)}`
-}
-
-const resolveProgramImage = (programPhoto: string | null): string => {
-  if (!programPhoto) {
-    return "/images/advertisementImage.png"
-  }
-
-  if (/^https?:\/\//i.test(programPhoto)) {
-    return programPhoto
-  }
-
-  const apiBase = process.env.NEXT_PUBLIC_API_URL
-  if (!apiBase) {
-    return "/images/advertisementImage.png"
-  }
-
-  try {
-    const origin = new URL(apiBase).origin
-    return `${origin}/${programPhoto.replace(/^\/+/, "")}`
-  } catch {
-    return "/images/advertisementImage.png"
-  }
-}
+ 
 
 type RecentOpportunity = {
   id: number;

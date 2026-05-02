@@ -11,7 +11,10 @@ import { Textarea } from "../ui/textarea"
 import CommonBtn from "@/components/common/common-btn"
 import UploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
-import { updateCoachProgram, getCoachProgramDetails } from "@/app/(dashboards)/coach/action"
+import {
+  updateCoachProgram,
+  getCoachProgramDetails,
+} from "@/app/(dashboards)/coach/action"
 import { toast } from "sonner"
 import { getSportOptions } from "@/app/(dashboards)/action"
 import useModal from "./modal/useModal"
@@ -65,7 +68,7 @@ const EditProgramPage: React.FC<EditProgramPageProps> = ({
   const { onProgramUpdated: contextOnProgramUpdated } = useProgramUpdate()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [sportOptions, setSportOptions] = useState<TSportOption[]>([])
-  
+
   const [programId, setProgramId] = useState<number | null>(null)
 
   const [form, setForm] = useState({
@@ -91,45 +94,56 @@ const EditProgramPage: React.FC<EditProgramPageProps> = ({
         const editData = JSON.parse(saved)
         if (editData?.id) {
           setProgramId(editData.id)
-          
+
           let photo = null
           const savedPhoto = sessionStorage.getItem("edit-program-photo")
           if (savedPhoto) {
             photo = savedPhoto
           }
-          
-          const timesList = Array.isArray(editData?.times) && editData.times.length > 0 
-            ? editData.times.map((t: any) => {
-                const timeStr = String(t.time || "")
-                let firstPart = timeStr.split("-")[0].trim()
-                const timeRegex = /^([0-9]{1,2}):([0-9]{2})$/
-                const match = firstPart.match(timeRegex)
-                if (match) {
-                  let hours = match[1]
-                  if (hours.length === 1) hours = "0" + hours
-                  firstPart = `${hours}:${match[2]}`
-                }
-                return firstPart
-              }) 
-            : ["", "", ""]
+
+          const timesList =
+            Array.isArray(editData?.times) && editData.times.length > 0
+              ? editData.times.map((t: any) => {
+                  const timeStr = String(t.time || "")
+                  let firstPart = timeStr.split("-")[0].trim()
+                  const timeRegex = /^([0-9]{1,2}):([0-9]{2})$/
+                  const match = firstPart.match(timeRegex)
+                  if (match) {
+                    let hours = match[1]
+                    if (hours.length === 1) hours = "0" + hours
+                    firstPart = `${hours}:${match[2]}`
+                  }
+                  return firstPart
+                })
+              : ["", "", ""]
           while (timesList.length < 3) timesList.push("")
-      
-          const goalsList = Array.isArray(editData?.goals) && editData.goals.length > 0
-            ? editData.goals.map((g: any) => g.goal)
-            : [""]
+
+          const goalsList =
+            Array.isArray(editData?.goals) && editData.goals.length > 0
+              ? editData.goals.map((g: any) => g.goal)
+              : [""]
 
           // Find matching sport or use empty string
-          const sportValue = editData?.sport || editData?.sport_option?.name || ""
-          
+          const sportValue =
+            editData?.sport || editData?.sport_option?.name || ""
+
           setForm({
             sport: sportValue,
             name: editData?.program_name || "",
             ageGroup: editData?.upto_age ? String(editData.upto_age) : "15",
-            price: editData?.program_price ? String(editData.program_price) : "",
-            discountPrice: editData?.discount_price ? String(editData.discount_price) : "",
+            price: editData?.program_price
+              ? String(editData.program_price)
+              : "",
+            discountPrice: editData?.discount_price
+              ? String(editData.discount_price)
+              : "",
             location: editData?.program_location || "",
-            start: editData?.program_start ? editData.program_start.split("T")[0] : "",
-            end: editData?.program_end ? editData.program_end.split("T")[0] : "",
+            start: editData?.program_start
+              ? editData.program_start.split("T")[0]
+              : "",
+            end: editData?.program_end
+              ? editData.program_end.split("T")[0]
+              : "",
             times: timesList,
             about: editData?.about_program || "",
             goals: goalsList,
@@ -138,42 +152,51 @@ const EditProgramPage: React.FC<EditProgramPageProps> = ({
           })
 
           // Fetch full details including about_program
-          getCoachProgramDetails(editData.id).then((response) => {
-            const res = response as any
-            if (res && res.success && res.data?.data?.program) {
-              const fullData = res.data.data.program
-              
-              const fullTimesList = Array.isArray(fullData?.times) && fullData.times.length > 0 
-                ? fullData.times.map((t: any) => {
-                    const timeStr = String(t.time || "")
-                    let firstPart = timeStr.split("-")[0].trim()
-                    const timeRegex = /^([0-9]{1,2}):([0-9]{2})$/
-                    const match = firstPart.match(timeRegex)
-                    if (match) {
-                      let hours = match[1]
-                      if (hours.length === 1) hours = "0" + hours
-                      firstPart = `${hours}:${match[2]}`
-                    }
-                    return firstPart
-                  }) 
-                : ["", "", ""]
-              while (fullTimesList.length < 3) fullTimesList.push("")
-          
-              const fullGoalsList = Array.isArray(fullData?.goals) && fullData.goals.length > 0
-                ? fullData.goals.map((g: any) => g.goal)
-                : [""]
+          getCoachProgramDetails(editData.id)
+            .then((response) => {
+              const res = response as any
+              if (res && res.success && res.data?.data?.program) {
+                const fullData = res.data.data.program
 
-              setForm(prev => ({
-                ...prev,
-                about: fullData?.about_program || prev.about,
-                times: fullTimesList,
-                goals: fullGoalsList,
-                sport: fullData?.sport || fullData?.sport_option?.name || prev.sport,
-                type: fullData?.program_type || prev.type,
-                ageGroup: fullData?.upto_age ? String(fullData.upto_age) : prev.ageGroup,
-              }))
-            }
-          }).catch(console.error)
+                const fullTimesList =
+                  Array.isArray(fullData?.times) && fullData.times.length > 0
+                    ? fullData.times.map((t: any) => {
+                        const timeStr = String(t.time || "")
+                        let firstPart = timeStr.split("-")[0].trim()
+                        const timeRegex = /^([0-9]{1,2}):([0-9]{2})$/
+                        const match = firstPart.match(timeRegex)
+                        if (match) {
+                          let hours = match[1]
+                          if (hours.length === 1) hours = "0" + hours
+                          firstPart = `${hours}:${match[2]}`
+                        }
+                        return firstPart
+                      })
+                    : ["", "", ""]
+                while (fullTimesList.length < 3) fullTimesList.push("")
+
+                const fullGoalsList =
+                  Array.isArray(fullData?.goals) && fullData.goals.length > 0
+                    ? fullData.goals.map((g: any) => g.goal)
+                    : [""]
+
+                setForm((prev) => ({
+                  ...prev,
+                  about: fullData?.about_program || prev.about,
+                  times: fullTimesList,
+                  goals: fullGoalsList,
+                  sport:
+                    fullData?.sport ||
+                    fullData?.sport_option?.name ||
+                    prev.sport,
+                  type: fullData?.program_type || prev.type,
+                  ageGroup: fullData?.upto_age
+                    ? String(fullData.upto_age)
+                    : prev.ageGroup,
+                }))
+              }
+            })
+            .catch(console.error)
         }
       }
     } catch {
@@ -246,13 +269,11 @@ const EditProgramPage: React.FC<EditProgramPageProps> = ({
           return
         }
 
-        const activeSportOptions = payload.data.filter(
-          (sport) => {
-            if (sport.status !== "active") return false
-            if (isCoach && sport.audience !== "coach") return false
-            return true
-          }
-        )
+        const activeSportOptions = payload.data.filter((sport) => {
+          if (sport.status !== "active") return false
+          if (isCoach && sport.audience !== "coach") return false
+          return true
+        })
         setSportOptions(activeSportOptions)
       } catch (err) {
         console.error("Error fetching sport data:", err)
@@ -260,10 +281,6 @@ const EditProgramPage: React.FC<EditProgramPageProps> = ({
     }
     getSportData()
   }, [isCoach])
-
- 
-
- 
 
   const handleAddProgram = async () => {
     if (isSubmitting) {
@@ -317,7 +334,7 @@ const EditProgramPage: React.FC<EditProgramPageProps> = ({
         return
       }
 
-      let res: any;
+      let res: any
       if (isCoach) {
         res = await updateCoachProgram(programId, formData)
       } else {
@@ -329,7 +346,7 @@ const EditProgramPage: React.FC<EditProgramPageProps> = ({
       // Check success correctly based on our generic action response pattern
       if (res && (res.success === true || res.status === true)) {
         toast.success("Program updated successfully!")
-        
+
         // Clean up sessionStorage first
         try {
           sessionStorage.removeItem("edit-program-photo")
@@ -493,17 +510,23 @@ const EditProgramPage: React.FC<EditProgramPageProps> = ({
                 <SelectValue placeholder="Select Age Group" />
               </SelectTrigger>
               <SelectContent position="popper">
-                <SelectItem value="13" className="hover:bg-brand!">
-                  U13
+                <SelectItem value="8" className="hover:bg-brand!">
+                  U03 - U08
                 </SelectItem>
-                <SelectItem value="15" className="hover:bg-brand!">
-                  U15
+                <SelectItem value="12" className="hover:bg-brand!">
+                  U09 - U12
                 </SelectItem>
                 <SelectItem value="17" className="hover:bg-brand!">
-                  U17
+                  U13 - U17
                 </SelectItem>
-                <SelectItem value="18" className="hover:bg-brand!">
-                  18-plus
+                <SelectItem value="21" className="hover:bg-brand!">
+                  U18 - U21
+                </SelectItem>
+                <SelectItem value="30" className="hover:bg-brand!">
+                  U21 - U30
+                </SelectItem>
+                <SelectItem value="200" className="hover:bg-brand!">
+                  30+
                 </SelectItem>
               </SelectContent>
             </Select>

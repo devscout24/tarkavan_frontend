@@ -110,7 +110,7 @@ export default function ClubProfileSetup() {
       }
 
       const res = await clubProfileSetup(formData)
-      
+      console.log(res)
 
       if (!res.success) {
         toast.error(res.message)

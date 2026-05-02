@@ -29,9 +29,11 @@ import { cn } from "@/lib/utils"
 import CommonBtn from "@/components/common/common-btn"
 import UiInput from "./ui-input"
 import { TbPlayFootball } from "react-icons/tb"
-import { getCities, getCountries, getSportOptions } from "@/app/(dashboards)/action"
-
-
+import {
+  getCities,
+  getCountries,
+  getSportOptions,
+} from "@/app/(dashboards)/action"
 
 type LocationOption = {
   id: number
@@ -42,7 +44,6 @@ type LocationOption = {
     name: string
   }[]
 }
-
 
 type ExploreFilterState = {
   button_type: string
@@ -85,30 +86,46 @@ const categories = [
   },
 ]
 
-
-
-function ExploreFilter({ filters, setFilters, initialState }: { filters: ExploreFilterState; setFilters: React.Dispatch<React.SetStateAction<ExploreFilterState>>; initialState: ExploreFilterState }) {
-  
-  const [sportsOptions, setSportsOptions] = useState<{ id: number; name: string }[]>([])
-  const [countriesOptions, setCountriesOptions] = useState<{ id: number; name: string }[]>([])
-  const [citiesOptions, setCitiesOptions] = useState<{ id: number; country_id: number; name: string }[]>([])
-  
- 
-
+function ExploreFilter({
+  filters,
+  setFilters,
+  initialState,
+}: {
+  filters: ExploreFilterState
+  setFilters: React.Dispatch<React.SetStateAction<ExploreFilterState>>
+  initialState: ExploreFilterState
+}) {
+  const [sportsOptions, setSportsOptions] = useState<
+    { id: number; name: string }[]
+  >([])
+  const [countriesOptions, setCountriesOptions] = useState<
+    { id: number; name: string }[]
+  >([])
+  const [citiesOptions, setCitiesOptions] = useState<
+    { id: number; country_id: number; name: string }[]
+  >([])
 
   useEffect(() => {
-  const init = async () => {
-    const [sports, countries, cities] = await Promise.all([
-      getSportOptions(),
-      getCountries(),
-      getCities(),
-    ])
-    if (sports && 'success' in sports && sports.success && sports.data) setSportsOptions(sports.data.data)
-    if (countries && 'success' in countries && countries.success && countries.data) setCountriesOptions(countries.data.data)
-    if (cities && 'success' in cities && cities.success && cities.data) setCitiesOptions(cities.data.data)
-  }
-  init()
-}, [])
+    const init = async () => {
+      const [sports, countries, cities] = await Promise.all([
+        getSportOptions(),
+        getCountries(),
+        getCities(),
+      ])
+      if (sports && "success" in sports && sports.success && sports.data)
+        setSportsOptions(sports.data.data)
+      if (
+        countries &&
+        "success" in countries &&
+        countries.success &&
+        countries.data
+      )
+        setCountriesOptions(countries.data.data)
+      if (cities && "success" in cities && cities.success && cities.data)
+        setCitiesOptions(cities.data.data)
+    }
+    init()
+  }, [])
 
   const locationOptions: LocationOption[] = React.useMemo(() => {
     return countriesOptions.map((country) => ({
@@ -199,7 +216,6 @@ function ExploreFilter({ filters, setFilters, initialState }: { filters: Explore
           </div>
 
           <div className="grid max-w-6/10 flex-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-
             {/* Location Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -259,7 +275,7 @@ function ExploreFilter({ filters, setFilters, initialState }: { filters: Explore
                 updateFilter("sports", value === "all" ? "" : value)
               }
             >
-              <SelectTrigger className="h-11 w-full rounded-xl border-white/15 bg-transparent text-white py-5">
+              <SelectTrigger className="h-11 w-full rounded-xl border-white/15 bg-transparent py-5 text-white">
                 <SelectValue placeholder="Select a sport" />
               </SelectTrigger>
               <SelectContent
@@ -285,44 +301,56 @@ function ExploreFilter({ filters, setFilters, initialState }: { filters: Explore
               value={filters.age_group}
               onValueChange={(value) => updateFilter("age_group", value)}
             >
-              <SelectTrigger className="w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white ">
+              <SelectTrigger className="w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white">
                 <SelectValue placeholder="Select Age Group" />
               </SelectTrigger>
               <SelectContent position="popper">
-                <SelectItem value="13">U13</SelectItem>
-                <SelectItem value="15">U15</SelectItem>
-                <SelectItem value="17">U17</SelectItem>
-                <SelectItem value="18">18+</SelectItem>
+                <SelectItem value="8" className="hover:bg-brand!">
+                  U03 - U08
+                </SelectItem>
+                <SelectItem value="12" className="hover:bg-brand!">
+                  U09 - U12
+                </SelectItem>
+                <SelectItem value="17" className="hover:bg-brand!">
+                  U13 - U17
+                </SelectItem>
+                <SelectItem value="21" className="hover:bg-brand!">
+                  U18 - U21
+                </SelectItem>
+                <SelectItem value="30" className="hover:bg-brand!">
+                  U21 - U30
+                </SelectItem>
+                <SelectItem value="200" className="hover:bg-brand!">
+                  30+
+                </SelectItem>
               </SelectContent>
             </Select>
-
 
             {/* Price Range Select */}
             <Select
               value={filters.priceRange}
               onValueChange={(value) => updateFilter("priceRange", value)}
             >
-              <SelectTrigger className="w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white ">
+              <SelectTrigger className="w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white">
                 <SelectValue placeholder="Select Price Range" />
               </SelectTrigger>
-              <SelectContent position="popper"> 
-                <div className="flex flex-col gap-2 p-2 bg-primary border border-secondary    ">
-                  <UiInput 
+              <SelectContent position="popper">
+                <div className="flex flex-col gap-2 border border-secondary bg-primary p-2">
+                  <UiInput
                     type="number"
                     value={filters.min_price}
-                    placeholder="Type minimum price" 
+                    placeholder="Type minimum price"
                     onChange={(e) => updateFilter("min_price", e.target.value)}
                   />
-                  <UiInput 
+                  <UiInput
                     type="number"
                     value={filters.max_price}
-                    placeholder="Type maximum price" 
+                    placeholder="Type maximum price"
                     onChange={(e) => updateFilter("max_price", e.target.value)}
                   />
                 </div>
               </SelectContent>
             </Select>
-
           </div>
         </div>
       </div>

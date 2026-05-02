@@ -15,9 +15,12 @@ import {
 } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { DatePickerDemo } from "@/components/common/date-picker"
-import { addRecruitment, updateRecruitment } from "@/app/(dashboards)/club/recruitment/action"
+import {
+  addRecruitment,
+  updateRecruitment,
+} from "@/app/(dashboards)/club/recruitment/action"
 import { toast } from "sonner"
-import useModal from "../../useModal" 
+import useModal from "../../useModal"
 import { getCoachPositions, getPlayerPosition } from "@/app/(dashboards)/action"
 import { getTeams } from "@/app/(dashboards)/club/teams/action"
 import { getRecruitmentDetails } from "@/app/(dashboards)/club/recruitment/action"
@@ -64,13 +67,13 @@ export default function RecruitmentForm({
   experiencePlaceholder = "e.g., 3+ years",
   tryoutPlaceholder = "e.g., March 15-18, 2026",
   descriptionPlaceholder = "Write role requirements and expectations...",
-    defaultValues,
+  defaultValues,
   onCancel,
 }: RecruitmentFormProps) {
   const { close } = useModal()
   const searchParams = useSearchParams()
-  const editId = searchParams.get('edit-id')
-  
+  const editId = searchParams.get("edit-id")
+
   const [recruitType, setRecruitType] = useState<RecruitType>(
     defaultValues?.recruitType ?? "coach"
   )
@@ -81,107 +84,133 @@ export default function RecruitmentForm({
   const [coachPositions, setCoachPositions] = useState<Option[]>([])
   const [coachPosition, setCoachPosition] = useState<string>("")
   const [experience, setExperience] = useState(defaultValues?.experience ?? "")
-  const [tryoutDates, setTryoutDates] = useState(defaultValues?.tryoutDates ?? "")
+  const [tryoutDates, setTryoutDates] = useState(
+    defaultValues?.tryoutDates ?? ""
+  )
   const [ageGroup, setAgeGroup] = useState("13")
-    const [description, setDescription] = useState(
+  const [description, setDescription] = useState(
     defaultValues?.description ?? ""
   )
-  
 
   useEffect(() => {
-    
     const getPositions = async () => {
-      try{
-        const res = await getPlayerPosition() 
-        if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
-          const positionsData = res.data.data.map((position: { id: number; name: string }) => ({
-            label: position.name,
-            value: String(position.id)
-          }))
+      try {
+        const res = await getPlayerPosition()
+        if (
+          res &&
+          "success" in res &&
+          res.success &&
+          res.data &&
+          "data" in res.data &&
+          res.data.data
+        ) {
+          const positionsData = res.data.data.map(
+            (position: { id: number; name: string }) => ({
+              label: position.name,
+              value: String(position.id),
+            })
+          )
           setPositions(positionsData)
         }
-      }catch(error){
+      } catch (error) {
         console.error("Error fetching positions:", error)
       }
     }
     getPositions()
-
   }, [])
 
-
   useEffect(() => {
-    
     const getTeam = async () => {
-      try{
-        const res = await getTeams() 
-        if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
-          const teamsData = res.data.data.map((team: { id: number; name: string }) => ({
-            label: team.name,
-            value: String(team.id)
-          }))
+      try {
+        const res = await getTeams()
+        if (
+          res &&
+          "success" in res &&
+          res.success &&
+          res.data &&
+          "data" in res.data &&
+          res.data.data
+        ) {
+          const teamsData = res.data.data.map(
+            (team: { id: number; name: string }) => ({
+              label: team.name,
+              value: String(team.id),
+            })
+          )
           setTeams(teamsData)
         }
-      }catch(error){
+      } catch (error) {
         console.error("Error fetching teams:", error)
       }
     }
     getTeam()
-
   }, [])
 
   useEffect(() => {
-    
     const getCoachPosition = async () => {
-      try{
-        const res = await getCoachPositions() 
-        if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
-          const teamsData = res.data.data.map((team: { id: number; name: string }) => ({
-            label: team.name,
-            value: String(team.id)
-          }))
+      try {
+        const res = await getCoachPositions()
+        if (
+          res &&
+          "success" in res &&
+          res.success &&
+          res.data &&
+          "data" in res.data &&
+          res.data.data
+        ) {
+          const teamsData = res.data.data.map(
+            (team: { id: number; name: string }) => ({
+              label: team.name,
+              value: String(team.id),
+            })
+          )
           setCoachPositions(teamsData)
         }
-      }catch(error){
+      } catch (error) {
         console.error("Error fetching teams:", error)
       }
     }
     getCoachPosition()
-
   }, [])
 
-
-
-
-// get edit-id from params
+  // get edit-id from params
   useEffect(() => {
-    
     const fetchRecruitmentDetails = async () => {
       if (!editId) return
-      
-      try{
+
+      try {
         const res = await getRecruitmentDetails(editId)
-        
-        
-        if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
+
+        if (
+          res &&
+          "success" in res &&
+          res.success &&
+          res.data &&
+          "data" in res.data &&
+          res.data.data
+        ) {
           const recruitment = res.data.data
-          
+
           // Populate form with recruitment data
           setRecruitType(recruitment.recruitment_type)
-          setPosition(recruitment.player_position?.id?.toString() || recruitment.coach_position?.id?.toString() || "")
+          setPosition(
+            recruitment.player_position?.id?.toString() ||
+              recruitment.coach_position?.id?.toString() ||
+              ""
+          )
           setTeam(recruitment.club_team_id?.toString() || "")
           setExperience(recruitment.experience || "")
-          setTryoutDates(recruitment.end_date?.split(' ')[0] || "")
+          setTryoutDates(recruitment.end_date?.split(" ")[0] || "")
           setDescription(recruitment.description || "")
           setAgeGroup(recruitment.upto_age?.toString() || "13")
         }
-      }catch(error){
+      } catch (error) {
         console.error("Error fetching recruitment details:", error)
       }
     }
-    
+
     fetchRecruitmentDetails()
   }, [editId])
-
 
   const handleSubmit = async () => {
     try {
@@ -196,20 +225,25 @@ export default function RecruitmentForm({
       formData.append("upto_age", ageGroup)
 
       const res = await addRecruitment(formData)
-   
-      
-      if (typeof res === "object" && res !== null && "success" in res && res.success) {
+
+      if (
+        typeof res === "object" &&
+        res !== null &&
+        "success" in res &&
+        res.success
+      ) {
         toast.success("Recruitment created successfully")
-        window.dispatchEvent(new CustomEvent('recruitmentCreated'))
+        window.dispatchEvent(new CustomEvent("recruitmentCreated"))
         close("add-new", ["recruitment"])
         return
       }
-      
-      const fallbackMessage = "Failed to create recruitment. Please check your inputs."
-      const message = 
-        typeof res === "object" && 
-        res !== null && 
-        "message" in res && 
+
+      const fallbackMessage =
+        "Failed to create recruitment. Please check your inputs."
+      const message =
+        typeof res === "object" &&
+        res !== null &&
+        "message" in res &&
         typeof res.message === "string"
           ? res.message
           : fallbackMessage
@@ -220,12 +254,7 @@ export default function RecruitmentForm({
     }
   }
 
-
-
   const handleUpdate = async () => {
-
- 
-
     try {
       const formData = new FormData()
       formData.append("recruitment_type", recruitType)
@@ -237,21 +266,29 @@ export default function RecruitmentForm({
       formData.append("description", description.trim())
       formData.append("upto_age", ageGroup)
 
-      const res = await updateRecruitment({ data: formData, recruitment_id: editId as string })
-       
-      
-      if (typeof res === "object" && res !== null && "success" in res && res.success) {
+      const res = await updateRecruitment({
+        data: formData,
+        recruitment_id: editId as string,
+      })
+
+      if (
+        typeof res === "object" &&
+        res !== null &&
+        "success" in res &&
+        res.success
+      ) {
         toast.success("Recruitment updated successfully")
-        window.dispatchEvent(new CustomEvent('recruitmentUpdated'))
+        window.dispatchEvent(new CustomEvent("recruitmentUpdated"))
         close("edit-id", ["recruitment"])
         return
       }
-      
-      const fallbackMessage = "Failed to update recruitment. Please check your inputs."
-      const message = 
-        typeof res === "object" && 
-        res !== null && 
-        "message" in res && 
+
+      const fallbackMessage =
+        "Failed to update recruitment. Please check your inputs."
+      const message =
+        typeof res === "object" &&
+        res !== null &&
+        "message" in res &&
         typeof res.message === "string"
           ? res.message
           : fallbackMessage
@@ -261,10 +298,6 @@ export default function RecruitmentForm({
       toast.error("Failed to update recruitment. Please try again.")
     }
   }
-
-
-
-
 
   return (
     <Card className="w-full rounded-none border-0 bg-[#121319] py-0 text-white ring-0">
@@ -312,7 +345,10 @@ export default function RecruitmentForm({
               <SelectTrigger className="mt-1 h-12 w-full border-white/15 bg-transparent px-3 py-6 text-base text-white data-placeholder:text-white/40">
                 <SelectValue placeholder={positionPlaceholder} />
               </SelectTrigger>
-              <SelectContent position="popper" className="bg-[#1a1c23] text-white">
+              <SelectContent
+                position="popper"
+                className="bg-[#1a1c23] text-white"
+              >
                 {positions.map((option) => (
                   <SelectItem
                     key={option.value}
@@ -334,7 +370,10 @@ export default function RecruitmentForm({
               <SelectTrigger className="mt-1 h-12 w-full border-white/15 bg-transparent px-3 py-6 text-base text-white data-placeholder:text-white/40">
                 <SelectValue placeholder={positionPlaceholder} />
               </SelectTrigger>
-              <SelectContent position="popper" className="bg-[#1a1c23] text-white">
+              <SelectContent
+                position="popper"
+                className="bg-[#1a1c23] text-white"
+              >
                 {coachPositions.map((option) => (
                   <SelectItem
                     key={option.value}
@@ -350,35 +389,35 @@ export default function RecruitmentForm({
         )}
 
         {recruitType === "player" && (
-                    <div className="flex flex-col">
-                      <span className="text-sm">Age Group</span>
-                      <Select  
-                      value={ageGroup}
-                      onValueChange={setAgeGroup}
-                      >
-                        <SelectTrigger className={`w-full py-5.5 mt-1  text-white     `}>
-                          <SelectValue placeholder="Select Age Group" />
-                        </SelectTrigger>
-                        <SelectContent position="popper">
-                          <SelectItem value="13" className="hover:bg-brand!">
-                            U13
-                          </SelectItem>
-                          <SelectItem value="15" className="hover:bg-brand!">
-                            U15
-                          </SelectItem>
-                          <SelectItem value="17" className="hover:bg-brand!">
-                            U17
-                          </SelectItem>
-                          <SelectItem value="18" className="hover:bg-brand!">
-                            18-plus
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+          <div className="flex flex-col">
+            <span className="text-sm">Age Group</span>
+            <Select value={ageGroup} onValueChange={setAgeGroup}>
+              <SelectTrigger className={`mt-1 w-full py-5.5 text-white`}>
+                <SelectValue placeholder="Select Age Group" />
+              </SelectTrigger>
+              <SelectContent position="popper">
+                <SelectItem value="8" className="hover:bg-brand!">
+                  U03 - U08
+                </SelectItem>
+                <SelectItem value="12" className="hover:bg-brand!">
+                  U09 - U12
+                </SelectItem>
+                <SelectItem value="17" className="hover:bg-brand!">
+                  U13 - U17
+                </SelectItem>
+                <SelectItem value="21" className="hover:bg-brand!">
+                  U18 - U21
+                </SelectItem>
+                <SelectItem value="30" className="hover:bg-brand!">
+                  U21 - U30
+                </SelectItem>
+                <SelectItem value="200" className="hover:bg-brand!">
+                  30+
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         )}
-
-        
-
 
         <div className="space-y-2">
           <label className="text-base text-white">Team Select</label>
@@ -386,7 +425,10 @@ export default function RecruitmentForm({
             <SelectTrigger className="mt-1 h-12 w-full border-white/15 bg-transparent px-3 py-6 text-base text-white data-placeholder:text-white/40">
               <SelectValue placeholder={teamPlaceholder} />
             </SelectTrigger>
-            <SelectContent position="popper" className="bg-[#1a1c23] text-white">
+            <SelectContent
+              position="popper"
+              className="bg-[#1a1c23] text-white"
+            >
               {teams.map((option) => (
                 <SelectItem
                   key={option.value}
@@ -432,25 +474,24 @@ export default function RecruitmentForm({
           >
             {cancelLabel}
           </Button>
-          
-          {editId ?   
-          <CommonBtn
-            variant="outline"
-            size="default"
-            onClick={handleUpdate}
-            text="Update"
-            className="h-11 min-w-80 rounded-xl bg-brand! px-8 text-base font-semibold text-primary hover:bg-brand"
-          />
-          :
-          <Button
-            type="button"
-            onClick={handleSubmit}
-            className="h-11 min-w-80 rounded-xl bg-brand px-8 text-base font-semibold text-primary hover:bg-brand"
-          >
-            {submitLabel}
-          </Button>
-        }
 
+          {editId ? (
+            <CommonBtn
+              variant="outline"
+              size="default"
+              onClick={handleUpdate}
+              text="Update"
+              className="h-11 min-w-80 rounded-xl bg-brand! px-8 text-base font-semibold text-primary hover:bg-brand"
+            />
+          ) : (
+            <Button
+              type="button"
+              onClick={handleSubmit}
+              className="h-11 min-w-80 rounded-xl bg-brand px-8 text-base font-semibold text-primary hover:bg-brand"
+            >
+              {submitLabel}
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

@@ -33,6 +33,7 @@ export default function TeamAddModal() {
     about: "",
     goals: [""],
     photo: null as File | null,
+    gender: "",
   })
   const [competitionLevels, setCompetitionLevels] = useState<
     Array<{ id: number; name: string }>
@@ -75,6 +76,7 @@ export default function TeamAddModal() {
       formData.append("name", form.location) // Using form.location as team name based on the input field
       formData.append("age_group", form.ageGroup)
       formData.append("competition_level_id", form.sport) // Using form.sport as competition level ID
+      formData.append("gender", form.gender)
 
       if (form.photo) {
         formData.append("image", form.photo)
@@ -200,17 +202,23 @@ export default function TeamAddModal() {
                 <SelectValue placeholder="Select Age Group" />
               </SelectTrigger>
               <SelectContent position="popper">
-                <SelectItem value="13" className="hover:bg-brand!">
-                  U13
+                <SelectItem value="8" className="hover:bg-brand!">
+                  U03 - U08
                 </SelectItem>
-                <SelectItem value="15" className="hover:bg-brand!">
-                  U15
+                <SelectItem value="12" className="hover:bg-brand!">
+                  U09 - U12
                 </SelectItem>
                 <SelectItem value="17" className="hover:bg-brand!">
-                  U17
+                  U13 - U17
                 </SelectItem>
-                <SelectItem value="18" className="hover:bg-brand!">
-                  18-plus
+                <SelectItem value="21" className="hover:bg-brand!">
+                  U18 - U21
+                </SelectItem>
+                <SelectItem value="30" className="hover:bg-brand!">
+                  U21 - U30
+                </SelectItem>
+                <SelectItem value="200" className="hover:bg-brand!">
+                  30+
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -237,6 +245,25 @@ export default function TeamAddModal() {
               </SelectContent>
             </Select>
           </div>
+        </div>
+        <div>
+          <span className="text-sm">Gender </span>
+          <Select
+            value={form.gender}
+            onValueChange={(v) => handleSelect("gender", v)}
+          >
+            <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white/60">
+              <SelectValue placeholder="Select Gender" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+              <SelectItem value="male" className="hover:bg-brand!">
+                Male
+              </SelectItem>
+              <SelectItem value="female" className="hover:bg-brand!">
+                Female
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="mt-6 mr-2 flex justify-end gap-4">

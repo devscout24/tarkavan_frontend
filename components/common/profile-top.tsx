@@ -8,12 +8,18 @@ export default function ProfileTop({
   setProfileImage,
   handleEditProfileModdal,
   profileTopInfo,
+  editProfileModalOpen,
+  setEditProfileModalOpen,
 }: {
   setProfileImage: (image: string | File) => void
-  handleEditProfileModdal: () => void
+  handleEditProfileModdal: (name: string) => void
   profileTopInfo: {
     name: string 
+    image: string
+    email: string
   }
+  editProfileModalOpen: boolean
+  setEditProfileModalOpen: (open: boolean) => void
 }) {
 
   
@@ -23,10 +29,10 @@ export default function ProfileTop({
 
       <div className="mt-4 flex flex-col items-start justify-between gap-4 rounded-xl bg-white/10 p-4 sm:flex-row sm:items-center md:p-5">
         <div className="flex items-center gap-4">
-          <div className="relative  rounded-full overflow-hidden">
+          <div className="relative border border-brand rounded-full overflow-hidden">
             <Image
-              src={"/images/player1.png"}
-              alt={"profile.name"}
+              src={profileTopInfo?.image}
+              alt={profileTopInfo?.name}
               width={80}
               height={80}
               className="size-16 object-cover md:size-20"
@@ -54,12 +60,12 @@ export default function ProfileTop({
               {profileTopInfo?.name || "GoElite Club"}
             </p>
             <p className="mt-1 text-base leading-tight font-normal text-white/55">
-              {"profile.email"}
+              {profileTopInfo?.email || ""}
             </p>
           </div>
         </div> 
 
-         <EditProfileModal profileTopInfo={profileTopInfo} handleEditProfileModdal={handleEditProfileModdal}/>
+         <EditProfileModal profileTopInfo={profileTopInfo} handleEditProfileModdal={(name) => handleEditProfileModdal(name)} editProfileModalOpen={editProfileModalOpen} setEditProfileModalOpen={setEditProfileModalOpen}/>
 
       </div>
     </div>

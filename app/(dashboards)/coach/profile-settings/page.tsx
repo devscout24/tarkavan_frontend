@@ -1,149 +1,157 @@
-"use client"
+// "use client"
 
-import ChangePassword from "@/components/common/change-password";
-import NotificationSetting from "@/components/common/notification-setting";
-import PrivacySetting from "@/components/common/privacy-setting";
-import ProfileTop from "@/components/common/profile-top"; 
-import { TChangePasswordData, TClubProfile, TPrivacyOption } from "@/types";
-import { useEffect, useState } from "react"; 
-import { getClubProfile, updateClubSetting } from "../../club/action";
+// import ChangePassword from "@/components/common/change-password";
+// import NotificationSetting from "@/components/common/notification-setting";
+// import PrivacySetting from "@/components/common/privacy-setting";
+// import ProfileTop from "@/components/common/profile-top"; 
+// import { TChangePasswordData, TClubProfile, TPrivacyOption } from "@/types";
+// import { useEffect, useState } from "react"; 
+// import { getClubProfile, updateClubSetting } from "../../club/action";
 
  
 
-export default  function ProfileSettingPage() {
+// export default  function ProfileSettingPage() {
 
-  const PRIVACY_OPTIONS: TPrivacyOption[] = [
-    {
-      value: "public",
-      title: "Public Profile",
-      description: "Visible to all users on the platform",
-    },
-    {
-      value: "private",
-      title: "Private Profile",
-      description: "Only you can view your profile",
-    },
-    {
-      value: "players",
-      title: "Athletes Only",
-      description: "Visible to verified athletes only",
-    },
-    {
-      value: "coach_and_players",
-      title: "Coaches & Athletes",
-      description: "Visible to verified coaches and athletes",
-    },
-    {
-      value: "players_and_teams",
-      title: "Coaches & Teams",
-      description: "Visible to coaches and team members only",
-    },
-    {
-      value: "coach_and_team",
-      title: "Coaches & Team Staff",
-      description: "Restricted to coaches and team staff only",
-    },
-    {
-      value: "only_player",
-      title: "Athlete Only",
-      description: "Fully private professional view for the athlete only",
-    },
-];
+//   const PRIVACY_OPTIONS: TPrivacyOption[] = [
+//     {
+//       value: "public",
+//       title: "Public Profile",
+//       description: "Visible to all users on the platform",
+//     },
+//     {
+//       value: "private",
+//       title: "Private Profile",
+//       description: "Only you can view your profile",
+//     },
+//     {
+//       value: "players",
+//       title: "Athletes Only",
+//       description: "Visible to verified athletes only",
+//     },
+//     {
+//       value: "coach_and_players",
+//       title: "Coaches & Athletes",
+//       description: "Visible to verified coaches and athletes",
+//     },
+//     {
+//       value: "players_and_teams",
+//       title: "Coaches & Teams",
+//       description: "Visible to coaches and team members only",
+//     },
+//     {
+//       value: "coach_and_team",
+//       title: "Coaches & Team Staff",
+//       description: "Restricted to coaches and team staff only",
+//     },
+//     {
+//       value: "only_player",
+//       title: "Athlete Only",
+//       description: "Fully private professional view for the athlete only",
+//     },
+// ];
 
-  const [passwordFormData, setPasswordFormData] = useState<TChangePasswordData>({
-    current_password: "",
-    new_password: "",
-    new_password_confirmation: "",
-  })
+//   const [passwordFormData, setPasswordFormData] = useState<TChangePasswordData>({
+//     current_password: "",
+//     new_password: "",
+//     new_password_confirmation: "",
+//   })
 
-const handleClubPrivacyChange = (value: string) => {
-  console.log(value)
-}
+// const handleClubPrivacyChange = (value: string) => {
+//   console.log(value)
+// }
 
 
-const handlePasswordChangeSave = () => {
-  console.log(passwordFormData)
-}
+// const handlePasswordChangeSave = () => {
+//   console.log(passwordFormData)
+// }
 
   
- const [profileImage, setProfileImage] = useState<string | File>("")
- useEffect(() => {
+//  const [profileImage, setProfileImage] = useState<string | File>("")
+//  useEffect(() => {
   
-  const handleProfileImageChange = async () => {
-    try{
+//   const handleProfileImageChange = async () => {
+//     try{
 
-      const formData = new FormData();
+//       const formData = new FormData();
 
-      if (profileImage instanceof File) {
-        formData.append("profileImage", profileImage);
-      }
+//       if (profileImage instanceof File) {
+//         formData.append("profileImage", profileImage);
+//       }
 
-      const res = await updateClubSetting(formData)
+//       const res = await updateClubSetting(formData)
 
-      console.log(res)
+//       console.log(res)
 
-    }catch(error){
-      console.error(error)
-      console.log("error", error)
-    }
-  }
+//     }catch(error){
+//       console.error(error)
+//       console.log("error", error)
+//     }
+//   }
 
-  handleProfileImageChange()
+//   handleProfileImageChange()
 
- }, [profileImage])
+//  }, [profileImage])
 
 
- const handleEditProfileModdal = () => {
-  console.log("Edit profile")
- }
+//  const handleEditProfileModdal = () => {
+//   console.log("Edit profile")
+//  }
   
- const [clubProfile, setClubProfile] = useState<TClubProfile>()
- console.log("clubProfile", clubProfile)
-  useEffect(() => {
+//  const [clubProfile, setClubProfile] = useState<TClubProfile>()
+//  console.log("clubProfile", clubProfile)
+//   useEffect(() => {
     
-    const getClubProfileInfo = async () => {
-      try{
-        const res = await getClubProfile()
+//     const getClubProfileInfo = async () => {
+//       try{
+//         const res = await getClubProfile()
         
-        if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
-          setClubProfile(res.data.data)
-        } 
+//         if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
+//           setClubProfile(res.data.data)
+//         } 
 
-      }catch(error){
-        console.error(error)
-        console.log("error", error)
-      }
-    }
+//       }catch(error){
+//         console.error(error)
+//         console.log("error", error)
+//       }
+//     }
 
-    getClubProfileInfo()
+//     getClubProfileInfo()
 
-  }, [])
+//   }, [])
 
  
-  return (
-    <section className="text-white">
-      <ProfileTop 
-        profileTopInfo={{
-          name: clubProfile?.club_name || "",   
-        }} 
-        setProfileImage={setProfileImage} 
-        handleEditProfileModdal={handleEditProfileModdal} 
-      />
+//   return (
+//     <section className="text-white">
+//       <ProfileTop 
+//         profileTopInfo={{
+//           name: clubProfile?.club_name || "", 
+//           image: "", 
+//           email:  "", 
+//         }} 
+//         setProfileImage={setProfileImage} 
+//         handleEditProfileModdal={handleEditProfileModdal} 
+//         editProfileModalOpen={false}
+//         setEditProfileModalOpen={() => {}}
+//       />
 
-      <ChangePassword 
-        passwordFormData={passwordFormData} 
-        setPasswordFormData={setPasswordFormData}  
-        onSave={handlePasswordChangeSave} 
-      />
+//       <ChangePassword 
+//         passwordFormData={passwordFormData} 
+//         setPasswordFormData={setPasswordFormData}  
+//         onSave={handlePasswordChangeSave} 
 
-      <PrivacySetting privacyOptions={PRIVACY_OPTIONS} onChange={(value) => handleClubPrivacyChange(value)}   />
-      <NotificationSetting />
-    </section>
-  )
+//       />
+
+//       <PrivacySetting privacyOptions={PRIVACY_OPTIONS} onChange={(value) => handleClubPrivacyChange(value)}   />
+//       <NotificationSetting />
+//     </section>
+//   )
+// }
+
+
+
+
+
+// uporer code comment out kore use korte hobe 
+export default function ProfileSettingPage() {
+  return null;
 }
-
-
-
-
-
-

@@ -1,32 +1,18 @@
-"use client"
 
-import { useState } from "react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { TNotificationItem } from "@/types"
 
-type NotificationItem = {
-  id: string
-  label: string
-  enabled: boolean
-}
+ 
+ 
 
-const DEFAULT_NOTIFICATIONS: NotificationItem[] = [
-  { id: "messages", label: "Messages notifications", enabled: true },
-  { id: "programs", label: "New Program notifications", enabled: true },
-  { id: "events", label: "Upcoming events notifications", enabled: true },
-  { id: "recruitment", label: "Recruitment notifications", enabled: true },
-  { id: "matches", label: "Upcoming Matches notifications", enabled: false },
-]
-
-export default function NotificationSetting() {
-  const [items, setItems] = useState(DEFAULT_NOTIFICATIONS)
+export default function NotificationSetting({ notifications, setNotifications }: { notifications: TNotificationItem[], setNotifications: (notifications: TNotificationItem[]) => void }) {
+  
 
   const toggleItem = (id: string) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, enabled: !item.enabled } : item
-      )
-    )
+    setNotifications(notifications.map((item) =>
+      item.id === id ? { ...item, enabled: !item.enabled } : item
+    ))
   }
 
   return (
@@ -39,11 +25,11 @@ export default function NotificationSetting() {
 
       <CardContent className="px-4 pb-4 md:px-6 md:pb-6">
         <div className="overflow-hidden rounded-xl border border-white/15">
-          {items.map((item, index) => (
+          {notifications.map((item, index) => (
             <div
               key={item.id}
               className={`flex items-center justify-between gap-4 px-4 py-3 md:px-5 ${
-                index !== items.length - 1 ? "border-b border-white/12" : ""
+                index !== notifications.length - 1 ? "border-b border-white/12" : ""
               }`}
             >
               <p className="text-base font-normal text-white">{item.label}</p>

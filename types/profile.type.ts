@@ -9,3 +9,10 @@ export type TChangePasswordData = {
   new_password: string
   new_password_confirmation: string
 }
+
+
+export type TNotificationItem = {
+  id: string
+  label: string
+  enabled: boolean
+}

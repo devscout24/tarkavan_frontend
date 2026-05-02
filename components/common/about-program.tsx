@@ -42,7 +42,7 @@ export default function AboutProgram({
                 key={goal.id}
                 className="rounded-xl border border-secondary/70 bg-[#020417]/70 p-4 md:p-5"
               >
-                <h4 className="text-base font-semibold text-white">
+                <h4 className="text-base font-normal text-white">
                   {goal.goal}
                 </h4>
               </article>

@@ -39,7 +39,7 @@ type TeamCardProps = {
 
 export default function TeamCard({
   teamName = "Elite U16 - Competitive",
-  ageGroup = "U16",
+  ageGroup = "",
   competitionLevel = "Development",
   playersCount = 18,
   playersLimit,

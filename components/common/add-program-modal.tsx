@@ -12,14 +12,17 @@ import { Textarea } from "../ui/textarea"
 import CommonBtn from "@/components/common/common-btn"
 import UploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
-import { createProgram, getProgramDetails, updateProgram } from "@/app/(dashboards)/club/action"
+import {
+  createProgram,
+  getProgramDetails,
+  updateProgram,
+} from "@/app/(dashboards)/club/action"
 import { createCoachProgram } from "@/app/(dashboards)/coach/action"
 import { toast } from "sonner"
 import { getSportOptions } from "@/app/(dashboards)/action"
 import useModal from "./modal/useModal"
 import { usePathname } from "next/navigation"
 import { useSearchParams } from "next/navigation"
-
 
 interface AddProgramPageProps {
   onSave?: (data: unknown) => void
@@ -76,7 +79,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
   const selectTriggerClassName =
     "mt-1 w-full border-neutral-700 bg-neutral-800 py-5 text-white data-[placeholder]:text-neutral-300"
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [sportOptions, setSportOptions] = useState<TSportOption[]>([])  
+  const [sportOptions, setSportOptions] = useState<TSportOption[]>([])
   const [form, setForm] = useState(() => {
     // Try to load photo from sessionStorage (better size limits than localStorage)
     let photo = null
@@ -177,46 +180,60 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
     getSportData()
   }, [isCoach])
 
-
-
-
-  useEffect(() => { 
-
+  useEffect(() => {
     const getEditProgramData = async () => {
       if (!editId) return
-      
+
       try {
         const res = await getProgramDetails(String(editId))
 
         console.log(res)
-        
-        if(res?.status === false) {
+
+        if (res?.status === false) {
           toast.error(res.message || "Failed to load program data")
           return
         }
 
         // Check if response has the expected structure
-        if (res && typeof res === 'object' && 'success' in res && res.success === true && 
-            'data' in res && res.data && typeof res.data === 'object' && 
-            'data' in res.data && res.data.data && typeof res.data.data === 'object' && 
-            'program' in res.data.data && res.data.data.program) {
+        if (
+          res &&
+          typeof res === "object" &&
+          "success" in res &&
+          res.success === true &&
+          "data" in res &&
+          res.data &&
+          typeof res.data === "object" &&
+          "data" in res.data &&
+          res.data.data &&
+          typeof res.data.data === "object" &&
+          "program" in res.data.data &&
+          res.data.data.program
+        ) {
           const program = res.data.data.program as any
-          
+
           setForm({
             sport: program.sport || "",
             name: program.program_name || "",
             ageGroup: program.upto_age ? String(program.upto_age) : "",
             price: program.program_price ? String(program.program_price) : "",
-            discountPrice: program.discount_price ? String(program.discount_price) : "",
+            discountPrice: program.discount_price
+              ? String(program.discount_price)
+              : "",
             location: program.program_location || "",
             start: program.program_start || "",
             end: program.program_end || "",
-            times: program.times && program.times.length > 0 ? program.times : ["", "", ""],
+            times:
+              program.times && program.times.length > 0
+                ? program.times
+                : ["", "", ""],
             about: program.about_program || "",
-            goals: program.goals && program.goals.length > 0 ? program.goals : [""],
+            goals:
+              program.goals && program.goals.length > 0 ? program.goals : [""],
             photo: program.program_photo || null,
             type: program.program_type || "one_one",
-            sportOptionId: program.sport_option_id ? String(program.sport_option_id) : "",
+            sportOptionId: program.sport_option_id
+              ? String(program.sport_option_id)
+              : "",
           })
         }
       } catch (err) {
@@ -224,7 +241,6 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
       }
     }
     getEditProgramData()
-    
   }, [editId])
 
   const handleAddProgram = async () => {
@@ -281,7 +297,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
         if (editId) {
           res = await updateProgram({ program_id: editId, data: formData })
         } else {
-          res = await createProgram(formData) 
+          res = await createProgram(formData)
         }
       }
 
@@ -290,7 +306,11 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
         isActionSuccess(res) &&
         (res.success === true || res.status === true)
       ) {
-        toast.success(editId ? "Program updated successfully!" : "Program created successfully!")
+        toast.success(
+          editId
+            ? "Program updated successfully!"
+            : "Program created successfully!"
+        )
         if (typeof window !== "undefined") {
           window.dispatchEvent(new CustomEvent("programCreated"))
         }
@@ -330,7 +350,9 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
   return (
     <div className="mx-auto w-full p-0">
       <div className="flex flex-col gap-4 rounded-2xl bg-neutral-900 p-8 text-white">
-        <h2 className="mb-2 text-2xl font-semibold">{editId ? "Edit Program" : "Add Program"}</h2>
+        <h2 className="mb-2 text-2xl font-semibold">
+          {editId ? "Edit Program" : "Add Program"}
+        </h2>
 
         {/* Photo Upload */}
         <div className="mb-2">
@@ -412,7 +434,9 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
                 // Set sport name
                 handleSelect("sport", v)
                 // Find and set sport ID
-                const selectedSport = sportOptions.find(sport => sport.name === v)
+                const selectedSport = sportOptions.find(
+                  (sport) => sport.name === v
+                )
                 if (selectedSport) {
                   handleSelect("sportOptionId", String(selectedSport.id))
                 }
@@ -455,17 +479,23 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
                 <SelectValue placeholder="Select Age Group" />
               </SelectTrigger>
               <SelectContent position="popper">
-                <SelectItem value="13" className="hover:bg-brand!">
-                  U13
+                <SelectItem value="8" className="hover:bg-brand!">
+                  U03 - U08
                 </SelectItem>
-                <SelectItem value="15" className="hover:bg-brand!">
-                  U15
+                <SelectItem value="12" className="hover:bg-brand!">
+                  U09 - U12
                 </SelectItem>
                 <SelectItem value="17" className="hover:bg-brand!">
-                  U17
+                  U13 - U17
                 </SelectItem>
-                <SelectItem value="18" className="hover:bg-brand!">
-                  18-plus
+                <SelectItem value="21" className="hover:bg-brand!">
+                  U18 - U21
+                </SelectItem>
+                <SelectItem value="30" className="hover:bg-brand!">
+                  U21 - U30
+                </SelectItem>
+                <SelectItem value="200" className="hover:bg-brand!">
+                  30+
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -585,7 +615,13 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
             onClick={() => {}}
           />
           <CommonBtn
-            text={isSubmitting ? "Saving..." : (editId ? "Update Program" : "Save Program")}
+            text={
+              isSubmitting
+                ? "Saving..."
+                : editId
+                  ? "Update Program"
+                  : "Save Program"
+            }
             size="lg"
             variant="default"
             className="w-fit bg-brand px-10 text-black hover:border hover:bg-transparent hover:text-white"

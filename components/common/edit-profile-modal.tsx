@@ -12,19 +12,33 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useEffect, useState } from "react"
 
 export function EditProfileModal(
   { 
     profileTopInfo, 
-    handleEditProfileModdal 
+    handleEditProfileModdal,
+    editProfileModalOpen,
+    setEditProfileModalOpen
   }: { 
     profileTopInfo: {
       name: string; 
     }; 
-    handleEditProfileModdal: () => void 
+    handleEditProfileModdal: (name: string) => void 
+    editProfileModalOpen: boolean
+    setEditProfileModalOpen: (open: boolean) => void
   }) {
+
+const [name, setName] = useState("")
+
+useEffect(() => {
+  setName(profileTopInfo.name)
+}, [profileTopInfo.name])
+    
+    
+
   return (
-    <Dialog>
+    <Dialog open={editProfileModalOpen} onOpenChange={setEditProfileModalOpen}>
       <form>
         <DialogTrigger asChild>
           <Button variant="outline" className="bg-transparent  hover:bg-transparent border border-brand text-brand hover:text-brand     ">Open Dialog</Button>
@@ -40,18 +54,14 @@ export function EditProfileModal(
           <FieldGroup>
             <Field>
               <Label htmlFor="name-1">Name</Label>
-              <Input id="name-1" name="name" defaultValue={profileTopInfo.name || ""} />
-            </Field>
-            <Field>
-              <Label htmlFor="username-1">Email</Label>
-              <Input id="username-1" name="username" defaultValue="@peduarte" />
-            </Field>
+              <Input id="name-1" name="name" value={name} onChange={(e) => setName(e.target.value)} />
+            </Field> 
           </FieldGroup>
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline" className="bg-transparent">Cancel</Button>
             </DialogClose>
-            <Button type="button" onClick={handleEditProfileModdal} className="cursor-pointer ">Save changes</Button>
+            <Button type="button" onClick={() => handleEditProfileModdal(name) } className="cursor-pointer ">Save changes</Button>
           </DialogFooter>
         </DialogContent>
       </form>

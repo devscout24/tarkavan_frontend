@@ -5,23 +5,20 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TPrivacyOption } from "@/types"
 
-
-
-
-export default function PrivacySetting({privacyOptions , onChange}: {
+export default function PrivacySetting({
+  privacyOptions,
+  onChange,
+  initialValue,
+}: {
   privacyOptions: TPrivacyOption[]
   onChange?: (value: string) => void
-}) {
-  const [selectedPrivacy, setSelectedPrivacy] = useState(
-    privacyOptions[0].value
-  )
+  initialValue?: string
+}) { 
 
-
-  const handlePrivacyChange = (value: string) => {
-    setSelectedPrivacy(value)
-    onChange?.(value) 
+  const handlePrivacyChange = (value: string) => { 
+    onChange?.(value)
   }
-
+ 
 
   return (
     <Card className="mt-6 gap-0 rounded-2xl border border-white/12 bg-primary py-0 text-white ring-0">
@@ -38,7 +35,7 @@ export default function PrivacySetting({privacyOptions , onChange}: {
           aria-label="Privacy settings"
         >
           {privacyOptions.map((option) => {
-            const isSelected = selectedPrivacy === option.value
+            const isSelected = initialValue === option.value
 
             return (
               <button

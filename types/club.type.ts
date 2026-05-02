@@ -1,3 +1,5 @@
+import { Goal } from "lucide-react"
+
 export type TSubscriptionPlan = {
   id: number
   name: string
@@ -98,6 +100,7 @@ export type TOrganizationType = {
 export type TClubProfile = {
   id: number;
   club_name: string;
+  email: string;
   city: string | null;
   city_id: number | null;
   state: string | null;
@@ -176,3 +179,56 @@ export type TMatchRequestByOthersClub = {
   created_club: TClubFull;
   requested_club: TClubFull;
 };
+
+
+
+export type TProgramDetails = {
+  program: TProgram
+  club: TClub
+}
+
+export type TProgram = {
+  id: number
+  program_name: string
+  program_type: "group" | "individual" | string
+  sport_option_id: number
+  sport_option: TSportOption
+  sport: string
+  program_price: number
+  discount_price: number
+  upto_age: number
+  program_location: string
+  program_start: string // ISO date
+  program_end: string   // ISO date
+  program_photo: string
+  status: "active" | "inactive" | string
+  about_program: string
+  time: string
+  times: TTimeSlot[]
+  goals: TGoal[]
+}
+
+export type TSportOption = {
+  id: number
+  name: string
+}
+
+export type TTimeSlot = {
+  id: number
+  time: string
+  slot_date: string | null
+  start_time: string | null
+  end_time: string | null
+  is_available: boolean
+}
+
+export type TGoal = {
+  id: number
+  goal: string
+}
+
+export type TClub = {
+  id: number
+  club_name: string
+  club_logo: string
+}

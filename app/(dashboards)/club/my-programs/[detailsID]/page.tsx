@@ -1,5 +1,4 @@
 "use client"
-import React from "react"
 
 import AboutProgram from "@/components/common/about-program"
 import CommonBtn from "@/components/common/common-btn"
@@ -12,14 +11,22 @@ import ProgramReview from "@/components/common/program-review"
 import { Button } from "@/components/ui/button"
 import { eachDayOfInterval, format } from "date-fns"
 import { ArrowLeftIcon } from "lucide-react"
-
-import AddProgramPage from "@/components/common/add-program-modal"
-import { useRouter, useSearchParams, usePathname } from "next/navigation"
+import {
+  useRouter,
+  useSearchParams,
+  usePathname,
+  useParams,
+} from "next/navigation"
+import { useEffect, useState } from "react"
+import { getProgramDetails } from "../../action"
+import { TProgramDetails } from "@/types"
+import moment from "moment"
 
 export default function ProgramDetails() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const pathname = usePathname()
+  const params = useParams()
   const programStartDate = new Date(2026, 3, 1)
   const programEndDate = new Date(2026, 3, 15)
 
@@ -36,7 +43,36 @@ export default function ProgramDetails() {
     return acc
   }, {})
 
- 
+  const detailsID = params.detailsID
+  const [programDetail, setProgramDetail] = useState<TProgramDetails | null>(
+    null
+  )
+
+  useEffect(() => {
+    if (!detailsID) return
+
+    const getProgramDetail = async () => {
+      try {
+        const res = await getProgramDetails(String(detailsID))
+
+        if (
+          res &&
+          "success" in res &&
+          res.success &&
+          res.data &&
+          "data" in res.data &&
+          res.data.data
+        ) {
+          setProgramDetail(res.data.data)
+        }
+      } catch (error) {
+        console.error("Error fetching program details:", error)
+      }
+    }
+
+    getProgramDetail()
+  }, [detailsID])
+
   return (
     <section className="text-white">
       {/* BACK BUTTON */}
@@ -58,7 +94,7 @@ export default function ProgramDetails() {
             nextParams.set("add-new", "program")
             router.replace(
               nextParams.toString()
-                ? `${pathname}?${nextParams.toString()}`
+                ? `${pathname}?${nextParams.toString()}&editID=${detailsID}`
                 : pathname
             )
           }}
@@ -69,12 +105,13 @@ export default function ProgramDetails() {
 
       {/* program details banner */}
       <ProgramDetailsBanner
-        title="Varsity Prep Mentorship"
-        category="Football"
-        duration="12 Weeks Duration"
-        dateRange="01-04-2026 to 15-04-2026"
-        location="GoElite Sports Complex, Toronto"
-        ageRange="Ages 8-14"
+        title={programDetail?.program.program_name || ""}
+        category={programDetail?.program?.sport_option?.name || ""}
+        duration={moment.duration(moment(programDetail?.program?.program_end).diff(moment(programDetail?.program?.program_start))).humanize()}
+        dateRange={`${moment(programDetail?.program?.program_start).format("MMM Do YY")} - ${moment(programDetail?.program?.program_end).format("MMM Do YY")}`}
+        location={programDetail?.program?.program_location || ""}
+        ageRange={`Ages: ${programDetail?.program?.upto_age || ""}`}
+        program_photo={programDetail?.program?.program_photo || ""}
       />
 
       {/* layout */}
@@ -84,33 +121,11 @@ export default function ProgramDetails() {
           {/* about program */}
           <AboutProgram
             sectionTitle="About This Program"
-            description="The Varsity Prep Mentorship is designed to bridge the gap between high school athletics and NCAA-level expectations. Our curriculum focuses on three core pillars: explosive physical development, tactical sports intelligence, and psychological resilience."
-            goals={[
-              {
-                id: 1,
-                goal: "Performance Goals: Increase vertical leap by 15%, improve 40-yard dash times, and optimize recovery cycles.",
-              },
-              {
-                id: 2,
-                goal: "Mentorship Goals: Develop leadership skills and understand the collegiate recruiting landscape.",
-              },
-            ]}
+            description={programDetail?.program?.about_program || ""}
+            goals={programDetail?.program?.goals || []}
           />
 
-          {/* program review */}
-          <ProgramReview
-            rating={4.9}
-            totalReviews={47}
-            feedbackLabel="Total Feedback"
-            reviewLabel="Write a Review"
-            breakdown={[
-              { stars: 5, percentage: 85 },
-              { stars: 4, percentage: 12 },
-              { stars: 3, percentage: 3 },
-              { stars: 2, percentage: 0 },
-              { stars: 1, percentage: 0 },
-            ]}
-          />
+ 
 
           {/* recent feedback */}
           <div className="mt-6">
@@ -132,7 +147,7 @@ export default function ProgramDetails() {
 
         {/* right side */}
         <div className="flex-1">
-          <ProgramCoachCard />
+          <ProgramCoachCard showMessageButton={false} imageUrl={programDetail?.club?.club_logo || ""} />
           <ProgramCalendar
             startDate={programStartDate}
             endDate={programEndDate}

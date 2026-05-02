@@ -10,10 +10,12 @@ export default function ChangePassword({
   onSave,
   setPasswordFormData,
   passwordFormData,
+  changePasswordLoading,
 }: { 
   onSave: () => void
   setPasswordFormData: (formData: TChangePasswordData) => void
   passwordFormData: TChangePasswordData
+  changePasswordLoading: boolean
 }) {
  
 
@@ -71,6 +73,7 @@ export default function ChangePassword({
             text="Save"
             onClick={onSave} 
             className="h-12 w-fit rounded-xl bg-brand px-10 text-base font-semibold text-primary hover:bg-brand/90"
+            isLoading={changePasswordLoading}
           />
         </div>
       </form>

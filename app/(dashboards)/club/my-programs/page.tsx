@@ -86,7 +86,7 @@ export default function UpcomingEventPage() {
   const searchParams = useSearchParams()
 
   const [programsData, setProgramsData] = useState<ProgramsData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
 
   const programActions = [
@@ -108,15 +108,17 @@ export default function UpcomingEventPage() {
     },
   ]
 
+  console.log(programsData)
+
   useEffect(() => {
     
     const getPrograms = async () => {
       try{
         setLoading(true)
-        const res = await getProgramList() 
-        console.log(res)
+        const res = await getProgramList()  
         if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
           setProgramsData(res.data.data)
+          setLoading(false)
         }
       }catch(error){
         console.error(error)

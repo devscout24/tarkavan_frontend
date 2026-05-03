@@ -69,7 +69,6 @@ export default function SearchExplore() {
 
       
       if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) { 
-        console.log(res?.data)
         setSearchResults(res?.data?.data?.data) 
         setLoading(false)
         setTotalPage(res.data.data.pagination.last_page)
@@ -183,11 +182,8 @@ export default function SearchExplore() {
 
           <div className="max-w-md mx-auto   "> 
             <Lottie animationData={animationData} loop />
-          </div>
-
-
+          </div>  
         </div>
-        
       }
  
       

@@ -91,6 +91,7 @@ export default function RecruitmentForm({
   const [description, setDescription] = useState(
     defaultValues?.description ?? ""
   )
+ 
 
   useEffect(() => {
     const getPositions = async () => {
@@ -110,7 +111,27 @@ export default function RecruitmentForm({
               value: String(position.id),
             })
           )
-          setPositions(positionsData)
+
+          // Sort positions in the specified order: GK, CB, RB, LB, DM, CM, AM, RW, LW, ST
+          const positionOrder = [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+          ]
+          const sortedPositions = positionsData.sort((a: Option, b: Option) => {
+            const aIndex = positionOrder.indexOf(a.value)
+            const bIndex = positionOrder.indexOf(b.value)
+            return aIndex - bIndex
+          })
+
+          setPositions(sortedPositions)
         }
       } catch (error) {
         console.error("Error fetching positions:", error)

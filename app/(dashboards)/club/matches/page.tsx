@@ -113,8 +113,7 @@ export default function Page() {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ")
   }
-
-  console.log(matchRequests)
+ 
 
   return (
     <section className="space-y-6 text-white">
@@ -154,6 +153,7 @@ export default function Page() {
             }
             note={formatFieldOpportunity(match.field_opportunity)}
             actionLabel="View Details"
+            onClick={() => route.push(`/club/matches/${match.id}`)}
           />
         ))}
 

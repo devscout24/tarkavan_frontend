@@ -37,8 +37,7 @@ export default function PlayerCard({
   goals , 
   assists
 }: PlayerCardProps) {
-
-  console.log(image);
+ 
   
   return (
     <Card

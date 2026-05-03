@@ -37,7 +37,7 @@ export default function NotFoundPage() {
 
           <Link
             href="/"
-            className="mt-6 inline-block rounded-xl bg-black px-6 py-3 text-white transition hover:bg-gray-800"
+            className="mt-6 inline-block rounded-xl bg-brand px-6 py-3 text-primary transition hover:bg-gray-800"
           >
             Go Home
           </Link>

@@ -14,6 +14,7 @@ export type FriendlyMatchCardProps = {
   actionLabel: string
   className?: string
   gradientClassName?: string
+  onClick?: () => void
 }
 
 export function FriendlyMatchCard({
@@ -26,6 +27,7 @@ export function FriendlyMatchCard({
   actionLabel,
   className,
   gradientClassName,
+  onClick,
 }: FriendlyMatchCardProps) {
   return (
     <Card
@@ -73,6 +75,7 @@ export function FriendlyMatchCard({
         <Button
           type="button"
           className="h-11 w-full rounded-xl bg-brand px-4 text-sm font-semibold text-[#111111] shadow-none hover:bg-brand/95"
+          onClick={onClick}
         >
           {actionLabel}
         </Button>

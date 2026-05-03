@@ -1,5 +1,6 @@
 import MemberSection from "./components/member-section"
 import { type TeamMember } from "./components/member-card"
+import { teamPlayerList } from "../../action";
 
 const coachMembers: TeamMember[] = [
   {
@@ -47,7 +48,17 @@ const playerMembers: TeamMember[] = [
   },
 ]
 
-export default function Page() {
+export default async function Page() {
+
+  try{
+
+    const res = await teamPlayerList("4");
+    console.log(res);
+
+  }catch(error){
+    console.error(error);
+  }
+
   return (
     <div className="space-y-4 bg-[#050713] ">
       <MemberSection

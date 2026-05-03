@@ -7,6 +7,18 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import type { WizardState } from "../types"
 import UiInput from "@/components/common/ui-input"
+import { format } from "date-fns"
+import { ChevronDownIcon } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 const controlClassName =
   "h-11 rounded-xl border border-white/10 bg-[#0F1117] px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
@@ -270,16 +282,37 @@ export default function CoreIdentity({
             }}
           />
 
-          <DatepickerField
-            label="Date of Birth"
-            selected={dateOfBirth}
-            open={openDatePicker}
-            onOpenChange={setOpenDatePicker}
-            onSelect={(date) => {
-              setValue("dateOfBirth", date, { shouldValidate: true })
-            }}
-            error={errors.dateOfBirth?.message}
-          />
+          <FieldGroup className="  flex-row">
+            <Field>
+              <FieldLabel htmlFor="date-picker-optional">Date of Birth</FieldLabel>
+              <Popover  >
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    id="date-picker-optional"
+                    className="w-32 py-5! justify-between font-normal  "
+                  > 
+                    {dateOfBirth ? format(dateOfBirth, "PPP") : "Select date"}
+                    <ChevronDownIcon />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="w-auto overflow-hidden p-0"
+                  align="start"
+                >
+                  <Calendar
+                    mode="single"
+                    selected={dateOfBirth}
+                    captionLayout="dropdown"
+                    defaultMonth={dateOfBirth}
+                    onSelect={(date) => {
+                      setValue("dateOfBirth", date, { shouldValidate: true })
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
+            </Field> 
+          </FieldGroup>
 
           <SelectField
             label="Select Gender"

@@ -4,6 +4,7 @@ import CommonBtn from "../common/common-btn"
 import Image, { StaticImageData } from "next/image"
 import { toast } from "sonner"
 import { applyRecruitment } from "@/app/(dashboards)/coach/action"
+import { useState } from "react"
 
 interface AdvertisementProps {
   imageUrl: string | StaticImageData
@@ -16,6 +17,7 @@ interface AdvertisementProps {
   hideDetails?: boolean
   is_applied?: boolean 
   recruitId?: string
+  application_status: string
 }
 
 const TimerIcon = () => (
@@ -48,14 +50,16 @@ export default function Advertisement({
   tryoutDate,
   description,
   headline, 
-  hideDetails = false,
-  is_applied , 
+  hideDetails = false, 
   recruitId,
+  application_status
 }: AdvertisementProps) {
 
 
+  const [loading, setLoading] = useState(false)
   const handleApply = async () => { 
    try{
+    setLoading(true)
 
     const formData = new FormData () ;
     formData.append("recruitment_id", recruitId || "");
@@ -64,16 +68,17 @@ export default function Advertisement({
     if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
       toast.success("Application submitted successfully") 
       window.dispatchEvent(new Event("load_coach_dashboard"))
+      setLoading(false)
     } else {
       toast.error("Failed to submit application")
+      setLoading(false)
     }
 
    }catch(error){
     console.error("Error applying:", error)
     toast.error("Error applying , Please try again")
+    setLoading(false)
    }
-
-
   }
 
 
@@ -125,14 +130,13 @@ export default function Advertisement({
         <CommonBtn
           variant="default"
           size="lg"
-          text={is_applied ? "Applied" : "Apply"}
+          text={application_status === "applied" ? "Applied" : "Apply"}
           className={`h-10 w-full cursor-pointer text-base font-medium transition-all  shrink-0 ${
-            is_applied 
-              ? "bg-transparent text-brand border border-brand cursor-default" 
-              : "bg-brand text-zinc-950 hover:bg-brand/90"
+             application_status === "applied" ? "bg-gray-500 text-white hover:bg-gray-600" : "bg-brand text-zinc-950 hover:bg-brand/90"
           }`}
           onClick={handleApply}
-          // disabled={is_applied}
+          disabled={loading || application_status === "applied"}
+          isLoading={loading}
         />
       </div>
     </div>

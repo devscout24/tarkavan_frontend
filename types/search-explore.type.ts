@@ -19,7 +19,8 @@ export type TClubItem = {
 
 export interface SportOption {
   id: number;
-  name: string;
+  name: string; 
+
 }
 
 export type  TClubProgramItem = {

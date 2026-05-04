@@ -166,6 +166,23 @@ export async function getCoachPositions() {
       status: 500,
     }
   }
+}  
+
+ 
+export async function getPlayerDashboard() {
+  try {
+    const res = await api.get(`/player/dashboard`)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
 } 
 
  

@@ -7,13 +7,51 @@ import ScoutingStatus from "./components/scouting-status"
 import PlayerRecruitmentCard from "./components/player-recruitment-card"
 import { useRouter } from "next/navigation"
 import ShareModal from "@/components/common/modal/all-modals/share-modal"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Advertisement from "@/components/custom/advertisement"
+import { getPlayerDashboard } from "../action"
+import { TPlayerDashboard, TPlayerStatsSummary } from "@/types/player.type"
+import moment from "moment"
 
 export default function PlayerDashboardPage() {
   const router = useRouter()
 
   const [openShareModal, setOpenShareModal] = useState(false)
+
+  const [dashData, setDashData] = useState<TPlayerDashboard>()
+
+  useEffect(() => {
+    
+    const getDashboard  = async () => {
+      try {
+        const res = await getPlayerDashboard()
+
+        if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
+          setDashData(res.data.data)
+        }
+ 
+      } catch (error) {
+        console.error(error)
+      } 
+    }
+    getDashboard()
+
+    const handleLoadDashboard = () => {
+      getDashboard()
+    }
+
+    window.addEventListener("load_coach_dashboard", handleLoadDashboard)
+
+    return () => {
+      window.removeEventListener("load_coach_dashboard", handleLoadDashboard)
+    }
+
+
+  }, [])
+
+  const playerId = dashData?.player_info?.id;
+   
+ 
 
   return (
     <section className=" ">
@@ -24,7 +62,7 @@ export default function PlayerDashboardPage() {
       </p>
 
       {/* stats */}
-      <PlayerStats />
+      <PlayerStats summary={dashData?.summary as TPlayerStatsSummary} />
 
       {/* activity and action  */}
       <div className="mt-6 flex w-full flex-col-reverse gap-6 text-white lg:flex-row">
@@ -36,41 +74,21 @@ export default function PlayerDashboardPage() {
 
           <div className="scrollbar-hide overflow-x-auto">
             <div className="flex flex-wrap gap-4 pb-2">
-              <div className="max-w-[320px] min-w-[320px] shrink-0">
-                <Advertisement
-                  imageUrl={"/images/advertisementImage.png"}
-                  positions="Defender, Winger"
-                  teamName="Elite U16"
-                  ageGroup="U16"
-                  tryoutDate="March 15-18, 2026"
-                  description="Looking for skilled defenders for upcoming season." 
-                   
-                />
-              </div>
 
-              <div className="max-w-[320px] min-w-[320px] shrink-0">
-                <Advertisement
-                  imageUrl={"/images/advertisementImage.png"}
-                  positions="Goalkeeper, Midfielder"
-                  teamName="Academy Select"
-                  ageGroup="U18"
-                  tryoutDate="April 20-23, 2026"
-                  description="Join our elite academy program for professional development."
-                  
-                />
-              </div>
-
-              <div className="max-w-[320px] min-w-[320px] shrink-0">
-                <Advertisement
-                  imageUrl={"/images/advertisementImage.png"}
-                  positions="Striker, Attacker"
-                  teamName="Premier FC"
-                  ageGroup="U14"
-                  tryoutDate="May 10-13, 2026"
-                  description="Seeking talented forwards for competitive league play."
-                   
-                />
-              </div>
+              {dashData?.recent_opportunities.map((opportunity) => (
+                <div key={opportunity.id} className="max-w-[320px] min-w-[320px] shrink-0">
+                  <Advertisement
+                    imageUrl={opportunity.club.club_logo}
+                    positions={opportunity.position.name}
+                    teamName={opportunity.club.club_name}
+                    ageGroup={String(opportunity.upto_age)}
+                    tryoutDate={moment(opportunity.tryout_date).format("MMM Do YY")}
+                    description={opportunity.description}
+                    recruitId={String(opportunity.id)}
+                    application_status={opportunity.application_status}
+                  />
+                </div>
+              ))} 
             </div>
           </div>
         </div>
@@ -99,10 +117,10 @@ export default function PlayerDashboardPage() {
             />
 
             <ShareModal
-              key={"shareUrl"}
+              key={playerId}
               open={openShareModal}
               onOpenChange={setOpenShareModal}
-              url={"https://tarkavan.vercel.app/profile/234"}
+              url={`${typeof window !== "undefined" ? window.location.origin : ""}/profile/${playerId}`}
               title="Watch my Player Card"
             />
 
@@ -111,18 +129,14 @@ export default function PlayerDashboardPage() {
 
             <h4 className="text-sm font-bold">Scouting Status</h4>
 
-            <ScoutingStatus />
+            <ScoutingStatus 
+              percentage={dashData?.scouting_status?.profile_completeness }
+            />
           </div>
 
           <TrainingReminderCard />
 
-          <PlayerRecruitmentCard
-            position="Defender, Winger"
-            ageGroup="Elite U16 | Age: U16"
-            tryoutDates="Tryouts: March 15-18, 2026"
-            description="Looking for skilled defenders for upcoming season."
-            buttonText="Apply"
-          />
+ 
         </div>
       </div>
     </section>

@@ -143,7 +143,7 @@ export default function CoachDashboardPage() {
                       description={opportunity.description || "No description provided."}
                       headline={opportunity.headline } 
                       is_applied={opportunity.is_applied} 
-                      recruitId={String(opportunity.id)}
+                      application_status={String(opportunity.id)}
                     />
                   </div>
                 ))

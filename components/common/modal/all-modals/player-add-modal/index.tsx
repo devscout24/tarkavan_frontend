@@ -90,6 +90,8 @@ export default function PlayerAddModal() {
     }))
   }, [])
 
+  
+
   // Define comprehensive data interface for all wizard steps
   interface CompletePlayerData {
     // Core Identity
@@ -268,7 +270,7 @@ export default function PlayerAddModal() {
 
     if (user?.role === "player") {
       // Format strengths data properly
-      const backendAllowedStrengthTypes = new Set(["mental", "physical"])
+      const backendAllowedStrengthTypes = new Set(["mental", "physical", "technical"  , "tactical" , "attacking" , "defender" , "aerial" ])
 
       const strengths: Array<{
         strength_type: string
@@ -381,6 +383,7 @@ export default function PlayerAddModal() {
 
       try {
         const res = await addChildOrPlayer(formData)
+        console.log(res)
 
         const response = res as {
           success?: boolean
@@ -388,6 +391,9 @@ export default function PlayerAddModal() {
           data?: {
             status?: boolean
             message?: string
+            data?: {
+              id?: number
+            }
           }
         }
 
@@ -396,6 +402,7 @@ export default function PlayerAddModal() {
 
           const user = JSON.parse(localStorage.getItem("go_elite_user") || "{}")
           user.status = "approve"
+          user.profile_id = response?.data?.data?.id
           localStorage.setItem("go_elite_user", JSON.stringify(user))
 
 

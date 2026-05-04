@@ -7,29 +7,38 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
 import { FaStar } from "react-icons/fa"
+import { TPlayerBasicInfo, TPlayerPositionInfo } from "@/types/player.type"
 
 export default function ProspectCard({
   provincialVotes = 0,
   academyVotes = 0,
+  basic_info,
+  position_info
 }: {
   provincialVotes?: number
   academyVotes?: number
+  basic_info?: TPlayerBasicInfo
+  position_info?: TPlayerPositionInfo
 }) {
+
+
+  // console.log(position_info)
+
   return (
     <div className="relative rounded-lg border-2 border-secondary">
       <Image
         width={500}
         height={1000}
-        src="/images/playerimage.png"
+        src={basic_info?.image || "/images/playerimage.png"}
         alt="playerimage"
-        className="h-full rounded-lg object-cover"
+        className="h-full min-h-130 rounded-lg object-cover"
       />
 
       <Badge
         variant="default"
         className="absolute top-3 left-3 rotate-10 -skew-10 rounded-[4px] bg-brand text-[14px] font-bold text-primary"
       >
-        PROSPECT #10
+        PROSPECT #{position_info?.jersey_number}
       </Badge>
 
       {/* stars */}
@@ -67,25 +76,27 @@ export default function ProspectCard({
 
       <div className="absolute right-0 bottom-0 left-0 px-8">
         <h1 className="text-extrabold text-[32px]">
-          <p className="">SHAHIN</p>
-          <span className="text-brand">TARKAVAN</span>
+          <p className="">{basic_info?.name}</p>
+          <span className="text-brand">{basic_info?.last_name}</span>
         </h1>
 
-        <p className="py-1 text-[14px]">Midfielder | Toronto FC Academy</p>
+        <p className="py-1 text-[14px]">{position_info?.primary_position?.name} {position_info?.club_team ? `| ${position_info?.club_team}`  : "" } </p>
 
         <ul className="space-y-2 text-sm">
           <li className="flex items-center gap-1">
             <span className="font-bold">
               <MapPin className="w-5" />{" "}
             </span>
-            North Toronto
+            {basic_info?.city}, {basic_info?.country}
           </li>
+          {basic_info?.age && 
           <li className="flex items-center gap-1">
             <span className="font-bold">
               <Lock className="w-5" />
             </span>
-            Parental Control Active
+            {basic_info?.age <= 18 ? "Parental Control Enabled"  : basic_info?.privacy_settings  }
           </li>
+          }
         </ul>
 
         <div className="mt-3 flex flex-wrap justify-start gap-2 pb-8">
@@ -97,21 +108,22 @@ export default function ProspectCard({
           </Badge>
           <Badge
             variant="outline"
-            className="rounded-[4px] border-secondary py-3 text-[12px] font-medium text-white"
+            className="uppercase rounded-[4px] border-secondary py-3 text-[12px] font-medium text-white"
           >
-            MALE
+            {basic_info?.gender}
           </Badge>
+          
           <Badge
             variant="outline"
             className="rounded-[4px] border-secondary py-3 text-[12px] font-medium text-white"
           >
-            UNDER-16
+            UNDER-{basic_info?.age}
           </Badge>
           <Badge
             variant="outline"
-            className="rounded-[4px] border-secondary py-3 text-[12px] font-medium text-white"
+            className="uppercase rounded-[4px] border-secondary py-3 text-[12px] font-medium text-white"
           >
-            HIGHTFOOTED
+            {position_info?.dominant_foot}
           </Badge>
         </div>
       </div>

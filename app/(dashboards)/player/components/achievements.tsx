@@ -1,22 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { TPlayerAchievement } from "@/types/player.type"
 import { Trophy, Award, Star } from "lucide-react"
+import moment from "moment"
 
 interface Achievement {
-  id: string
-  icon: "trophy" | "award" | "star"
+  id: string 
   title: string
 }
 
 interface AchievementsProps {
-  achievements?: Achievement[]
+  achievements?: TPlayerAchievement[]
 }
 
-const defaultAchievements: Achievement[] = [
-  { id: "1", icon: "trophy", title: "League Champion 2024" },
-  { id: "2", icon: "award", title: "Team Captain" },
-  { id: "3", icon: "star", title: "MLS Next Tournament MVP" },
-]
-
+ 
 const iconMap = {
   trophy: Trophy,
   award: Award,
@@ -24,7 +20,7 @@ const iconMap = {
 }
 
 export default function Achievements({
-  achievements = defaultAchievements,
+  achievements ,
 }: AchievementsProps) {
   return (
     <Card className="mt-6  border border-secondary/20 bg-primary ">
@@ -34,13 +30,12 @@ export default function Achievements({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        {achievements.map((achievement) => {
-          const IconComponent = iconMap[achievement.icon]
+        {achievements?.map((achievement) => { 
           return (
             <div key={achievement.id} className="flex items-center gap-3">
-              <IconComponent className="size-5 text-brand" />
+              <Award className="size-5 text-brand" />
               <span className="text-sm font-medium text-white">
-                {achievement.title}
+                {achievement.title} - { moment(achievement?.date_earned).format("MMM Do YY") }
               </span>
             </div>
           )

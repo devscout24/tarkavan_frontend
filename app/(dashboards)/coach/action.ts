@@ -106,3 +106,4 @@ export async function applyRecruitment(data: FormData) {
   }
 }
 
+ 

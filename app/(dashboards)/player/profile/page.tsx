@@ -1,10 +1,10 @@
+"use client"
 import { Card } from "@/components/ui/card"
 import CommonBtn from "@/components/common/common-btn"
 import ProspectCard from "../components/prospect-card"
 import Bio from "../components/bio"
 import Achievements from "../components/achievements"
 import SocialLinks from "../components/social-links"
-import Stat from "../components/stat"
 import PlayerMedia from "../components/player-media"
 import VisibilityEdit from "@/components/common/visibility-edit"
 import RadarChart from "@/components/common/radar"
@@ -18,67 +18,43 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { getPlayerProfile } from "./action"
+import { useEffect, useState } from "react"
+import { TPlayerProfile } from "@/types/player.type"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
+import { Edit } from "lucide-react"
+import EditPlayerAttributes from "@/components/common/player-edits/edit-player-attributes"
 
 export default function PlayerProfile() {
-  type PlayerStats = {
-    id: string
-    year: string
-    games: number
-    goals: number
-    assists: number
-    yellowCards: number
-    redCards: number
-  }
-
-  const demoStats: PlayerStats[] = [
-    {
-      id: "1",
-      year: "2021",
-      games: 28,
-      goals: 22,
-      assists: 15,
-      yellowCards: 35,
-      redCards: 42,
-    },
-    {
-      id: "2",
-      year: "2022",
-      games: 30,
-      goals: 25,
-      assists: 18,
-      yellowCards: 40,
-      redCards: 47,
-    },
-    {
-      id: "3",
-      year: "2023",
-      games: 32,
-      goals: 30,
-      assists: 20,
-      yellowCards: 45,
-      redCards: 52,
-    },
-    {
-      id: "4",
-      year: "2024",
-      games: 15,
-      goals: 12,
-      assists: 8,
-      yellowCards: 25,
-      redCards: 32,
-    },
-    {
-      id: "5",
-      year: "2025",
-      games: 20,
-      goals: 18,
-      assists: 10,
-      yellowCards: 30,
-      redCards: 37,
-    },
-  ]
-
   const columnBorderClass = "border-r border-white/15 last:border-r-0"
+  const user = localStorage.getItem("go_elite_user")
+    ? JSON.parse(localStorage.getItem("go_elite_user")!)
+    : null
+  const [playerData, setPlayerData] = useState<TPlayerProfile>()
+  console.log(playerData)
+  useEffect(() => {
+    const profileData = async () => {
+      try {
+        const res = await getPlayerProfile(user?.profile_id)
+        console.log(res)
+        if (res && "success" in res && res.data && res.data.data) {
+          setPlayerData(res.data.data)
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    profileData()
+  }, [])
 
   return (
     <>
@@ -86,20 +62,44 @@ export default function PlayerProfile() {
         {/* visibility and customization options */}
         <Card className="flex-row items-center bg-secondary/40 px-5">
           <VisibilityEdit />
+
           <CommonBtn
             text="Save Changes"
-            className="w-fit bg-brand px-2 font-medium text-primary hover:bg-brand"
+            className="w-fit bg-brand px-2 font-medium text-nowrap text-primary hover:bg-brand"
             size={"sm"}
             variant={"default"}
           />
+
+          {/* <Dialog >
+            <DialogTrigger>
+              <CommonBtn
+                text="Save Changes"
+                className="w-fit text-nowrap bg-brand px-2 font-medium text-primary hover:bg-brand"
+                size={"sm"}
+                variant={"default"}
+              />
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl! max-h-[90vh] overflow-y-auto bg-primary text-white ">
+              <DialogHeader> 
+                <DialogDescription>
+                  <PlayerProfileEditForm/>
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>  */}
         </Card>
 
         {/* profile info */}
         <div className="mt-6 gap-6 lg:flex">
           <div className="flex-3">
-            <ProspectCard academyVotes={20} provincialVotes={30} />
-            <Bio />
-            <Achievements />
+            <ProspectCard
+              academyVotes={20}
+              provincialVotes={30}
+              basic_info={playerData?.basic_info}
+              position_info={playerData?.position_info}
+            />
+            <Bio description={String(playerData?.basic_info?.biography)} />
+            <Achievements achievements={playerData?.achievements} />
             <SocialLinks />
           </div>
           <div className="flex-7">
@@ -138,30 +138,30 @@ export default function PlayerProfile() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {demoStats.map((stat) => (
+                    {playerData?.season_stats_last_five_years?.map((stat) => (
                       <TableRow
-                        key={stat.id}
+                        key={stat.season_year}
                         className="border-t border-white/20 hover:bg-transparent"
                       >
                         <TableCell
                           className={`sticky left-0 bg-background font-medium ${columnBorderClass}`}
                         >
-                          {stat.year}
+                          {stat.season_year}
                         </TableCell>
                         <TableCell className={columnBorderClass}>
-                          {stat.games}
+                          {stat.total_played_games}
                         </TableCell>
                         <TableCell className={columnBorderClass}>
                           {stat.goals}
                         </TableCell>
                         <TableCell className={columnBorderClass}>
-                          {stat.assists}
+                          {stat.assist}
                         </TableCell>
                         <TableCell className={columnBorderClass}>
-                          {stat.yellowCards}
+                          {stat.yellow_cards}
                         </TableCell>
                         <TableCell className={columnBorderClass}>
-                          {stat.redCards}
+                          {stat.red_cards}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -177,14 +177,34 @@ export default function PlayerProfile() {
                 Player Attributes
               </h2>
 
-              <div className="grid grid-cols-1 items-center gap-4 rounded-xl bg-secondary/30 py-1 xl:grid-cols-2">
-                <RadarChart />
+              <div className="relative grid grid-cols-1 items-center gap-4 rounded-xl bg-secondary/30 py-1 xl:grid-cols-2">
+                <RadarChart strengths={playerData?.strengths} />
+
+                <Dialog>
+                  <DialogTrigger className="absolute! top-2 right-2">
+                    <CommonBtn
+                      size={"lg"}
+                      variant={"default"}
+                      onClick={() => {}}
+                      text="Edit"
+                      icon={<Edit className="h-5 w-5" />}
+                      className=" w-fit bg-brand px-3 text-primary hover:bg-brand/80"
+                    />
+                  </DialogTrigger>
+                  <DialogContent className="max-h-[90vh] max-w-2xl! overflow-y-auto bg-primary text-white">
+                    <DialogHeader>
+                      <DialogDescription>
+                        <EditPlayerAttributes    />
+                      </DialogDescription>
+                    </DialogHeader>
+                  </DialogContent>
+                </Dialog>
                 <div className="px-6">
                   <RadarStrength />
                 </div>
               </div>
 
-              {/* player stars and ratings */} 
+              {/* player stars and ratings */}
               {/* <div className="mt-4">
                 <h2 className="text-lg font-bold text-white">Player Ratings</h2>
                 <div className="w-full gap-2"> 

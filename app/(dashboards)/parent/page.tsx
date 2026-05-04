@@ -249,6 +249,7 @@ export default function Page() {
                       description={
                         opportunity.description || "Opportunity available."
                       }  
+                      application_status={  "pending"}
                     />
                   </div>
                 ))

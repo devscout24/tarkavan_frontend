@@ -13,12 +13,23 @@ import { ChevronDownIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { getSportOptions } from "@/app/(dashboards)/action"
+import { SportOption } from "@/types"
+import CountryCitySelector from "@/components/common/country-city-selector"
 
 const controlClassName =
   "h-11 rounded-xl border border-white/10 bg-[#0F1117] px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
@@ -57,7 +68,6 @@ export default function CoreIdentity({
   draft: WizardState["forms"]["coreIdentity"]
   onDraftChange: (value: WizardState["forms"]["coreIdentity"]) => void
 }) {
-  const [openDatePicker, setOpenDatePicker] = useState(false)
   const [photoPreviews, setPhotoPreviews] = useState<PhotoPreview[]>([])
   const previewUrlsRef = useRef<string[]>([])
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -144,6 +154,15 @@ export default function CoreIdentity({
       }
     }
   }, [watch, handleDraftChange])
+  const [sportsOptions, setSportsOptions] = useState<SportOption[]>([])
+  useEffect(() => {
+    const init = async () => {
+      const [sports] = await Promise.all([getSportOptions()])
+      if (sports && "success" in sports && sports.success && sports.data)
+        setSportsOptions(sports.data.data)
+    }
+    init()
+  }, [])
 
   const handlePhotoSelect = useCallback(
     (files: File[]) => {
@@ -200,6 +219,8 @@ export default function CoreIdentity({
     }
   }, [])
 
+  console.log(sportsOptions)
+
   return (
     <div className="w-full rounded-2xl bg-[#090B10] p-4 text-white">
       <ModalStepHeader
@@ -216,6 +237,8 @@ export default function CoreIdentity({
             {errors.profilePhotos.message}
           </p>
         )}
+
+        
 
         {photoPreviews.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-3">
@@ -282,16 +305,18 @@ export default function CoreIdentity({
             }}
           />
 
-          <FieldGroup className="  flex-row">
+          <FieldGroup className="flex-row">
             <Field>
-              <FieldLabel htmlFor="date-picker-optional">Date of Birth</FieldLabel>
-              <Popover  >
+              <FieldLabel htmlFor="date-picker-optional">
+                Date of Birth
+              </FieldLabel>
+              <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     id="date-picker-optional"
-                    className="w-32 py-5! justify-between font-normal  "
-                  > 
+                    className="w-32 justify-between py-5! font-normal"
+                  >
                     {dateOfBirth ? format(dateOfBirth, "PPP") : "Select date"}
                     <ChevronDownIcon />
                   </Button>
@@ -311,7 +336,7 @@ export default function CoreIdentity({
                   />
                 </PopoverContent>
               </Popover>
-            </Field> 
+            </Field>
           </FieldGroup>
 
           <SelectField
@@ -329,10 +354,15 @@ export default function CoreIdentity({
             }
             error={errors.gender?.message}
           />
+           
+           <div className="w-full">
+            <p className="text-sm text-white">Country & City</p>
+            <CountryCitySelector/>
+           </div>
 
           <UiInput
             label="Nationality"
-            placeholder="Canada"
+            placeholder="Canada" 
             className={controlClassName}
             value={draft.nationality || ""}
             onChange={(e) => {
@@ -357,19 +387,36 @@ export default function CoreIdentity({
                 email: e.target.value,
               })
             }}
-          />
+          /> 
 
-          <SelectField
-            label="Sport Selection"
-            placeholder="Select Sport"
-            options={[{ value: "soccer", label: "Soccer" }]}
-            triggerClassName={triggerClassName}
-            value={sport}
-            onValueChange={(value) =>
-              setValue("sport", value, { shouldValidate: true })
-            }
-            error={errors.sport?.message}
-          />
+          <div className="">
+            <label className="mb-2 block text-sm font-medium text-white">
+              Sport Selection
+            </label>
+            <Select
+              value={sport}
+              onValueChange={(value) =>
+                setValue("sport", value, { shouldValidate: true })
+              }
+            >
+              <SelectTrigger className="w-full py-5.5">
+                <SelectValue placeholder="Sport Selection" />
+              </SelectTrigger>
+              <SelectContent position="popper">
+                <SelectGroup>
+                  {sportsOptions.map((sport) => (
+                    <SelectItem
+                      key={sport.id}
+                      value={String(sport.id)}
+                      className="hover:bg-brand!"
+                    >
+                      {sport.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
 
           <UiInput
             label="Jersey Number"

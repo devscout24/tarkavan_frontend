@@ -1,5 +1,6 @@
 "use client" // Next.js hole lagbe
 
+import { TPlayerStrength } from "@/types/player.type"
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -22,20 +23,20 @@ ChartJS.register(
   Legend
 )
 
-export default function RadarChart() {
+export default function RadarChart(
+  {
+    strengths
+  }
+  :
+  {
+    strengths?: TPlayerStrength[]
+  }
+) {
   const data = {
-    labels: [
-      "Technical",
-      "Defending",
-      "Physical",
-      "Tactical",
-      "Aerial",
-      "Attacking",
-      "Mental",
-    ],
+    labels: strengths?.map((strength) => strength.strength_name) || [],
     datasets: [
       {
-        data: [80, 90, 75, 60, 96, 65, 100],
+        data: strengths?.map((strength) => strength.endorse_count) || [80, 90, 75, 60, 96],
         fill: true,
         backgroundColor: "rgba(198, 245, 122, 0.2)", 
         pointBackgroundColor: "#C6F57A",

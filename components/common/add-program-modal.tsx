@@ -186,8 +186,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
 
       try {
         const res = await getProgramDetails(String(editId))
-
-        console.log(res)
+ 
 
         if (res?.status === false) {
           toast.error(res.message || "Failed to load program data")

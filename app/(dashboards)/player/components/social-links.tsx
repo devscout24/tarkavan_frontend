@@ -18,7 +18,7 @@ import { RiTwitterXLine } from "react-icons/ri"
 import { FaWhatsapp } from "react-icons/fa6"
 import CommonBtn from "@/components/common/common-btn"
 import ShareModal from "@/components/common/modal/all-modals/share-modal"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function SocialLinks({
   facebookUrl = "#",
@@ -37,10 +37,19 @@ export default function SocialLinks({
   ]
 
   const [openShareModal, setOpenShareModal] = useState(false)
+  const [profileId, setProfileId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const data = localStorage.getItem("go_elite_user");
+    if (data) {
+      const parsed = JSON.parse(data);
+      setProfileId(parsed?.profile_id);
+    }
+  }, []);
 
   return (
     <Card className="mt-6 border border-secondary/20 bg-primary">
-      <CardContent className="flex items-center justify-between py-3">
+      <CardContent className="flex items-center justify-between flex-wrap gap-y-4  py-3">
         <div className="flex items-center gap-5">
           {socialLinks.map(({ icon: Icon, url, label }) => (
             <a
@@ -77,7 +86,7 @@ export default function SocialLinks({
         key={"shareUrl"}
         open={openShareModal}
         onOpenChange={setOpenShareModal}
-        url={"https://tarkavan.vercel.app/profile/234"}
+        url={`${window.location.origin}/profile/player/${profileId || "player"}`}
         title="Watch my Player Card"
       />
     </Card>

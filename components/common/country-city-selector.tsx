@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Country, City } from "country-state-city";
 
 type CityType = {
@@ -9,7 +9,15 @@ type CityType = {
   stateCode?: string;
 };
 
-export default function CountryCitySelector() {
+export default function CountryCitySelector(
+  {
+    onSelect 
+  }
+  :
+  {
+    onSelect: (data:{country_name: string , city_name: string}) => void
+  }
+) {
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [cities, setCities] = useState<CityType[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>("");
@@ -27,8 +35,23 @@ export default function CountryCitySelector() {
     setSelectedCity("");
   };
 
+
+useEffect(() => {
+  const selectedCountryObj = countries.find(
+    (c) => c.isoCode === selectedCountry
+  );
+
+  const data = {
+    country_name: selectedCountryObj?.name || "",
+    city_name: selectedCity || "",
+  };
+
+  onSelect(data);
+}, [selectedCity, selectedCountry]);
+
+
   return (
-    <div className="flex gap-2    ">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2    ">
       {/* Country Dropdown */}
       <select onChange={handleCountryChange} value={selectedCountry} className="border border-secondary/30 p-2 rounded-md w-full bg-secondary        ">
         <option value="">Select Country</option>

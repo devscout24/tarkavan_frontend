@@ -64,8 +64,7 @@ export default function ProfileSettingPage() {
         if (profileImage && profileImage instanceof File) {
           formData.append("club_logo", profileImage)
         }
-        const res = await updateClubSetting(formData)
-        console.log(res)
+        const res = await updateClubSetting(formData) 
         if(res && "success" in res && res.success && res.data && "data" in res.data) {
           setClubProfile(res.data.data)
           toast.success("Profile image updated successfully")
@@ -127,22 +126,7 @@ export default function ProfileSettingPage() {
       value: "coach_and_players",
       title: "Coaches & Athletes",
       description: "Visible to verified coaches and athletes",
-    },
-    // {
-    //   value: "players_and_teams",
-    //   title: "Coaches & Teams",
-    //   description: "Visible to coaches and team members only",
-    // },
-    // {
-    //   value: "coach_and_team",
-    //   title: "Coaches & Team Staff",
-    //   description: "Restricted to coaches and team staff only",
-    // },
-    // {
-    //   value: "only_player",
-    //   title: "Athlete Only",
-    //   description: "Fully private professional view for the athlete only",
-    // },
+    }, 
   ]
 
 
@@ -187,8 +171,7 @@ export default function ProfileSettingPage() {
       
       const res = await updateClubSetting(formData)
       
-      if (res && "success" in res && res.success) {
-        console.log(res)
+      if (res && "success" in res && res.success) { 
         setChangePasswordLoading(false)
         toast.success("Password updated successfully")
         setPasswordFormData({

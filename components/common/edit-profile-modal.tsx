@@ -12,6 +12,7 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Edit2 } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export function EditProfileModal(
@@ -41,7 +42,10 @@ useEffect(() => {
     <Dialog open={editProfileModalOpen} onOpenChange={setEditProfileModalOpen}>
       <form>
         <DialogTrigger asChild>
-          <Button variant="outline" className="bg-transparent  hover:bg-transparent border border-brand text-brand hover:text-brand     ">Open Dialog</Button>
+          <Button variant="outline" className="bg-transparent flex gap-2 hover:bg-transparent border border-brand text-brand hover:text-brand     ">
+            <Edit2/>
+            <span>Edit</span>
+          </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>

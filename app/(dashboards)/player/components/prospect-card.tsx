@@ -44,7 +44,6 @@ export default function ProspectCard({
       {/* stars */}
       <div className=" absolute top-0 right-0   flex w-full flex-col items-end justify-end gap-2 px-5 pt-5">
         {/* provincial votes */}
-        {provincialVotes > 0 && (
           <HoverCard openDelay={0}>
             <HoverCardTrigger className="relative">
               <FaStar className="text-7xl text-yellow-500" />
@@ -56,10 +55,10 @@ export default function ProspectCard({
               Provincial Team Vote: {provincialVotes} votes
             </HoverCardContent>
           </HoverCard>
-        )}
+        {/* {provincialVotes > 0 && (
+        )} */}
 
         {/* Professional academy votes */}
-        {academyVotes > 0 && (
           <HoverCard openDelay={0}>
             <HoverCardTrigger className="relative">
               <FaStar className="text-7xl text-red-500" />
@@ -71,7 +70,8 @@ export default function ProspectCard({
               Professional Academy Vote: {academyVotes} votes
             </HoverCardContent>
           </HoverCard>
-        )}
+        {/* {academyVotes > 0 && (
+        )} */}
       </div>
 
       <div className="absolute right-0 bottom-0 left-0 px-8">

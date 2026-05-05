@@ -51,13 +51,7 @@ export default async function page() {
         ? Globe
         : Shield
 
-  const shareUrl = clubProfile?.id
-    ? `https://tarkavan.vercel.app/profile/${clubProfile.id}`
-    : ""
-
-  const shareTitle = clubProfile?.club_name
-    ? `Check out ${clubProfile.club_name}`
-    : "Check out this club profile"
+ 
 
   return (
     <section>

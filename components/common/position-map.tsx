@@ -1,116 +1,104 @@
-import SoccerLineUp, { type Team } from "react-soccer-lineup"
-
-type PositionApiItem = {
-  id: number
-  name: string
-}
+import { TPlayerPosition } from "@/types/player.type"
+import SoccerLineUp, { type Team, type Player } from "react-soccer-lineup"
 
 type PositionMapProps = {
-  data?: PositionApiItem[]
+  data?: TPlayerPosition[] | null
 }
 
-const extractShortCode = (name: string) => {
+const extractShortCode = (name: string): string => {
   const match = name.match(/\(([^)]+)\)\s*$/)
   return match?.[1]?.trim().toUpperCase() ?? ""
 }
 
-type LineupPlayer = {
-  number?: number
-  name?: string
-  offset?: { x?: number; y?: number }
-  style?: {
-    color?: string
-    borderColor?: string
-    nameColor?: string
-    numberColor?: string
-  }
-}
-
-const emptySlot = (): LineupPlayer => ({
+const emptySlot = (): Player => ({
   name: "",
   number: undefined,
-  offset: { x: 0, y: 0 },
   style: {
     color: "transparent",
     borderColor: "transparent",
     nameColor: "transparent",
     numberColor: "transparent",
+    numberBackgroundColor: "transparent",
   },
 })
 
-const slotFromCode = (
-  byCode: Record<string, PositionApiItem | undefined>,
+const makeSlot = (
+  byCode: Record<string, TPlayerPosition | undefined>,
   code: string,
-  fallbackName: string,
+  label: string,
   offset?: { x?: number; y?: number }
-): LineupPlayer => {
+): Player => {
   const item = byCode[code]
-
-  if (!item) {
-    return emptySlot()
-  }
+  if (!item) return emptySlot()
 
   return {
     number: item.id,
-    name: fallbackName,
+    name: label,
     ...(offset ? { offset } : {}),
   }
 }
 
-export default function PositionMap({ data = [] }: PositionMapProps) {
-  const byCode = data.reduce<Record<string, PositionApiItem>>((acc, item) => {
-    const code = extractShortCode(item.name)
-    if (!code) {
-      return acc
-    }
+export default function PositionMap({ data }: PositionMapProps) {
+  const safeData: TPlayerPosition[] = Array.isArray(data)
+    ? data.filter((item): item is TPlayerPosition => !!item?.name)
+    : []
 
-    // Normalize API codes to field slots used by react-soccer-lineup.
+  const byCode = safeData.reduce<Record<string, TPlayerPosition>>((acc, item) => {
+    const code = extractShortCode(item.name)
+    if (!code) return acc
+
     if (code === "CB") {
-      if (!acc.RCB) {
-        acc.RCB = item
+      if (!acc["RCB"]) {
+        acc["RCB"] = item
       } else {
-        acc.LCB = item
+        acc["LCB"] = item
       }
       return acc
     }
 
-    if (code === "DM") {
-      acc.CDM = item
-      return acc
+    const normalized: Record<string, string> = {
+      DM: "CDM",
+      AM: "CAM",
     }
-
-    if (code === "AM") {
-      acc.CAM = item
-      return acc
-    }
-
-    acc[code] = item
+    acc[normalized[code] ?? code] = item
     return acc
   }, {})
 
   const awayTeam: Team = {
     squad: {
-      gk: slotFromCode(byCode, "GK", "Goalkeeper", { x: 10, y: 0 }),
+      gk: makeSlot(byCode, "GK", "Goalkeeper"),
+
       df: [
-        slotFromCode(byCode, "RB", "Right-back", { x: 11, y: 5 }),
-        slotFromCode(byCode, "RCB", "Centre-back", { x: 11, y: 0 }),
-        slotFromCode(byCode, "LCB", "Centre-back", { x: 11, y: 0 }),
-        slotFromCode(byCode, "LB", "Left-back", { x: 11, y: 0 }),
+        makeSlot(byCode, "RB",  "Right Back"),
+        makeSlot(byCode, "RCB", "Centre Back"),
+        makeSlot(byCode, "LCB", "Centre Back"),
+        makeSlot(byCode, "LB",  "Left Back"),
       ],
+
+      cdm: [
+        makeSlot(byCode, "CDM", "Defensive Mid"),
+      ],
+
       cm: [
-        slotFromCode(byCode, "CDM", "Defensive Midfielder", { y: 0 }),
-        slotFromCode(byCode, "CM", "Central Midfielder", { y: 0 }),
-        slotFromCode(byCode, "CAM", "Attacking Midfielder", { x: -16, y: -30 }),
+        makeSlot(byCode, "CM", "Central Mid"),
       ],
+
+      cam: [
+        makeSlot(byCode, "CAM", "Attacking Mid"),
+      ],
+
       fw: [
-        slotFromCode(byCode, "RW", "Right Winger"),
-        slotFromCode(byCode, "ST", "Striker", { x: -8, y: 0 }),
-        slotFromCode(byCode, "LW", "Left Winger"),
+        makeSlot(byCode, "RW", "Right Winger"),
+        makeSlot(byCode, "ST", "Striker"),
+        makeSlot(byCode, "LW", "Left Winger"),
       ],
     },
+
     style: {
       borderColor: "#ffffff",
-      nameColor: "#333333",
+      nameColor: "#ffffff",
+      numberColor: "#ffffff",
+      numberBackgroundColor: "rgba(0,0,0,0.35)",
     },
   }
 

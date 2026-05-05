@@ -79,8 +79,7 @@ export default function MatchTable({ matchRequests }: { matchRequests: TMatchReq
         toast.error(res.message)
         return
       }
-
-      console.log(res)
+ 
 
     }catch(error){
       console.error(error)

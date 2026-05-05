@@ -79,8 +79,7 @@
 //       }
 
 //       const res = await updateClubSetting(formData)
-
-//       console.log(res)
+ 
 
 //     }catch(error){
 //       console.error(error)

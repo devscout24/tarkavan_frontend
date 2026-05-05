@@ -184,6 +184,8 @@ export type TPlayerProfile = {
   videos: string[]
   media_links: string[]
   season_stats_last_five_years: TSeasonStats[]
+  professional_votes: number
+  provencial_votes: number
 }
 
 
@@ -230,3 +232,15 @@ export type TPlayerProfileForm = {
   reels?: File[]
 }
 
+
+
+export type TPlayerProfileSetting = {
+  name: string;
+  email: string;
+  profile_image: string;
+  country_id: number | null;
+  city_id: number | null;
+  country: string | null;
+  city: string | null;
+  privacy_settings: "public" | "private" | "friends" | string;
+};

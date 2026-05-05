@@ -1,11 +1,7 @@
 import type { Metadata } from "next"
 import ProfilePage from "./components/main-page"
-import {
-  getPublicProfile,
-  type GetPublicProfileResult,
-  type ProfileApiResponse,
-  type PlayerRootData,
-} from "../../action"
+import { getPublicProfile, GetPublicProfileResult, PlayerRootData, ProfileApiResponse } from "@/app/(public)/action"
+ 
 
 type ProfilePageProps = {
   params: Promise<{

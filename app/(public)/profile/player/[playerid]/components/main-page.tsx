@@ -18,11 +18,11 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/components/ui/hover-card"
-import ProfileCard from "../../components/profile-card"
-import Achievement from "../../components/achivement" 
-import BIO from "../../components/bio"
-import StatCard from "../../components/stat-card"
+} from "@/components/ui/hover-card" 
+import ProfileCard from "../../../components/profile-card"
+import Achievement from "../../../components/achivement" 
+import BIO from "../../../components/bio"
+import StatCard from "../../../components/stat-card"
 // Inline type definitions for profile data
 interface BasicInfo {
   id: number
@@ -222,7 +222,7 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                   <RadarChart />
 
                   <div className="px-6">
-                    <RadarStrength />
+                    {/* <RadarStrength /> */}
 
                     {/* stars */}
                     <div className="mt-4">

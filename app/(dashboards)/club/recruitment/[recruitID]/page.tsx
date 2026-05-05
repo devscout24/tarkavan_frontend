@@ -83,8 +83,7 @@ export default function Page() {
       const res = await changeStatus({
         applicantId: applicantId as string,
         status: formData,
-      })
-      console.log(res)
+      }) 
       if (
         res &&
         "success" in res &&

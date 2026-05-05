@@ -19,6 +19,7 @@ import {
 import { clubProfileSetup } from "@/app/(dashboards)/club/action"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import CountryCitySelector from "../../country-city-selector"
 
 const maxDescriptionLength = 300
 
@@ -84,8 +85,7 @@ export default function ClubProfileSetup() {
 
       formData.append("sports_name", selectedSport?.name ?? selectedSportId)
 
-      formData.append("city", city)
-      formData.append("state", provinceState)
+      formData.append("city", city) 
       formData.append("country", country)
       formData.append("club_description", description)
 
@@ -109,8 +109,7 @@ export default function ClubProfileSetup() {
         formData.append("club_logo", clubLogo)
       }
 
-      const res = await clubProfileSetup(formData)
-      console.log(res)
+      const res = await clubProfileSetup(formData) 
 
       if (!res.success) {
         toast.error(res.message)
@@ -183,6 +182,7 @@ export default function ClubProfileSetup() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
+        </div>
           <div className="mt-1.5 space-y-2">
             <label className="text-sm text-[#D9D9D9]">Sport Selection</label>
             <Select value={selectedSportId} onValueChange={setSelectedSportId}>
@@ -204,29 +204,13 @@ export default function ClubProfileSetup() {
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          <UiInput
-            label="City"
-            labelClass="text-sm text-[#D9D9D9]"
-            placeholder="e.g. Toronto"
-            value={city}
-            onChange={(event) => setCity(event.target.value)}
-          />
-          <UiInput
-            label="Province / State"
-            labelClass="text-sm text-[#D9D9D9]"
-            placeholder="e.g. Ontario"
-            value={provinceState}
-            onChange={(event) => setProvinceState(event.target.value)}
-          />
-          <UiInput
-            label="Country"
-            labelClass="text-sm text-[#D9D9D9]"
-            placeholder="e.g. Canada"
-            value={country}
-            onChange={(event) => setCountry(event.target.value)}
-          />
-        </div>
+          </div> 
+          <CountryCitySelector
+            onSelect={(data)=> {
+              setCity(data.city_name) 
+              setCountry(data.country_name)
+            }}
+          /> 
 
         {/* organization type */}
         <div className="rounded-2xl border border-white/10 bg-[#131722]/10 p-4 sm:p-5">

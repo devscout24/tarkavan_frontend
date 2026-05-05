@@ -49,6 +49,8 @@ interface CoreIdentityFormData {
   jerseyNumber: string
   dominantFoot: string
   clubTeam: string
+  country: string
+  city: string
 }
 
 type PhotoPreview = {
@@ -71,6 +73,7 @@ export default function CoreIdentity({
   const [photoPreviews, setPhotoPreviews] = useState<PhotoPreview[]>([])
   const previewUrlsRef = useRef<string[]>([])
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [location , setLocation] = useState({country: "" , city: ""}) 
 
   const {
     register,
@@ -91,6 +94,8 @@ export default function CoreIdentity({
       jerseyNumber: draft.jerseyNumber,
       dominantFoot: draft.dominantFoot,
       clubTeam: draft.clubTeam,
+      country: location.country,
+      city: location.city,
     },
   })
 
@@ -103,6 +108,8 @@ export default function CoreIdentity({
     register("gender", { required: "Gender is required" })
     register("sport", { required: "Sport is required" })
     register("dominantFoot", { required: "Dominant foot is required" })
+    register("country")
+    register("city")
   }, [register])
 
   const dateOfBirth = watch("dateOfBirth")
@@ -114,8 +121,8 @@ export default function CoreIdentity({
   const handleDraftChange = useCallback(
     (values: CoreIdentityFormData) => {
       onDraftChange({
-        profilePhotoNames: photoPreviews.map((item) => item.file.name),
-        profilePhotos: photoPreviews.map((item) => item.file),
+        profilePhotoNames: values.profilePhotos.map((item) => item.name),
+        profilePhotos: values.profilePhotos,
         firstName: values.firstName ?? "",
         lastName: values.lastName ?? "",
         dateOfBirth: values.dateOfBirth
@@ -128,9 +135,11 @@ export default function CoreIdentity({
         jerseyNumber: values.jerseyNumber ?? "",
         dominantFoot: values.dominantFoot ?? "",
         clubTeam: values.clubTeam ?? "",
+        country: values.country ?? "",  
+        city: values.city ?? ""   
       })
     },
-    [onDraftChange, photoPreviews]
+    [onDraftChange]
   )
 
   // Use a debounced approach to avoid updating during render phase
@@ -218,9 +227,9 @@ export default function CoreIdentity({
       previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url))
     }
   }, [])
+ 
 
-  console.log(sportsOptions)
-
+  
   return (
     <div className="w-full rounded-2xl bg-[#090B10] p-4 text-white">
       <ModalStepHeader
@@ -356,8 +365,13 @@ export default function CoreIdentity({
           />
            
            <div className="w-full">
-            <p className="text-sm text-white">Country & City</p>
-            <CountryCitySelector/>
+              <p className="text-sm text-white">Country & City</p>
+              <CountryCitySelector 
+                  onSelect={(data) => {
+                    setValue("country", data.country_name, { shouldValidate: true });
+                    setValue("city", data.city_name, { shouldValidate: true });
+                  }}
+              />
            </div>
 
           <UiInput

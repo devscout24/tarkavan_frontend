@@ -52,8 +52,7 @@ export default async function Page() {
 
   try{
 
-    const res = await teamPlayerList("4");
-    console.log(res);
+    const res = await teamPlayerList("4"); 
 
   }catch(error){
     console.error(error);

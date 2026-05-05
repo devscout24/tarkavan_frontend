@@ -70,8 +70,7 @@ export default function PlayerProfile() {
   const mapPosition = []
   mapPosition.push(playerData?.position_info?.primary_position)
   mapPosition.push(playerData?.position_info?.secondary_position)
- 
-console.log("Player Data:", playerData)
+  
   const privacy = playerData?.basic_info?.privacy_settings ?? "public";
 
   const iconMap: Record<string, IconType> = {
@@ -216,9 +215,7 @@ console.log("Player Data:", playerData)
                               <HoverCardContent>
                                 Provincial Team Vote: {playerData?.provencial_votes} votes
                               </HoverCardContent>
-                            </HoverCard>
-                          {/* {provincialVotes > 0 && (
-                          )} */}
+                            </HoverCard> 
                           <div className="flex items-center gap-2">
                             <span className="block h-2 w-2 rounded-full bg-yellow-500" />
                             <p className="text-white">Provincial Team</p>
@@ -237,9 +234,7 @@ console.log("Player Data:", playerData)
                               <HoverCardContent>
                                 Professional Academy Vote: {playerData?.professional_votes} votes
                               </HoverCardContent>
-                            </HoverCard>
-                          {/* {academyVotes > 0 && (
-                          )} */}
+                            </HoverCard> 
                           <div className="flex items-center gap-2">
                             <span className="block h-2 w-2 rounded-full bg-red-500" />
                             <p className="text-white">Professional Academy</p>

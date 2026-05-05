@@ -19,56 +19,25 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card" 
-import ProfileCard from "../../../components/profile-card"
-import Achievement from "../../../components/achivement" 
-import BIO from "../../../components/bio"
-import StatCard from "../../../components/stat-card"
+import ProfileCard from "../../../components/profile-card" 
+import BIO from "../../../components/bio" 
+import { TPlayerBasicInfo, TPlayerPosition, TPlayerPositionInfo, TPlayerProfile, TPlayerStrength } from "@/types"
+import Achievements from "@/app/(dashboards)/player/components/achievements"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 // Inline type definitions for profile data
-interface BasicInfo {
-  id: number
-  name: string
-  last_name: string
-  full_name: string
-  dob: string
-  age: number
-  gender: string
-  nationality: string
-  email: string
-  image: string | null
-  biography: string
-  privacy_settings: string
-  sports: string
-  sport_option_id: number | null
-  sport_option: unknown
-}
+ 
+ 
 
-interface PositionInfo {
-  primary_position: string | null
-  secondary_position: string | null
-  jersey_number: number
-  dominant_foot: string
-  club_team: string
-  sports_selection: string
-}
+ 
 
-interface PlayerStats {
-  total_matches: number
-  total_played_time: number
-  goals: number
-  assists: number
-  yellow_cards: number
-  red_cards: number
-  clean_sheets: number
-  total_saves: number
-}
-
-interface Strength {
-  id: number
-  strength_type: string
-  strength_name: string
-  endorse_count: number
-  endorsed: boolean
-}
+ 
 
 interface Achievement {
   id: number
@@ -78,51 +47,27 @@ interface Achievement {
   image: string | null
 }
 
-interface Video {
-  id: number
-  video_url: string
-  status: string
-  uploaded_at: string
-}
+ 
 
-interface SeasonStats {
-  season_year: number
-  total_played_games: number
-  total_played_time: number
-  goals: number
-  assist: number
-  yellow_cards: number
-  red_cards: number
-  clean_sheets: number
-  total_saves: number
-  penalty_saves: number
-}
+ 
 
-interface ProfileData {
-  basic_info: BasicInfo
-  position_info: PositionInfo
-  player_stats: PlayerStats
-  strengths: Strength[]
-  achievements: Achievement[]
-  gallery: string[]
-  videos: Video[]
-  media_links: string[]
-  season_stats_last_five_years: SeasonStats[]
-}
-
+ 
 interface ProfilePageProps {
-  data: ProfileData | null
+  data: TPlayerProfile  
 }
 
-export default function ProfilePage({ data }: ProfilePageProps) {
+export default function ProfilePage({ data   }: ProfilePageProps) {
   const [teamVoted, setTeamVoted] = useState(false)
   const [academyVoted, setAcademyVoted] = useState(false)
   const [loading, setLoading] = useState({
     team: false,
     academy: false,
   })
-  const provincialVotes = 7
-  const academyVotes = 12
+  
+    const mapPosition = []
+  mapPosition.push(data?.position_info?.primary_position)
+  mapPosition.push(data?.position_info?.secondary_position)
+  const columnBorderClass = "border-r border-white/15 last:border-r-0"
  
 
   return (
@@ -143,8 +88,8 @@ export default function ProfilePage({ data }: ProfilePageProps) {
           <div className="mt-8 grid w-full grid-cols-1 gap-6 md:grid-cols-2">
             {/* left */}
             <div className="">
-              <ProfileCard academyVotes={12} provincialVotes={7} basic_info={data?.basic_info}  />
-              <Achievement />
+              <ProfileCard academyVotes={data?.professional_votes || 0} provincialVotes={data?.provencial_votes || 0} basic_info={data?.basic_info as TPlayerBasicInfo} position_info={data?.position_info as TPlayerPositionInfo} />
+              <Achievements achievements={data?.achievements} />
 
               <div className="mt-6 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-brand p-7">
                 <div className="">
@@ -200,14 +145,59 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                 <h2 className="text-[24px] font-semibold text-white">
                   Player Stats
                 </h2>
-                <div className="mt-4 flex flex-wrap justify-between gap-2">
-                  <StatCard title="Games" text="30" />
-                  {/* <StatCard title="Minutes Played" text="35" /> */}
-                  <StatCard title="Goals" text="22" />
-                  <StatCard title="Asists" text="08" />
-                  <StatCard title="Yellow" text="08" />
-                  <StatCard title="Red" text="01" />
-                </div>
+
+              <div className="mx-auto mt-4 max-w-[95vw] [&>div]:rounded-lg [&>div]:border">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-brand hover:bg-brand">
+                      <TableHead
+                        className={`sticky left-0 z-10 bg-brand ${columnBorderClass} text-primary! font-semibold `}
+                      >
+                        Year
+                      </TableHead>
+                      <TableHead className={"text-primary! font-semibold "}>Games</TableHead>
+                      <TableHead className={"text-primary! font-semibold "}>Goals</TableHead>
+                      <TableHead className={"text-primary! font-semibold "}>Assists</TableHead>
+                      <TableHead className={"text-primary! font-semibold "}>
+                        Yellow Cards
+                      </TableHead>
+                      <TableHead className={"text-primary! font-semibold "}>
+                        Red Cards
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody className="text-white">
+                    {data?.season_stats_last_five_years?.map((stat) => (
+                      <TableRow
+                        key={stat.season_year}
+                        className="border-t border-white/20 hover:bg-transparent"
+                      >
+                        <TableCell
+                          className={`sticky left-0 bg-transparent font-medium ${columnBorderClass}`}
+                        >
+                          {stat.season_year}
+                        </TableCell>
+                        <TableCell className={columnBorderClass}>
+                          {stat.total_played_games}
+                        </TableCell>
+                        <TableCell className={columnBorderClass}>
+                          {stat.goals}
+                        </TableCell>
+                        <TableCell className={columnBorderClass}>
+                          {stat.assist}
+                        </TableCell>
+                        <TableCell className={columnBorderClass}>
+                          {stat.yellow_cards}
+                        </TableCell>
+                        <TableCell className={columnBorderClass}>
+                          {stat.red_cards}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+ 
               </div>
 
               {/*  */}
@@ -219,10 +209,10 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                 </h2>
 
                 <div className="grid grid-cols-1 items-center gap-4 rounded-xl bg-secondary/30 py-1 xl:grid-cols-2">
-                  <RadarChart />
+                  <RadarChart strengths={data?.strengths as TPlayerStrength[]} />
 
-                  <div className="px-6">
-                    {/* <RadarStrength /> */}
+                  <div className="px-6 py-4 ">
+                    <RadarStrength strengths={data?.strengths as TPlayerStrength[]} isPublic={true} />
 
                     {/* stars */}
                     <div className="mt-4">
@@ -232,19 +222,17 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                       <div className="w-full   gap-2">
                         {/* provincial votes */}
                         <div className=" grid grid-cols-2    ">
-                          {provincialVotes > 0 && (
                             <HoverCard openDelay={0}>
                               <HoverCardTrigger className="relative w-fit  ">
                                 <FaStar className="text-7xl text-yellow-500" />
                                 <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
-                                  {provincialVotes}
+                                  {data?.professional_votes || 0}
                                 </span>
                               </HoverCardTrigger>
                               <HoverCardContent>
-                                Provincial Team Vote: {provincialVotes} votes
+                                Provincial Team Vote: {data?.provencial_votes || 0} votes
                               </HoverCardContent>
-                            </HoverCard>
-                          )}
+                            </HoverCard> 
                           <div className="flex items-center gap-2">
                             <span className="block h-2 w-2 rounded-full bg-yellow-500" />
                             <p className="text-white">Provincial Team</p>
@@ -253,19 +241,17 @@ export default function ProfilePage({ data }: ProfilePageProps) {
 
                         {/* Professional academy votes */}
                         <div className="grid grid-cols-2    ">
-                          {academyVotes > 0 && (
                             <HoverCard openDelay={0}>
                               <HoverCardTrigger className="relative w-fit  ">
                                 <FaStar className="text-7xl text-red-500" />
                                 <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
-                                  {academyVotes}
+                                  {data?.professional_votes || 0}
                                 </span>
                               </HoverCardTrigger>
                               <HoverCardContent>
-                                Professional Academy Vote: {academyVotes} votes
+                                Professional Academy Vote: {data?.professional_votes || 0} votes
                               </HoverCardContent>
-                            </HoverCard>
-                          )}
+                            </HoverCard> 
                           <div className="flex items-center gap-2">
                             <span className="block h-2 w-2 rounded-full bg-red-500" />
                             <p className="text-white">Professional Academy</p>
@@ -278,13 +264,13 @@ export default function ProfilePage({ data }: ProfilePageProps) {
 
                 {/* position map */}
                 <div className="mt-6 overflow-hidden rounded-2xl border border-brand">
-                  <PositionMap />
+                  <PositionMap data={mapPosition as TPlayerPosition[]}  />
                 </div>
               </div>
             </div>
           </div>
 
-          <BIO />
+          <BIO description={String(data?.basic_info?.biography)} />
 
           <div className="sticky bottom-0 mt-10 flex w-full flex-wrap justify-center gap-10 py-5 backdrop-blur-md">
             <CommonBtn

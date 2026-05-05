@@ -23,6 +23,8 @@ import { getSportOptions } from "@/app/(dashboards)/action"
 import useModal from "./modal/useModal"
 import { usePathname } from "next/navigation"
 import { useSearchParams } from "next/navigation"
+import InputField from "./input-field"
+import { getHighestNumber } from "@/lib/get-highest-number"
 
 interface AddProgramPageProps {
   onSave?: (data: unknown) => void
@@ -247,6 +249,7 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
       return
     }
 
+ 
     try {
       setIsSubmitting(true)
 
@@ -468,36 +471,14 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
             />
           </div>
           {/* Second row: Age Group & Program Price */}
+          
           <div className="flex flex-col">
             <span className="text-sm">Age Group</span>
-            <Select
-              value={form.ageGroup}
-              onValueChange={(v) => handleSelect("ageGroup", v)}
-            >
-              <SelectTrigger className={selectTriggerClassName}>
-                <SelectValue placeholder="Select Age Group" />
-              </SelectTrigger>
-              <SelectContent position="popper">
-                <SelectItem value="8" className="hover:bg-brand!">
-                  U03 - U08
-                </SelectItem>
-                <SelectItem value="12" className="hover:bg-brand!">
-                  U09 - U12
-                </SelectItem>
-                <SelectItem value="17" className="hover:bg-brand!">
-                  U13 - U17
-                </SelectItem>
-                <SelectItem value="21" className="hover:bg-brand!">
-                  U18 - U21
-                </SelectItem>
-                <SelectItem value="30" className="hover:bg-brand!">
-                  U21 - U30
-                </SelectItem>
-                <SelectItem value="200" className="hover:bg-brand!">
-                  30+
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <Input 
+              placeholder="e.g U14 or U16-U20"
+              onChange={(e)=> handleSelect("ageGroup", String(getHighestNumber(e.target.value)))}
+              className="py-4.5 mt-1 border-neutral-700 bg-neutral-800 placeholder:text-neutral-300 placeholder:opacity-100"
+            /> 
           </div>
           <div className="flex flex-col">
             <span className="text-sm">Program Price ($)</span>

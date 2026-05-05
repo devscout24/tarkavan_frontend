@@ -88,6 +88,9 @@ export default function SearchExplore() {
   fetchData();
   }, [filters, currentPage])
 
+  console.log(searchResults);
+  
+
 
   return (
     <section>
@@ -122,7 +125,7 @@ export default function SearchExplore() {
               name={item?.club_name} 
               organizationType={item?.organization_type }
               location={item?.location as string}
-              head="Head Coach"
+              head={item?.organization_type as string}
               description={item?.club_description as string}
               />
               )

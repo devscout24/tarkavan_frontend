@@ -1,83 +1,41 @@
 import type { Metadata } from "next"
-import ProfilePage from "./components/main-page"
-import { getPublicProfile, GetPublicProfileResult, PlayerRootData, ProfileApiResponse } from "@/app/(public)/action"
+import ProfilePage from "./components/main-page" 
+import { TPlayerProfile } from "@/types"
+import { getPlayerProfile } from "@/app/(public)/action"
  
 
 type ProfilePageProps = {
   params: Promise<{
-    profileID: string
+    playerid: string
   }>
 }
-
-function isProfileSuccess(res: GetPublicProfileResult): res is {
-  success: true
-  data: ProfileApiResponse
-} {
-  return (
-    res != null &&
-    "success" in res &&
-    res.success === true &&
-    "data" in res &&
-    res.data != null &&
-    typeof res.data === "object" &&
-    "data" in (res.data as object)
-  )
-}
-
-function extractRootData(res: GetPublicProfileResult): PlayerRootData | null {
-  if (!isProfileSuccess(res)) {
-    return null
-  }
-
-  const rootData = res.data?.data
-  if (rootData == null || typeof rootData !== "object") {
-    return null
-  }
-
-  if (!("basic_info" in rootData) || rootData.basic_info == null) {
-    return null
-  }
-
-  return rootData as PlayerRootData
-}
-
-async function getBaseUrl() {
-  const configuredBase = process.env.NEXT_PUBLIC_BASE_URL?.trim()
-  if (configuredBase) {
-    return configuredBase.replace(/\/$/, "")
-  }
-
-  const productionHost =
-    process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL?.trim() ??
-    process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim()
-  if (productionHost) {
-    return `https://${productionHost.replace(/^https?:\/\//, "").replace(/\/$/, "")}`
-  }
-
-  if (process.env.NODE_ENV === "production") {
-    return "https://tarkavan.vercel.app"
-  }
-
-  return "http://localhost:3000"
-}
+ 
+ 
 
 export default async function ProfilePageFinal({ params }: ProfilePageProps) {
-  const { profileID } = await params
-  const res = await getPublicProfile({ id: profileID })
-  const data = extractRootData(res)
-
-  return <ProfilePage data={data} />
+  const { playerid } = await params
+  const res = await getPlayerProfile(String(playerid)) 
+    let data = null
+  if( res && "success" in res && res.success && res.data && "data" in res.data && res.data.data ) { 
+    data = res.data.data
+  }
+  
+  return <ProfilePage data={data as TPlayerProfile} />
 }
 
 export async function generateMetadata({
   params,
 }: ProfilePageProps): Promise<Metadata> {
-  const { profileID } = await params
-  const baseUrl = await getBaseUrl()
-  const profileUrl = `${baseUrl}/profile/${profileID}`
+  const { playerid } = await params
+  const baseUrl = `https://tarkavan.vercel.app`
+  const profileUrl = `${baseUrl}/profile/${playerid}`
   const ogRouteImage = `${baseUrl}/api/og?${new URLSearchParams({ url: profileUrl }).toString()}`
-  const res = await getPublicProfile({ id: profileID })
-  const rootData = extractRootData(res)
+  const res = await getPlayerProfile(String(playerid))
+  let rootData = null
+  if( res && "success" in res && res.success && res.data && "data" in res.data && res.data.data ) { 
+    rootData = res.data.data
+  }
+
 
   
 

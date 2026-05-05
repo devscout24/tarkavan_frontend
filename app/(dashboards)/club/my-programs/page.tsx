@@ -107,8 +107,7 @@ export default function UpcomingEventPage() {
       onSelect: () => {},
     },
   ]
-
-  console.log(programsData)
+ 
 
   useEffect(() => {
     
@@ -272,8 +271,8 @@ export default function UpcomingEventPage() {
               coachName={program.coach_name}
               schedule={program.time}
               duration={`${program.program_start} - ${program.program_end}`}
-              currentPrice={program.discount_price ? `$${program.discount_price}` : `$${program.program_price}`}
-              previousPrice={program.discount_price ? `$${program.program_price}` : undefined}
+              currentPrice={program.discount_price ? `$${program.program_price - program.discount_price  }` : `$${program.program_price}`}
+              previousPrice={String(program.program_price)}
               imageSrc={program.program_photo}
               imageAlt={program.program_name}
               buttonLabel="View Details"

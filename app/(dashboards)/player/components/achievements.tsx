@@ -25,7 +25,7 @@ export default function Achievements({
   return (
     <Card className="mt-6  border border-secondary/20 bg-primary ">
       <CardHeader className="pb-0">
-        <CardTitle className="text-xs font-semibold tracking-wider text-brand uppercase">
+        <CardTitle className="text-base font-semibold tracking-wider text-brand uppercase">
           Achievements
         </CardTitle>
       </CardHeader>

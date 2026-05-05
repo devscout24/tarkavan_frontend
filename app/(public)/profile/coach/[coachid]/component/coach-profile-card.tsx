@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/hover-card"
 import { TPlayerBasicInfo, TPlayerPositionInfo } from "@/types"
 
-export default function ProfileCard({
+export default function CoachProfileCard({
   provincialVotes = 0,
   academyVotes = 0,
   basic_info,
@@ -18,8 +18,8 @@ export default function ProfileCard({
 }: {
   provincialVotes?: number
   academyVotes?: number
-  basic_info: TPlayerBasicInfo
-  position_info: TPlayerPositionInfo
+  basic_info?: TPlayerBasicInfo
+  position_info?: TPlayerPositionInfo
 
 }) {
   return (
@@ -77,7 +77,7 @@ export default function ProfileCard({
 
             <span>{basic_info?.city} , {basic_info?.country} </span>
             <CiLock />
-            <span>{basic_info?.age >= 18 ? "No parental control" : "Parental Control Active"}</span>
+            <span>Parental Control Active</span>
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2.5">

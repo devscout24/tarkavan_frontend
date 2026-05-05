@@ -16,6 +16,8 @@ import { toast } from "sonner"
 import useModal from "../useModal"
 import { useRouter } from "next/navigation"
 import { handleLogout } from "@/lib/helpers"
+import { getHighestNumber } from "@/lib/get-highest-number"
+import { number } from "motion/react"
 
 export default function TeamAddModal() {
   const { close } = useModal()
@@ -56,6 +58,7 @@ export default function TeamAddModal() {
     const getData = async () => {
       try {
         const res = await getCompetitionLabel()
+        console.log("Competition Levels Response:", res) // Debug log
         if (res && "success" in res && res.success && "data" in res) {
           setCompetitionLevels(res.data?.data || [])
         }
@@ -71,6 +74,12 @@ export default function TeamAddModal() {
 
     try {
       setIsSubmitting(true)
+
+      if(typeof Number(form.ageGroup) !== "number" || isNaN(Number(form.ageGroup))) { 
+        toast.error("Please enter a valid age group (e.g., U14 or U16-U20).")
+        return
+      }  
+ 
 
       const formData = new FormData()
       formData.append("name", form.location) // Using form.location as team name based on the input field
@@ -91,6 +100,7 @@ export default function TeamAddModal() {
         res.success
       ) {
         toast.success("Team created successfully")
+        
         window.dispatchEvent(new Event("refetch:teams"))
         close("add-new", ["team"])
         router.push("/club/teams")
@@ -192,37 +202,15 @@ export default function TeamAddModal() {
           />
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div>
+          
+          <div className="flex flex-col">
             <span className="text-sm">Age Group</span>
-            <Select
-              value={form.ageGroup}
-              onValueChange={(v) => handleSelect("ageGroup", v)}
-            >
-              <SelectTrigger className="mt-1 w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white/60">
-                <SelectValue placeholder="Select Age Group" />
-              </SelectTrigger>
-              <SelectContent position="popper">
-                <SelectItem value="8" className="hover:bg-brand!">
-                  U03 - U08
-                </SelectItem>
-                <SelectItem value="12" className="hover:bg-brand!">
-                  U09 - U12
-                </SelectItem>
-                <SelectItem value="17" className="hover:bg-brand!">
-                  U13 - U17
-                </SelectItem>
-                <SelectItem value="21" className="hover:bg-brand!">
-                  U18 - U21
-                </SelectItem>
-                <SelectItem value="30" className="hover:bg-brand!">
-                  U21 - U30
-                </SelectItem>
-                <SelectItem value="200" className="hover:bg-brand!">
-                  30+
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            <Input 
+              placeholder="e.g U14 or U16-U20"
+              onChange={(e)=> handleSelect("ageGroup", String(getHighestNumber(e.target.value)))}
+              className="py-4.5 mt-1 border-neutral-700 bg-neutral-800 placeholder:text-neutral-300 placeholder:opacity-100"
+            /> 
+          </div> 
           <div>
             <span className="text-sm">Competition Level </span>
             <Select

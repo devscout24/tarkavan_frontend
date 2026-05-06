@@ -1,349 +1,151 @@
 "use client"
 import React, { useEffect, useState } from "react"
 import { Input } from "../ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Textarea } from "../ui/textarea"
 import CommonBtn from "@/components/common/common-btn"
 import UploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
-import {
-  createProgram,
-  getProgramDetails,
-  updateProgram,
-} from "@/app/(dashboards)/club/action"
-import { createCoachProgram } from "@/app/(dashboards)/coach/action"
+import { createProgram, getProgramDetails, updateProgram } from "@/app/(dashboards)/club/action"
 import { toast } from "sonner"
 import { getSportOptions } from "@/app/(dashboards)/action"
-import useModal from "./modal/useModal"
-import { usePathname } from "next/navigation"
-import { useSearchParams } from "next/navigation"
-import InputField from "./input-field"
+import useModal from "./modal/useModal" 
 import { getHighestNumber } from "@/lib/get-highest-number"
 
-interface AddProgramPageProps {
-  onSave?: (data: unknown) => void
+type TSportOption = { id: number; name: string; audience: string; status: string }
+
+const initialForm = {
+  sport: "", name: "", ageGroup: "", price: "", discountPrice: "",
+  location: "", start: "", end: "", times: ["", "", ""],
+  about: "", goals: [""], photo: null as string | null,
+  type: "one_one", sportOptionId: "",
 }
 
-type TSportOption = {
-  id: number
-  name: string
-  audience: string
-  status: string
-}
+const fieldCls = "border-neutral-700 bg-neutral-800 py-5 placeholder:text-neutral-300 placeholder:opacity-100"
+const selectCls = "mt-1 w-full border-neutral-700 bg-neutral-800 py-5 text-white data-[placeholder]:text-neutral-300"
 
-type TSportOptionsPayload = {
-  status: boolean
-  message: string
-  data: TSportOption[]
-}
+const AddProgramPage: React.FC = () => {
+  const { close } = useModal() 
 
-type TSportOptionsSuccessResponse = {
-  success: true
-  data: TSportOptionsPayload
-}
-
-const isSportOptionsSuccessResponse = (
-  value: unknown
-): value is TSportOptionsSuccessResponse => {
-  if (typeof value !== "object" || value === null) {
-    return false
-  }
-
-  if (!("success" in value) || !("data" in value)) {
-    return false
-  }
-
-  return value.success === true
-}
-
-const isActionSuccess = (
-  value: unknown
-): value is { success?: boolean; status?: boolean } => {
-  if (typeof value !== "object" || value === null) {
-    return false
-  }
-
-  return "success" in value || "status" in value
-}
-
-const AddProgramPage: React.FC<AddProgramPageProps> = () => {
-  const { close } = useModal()
-  const pathname = usePathname()
-  const isCoach = pathname?.includes("/coach")
-  const fieldClassName =
-    "border-neutral-700 bg-neutral-800 py-5 placeholder:text-neutral-300 placeholder:opacity-100"
-  const selectTriggerClassName =
-    "mt-1 w-full border-neutral-700 bg-neutral-800 py-5 text-white data-[placeholder]:text-neutral-300"
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [sportOptions, setSportOptions] = useState<TSportOption[]>([])
-  const [form, setForm] = useState(() => {
-    // Try to load photo from sessionStorage (better size limits than localStorage)
-    let photo = null
-    if (typeof window !== "undefined") {
-      try {
-        const saved = sessionStorage.getItem("add-program-photo")
-        if (saved) {
-          photo = saved
-        }
-      } catch {
-        // Ignore storage access errors
-      }
-    }
-    return {
-      sport: "",
-      name: "",
-      ageGroup: "",
-      price: "",
-      discountPrice: "",
-      location: "",
-      start: "",
-      end: "",
-      times: ["", "", ""],
-      about: "",
-      goals: [""],
-      photo,
-      type: "one_one",
-      sportOptionId: "",
-    }
-  })
-  const searchParams = useSearchParams()
-  const editId = searchParams.get("edit-id")
+  const [form, setForm] = useState(initialForm)
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
-  }
+  const set = (name: string, value: string) => setForm((p) => ({ ...p, [name]: value }))
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    set(e.target.name, e.target.value)
 
-  const handleSelect = (name: string, value: string) => {
-    setForm((prev) => ({ ...prev, [name]: value }))
-  }
+  const handleTimeChange = (idx: number, value: string) =>
+    setForm((p) => { const times = [...p.times]; times[idx] = value; return { ...p, times } })
 
-  // Use UploadPhoto instead
+  const handleGoalChange = (idx: number, value: string) =>
+    setForm((p) => { const goals = [...p.goals]; goals[idx] = value; return { ...p, goals } })
 
-  const handleTimeChange = (idx: number, value: string) => {
-    setForm((prev) => {
-      const times = [...prev.times]
-      times[idx] = value
-      return { ...prev, times }
-    })
-  }
-
-  const handleGoalChange = (idx: number, value: string) => {
-    setForm((prev) => {
-      const goals = [...prev.goals]
-      goals[idx] = value
-      return { ...prev, goals }
-    })
-  }
-
-  const addGoal = () => {
-    setForm((prev) => ({ ...prev, goals: [...prev.goals, ""] }))
-  }
-
-  const removeGoal = (idx: number) => {
-    setForm((prev) => {
-      const goals = prev.goals.filter((_, i) => i !== idx)
-      return { ...prev, goals }
-    })
-  }
+  const addGoal = () => setForm((p) => ({ ...p, goals: [...p.goals, ""] }))
+  const removeGoal = (idx: number) =>
+    setForm((p) => ({ ...p, goals: p.goals.filter((_, i) => i !== idx) }))
 
   useEffect(() => {
-    const getSportData = async () => {
-      try {
-        const res = await getSportOptions()
-
-        if (!isSportOptionsSuccessResponse(res)) {
-          return
-        }
-
-        const payload = res.data
-        if (!payload.status || !Array.isArray(payload.data)) {
-          return
-        }
-
-        const activeSportOptions = payload.data.filter((sport) => {
-          if (sport.status !== "active") return false
-          if (isCoach && sport.audience !== "coach") return false
-          return true
-        })
-        setSportOptions(activeSportOptions)
-      } catch (err) {
-        console.error("Error fetching sport data:", err)
-      }
-    }
-    getSportData()
-  }, [isCoach])
-
+    getSportOptions()
+      .then((res: any) => { if (res?.success && res?.data?.data) setSportOptions(res.data.data) })
+      .catch(console.error)
+  }, [])
+  const editId = localStorage.getItem("edit_program_id")
   useEffect(() => {
-    const getEditProgramData = async () => {
-      if (!editId) return
-
-      try {
-        const res = await getProgramDetails(String(editId))
- 
-
-        if (res?.status === false) {
-          toast.error(res.message || "Failed to load program data")
-          return
-        }
-
-        // Check if response has the expected structure
-        if (
-          res &&
-          typeof res === "object" &&
-          "success" in res &&
-          res.success === true &&
-          "data" in res &&
-          res.data &&
-          typeof res.data === "object" &&
-          "data" in res.data &&
-          res.data.data &&
-          typeof res.data.data === "object" &&
-          "program" in res.data.data &&
-          res.data.data.program
-        ) {
-          const program = res.data.data.program as any
-
-          setForm({
-            sport: program.sport || "",
-            name: program.program_name || "",
-            ageGroup: program.upto_age ? String(program.upto_age) : "",
-            price: program.program_price ? String(program.program_price) : "",
-            discountPrice: program.discount_price
-              ? String(program.discount_price)
-              : "",
-            location: program.program_location || "",
-            start: program.program_start || "",
-            end: program.program_end || "",
-            times:
-              program.times && program.times.length > 0
-                ? program.times
-                : ["", "", ""],
-            about: program.about_program || "",
-            goals:
-              program.goals && program.goals.length > 0 ? program.goals : [""],
-            photo: program.program_photo || null,
-            type: program.program_type || "one_one",
-            sportOptionId: program.sport_option_id
-              ? String(program.sport_option_id)
-              : "",
-          })
-        }
-      } catch (err) {
-        console.error("Error fetching program data:", err)
-      }
-    }
-    getEditProgramData()
+    if (!editId) return
+    getProgramDetails(String(editId)).then((res: any) => {
+      const p = res?.data?.data?.program
+      console.log("Fetched program details for editing:", p)
+      if (!p) { toast.error("Failed to load program data"); return }
+      setForm({
+        sport: p.sport || "",
+        name: p.program_name || "",
+        ageGroup: p.upto_age ? String(p.upto_age) : "",
+        price: p.program_price ? String(p.program_price) : "",
+        discountPrice: p.discount_price ? String(p.discount_price) : "",
+        location: p.program_location || "",
+        start: p.program_start || "",
+        end: p.program_end || "", 
+        about: p.about_program || "",
+        goals: p.goals?.length
+        ? p.goals.map((g: { goal: string }) => g.goal)
+        : [""],
+        photo: p.program_photo || null,
+        type: p.program_type || "one_one",
+        sportOptionId: p.sport_option_id ? String(p.sport_option_id) : "",
+        times: p.times?.length
+        ? p.times.map((t: {
+        id: number;
+        time: string;
+        slot_date: string | null;
+        start_time: string | null;
+        end_time: string | null;
+        is_available: boolean;
+      }) => t.time)
+        : ["", "", ""],
+      })
+    }).catch(console.error)
   }, [editId])
 
-  const handleAddProgram = async () => {
-    if (isSubmitting) {
-      return
+  const buildFormData = async () => {
+    const formData = new FormData()
+    const fields: Record<string, string> = {
+      sport: form.sport, program_type: form.type, program_name: form.name,
+      program_price: form.price, program_location: form.location,
+      program_start: form.start, program_end: form.end,
+      about_program: form.about, discount_price: form.discountPrice || "0",
+      upto_age: String(getHighestNumber(form.ageGroup)), sport_option_id: form.sportOptionId,
     }
+    Object.entries(fields).forEach(([k, v]) => formData.append(k, v))
+    form.times.filter((t) => t.trim()).forEach((t, i) => formData.append(`program_times[${i}]`, t))
+    form.goals.filter((g) => g.trim()).forEach((g, i) => formData.append(`goals[${i}]`, g))
+
+    if (form.photo?.startsWith("data:")) {
+      const blob = await (await fetch(form.photo)).blob()
+      const ext = blob.type.split("/")[1]?.toLowerCase() || "jpg"
+      formData.append("program_photo", new File([blob], `program-photo.${ext}`, { type: blob.type }))
+    }
+    return formData
+  }
 
  
+
+ 
+
+  const onSuccess = (message: string) => {
+    toast.success(message)
+    window.dispatchEvent(new Event("programevent")) 
+    close("add-new", ["program"])
+    close("editID")
+  }
+
+  const handleAdd = async () => {
+    if (isSubmitting) return
+    setIsSubmitting(true)
     try {
-      setIsSubmitting(true)
-
-      const formData = new FormData()
-      formData.append("sport", form.sport)
-      formData.append("program_type", form.type)
-      formData.append("program_name", form.name)
-      formData.append("program_price", form.price)
-      formData.append("program_location", form.location)
-      formData.append("program_start", form.start)
-      formData.append("program_end", form.end)
-      formData.append("about_program", form.about)
-      formData.append("discount_price", form.discountPrice || "0")
-      formData.append("upto_age", form.ageGroup)
-      formData.append("sport_option_id", form.sportOptionId)
-
-      // if (form.type) {
-      //   formData.append("program_type", form.type)
-      // }
-
-      form.times
-        .filter((time) => Boolean(time.trim()))
-        .forEach((time, index) => {
-          formData.append(`program_times[${index}]`, time)
-        })
-
-      form.goals
-        .filter((goal) => Boolean(goal.trim()))
-        .forEach((goal, index) => {
-          formData.append(`goals[${index}]`, goal)
-        })
-
-      if (form.photo && form.photo.startsWith("data:")) {
-        const photoResponse = await fetch(form.photo)
-        const photoBlob = await photoResponse.blob()
-        const extension = photoBlob.type.split("/")[1]?.toLowerCase() || "jpg"
-        const file = new File([photoBlob], `program-photo.${extension}`, {
-          type: photoBlob.type || "image/jpeg",
-        })
-        formData.append("program_photo", file)
-      }
-
-      let res: unknown
-      if (isCoach) {
-        res = await createCoachProgram(formData)
-      } else {
-        if (editId) {
-          res = await updateProgram({ program_id: editId, data: formData })
-        } else {
-          res = await createProgram(formData)
-        }
-      }
-
-      // Check success correctly based on our generic action response pattern
-      if (
-        isActionSuccess(res) &&
-        (res.success === true || res.status === true)
-      ) {
-        toast.success(
-          editId
-            ? "Program updated successfully!"
-            : "Program created successfully!"
-        )
-        if (typeof window !== "undefined") {
-          window.dispatchEvent(new CustomEvent("programCreated"))
-        }
+      const res: any = await createProgram(await buildFormData())
+      res?.success || res?.status
+        ? onSuccess("Program created successfully!")
+        : toast.error(res?.message || "Failed to create program.")
         close("add-new", ["program"])
-        // remove add new param from url
-        if (typeof window !== "undefined") {
-          const url = new URL(window.location.href)
-          url.searchParams.delete("add-new")
-          window.history.replaceState({}, "", url.toString())
-        }
-
-        try {
-          sessionStorage.removeItem("add-program-photo")
-        } catch {
-          // Ignore storage removal errors
-        }
-        return
-      }
-
-      const fallbackMessage =
-        "Failed to create program. Please check your inputs."
-      const message =
-        typeof res === "object" &&
-        res !== null &&
-        "message" in res &&
-        typeof res.message === "string"
-          ? res.message
-          : fallbackMessage
-      toast.error(message)
     } catch {
       toast.error("Failed to create program. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleUpdate = async () => {
+    if (isSubmitting || !editId) return
+    setIsSubmitting(true)
+    try {
+      const res: any = await updateProgram({ program_id: editId, data: await buildFormData() })
+      res?.success || res?.status
+        ? onSuccess("Program updated successfully!") 
+        : toast.error(res?.message || "Failed to update program.")
+        close("add-new", ["program"])
+    } catch {
+      toast.error("Failed to update program. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
@@ -352,26 +154,14 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
   return (
     <div className="mx-auto w-full p-0">
       <div className="flex flex-col gap-4 rounded-2xl bg-neutral-900 p-8 text-white">
-        <h2 className="mb-2 text-2xl font-semibold">
-          {editId ? "Edit Program" : "Add Program"}
-        </h2>
+        <h2 className="mb-2 text-2xl font-semibold">{editId ? "Edit Program" : "Add Program"}</h2>
 
         {/* Photo Upload */}
         <div className="mb-2">
           <UploadPhoto
-            onFileSelect={async (file) => {
-              // Convert file to dataURL
+            onFileSelect={(file) => {
               const reader = new FileReader()
-              reader.onload = () => {
-                const dataUrl = reader.result as string
-                setForm((prev) => ({ ...prev, photo: dataUrl }))
-                try {
-                  sessionStorage.setItem("add-program-photo", dataUrl)
-                } catch {
-                  // If sessionStorage is full, keep in memory only
-                  console.warn("sessionStorage full, keeping image in memory")
-                }
-              }
+              reader.onload = () => setForm((p) => ({ ...p, photo: reader.result as string }))
               reader.readAsDataURL(file)
             }}
             title="UPLOAD PHOTO"
@@ -379,234 +169,135 @@ const AddProgramPage: React.FC<AddProgramPageProps> = () => {
           />
           {form.photo && (
             <div className="mt-2 flex items-center gap-2">
-              <Image
-                src={form.photo}
-                alt="Uploaded Preview"
-                width={80}
-                height={80}
-                unoptimized
-                className="h-20 w-20 rounded border border-neutral-700 object-cover"
-              />
-              <button
-                type="button"
-                className="ml-2 flex h-7 w-7 items-center justify-center rounded-full border border-neutral-700 bg-black/60 text-lg text-white hover:bg-red-600 hover:text-white"
-                onClick={() => {
-                  setForm((prev) => ({ ...prev, photo: null }))
-                  try {
-                    sessionStorage.removeItem("add-program-photo")
-                  } catch {
-                    // Ignore removal errors
-                  }
-                }}
-                aria-label="Remove uploaded photo"
-              >
-                ×
-              </button>
+              <Image src={form.photo} alt="Uploaded Preview" width={80} height={80} unoptimized
+                className="h-20 w-20 rounded border border-neutral-700 object-cover" />
+              <button type="button" aria-label="Remove uploaded photo"
+                className="ml-2 flex h-7 w-7 items-center justify-center rounded-full border border-neutral-700 bg-black/60 text-lg text-white hover:bg-red-600"
+                onClick={() => setForm((p) => ({ ...p, photo: null }))}>×</button>
             </div>
           )}
         </div>
 
+        {/* Program Type */}
         <div className="flex flex-col">
           <span className="text-sm">Program Type</span>
-          <Select
-            value={form.type}
-            onValueChange={(v) => handleSelect("type", v)}
-          >
-            <SelectTrigger className={selectTriggerClassName}>
-              <SelectValue placeholder="Select Program Type" />
-            </SelectTrigger>
+          <Select value={form.type} onValueChange={(v) => set("type", v)}>
+            <SelectTrigger className={selectCls}><SelectValue placeholder="Select Program Type" /></SelectTrigger>
             <SelectContent position="popper">
-              <SelectItem value="group" className="hover:bg-brand!">
-                Group
-              </SelectItem>
-              <SelectItem value="one_one" className="hover:bg-brand!">
-                One-on-One
-              </SelectItem>
+              <SelectItem value="group" className="hover:bg-brand!">Group</SelectItem>
+              <SelectItem value="one_one" className="hover:bg-brand!">One-on-One</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {/* First row: Sport Selection & Program Name */}
+          {/* Sport Selection */}
           <div className="flex flex-col">
             <span className="text-sm">Sport Selection</span>
-            <Select
-              value={form.sport}
-              onValueChange={(v) => {
-                // Set sport name
-                handleSelect("sport", v)
-                // Find and set sport ID
-                const selectedSport = sportOptions.find(
-                  (sport) => sport.name === v
-                )
-                if (selectedSport) {
-                  handleSelect("sportOptionId", String(selectedSport.id))
-                }
-              }}
-            >
-              <SelectTrigger className={selectTriggerClassName}>
-                <SelectValue placeholder="Select Sport" />
-              </SelectTrigger>
+            <Select value={form.sport} onValueChange={(v) => {
+              set("sport", v)
+              const s = sportOptions.find((s) => s.name === v)
+              if (s) set("sportOptionId", String(s.id))
+            }}>
+              <SelectTrigger className={selectCls}><SelectValue placeholder="Select Sport" /></SelectTrigger>
               <SelectContent position="popper">
-                {sportOptions.map((sport) => (
-                  <SelectItem
-                    key={sport.id}
-                    value={sport.name}
-                    className="hover:bg-brand"
-                  >
-                    {sport.name}
-                  </SelectItem>
+                {sportOptions.map((s) => (
+                  <SelectItem key={s.id} value={s.name} className="hover:bg-brand!">{s.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
+
           <div className="flex flex-col">
             <span className="text-sm">Program Name</span>
-            <Input
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              placeholder="Program Name"
-              className={`mt-1 ${fieldClassName}`}
-            />
+            <Input name="name" value={form.name} onChange={handleChange}
+              placeholder="Program Name" className={`mt-1 ${fieldCls}`} />
           </div>
-          {/* Second row: Age Group & Program Price */}
-          
+
           <div className="flex flex-col">
             <span className="text-sm">Age Group</span>
-            <Input 
-              placeholder="e.g U14 or U16-U20"
-              onChange={(e)=> handleSelect("ageGroup", String(getHighestNumber(e.target.value)))}
-              className="py-4.5 mt-1 border-neutral-700 bg-neutral-800 placeholder:text-neutral-300 placeholder:opacity-100"
-            /> 
+            <Input placeholder="e.g U14 or U16-U20"
+              value={form.ageGroup}
+              onChange={(e) => set("ageGroup",  e.target.value )}
+              className={`mt-1 ${fieldCls}`} />
           </div>
+
           <div className="flex flex-col">
             <span className="text-sm">Program Price ($)</span>
-            <Input
-              name="price"
-              value={form.price}
-              onChange={handleChange}
-              placeholder="Program Price ($)"
-              className={`mt-1 ${fieldClassName}`}
-              type="number"
-            />
+            <Input name="price" value={form.price} onChange={handleChange}
+              placeholder="Program Price ($)" className={`mt-1 ${fieldCls}`} type="number" />
           </div>
-          <Input
-            name="discountPrice"
-            value={form.discountPrice}
-            onChange={handleChange}
-            placeholder="Program Discount Price ($)"
-            className={fieldClassName}
-            type="number"
-          />
-          <Input
-            name="location"
-            value={form.location}
-            onChange={handleChange}
-            placeholder="Program Location"
-            className={fieldClassName}
-          />
+
+          <div className=" ">
+            <span className="text-sm  ">Discount Price ($)</span>
+            <Input name="discountPrice" value={form.discountPrice} onChange={handleChange}
+              placeholder="Program Discount Price ($)" className={fieldCls} type="number" />
+          </div>
+
+          <div className="">
+            <span className="text-sm">Program Location</span>
+            <Input name="location" value={form.location} onChange={handleChange}
+              placeholder="Program Location" className={fieldCls} />
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col">
               <span className="text-sm">Program Start</span>
-              <Input
-                name="start"
-                value={form.start}
-                onChange={handleChange}
-                placeholder="Program Start (mm/dd/yyyy)"
-                className={`mt-1 ${fieldClassName}`}
-                type="date"
-              />
+              <Input name="start" value={form.start} onChange={handleChange}
+                className={`mt-1 ${fieldCls}`} type="date" />
             </div>
             <div className="flex flex-col">
               <span className="text-sm">Program End</span>
-              <Input
-                name="end"
-                value={form.end}
-                onChange={handleChange}
-                placeholder="Program End (mm/dd/yyyy)"
-                className={`mt-1 ${fieldClassName}`}
-                type="date"
-              />
+              <Input name="end" value={form.end} onChange={handleChange}
+                className={`mt-1 ${fieldCls}`} type="date" />
             </div>
           </div>
+
           <div className="flex flex-col">
             <span className="text-sm">Add Program Time</span>
             <div className="mt-1 flex gap-2">
               {form.times.map((time, idx) => (
-                <Input
-                  key={idx}
-                  value={time}
+                <Input key={idx} value={time}
                   onChange={(e) => handleTimeChange(idx, e.target.value)}
-                  placeholder="HH:MM"
-                  className={fieldClassName}
-                  type="time"
-                />
+                  placeholder="HH:MM" className={fieldCls} type="time" />
               ))}
             </div>
           </div>
         </div>
 
-        <Textarea
-          name="about"
-          value={form.about}
-          onChange={handleChange}
+        <Textarea name="about" value={form.about} onChange={handleChange}
           placeholder="About This Program"
-          className="mt-2 border-neutral-700 bg-neutral-800 placeholder:text-neutral-300 placeholder:opacity-100"
-        />
+          className="mt-2 border-neutral-700 bg-neutral-800 placeholder:text-neutral-300 placeholder:opacity-100" />
 
+        {/* Goals */}
         <div className="mt-2 rounded-lg border border-dashed border-neutral-700 p-3">
           <div className="flex flex-col gap-2">
             {form.goals.map((goal, idx) => (
               <div key={idx} className="flex items-center gap-2">
-                <Input
-                  value={goal}
-                  onChange={(e) => handleGoalChange(idx, e.target.value)}
-                  placeholder={`Goal ${idx + 1}`}
-                  className={`mx-auto w-97/100 ${fieldClassName}`}
-                />
+                <Input value={goal} onChange={(e) => handleGoalChange(idx, e.target.value)}
+                  placeholder={`Goal ${idx + 1}`} className={`mx-auto w-97/100 ${fieldCls}`} />
                 {form.goals.length > 1 && (
-                  <CommonBtn
-                    text="✕"
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => removeGoal(idx)}
-                    className="hover:border-brand hover:bg-brand hover:text-primary"
-                  />
+                  <CommonBtn text="✕" size="sm" variant="ghost" onClick={() => removeGoal(idx)}
+                    className="hover:border-brand hover:bg-brand hover:text-primary" />
                 )}
               </div>
             ))}
-            <CommonBtn
-              text="+ Add Goals"
-              size="sm"
-              variant="outline"
-              className="mx-auto mt-2 w-97/100 py-5! hover:border-brand hover:bg-brand hover:text-primary"
-              onClick={addGoal}
-            />
+            <CommonBtn text="+ Add Goals" size="sm" variant="outline" onClick={addGoal}
+              className="mx-auto mt-2 w-97/100 py-5! hover:border-brand hover:bg-brand hover:text-primary" />
           </div>
         </div>
 
+        {/* Actions */}
         <div className="mt-6 mr-4 flex justify-end gap-4">
+          <CommonBtn text="Cancel" size="lg" variant="outline" onClick={()=>{ 
+            localStorage.removeItem("edit_program_id")
+            close("add-new", ["program"]) }}
+            className="w-fit px-10 hover:border-brand hover:bg-brand hover:text-primary" />
           <CommonBtn
-            text="Cancel"
-            size="lg"
-            variant="outline"
-            className="w-fit px-10 hover:border-brand hover:bg-brand hover:text-primary"
-            onClick={() => {}}
-          />
-          <CommonBtn
-            text={
-              isSubmitting
-                ? "Saving..."
-                : editId
-                  ? "Update Program"
-                  : "Save Program"
-            }
-            size="lg"
-            variant="default"
+            text={isSubmitting ? "Saving..." : editId ? "Update Program" : "Save Program"}
+            size="lg" variant="default"
             className="w-fit bg-brand px-10 text-black hover:border hover:bg-transparent hover:text-white"
-            onClick={handleAddProgram}
-          />
+            onClick={editId ? handleUpdate : handleAdd} />
         </div>
       </div>
     </div>

@@ -49,7 +49,7 @@ export default function ClubOpurtunityCard({
         toast.success("Match requested successfully!")
         setRequesting(false)
 
-        window.dispatchEvent(new CustomEvent('matchApplied')) 
+        window.dispatchEvent(new Event('matchApplied')) 
 
       } else if(res && 'data' in res && res.data && 'message' in res.data) {
         toast.error(res.data.message)

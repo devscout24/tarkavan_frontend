@@ -126,6 +126,17 @@ export default function UpcomingEventPage() {
     }
 
     getPrograms()
+
+    const handleProgramEvent = () => {
+      getPrograms()
+    }
+
+    window.addEventListener('programevent', handleProgramEvent)
+
+    return () => {
+      window.removeEventListener('programevent', handleProgramEvent)
+    }
+
   }, [refreshKey])  
 
   // Function to refresh programs list
@@ -164,13 +175,8 @@ export default function UpcomingEventPage() {
           size="sm"
           variant="default"
           onClick={() => {
-            const nextParams = new URLSearchParams(searchParams.toString())
-            nextParams.set("add-new", "program")
-            router.replace(
-              nextParams.toString()
-                ? `${pathname}?${nextParams.toString()}`
-                : pathname
-            )
+            localStorage.removeItem("edit_program_id") 
+            router.replace(`?add-new=program`)
           }}
         />
       </div>
@@ -240,10 +246,8 @@ export default function UpcomingEventPage() {
                 size="sm"
                 variant="default"
                 onClick={() => {
-                  const nextParams = new URLSearchParams()
-                  nextParams.set("add-new", "program")
-                  nextParams.set("edit-id", String(programsData?.latest_upcoming_program?.id || ""))
-                  router.replace(`${pathname}?${nextParams.toString()}`)
+                  localStorage.setItem("edit_program_id", String(programsData?.latest_upcoming_program?.id || ""))
+                  router.push(`?add-new=program`) 
                 }}
               />
             </div>
@@ -270,7 +274,7 @@ export default function UpcomingEventPage() {
               title={program.program_name}
               coachName={program.coach_name}
               schedule={program.time}
-              duration={`${program.program_start} - ${program.program_end}`}
+              duration={`${moment(program.program_start).format("MMM Do YY") } - ${moment(program.program_end).format("MMM Do YY")}`}
               currentPrice={program.discount_price ? `$${program.program_price - program.discount_price  }` : `$${program.program_price}`}
               previousPrice={String(program.program_price)}
               imageSrc={program.program_photo}

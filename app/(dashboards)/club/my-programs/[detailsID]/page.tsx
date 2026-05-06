@@ -6,15 +6,12 @@ import { ProgramCalendar } from "@/components/common/program-calendar"
 import ProgramCoachCard from "@/components/common/program-coach-card"
 import ProgramDetailsBanner from "@/components/common/program-details-banner"
 import ProgramFeedbackCard from "@/components/common/program-feedback-card"
-import ProgramHead from "@/components/common/program-head"
-import ProgramReview from "@/components/common/program-review"
+import ProgramHead from "@/components/common/program-head" 
 import { Button } from "@/components/ui/button"
 import { eachDayOfInterval, format } from "date-fns"
 import { ArrowLeftIcon } from "lucide-react"
 import {
-  useRouter,
-  useSearchParams,
-  usePathname,
+  useRouter, 
   useParams,
 } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -23,9 +20,7 @@ import { TProgramDetails } from "@/types"
 import moment from "moment"
 
 export default function ProgramDetails() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const pathname = usePathname()
+  const router = useRouter() 
   const params = useParams()
   const programStartDate = new Date(2026, 3, 1)
   const programEndDate = new Date(2026, 3, 15)
@@ -71,6 +66,18 @@ export default function ProgramDetails() {
     }
 
     getProgramDetail()
+
+    const handleProgramEvent = () => {
+      getProgramDetail()
+    }
+
+    window.addEventListener("programevent", handleProgramEvent)
+
+    return () => {
+      window.removeEventListener("programevent", handleProgramEvent)
+    }
+
+
   }, [detailsID])
 
   return (
@@ -89,14 +96,9 @@ export default function ProgramDetails() {
           className="h-10 w-fit rounded-[8px] bg-brand px-4 font-medium text-primary hover:bg-brand xl:h-11 xl:px-5 xl:text-base 2xl:h-12 2xl:px-6 2xl:text-lg"
           size="sm"
           variant="default"
-          onClick={() => {
-            const nextParams = new URLSearchParams(searchParams.toString())
-            nextParams.set("add-new", "program")
-            router.replace(
-              nextParams.toString()
-                ? `${pathname}?${nextParams.toString()}&editID=${detailsID}`
-                : pathname
-            )
+          onClick={() => { 
+             localStorage.setItem("edit_program_id", String(detailsID))
+             router.push(`?add-new=program`)
           }}
         />
       </div>

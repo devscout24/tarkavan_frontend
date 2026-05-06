@@ -12,14 +12,14 @@ interface ModalProps {
   openId: string
   className?: string 
   autoFocus?: boolean 
-  children: React.ReactNode
+  children: React.ReactNode 
 }
 
 export default function Modal({
   openId,
   modalId,
   className = "",  
-  children,
+  children, 
 }: PropsWithChildren<ModalProps>) {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -60,7 +60,7 @@ export default function Modal({
   }
 
   return (
-    <Dialog open={modal === openId} onOpenChange={handleOpenChange}>
+    <Dialog open={modal === openId} onOpenChange={handleOpenChange}  >
       <DialogContent
         className={cn(
           "max-h-[90dvh] w-full max-w-[95vw] overflow-x-scroll px-2 py-4 sm:px-6 **:data-[slot='dialog-close']:bg-brand bg-transparent   ",

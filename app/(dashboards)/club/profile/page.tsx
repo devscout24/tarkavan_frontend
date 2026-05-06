@@ -80,7 +80,7 @@ export default async function page() {
             showMessageButton={false}
             location={
               clubProfile
-                ? `${clubProfile.city}, ${clubProfile.state}, ${clubProfile.country}`
+                ? `${clubProfile.city}, ${clubProfile.country}`
                 : "Location not available"
             }
             tags={

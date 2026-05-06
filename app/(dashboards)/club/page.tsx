@@ -250,7 +250,10 @@ export default function ClubDashboardPage() {
               icon={<PlusIcon />}
               className="w-full scale-90 cursor-pointer bg-secondary py-6! text-white hover:bg-brand hover:text-primary"
               text={"Add Program"}
-              onClick={() => router.push("?add-new=program")}
+              onClick={() =>{ 
+                localStorage.removeItem("edit_program_id")
+                router.push("?add-new=program")
+              }}
             />
             <CommonBtn
               variant={"default"}

@@ -81,14 +81,16 @@ export default function SocialLinks({
           onClick={onClick}
         />
       </CardContent>
-
+      
+      {profileId  && 
       <ShareModal
-        key={"shareUrl"}
-        open={openShareModal}
-        onOpenChange={setOpenShareModal}
-        url={`${window.location.origin}/profile/player/${profileId || "player"}`}
-        title="Watch my Player Card"
+      key={"shareUrl"}
+      open={openShareModal}
+      onOpenChange={setOpenShareModal}
+      url={`${window.location.origin}/profile/player/${profileId}`}
+      title="Watch my Player Card"
       />
+      }
     </Card>
   )
 }

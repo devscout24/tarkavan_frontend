@@ -1,10 +1,12 @@
 "use client"
 import ProgramCard from "@/components/common/program-card"
 import PlayerActivePrograms from "../../../../components/common/player-active-programs"
+import { useEffect, useState } from "react"
+import { getUpcommingPlayerParentOrPlayer } from "./action"
 // import { useNavigate } from "react-router"
 
 export default function UpcomingEventPage() {
-  const programs = [
+    const programs = [
     {
       id: "1",
       title: "Elite Hoops Leadership Academy",
@@ -43,6 +45,8 @@ export default function UpcomingEventPage() {
 
   // const navigate = useNavigate()
 
+ 
+
   return (
     <section>
       <PlayerActivePrograms />
@@ -55,7 +59,7 @@ export default function UpcomingEventPage() {
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {programs.map((program, index) => (
           <ProgramCard
-            key={index}
+            key={index} 
             {...program}
             onClick={() =>  {} }
           />

@@ -36,7 +36,8 @@ type ProgramCardProps = {
   onClick?: () => void
   showThreeDotsMenu?: boolean
   threeDotsItems?: ThreeDotsMenuItem[]
-  id?: string | number
+  id?: string | number 
+  viewOnly: boolean
 }
 
 export default function ProgramCard({
@@ -52,6 +53,7 @@ export default function ProgramCard({
   buttonLabel,
   className,
   onClick, 
+  viewOnly = false ,
   id
 }: ProgramCardProps) { 
 
@@ -61,7 +63,7 @@ export default function ProgramCard({
        
       if(res && 'success' in res && res.success) {
         toast.success("Program deleted successfully")
-        window.dispatchEvent(new CustomEvent('programDeleted'))
+        window.dispatchEvent(new Event('programDeleted'))
       }
     } catch (err) { 
       toast.error("Failed to delete program")
@@ -124,6 +126,7 @@ export default function ProgramCard({
         </div> 
         <div className="flex gap-4">
           <CommonBtn text={buttonLabel}  className="flex-1 h-11 rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90   " size={"lg"} variant={"default"} onClick={onClick} />
+          {!viewOnly && 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className=" border-brand! py-5     ">
@@ -137,6 +140,7 @@ export default function ProgramCard({
               </DropdownMenuGroup> 
             </DropdownMenuContent>
           </DropdownMenu>
+          }
         </div>
       </CardContent>
     </Card>

@@ -1,7 +1,7 @@
 import Footer from "@/components/common/footer";
 import Nav from "@/components/common/nav";
 import CoachProfileCard from "./component/coach-profile-card";
-
+export const runtime = 'edge';
 export default function page() {
     return <section>
 

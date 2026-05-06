@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import ProfilePage from "./components/main-page" 
 import { TPlayerProfile } from "@/types"
 import { getPlayerProfile } from "@/app/(public)/action"
- 
+export const runtime = 'edge';
 
 type ProfilePageProps = {
   params: Promise<{

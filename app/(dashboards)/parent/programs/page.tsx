@@ -49,11 +49,10 @@ export default function ProgramPage() {
     <section>
       <ProgramHead
         title="Available Programs"
-        options={[
-          { value: "all", label: "All" },
-          { value: "soccer", label: "Soccer" },
-        ]}
+        options={[{ id: 3, name: "All Sports" }]}
         placeholder="All Sports"
+        selectedFilter=""
+        setSelectedFilter={() => {}}
       />
 
       {/* programs cards */}
@@ -63,6 +62,7 @@ export default function ProgramPage() {
             key={index}
             {...program}
             onClick={() => router.push(`/parent/programs/${program.id}`)}
+            viewOnly={false}
           />
         ))}
       </div>

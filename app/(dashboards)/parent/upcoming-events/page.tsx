@@ -73,6 +73,7 @@ export default function UpcomingEventPage() {
             key={index}
             {...program}
             onClick={() => {}}
+            viewOnly={false}
           />
         ))}
       </div>

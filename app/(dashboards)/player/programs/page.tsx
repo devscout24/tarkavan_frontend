@@ -51,8 +51,7 @@ export default function ProgramPage() {
 
     const  [programs, setPrograms] = useState<TProgramUpcomming[]>([])
     const [sports, setSports] = useState<TSportOption[]>([])
-    const [selectedFilter, setSelectedFilter] = useState<string>("") 
-    console.log("Selected Filter:", selectedFilter)
+    const [selectedFilter, setSelectedFilter] = useState<string>("")  
     useEffect(() => {
   
       const getPrograms = async () => {

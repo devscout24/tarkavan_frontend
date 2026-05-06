@@ -91,9 +91,11 @@ export default function SearchExploreDetails() {
           {/* recent feedback */}
           <div className="mt-6">
             <ProgramHead
-              options={[{ value: "most-recent", label: "Most Recent" }]}
+              options={[{ id:9 , name: "Most Recent" }]}
               placeholder="Choose short"
               title="Recent Feedback"
+              selectedFilter=""
+              setSelectedFilter={() => {}}
             />
 
             <ProgramFeedbackCard

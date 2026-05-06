@@ -218,6 +218,7 @@ export default function UpcomingEventPage() {
                 buttonLabel="View Details"
                 onClick={() => router.push(`/coach/my-programs/${program.id}`)}
                 threeDotsItems={programActions(program)}
+                viewOnly={false}
               />
             )
           })}

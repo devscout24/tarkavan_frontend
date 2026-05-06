@@ -42,6 +42,7 @@ export default function ProgramDetails() {
   const [programDetail, setProgramDetail] = useState<TProgramDetails | null>(
     null
   )
+  const [selectedFilter, setSelectedFilter] = useState<string>("most_recent")
 
   useEffect(() => {
     if (!detailsID) return
@@ -132,9 +133,11 @@ export default function ProgramDetails() {
           {/* recent feedback */}
           <div className="mt-6">
             <ProgramHead
-              options={[{ value: "most-recent", label: "Most Recent" }]}
+              options={[{ id: 1, name: "Most Recent" }]}
               placeholder="Choose short"
               title="Recent Feedback"
+              setSelectedFilter={setSelectedFilter}
+              selectedFilter={selectedFilter}
             />
 
             <ProgramFeedbackCard

@@ -1,8 +1,6 @@
 "use client"
 import ProgramCard from "@/components/common/program-card"
-import PlayerActivePrograms from "../../../../components/common/player-active-programs"
-import { useEffect, useState } from "react"
-import { getUpcommingPlayerParentOrPlayer } from "./action"
+import PlayerActivePrograms from "../../../../components/common/player-active-programs" 
 // import { useNavigate } from "react-router"
 
 export default function UpcomingEventPage() {
@@ -62,6 +60,7 @@ export default function UpcomingEventPage() {
             key={index} 
             {...program}
             onClick={() =>  {} }
+            viewOnly={false}
           />
         ))}
       </div>

@@ -91,9 +91,11 @@ export default function UpcomingEventDetails() {
           {/* recent feedback */}
           <div className="mt-6">
             <ProgramHead
-              options={[{ value: "most-recent", label: "Most Recent" }]}
+              options={[{ id: 4, name: "Most Recent" }]}
               placeholder="Choose short"
               title="Recent Feedback"
+              selectedFilter=""
+              setSelectedFilter={() => {}}
             />
 
             <ProgramFeedbackCard

@@ -282,6 +282,7 @@ export default function UpcomingEventPage() {
               buttonLabel="View Details"
               onClick={() => router.push(`/club/my-programs/${program.id}`)}
               threeDotsItems={programActions}
+              viewOnly={false}
             />
           ))
         ) : (

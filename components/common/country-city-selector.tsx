@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Country, City } from "country-state-city";
+import { u } from "motion/react-client";
 
 type CityType = {
   name: string;
@@ -11,10 +12,14 @@ type CityType = {
 
 export default function CountryCitySelector(
   {
-    onSelect 
+    onSelect ,
+    onReset,
+    className
   }
   :
   {
+    className?: string,
+    onReset?: (country: "" , city: "") => void,
     onSelect: (data:{country_name: string , city_name: string}) => void
   }
 ) {
@@ -23,6 +28,9 @@ export default function CountryCitySelector(
   const [selectedCity, setSelectedCity] = useState<string>("");
 
   const countries = Country.getAllCountries();
+
+
+ 
 
   const handleCountryChange = (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -51,7 +59,7 @@ useEffect(() => {
 
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-2    ">
+    <div className={`flex gap-2 w-full ${className}     `}>
       {/* Country Dropdown */}
       <select onChange={handleCountryChange} value={selectedCountry} className="border border-secondary/30 p-2 rounded-md w-full bg-secondary        ">
         <option value="">Select Country</option>

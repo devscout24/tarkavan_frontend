@@ -1,5 +1,5 @@
 "use client"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import CoreIdentity from "./components/core-identity" 
 import SeasonStats from "./components/season-stats"
@@ -15,59 +15,24 @@ import { addChildOrPlayer } from "@/app/(dashboards)/action"
 import { toast } from "sonner"
 import SelectPosition from "./components/position-map" 
 import { playerProfileUpdate } from "@/app/(dashboards)/player/profile/action"
+import { TCompletePlayerData } from "@/types"
+import useModal from "../../useModal"
 
-const PLAYER_ADD_WIZARD_STORAGE_KEY = "player-add-modal:wizard-state:v1"
-
-function getInitialWizardState(): WizardState {
-  if (typeof window === "undefined") {
-    return defaultWizardState
-  }
-
-  try {
-    const rawState = window.localStorage.getItem(PLAYER_ADD_WIZARD_STORAGE_KEY)
-    if (!rawState) {
-      return defaultWizardState
-    }
-
-    const parsed = JSON.parse(rawState) as WizardState
-    if (!parsed?.forms) {
-      return defaultWizardState
-    }
-
-    return {
-      ...defaultWizardState,
-      ...parsed,
-      forms: {
-        ...defaultWizardState.forms,
-        ...parsed.forms,
-      },
-    }
-  } catch {
-    return defaultWizardState
-  }
-}
 
 export default function PlayerAddModal() {
-  const [wizardState, setWizardState] = useState<WizardState>(() =>
-    getInitialWizardState()
-  )
+  const [wizardState, setWizardState] = useState<WizardState>(defaultWizardState)
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
   const currentStep = wizardState.currentStep
   const totalSteps = 8
   const isUpdate = searchParams.get("update");
+  const { close } = useModal()
 
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(
-        PLAYER_ADD_WIZARD_STORAGE_KEY,
-        JSON.stringify(wizardState)
-      )
-    } catch {
-      // Ignore storage errors.
-    }
-  }, [wizardState])
+  // Function to reset wizard state
+  const resetWizardState = useCallback(() => {
+    setWizardState(defaultWizardState)
+  }, [])
 
   const updateStepData = useCallback(
     <K extends keyof WizardState["forms"]>(
@@ -95,85 +60,7 @@ export default function PlayerAddModal() {
   
 
   // Define comprehensive data interface for all wizard steps
-  interface CompletePlayerData {
-    // Core Identity
-    firstName: string
-    lastName: string
-    city: string
-    country: string
-    email: string
-    dateOfBirth?: string
-    gender: string
-    nationality: string
-    sport: string
-    jerseyNumber: string
-    dominantFoot: string
-    clubTeam: string
-    profilePhotoNames: string[]
 
-    // Position Map
-    primaryPosition: string
-    secondaryPosition: string
-
-    // Season Stats
-    seasonStats: {
-      activeTab: "outfield" | "goalkeeper"
-      values: {
-        outfieldGamesPlayed: string
-        outfieldGoals: string
-        outfieldAssists: string
-        outfieldYellowCards: string
-        outfieldRedCards: string
-        goalkeeperGamesPlayed: string
-        goalkeeperGoals: string
-        goalkeeperAssists: string
-        goalkeeperYellowCards: string
-        goalkeeperRedCards: string
-        goalkeeperCleanSheets: string
-        goalkeeperTotalSaves: string
-      }
-    }
-
-    // Strengths
-    strengths: {
-      activeCategoryId: string
-      selectedByCategory: Record<string, string>
-    }
-
-    // Biography
-    biography: string
-
-    // Highlights
-    highlights: {
-      showcaseValue: string
-      selectedShowcaseSource: "youtube" | "hudl" | "vimeo" | null
-      uploadedItems: Array<{
-        id: string
-        title: string
-        type: "video" | "link"
-        source?: "youtube" | "hudl" | "vimeo"
-        file?: File
-      }>
-    }
-
-    // Achievements
-    achievements: {
-      uploadedAssets: Array<{
-        id: string
-        name: string
-        type: string
-        file?: File
-      }>
-      title: string
-      dateEarned?: string
-      description: string
-    }
-
-    // Privacy Settings
-    privacySettings: {
-      visibility: string
-    }
-  }
 
   // Memoized handlers to prevent unnecessary re-renders of child components
   const handleCoreIdentityChange = useCallback(
@@ -225,7 +112,7 @@ export default function PlayerAddModal() {
   )
 
   // Safe data collection function - properly typed from wizard state
-  const collectCompletePlayerData = useCallback((): CompletePlayerData => {
+  const collectCompletePlayerData = useCallback((): TCompletePlayerData => {
     return {
       // Core Identity
       firstName: wizardState.forms.coreIdentity.firstName,
@@ -402,15 +289,13 @@ export default function PlayerAddModal() {
         }
 
         if (response.success && response.data?.status) {
-
-
           const user = JSON.parse(localStorage.getItem("go_elite_user") || "{}")
           user.status = "approve"
           user.profile_id = response?.data?.data?.id
           localStorage.setItem("go_elite_user", JSON.stringify(user))
 
-
           toast.success(response.data.message || "Player added successfully")
+          resetWizardState()
 
           const nextParams = new URLSearchParams(searchParams.toString())
           nextParams.delete("add-new")
@@ -456,6 +341,7 @@ export default function PlayerAddModal() {
     pathname,
     router,
     searchParams,
+    resetWizardState,
     user,
     wizardState.forms.coreIdentity.profilePhotos,
   ])
@@ -596,17 +482,20 @@ export default function PlayerAddModal() {
 
         if (response.success && response.data?.status) {
           setUpdating(false)
- 
           toast.success(response.data.message || "Player updated successfully")
-          window.dispatchEvent(new CustomEvent('player_profile_updated')) 
-          localStorage.removeItem("player-add-modal:wizard-state:v1")
+          
+          
+          window.dispatchEvent(new CustomEvent('player_profile_updated'))
+          
+         
+          close("update")
+          resetWizardState()
 
+          
           const nextParams = new URLSearchParams(searchParams.toString())
           nextParams.delete("update")
           router.replace(
-            nextParams.toString()
-              ? `${pathname}?${nextParams.toString()}`
-              : pathname
+            nextParams.toString() ? `${pathname}?${nextParams.toString()}` : pathname
           )
         } else {
           setUpdating(false)

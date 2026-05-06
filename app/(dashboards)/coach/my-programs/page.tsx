@@ -208,7 +208,7 @@ export default function UpcomingEventPage() {
                 key={program.id}
                 id={program.id}
                 title={program.program_name}
-                coachName={program.coach_name}
+                type={program.coach_name}
                 schedule={program.time || "N/A"}
                 duration={`${new Date(program.program_start).toLocaleDateString()} - ${new Date(program.program_end).toLocaleDateString()}`}
                 currentPrice={`$${program.discount_price || program.program_price}`}

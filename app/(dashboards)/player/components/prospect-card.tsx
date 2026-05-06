@@ -38,7 +38,7 @@ export default function ProspectCard({
         variant="default"
         className="absolute top-3 left-3 rotate-10 -skew-10 rounded-[4px] bg-brand text-[14px] font-bold text-primary"
       >
-        PROSPECT #{position_info?.jersey_number}
+        JERSEY #{position_info?.jersey_number}
       </Badge>
 
       {/* stars */}

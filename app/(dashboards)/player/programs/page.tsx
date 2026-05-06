@@ -3,50 +3,14 @@
 import ProgramCard from "@/components/common/program-card"
 import ProgramHead from "../../../../components/common/program-head"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
-import { getAvailablePlayerParentOrPlayer } from "../upcoming-events/action"
+import { useEffect, useState } from "react" 
 import { getSportOptions } from "../../action"
 import { TSportOption } from "@/types"
+import moment from "moment"
+import { getAvailablePlayerParentProgram } from "./action"
 
-export default function ProgramPage() {
-  // const programs = [
-  //   {
-  //     id: "1",
-  //     title: "Elite Hoops Leadership Academy",
-  //     coachName: "Elena Rodriguez",
-  //     schedule: "Tuesdays, 6:00 PM",
-  //     duration: "8 Weeks Program",
-  //     currentPrice: "$249",
-  //     imageSrc: "/images/player1.png",
-  //     imageAlt: "Program image",
-  //     buttonLabel: "View Details",
-  //   },
-  //   {
-  //     id: "2",
-  //     title: "Premier Soccer Striker Clinic",
-  //     coachName: "David Chen",
-  //     schedule: "Weekends, 10:00 AM",
-  //     duration: "4 Weeks Program",
-  //     currentPrice: "$199",
-  //     imageSrc: "/images/player2.png",
-  //     imageAlt: "Program image",
-  //     buttonLabel: "View Details",
-  //   },
-  //   {
-  //     id: "3",
-  //     title: "Mindset & Performance Coaching",
-  //     coachName: "Sarah Jenkins",
-  //     schedule: "Thursdays, 5:00 PM",
-  //     duration: "12 Weeks Program",
-  //     currentPrice: "$269",
-  //     previousPrice: "$299",
-  //     discountLabel: "10% Off",
-  //     imageSrc: "/images/player3.png",
-  //     imageAlt: "Program image",
-  //     buttonLabel: "View Details",
-  //   },
-  // ]
-
+export default function ProgramPage() { 
+  
   const router = useRouter()
 
     const  [programs, setPrograms] = useState<TProgramUpcomming[]>([])
@@ -56,8 +20,7 @@ export default function ProgramPage() {
   
       const getPrograms = async () => {
         try{ 
-          const res = await getAvailablePlayerParentOrPlayer(selectedFilter)  
-          console.log("API Response:", res)
+          const res = await getAvailablePlayerParentProgram(selectedFilter)   
           if(res && "success" in res && res.success && res.data && "data" in res.data && res.data.data ) {
               setPrograms(res.data.data.programs)
             } 
@@ -104,14 +67,17 @@ export default function ProgramPage() {
             key={index}
             id={program.id}
             title={program.program_name}
-            coachName={program.coach_name}
+            type={program.program_type}
             schedule={program.time}
-            // duration={program.program_duration}
-            // currentPrice={program.program_price}
+            duration={moment(program.program_start).format("MMM Do YY")}
+            currentPrice={String(program.program_price)}
+            previousPrice={String(program.discount_price + program.program_price)}
+            discountLabel={`${Math.round((program.discount_price / (program.discount_price + program.program_price)) * 100)}% Off`}
             imageSrc={program.program_photo}
             imageAlt={program.program_name}
+            sport={program.sport}
             buttonLabel="View Details"
-            onClick={() =>  {} }
+            onClick={() => router.push(`/player/programs/${program.id}`) }
             viewOnly={true}
           /> 
         ))}

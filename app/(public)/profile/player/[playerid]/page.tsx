@@ -2,7 +2,8 @@ import type { Metadata } from "next"
 import ProfilePage from "./components/main-page" 
 import { TPlayerProfile } from "@/types"
 import { getPlayerProfile } from "@/app/(public)/action"
-export const runtime = 'edge';
+ 
+ 
 
 type ProfilePageProps = {
   params: Promise<{
@@ -10,8 +11,8 @@ type ProfilePageProps = {
   }>
 }
  
- 
 
+ 
 export default async function ProfilePageFinal({ params }: ProfilePageProps) {
   const { playerid } = await params
   const res = await getPlayerProfile(String(playerid)) 

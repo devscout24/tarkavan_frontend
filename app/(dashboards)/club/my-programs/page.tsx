@@ -78,8 +78,7 @@ interface ProgramsData {
     active: number
     inactive: number
   }
-}
-
+} 
 export default function UpcomingEventPage() {
   const router = useRouter()
   const pathname = usePathname()
@@ -272,7 +271,7 @@ export default function UpcomingEventPage() {
               key={program.id}
               id={program.id.toString()}
               title={program.program_name}
-              coachName={program.coach_name}
+              type={program.coach_name}
               schedule={program.time}
               duration={`${moment(program.program_start).format("MMM Do YY") } - ${moment(program.program_end).format("MMM Do YY")}`}
               currentPrice={program.discount_price ? `$${program.program_price - program.discount_price  }` : `$${program.program_price}`}

@@ -44,7 +44,7 @@ export default function ProgramDetailsBanner({
 
       <div className="absolute inset-x-0 bottom-0 z-10 p-4 md:p-6">
         <div className="flex items-center gap-2">
-          <Badge className="h-auto rounded-md bg-[#00A63E] px-2 py-1 text-[14px] font-semibold tracking-wide text-primary-foreground uppercase">
+          <Badge className="h-auto rounded-md bg-brand/50  px-2 py-1 text-[14px] font-semibold tracking-wide text-primary uppercase">
             {category}
           </Badge>
 

@@ -87,10 +87,8 @@ export default function SearchExplore() {
 
   fetchData();
   }, [filters, currentPage])
-
-  console.log(searchResults);
-  
-
+ 
+console.log("Search filters:", filters)
 
   return (
     <section>

@@ -7,17 +7,7 @@ import {
   Users,
   UsersRound,
 } from "lucide-react"
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+ 
 import {
   Select,
   SelectContent,
@@ -34,16 +24,9 @@ import {
   getCountries,
   getSportOptions,
 } from "@/app/(dashboards)/action"
+import CountryCitySelector from "./country-city-selector"
 
-type LocationOption = {
-  id: number
-  name: string
-  cities: {
-    id: number
-    country_id: number
-    name: string
-  }[]
-}
+ 
 
 type ExploreFilterState = {
   button_type: string
@@ -98,42 +81,26 @@ function ExploreFilter({
   const [sportsOptions, setSportsOptions] = useState<
     { id: number; name: string }[]
   >([])
-  const [countriesOptions, setCountriesOptions] = useState<
-    { id: number; name: string }[]
-  >([])
-  const [citiesOptions, setCitiesOptions] = useState<
-    { id: number; country_id: number; name: string }[]
-  >([])
+ 
+
 
   useEffect(() => {
     const init = async () => {
-      const [sports, countries, cities] = await Promise.all([
+      const [sports ] = await Promise.all([
         getSportOptions(),
         getCountries(),
         getCities(),
       ])
       if (sports && "success" in sports && sports.success && sports.data)
         setSportsOptions(sports.data.data)
-      if (
-        countries &&
-        "success" in countries &&
-        countries.success &&
-        countries.data
-      )
-        setCountriesOptions(countries.data.data)
-      if (cities && "success" in cities && cities.success && cities.data)
-        setCitiesOptions(cities.data.data)
+ 
+         
+ 
     }
     init()
   }, [])
 
-  const locationOptions: LocationOption[] = React.useMemo(() => {
-    return countriesOptions.map((country) => ({
-      id: country.id,
-      name: country.name,
-      cities: citiesOptions.filter((city) => city.country_id === country.id),
-    }))
-  }, [countriesOptions, citiesOptions])
+ 
 
   const updateFilter = <K extends keyof ExploreFilterState>(
     key: K,
@@ -142,24 +109,19 @@ function ExploreFilter({
     setFilters((prev) => ({ ...prev, [key]: value }))
   }
 
-  const handleSelectCountry = (country: LocationOption) => {
+  const handleSelectCountry = (country: string) => {
     setFilters((prev) => ({
-      ...prev,
-      location: country.name,
-      country_id: String(country.id),
-      city_id: "",
+      ...prev, 
+      country_id: String(country), 
     }))
   }
 
-  const handleSelectCity = (
-    country: LocationOption,
-    city: LocationOption["cities"][number]
-  ) => {
+  const handleSelectCity = (country: string, city:  string ) => {
     setFilters((prev) => ({
       ...prev,
-      location: `${country.name}, ${city.name}`,
-      country_id: String(country.id),
-      city_id: String(city.id),
+      location: `${city}, ${country}`,
+      country_id: String(country),
+      city_id: String(city),
     }))
   }
 
@@ -215,58 +177,21 @@ function ExploreFilter({
             Quick Filters
           </div>
 
-          <div className="grid max-w-6/10 flex-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {/* Location Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  className="flex w-full items-center rounded-xl border border-white/15 bg-transparent px-3 py-1.5 text-left text-sm text-white"
-                >
-                  <span className="truncate">
-                    {filters.location || "Select Location"}
-                  </span>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-60 border-white/10 bg-secondary text-white"
-                align="start"
-              >
-                {locationOptions.length > 0 ? (
-                  locationOptions.map((country) => (
-                    <DropdownMenuSub key={country.id}>
-                      <DropdownMenuSubTrigger className="focus:bg-brand focus:text-primary data-[state=open]:bg-brand data-[state=open]:text-primary">
-                        {country.name}
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuPortal>
-                        <DropdownMenuSubContent className="min-w-52 border-white/10 bg-secondary text-white">
-                          {/* Country-level selection (no specific city) */}
-                          <DropdownMenuItem
-                            onClick={() => handleSelectCountry(country)}
-                            className="focus:bg-brand focus:text-primary"
-                          >
-                            All cities in {country.name}
-                          </DropdownMenuItem>
-                          {country.cities.map((city) => (
-                            <DropdownMenuItem
-                              key={city.id}
-                              onClick={() => handleSelectCity(country, city)}
-                              className="focus:bg-brand focus:text-primary"
-                            >
-                              {city.name}
-                            </DropdownMenuItem>
-                          ))}
-                        </DropdownMenuSubContent>
-                      </DropdownMenuPortal>
-                    </DropdownMenuSub>
-                  ))
-                ) : (
-                  <DropdownMenuItem disabled className="text-white/40">
-                    Loading locations...
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div className="   flex-1 gap-3 flex  ">
+            {/* Location */}
+            <CountryCitySelector
+              className="min-w-[300px]  "
+              onSelect={(data)=> { 
+                if(data.country_name){
+                  handleSelectCountry(data.country_name)
+                }
+                if(data.city_name){
+                  handleSelectCity(data.country_name, data.city_name)
+                } 
+              } }
+            />
+
+ 
 
             {/* Sports Select - dynamic from API */}
             <Select

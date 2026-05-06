@@ -3,8 +3,7 @@ import ProgramCoachCard from "@/components/common/program-coach-card"
 import { Card } from "@/components/ui/card"
 import { Globe, Lock, Shield } from "lucide-react" 
 import { getClubProfile } from "../action"
-import Link from "next/link" 
-
+import Link from "next/link"  
 export default async function page() {
   let clubProfile = null
   try {
@@ -96,48 +95,7 @@ export default async function page() {
             role={clubProfile?.sports_name || "Sports Club"}
           />
 
-          {/* <div className="mt-6 flex flex-wrap items-center justify-between rounded-2xl border border-secondary p-7">
-            <div className="">
-              <ul className="flex gap-7.5 rounded-lg p-4 text-2xl text-white">
-                <a
-                  href="http://example.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <FaFacebookF />
-                </a>
-                <a
-                  href="http://example.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <IoLogoInstagram />
-                </a>
-                <a
-                  href="http://example.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <FaTiktok />
-                </a>
-                <a
-                  href="http://example.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <FaXTwitter />
-                </a>
-                <a
-                  href="http://example.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <IoLogoWhatsapp />
-                </a>
-              </ul>
-            </div>
-            <ProfileShareButton url={shareUrl} title={shareTitle} />
-          </div> */}
+           
         </div>
         <div className="flex-2">
           {/* bio */}
@@ -154,14 +112,7 @@ export default async function page() {
             </p>
           </Card>
 
-          {/* programs */}
-          {/* <div className="mx-2 mt-10">
-            <h3 className="pb-5 text-xl font-semibold text-white">
-              Social Media
-            </h3>
-
-            <AddSocialClub />
-          </div> */}
+ 
         </div>
       </div>
     </section>

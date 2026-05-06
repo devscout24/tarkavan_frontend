@@ -3,8 +3,7 @@ import { cn } from "@/lib/utils"
 type Goal = {
   id: number
   goal: string
-}
-
+} 
 type AboutProgramProps = {
   sectionTitle?: string
   description?: string

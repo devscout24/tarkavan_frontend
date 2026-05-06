@@ -244,3 +244,84 @@ export type TPlayerProfileSetting = {
   city: string | null;
   privacy_settings: "public" | "private" | "friends" | string;
 };
+
+
+  export type TCompletePlayerData ={
+    // Core Identity
+    firstName: string
+    lastName: string
+    city: string
+    country: string
+    email: string
+    dateOfBirth?: string
+    gender: string
+    nationality: string
+    sport: string
+    jerseyNumber: string
+    dominantFoot: string
+    clubTeam: string
+    profilePhotoNames: string[]
+
+    // Position Map
+    primaryPosition: string
+    secondaryPosition: string
+
+    // Season Stats
+    seasonStats: {
+      activeTab: "outfield" | "goalkeeper"
+      values: {
+        outfieldGamesPlayed: string
+        outfieldGoals: string
+        outfieldAssists: string
+        outfieldYellowCards: string
+        outfieldRedCards: string
+        goalkeeperGamesPlayed: string
+        goalkeeperGoals: string
+        goalkeeperAssists: string
+        goalkeeperYellowCards: string
+        goalkeeperRedCards: string
+        goalkeeperCleanSheets: string
+        goalkeeperTotalSaves: string
+      }
+    }
+
+    // Strengths
+    strengths: {
+      activeCategoryId: string
+      selectedByCategory: Record<string, string>
+    }
+
+    // Biography
+    biography: string
+
+    // Highlights
+    highlights: {
+      showcaseValue: string
+      selectedShowcaseSource: "youtube" | "hudl" | "vimeo" | null
+      uploadedItems: Array<{
+        id: string
+        title: string
+        type: "video" | "link"
+        source?: "youtube" | "hudl" | "vimeo"
+        file?: File
+      }>
+    }
+
+    // Achievements
+    achievements: {
+      uploadedAssets: Array<{
+        id: string
+        name: string
+        type: string
+        file?: File
+      }>
+      title: string
+      dateEarned?: string
+      description: string
+    }
+
+    // Privacy Settings
+    privacySettings: {
+      visibility: string
+    }
+  }

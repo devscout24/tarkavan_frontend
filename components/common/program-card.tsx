@@ -23,7 +23,8 @@ import { toast } from "sonner"
 
 type ProgramCardProps = { 
   title?: string
-  coachName?: string
+  sport?: string
+  type?: string
   schedule?: string
   duration?: string
   currentPrice?: string
@@ -42,7 +43,8 @@ type ProgramCardProps = {
 
 export default function ProgramCard({
   title,
-  coachName,
+  sport,
+  type,
   schedule,
   duration,
   currentPrice,
@@ -96,9 +98,16 @@ export default function ProgramCard({
 
       <CardContent className="h-full flex flex-col justify-between  p-4">
         <div className="flex items-start justify-between gap-4 h-15.5 ">
-          <h3 className="max-w-[70%] text-lg leading-tight font-semibold line-clamp-2 overflow-hidden text-ellipsis ">
-            {title}
-          </h3>
+          <div className="max-w-[70%]  ">
+            <h3 className="text-lg leading-tight font-semibold line-clamp-2 overflow-hidden text-ellipsis ">
+              {title}
+            </h3>
+
+            <p className="">
+              {sport}
+            </p>
+
+          </div>
 
           <div className="text-right">
             <p className="text-lg leading-none font-bold text-brand">
@@ -113,14 +122,14 @@ export default function ProgramCard({
         <div className="space-y-2 text-[14px] font-light text-white/80">
           <div className="flex items-center gap-2">
             <UserRound className="size-4" />
-            <span>Coach: {coachName}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Calendar className="size-4" />
-            <span>{schedule}</span>
+            <span>Type: {type === "one_one" ? "Single" : "Group"}</span>
           </div>
           <div className="flex items-center gap-2">
             <Clock3 className="size-4" />
+            <span>{schedule}</span>
+          </div>
+          <div className="flex items-center gap-2"> 
+            <Calendar className="size-4" />
             <span>{duration}</span>
           </div>
         </div> 

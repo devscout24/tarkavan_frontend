@@ -14,6 +14,7 @@ import { toast } from "sonner"
 import PlusIcon from "@/components/icons/plus-icon" 
 import Loader from "@/components/common/loader"
 import { getCoachDashboard } from "./action"
+import api from "@/lib/api-fetcher"
 import { TDashboardResponse } from "@/types"
 import moment from "moment"
 
@@ -52,30 +53,35 @@ export default function CoachDashboardPage() {
   const [dashboardData, setDashboardData] = useState<TDashboardResponse | null>(null)
   const [loading, setLoading] = useState(true)
  
-
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const res = await getCoachDashboard() 
-        if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
+       
+        const res = await api.get('/coach/dashboard')
+       
+        
+        if (res.data && res.data.status && res.data.data) {
           setDashboardData(res.data.data)
+       
         } else {
-          toast.error(res?.message || "Failed to fetch dashboard data")
+          console.log('❌ COACH OVERVIEW FAILED:', res.data)
+        
         }
       } catch (error) {
-        toast.error("An unexpected error occurred while fetching dashboard data")
+     
+        toast.error("An unexpected error occurred while fetching coach overview data")
       } finally {
         setLoading(false)
       }
     }
 
-  fetchDashboardData()
-
-  const handleReload = () => {
     fetchDashboardData()
-  }
 
-  window.addEventListener("load_coach_dashboard", handleReload)
+    const handleReload = () => {
+      fetchDashboardData()
+    }
+
+    window.addEventListener("load_coach_dashboard", handleReload)
 
   return () => {
     window.removeEventListener("load_coach_dashboard", handleReload)

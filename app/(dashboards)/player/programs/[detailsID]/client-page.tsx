@@ -13,9 +13,9 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { getAvailablePlayerParentProgramDetails } from "../action"
 import { useParams } from "next/navigation";
-import { toast } from "sonner" 
-import { TProgramDetailsParentAndPlayer } from "@/types"
+import { toast } from "sonner"  
 import moment from "moment"
+import { TProgramDetailsParentAndPlayer } from "@/types"
 
 
 
@@ -41,6 +41,7 @@ export default function PlayerProgramDetailsClientPage() {
       try{ 
         const res = await getAvailablePlayerParentProgramDetails(String(id)) 
         if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
+          console.log("Fetched Program Details: ", res.data.data.program)
           setDetails(res.data.data)
         } 
       }catch(err){
@@ -67,12 +68,12 @@ export default function PlayerProgramDetailsClientPage() {
 
       {/* program details banner */}
       <ProgramDetailsBanner
-        title={details?.program.program_name || "Program Name"}
-        category={details?.program?.sport || "Program Type"}
-        duration={moment.duration(moment(details?.program?.program_end).diff(moment(details?.program?.program_start))).humanize()}
-        dateRange={`${moment(details?.program?.program_start).format("MMM Do YY")} - ${moment(details?.program?.program_end).format("MMM Do YY")}`}
-        location={details?.program?.program_location}
-        ageRange={`Age U${details?.program?.upto_age}`}
+        title={details?.program_name || "Program Name"}
+        category={details?.sport || "Program Type"}
+        duration={moment.duration(moment(details?.end_date).diff(moment(details?.start_date))).humanize()}
+        dateRange={`${moment(details?.start_date).format("MMM Do YY")} - ${moment(details?.end_date).format("MMM Do YY")}`}
+        location={details?.location}
+        ageRange={`Age U${details?.age_limit}`}
       />
 
       {/* layout */}
@@ -82,11 +83,11 @@ export default function PlayerProgramDetailsClientPage() {
           {/* about program */}
           <AboutProgram
             sectionTitle="About This Program"
-            description={details?.program?.about_program}
+            description={details?.about}
           />
 
           {/* program review */}
-          {details && details?.recent_feedback.length > 0 && 
+          {details && details?.recent_feedback?.length > 0 && 
           <ProgramReview
           rating={4.9}
           totalReviews={47}
@@ -103,7 +104,7 @@ export default function PlayerProgramDetailsClientPage() {
         }
 
           {/* recent feedback */}
-          {details && details?.recent_feedback.length > 0 && 
+          {details && details?.recent_feedback?.length > 0 && 
           <div className="mt-6">
             <ProgramHead
               options={[{ id: 5, name: "Most Recent" }]}

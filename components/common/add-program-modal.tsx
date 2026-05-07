@@ -124,6 +124,7 @@ const AddProgramPage: React.FC = () => {
     setIsSubmitting(true)
     try {
       const res: any = await createProgram(await buildFormData())
+      console.log("Create Program Response:", res)
       res?.success || res?.status
         ? onSuccess("Program created successfully!")
         : toast.error(res?.message || "Failed to create program.")

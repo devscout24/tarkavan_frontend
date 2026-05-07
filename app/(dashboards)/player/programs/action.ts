@@ -23,7 +23,7 @@ export async function getAvailablePlayerParentProgram(filter?: string) {
 
 export async function getAvailablePlayerParentProgramDetails(id: string) {
   try {
-    const res = await api.get(`/program/booking/view/${id}`)
+    const res = await api.get(`/coach/program/view/${id}`)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {

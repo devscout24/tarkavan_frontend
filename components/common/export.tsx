@@ -43,9 +43,9 @@ export default function Export({ onExport, className }: ExportProps) {
   return (
     <Button
       variant="outline"
-      size="sm"
+      size="lg"
       onClick={onExport}
-      className={`flex h-8 items-center gap-2 rounded-full border-white/20 bg-transparent px-3 text-white hover:bg-white/10 hover:text-brand ${className}`}
+      className={`flex h-8 items-center gap-2 rounded-full border-white/20 bg-transparent px-6 text-white hover:bg-white/10 hover:text-brand ${className} cursor-pointer`}
     >
       <DownloadIcon />
       Export

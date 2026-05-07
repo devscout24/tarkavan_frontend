@@ -88,7 +88,6 @@ export default function SearchExplore() {
   fetchData();
   }, [filters, currentPage])
  
-console.log("Search filters:", filters)
 
   return (
     <section>

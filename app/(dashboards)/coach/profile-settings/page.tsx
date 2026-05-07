@@ -1,156 +1,289 @@
-// "use client"
+"use client"
 
-// import ChangePassword from "@/components/common/change-password";
-// import NotificationSetting from "@/components/common/notification-setting";
-// import PrivacySetting from "@/components/common/privacy-setting";
-// import ProfileTop from "@/components/common/profile-top"; 
-// import { TChangePasswordData, TClubProfile, TPrivacyOption } from "@/types";
-// import { useEffect, useState } from "react"; 
-// import { getClubProfile, updateClubSetting } from "../../club/action";
+import ChangePassword from "@/components/common/change-password"
 
- 
+declare global {
+  interface Window {
+    testApi?: () => Promise<void>
+  }
+}
+import NotificationSetting from "@/components/common/notification-setting"
+import PrivacySetting from "@/components/common/privacy-setting"
+import PrivacySettingsCoach from "@/components/common/privacy-settings-coach"
+import ProfileTop from "@/components/common/profile-top"
+import {
+  TChangePasswordData,
+  TNotificationItem,
+  TPrivacyOption,
+} from "@/types"
+import { useEffect, useState } from "react"
 
-// export default  function ProfileSettingPage() {
-
-//   const PRIVACY_OPTIONS: TPrivacyOption[] = [
-//     {
-//       value: "public",
-//       title: "Public Profile",
-//       description: "Visible to all users on the platform",
-//     },
-//     {
-//       value: "private",
-//       title: "Private Profile",
-//       description: "Only you can view your profile",
-//     },
-//     {
-//       value: "players",
-//       title: "Athletes Only",
-//       description: "Visible to verified athletes only",
-//     },
-//     {
-//       value: "coach_and_players",
-//       title: "Coaches & Athletes",
-//       description: "Visible to verified coaches and athletes",
-//     },
-//     {
-//       value: "players_and_teams",
-//       title: "Coaches & Teams",
-//       description: "Visible to coaches and team members only",
-//     },
-//     {
-//       value: "coach_and_team",
-//       title: "Coaches & Team Staff",
-//       description: "Restricted to coaches and team staff only",
-//     },
-//     {
-//       value: "only_player",
-//       title: "Athlete Only",
-//       description: "Fully private professional view for the athlete only",
-//     },
-// ];
-
-//   const [passwordFormData, setPasswordFormData] = useState<TChangePasswordData>({
-//     current_password: "",
-//     new_password: "",
-//     new_password_confirmation: "",
-//   })
-
-// const handleClubPrivacyChange = (value: string) => {
-//   console.log(value)
-// }
-
-
-// const handlePasswordChangeSave = () => {
-//   console.log(passwordFormData)
-// }
-
-  
-//  const [profileImage, setProfileImage] = useState<string | File>("")
-//  useEffect(() => {
-  
-//   const handleProfileImageChange = async () => {
-//     try{
-
-//       const formData = new FormData();
-
-//       if (profileImage instanceof File) {
-//         formData.append("profileImage", profileImage);
-//       }
-
-//       const res = await updateClubSetting(formData)
- 
-
-//     }catch(error){
-//       console.error(error)
-//       console.log("error", error)
-//     }
-//   }
-
-//   handleProfileImageChange()
-
-//  }, [profileImage])
-
-
-//  const handleEditProfileModdal = () => {
-//   console.log("Edit profile")
-//  }
-  
-//  const [clubProfile, setClubProfile] = useState<TClubProfile>()
-//  console.log("clubProfile", clubProfile)
-//   useEffect(() => {
-    
-//     const getClubProfileInfo = async () => {
-//       try{
-//         const res = await getClubProfile()
-        
-//         if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
-//           setClubProfile(res.data.data)
-//         } 
-
-//       }catch(error){
-//         console.error(error)
-//         console.log("error", error)
-//       }
-//     }
-
-//     getClubProfileInfo()
-
-//   }, [])
-
- 
-//   return (
-//     <section className="text-white">
-//       <ProfileTop 
-//         profileTopInfo={{
-//           name: clubProfile?.club_name || "", 
-//           image: "", 
-//           email:  "", 
-//         }} 
-//         setProfileImage={setProfileImage} 
-//         handleEditProfileModdal={handleEditProfileModdal} 
-//         editProfileModalOpen={false}
-//         setEditProfileModalOpen={() => {}}
-//       />
-
-//       <ChangePassword 
-//         passwordFormData={passwordFormData} 
-//         setPasswordFormData={setPasswordFormData}  
-//         onSave={handlePasswordChangeSave} 
-
-//       />
-
-//       <PrivacySetting privacyOptions={PRIVACY_OPTIONS} onChange={(value) => handleClubPrivacyChange(value)}   />
-//       <NotificationSetting />
-//     </section>
-//   )
-// }
-
-
-
-
-
-// uporer code comment out kore use korte hobe 
 export default function ProfileSettingPage() {
-  return null;
+  const [editProfileModalOpen, setEditProfileModalOpen] = useState(false)
+  const [profileData, setProfileData] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/parent/profile`
+        console.log("Environment variable:", process.env.NEXT_PUBLIC_API_URL)
+        console.log("Full API URL:", apiUrl)
+        
+        const token = localStorage.getItem('go_elite_token') || sessionStorage.getItem('go_elite_token')
+        console.log("Token found:", !!token)
+        
+        const response = await fetch(apiUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        })
+        
+        console.log("Response status:", response.status)
+        console.log("Response headers:", response.headers)
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        
+        const result = await response.json()
+        console.log("API Response:", result)
+        
+        if (result.status && result.data) {
+          setProfileData(result.data)
+          console.log("Profile data set:", result.data)
+        } else {
+          console.warn("Invalid response structure:", result)
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error)
+        console.error("Error details:", error instanceof Error ? error.message : "Unknown error")
+        
+        // Fallback to mock data for development
+        console.log("Using fallback mock data")
+        setProfileData({
+          name: "Mehedi Noor Khan",
+          email: "mehedinoork@gmail.com",
+          profile_image: "https://tarkavan.thenightowl.team/",
+          privacy_settings: null
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProfile()
+  }, [])
+
+  // Test function - run this in browser console to test API directly
+  window.testApi = async () => {
+    try {
+      const token = localStorage.getItem('go_elite_token') || sessionStorage.getItem('go_elite_token')
+      console.log("Test API - Token found:", !!token)
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/parent/profile`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+      console.log("Test API Response:", response)
+      const data = await response.json()
+      console.log("Test API Data:", data)
+    } catch (error) {
+      console.error("Test API Error:", error)
+    }
+  }
+
+  const updateProfile = async (formData: FormData) => {
+    try {
+      console.log("Updating profile with FormData")
+      const token = localStorage.getItem('go_elite_token') || sessionStorage.getItem('go_elite_token')
+      console.log("Token found for update:", !!token)
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/parent/profile/update`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const result = await response.json()
+      console.log("Update API Response:", result)
+
+      if (result.status && result.data) {
+        setProfileData(result.data)
+        console.log("Profile updated successfully:", result.data)
+        return { success: true, message: result.message }
+      } else {
+        console.error("Profile update failed:", result.message)
+        return { success: false, message: result.message || "Update failed" }
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error)
+      return { success: false, message: "Network error occurred" }
+    }
+  }
+
+
+
+
+  const PRIVACY_OPTIONS: TPrivacyOption[] = [
+    {
+      value: "public",
+      title: "Public Profile",
+     
+    },
+    {
+      value: "private",
+      title: "Private Profile",
+    
+    },
+    {
+      value: "players",
+      title: "Athletes Only",
+     
+    },
+    {
+      value: "coach_and_players",
+      title: "Coaches & Athletes",
+     
+    }, 
+  ]
+
+  const handleClubPrivacyChange = async (privacyData: { privacy_settings: string; allow_parent_player_reviews: number; visible_reviews: number }) => {
+    // Update local state immediately for better UX
+    setProfileData((prev: any) => ({
+      ...prev,
+      privacy_settings: privacyData.privacy_settings,
+      allow_parent_player_reviews: privacyData.allow_parent_player_reviews,
+      visible_reviews: privacyData.visible_reviews,
+    }))
+
+    const formData = new FormData()
+    formData.append("privacy_settings", privacyData.privacy_settings)
+    formData.append("allow_parent_player_reviews", privacyData.allow_parent_player_reviews.toString())
+    formData.append("visible_reviews", privacyData.visible_reviews.toString())
+    
+    const result = await updateProfile(formData)
+    if (result.success) {
+      console.log("Privacy settings updated successfully")
+    } else {
+      console.error("Failed to update privacy settings:", result.message)
+      // Revert to original values if API call fails
+      // You might want to refetch the profile data here
+    }
+  }
+  
+  const [passwordFormData, setPasswordFormData] = useState<TChangePasswordData>(
+    {
+      current_password: "",
+      new_password: "",
+      new_password_confirmation: "",
+    }
+  )
+  const [changePasswordLoading, setChangePasswordLoading] = useState(false)
+  const handlePasswordChangeSave = () => {
+    console.log("Password change requested")
+    setChangePasswordLoading(false)
+  }
+
+  const handleProfileImageChange = async (image: string | File) => {
+    if (image instanceof File) {
+      const formData = new FormData()
+      formData.append("profile_image", image)
+      
+      const result = await updateProfile(formData)
+      if (result.success) {
+        console.log("Profile image updated successfully")
+      } else {
+        console.error("Failed to update profile image:", result.message)
+      }
+    }
+  }
+
+  const handleEditProfileModdal = async (name: string) => {
+    const formData = new FormData()
+    formData.append("name", name)
+    
+    const result = await updateProfile(formData)
+    if (result.success) {
+      setEditProfileModalOpen(false)
+      console.log("Profile name updated successfully")
+    } else {
+      console.error("Failed to update profile name:", result.message)
+    }
+  }
+
+  // notification setting
+  const DEFAULT_NOTIFICATIONS: TNotificationItem[] = [
+    { id: "messages", label: "Messages notifications", enabled: true },
+    { id: "programs", label: "New Program notifications", enabled: true },
+    { id: "events", label: "Upcoming events notifications", enabled: true },
+    { id: "recruitment", label: "Recruitment notifications", enabled: true },
+    { id: "matches", label: "Upcoming Matches notifications", enabled: false },
+  ]
+  const [notificationItems, setNotificationItems] = useState<
+    TNotificationItem[]
+  >(DEFAULT_NOTIFICATIONS)
+
+
+
+
+
+
+
+
+
+  if (loading) {
+    return (
+      <section className="text-white">
+        <div className="p-8">
+          <p>Loading profile data...</p>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <section className="text-white">
+      <ProfileTop
+        profileTopInfo={{
+          name: profileData?.name || "Loading...",
+          image: profileData?.profile_image || "/images/default-avatar.png",
+          email: profileData?.email || "",
+        }}
+        setProfileImage={handleProfileImageChange}
+        handleEditProfileModdal={(name) => handleEditProfileModdal(name)}
+        editProfileModalOpen={editProfileModalOpen}
+        setEditProfileModalOpen={setEditProfileModalOpen}
+      />
+
+      <ChangePassword
+        passwordFormData={passwordFormData}
+        setPasswordFormData={setPasswordFormData}
+        onSave={handlePasswordChangeSave}
+        changePasswordLoading={changePasswordLoading}
+      />
+
+      <PrivacySettingsCoach
+        privacyOptions={PRIVACY_OPTIONS}
+        initialValue={profileData?.privacy_settings || "public"}
+        initialAllowParentPlayerReviews={profileData?.allow_parent_player_reviews}
+        initialVisibleReviews={profileData?.visible_reviews}
+        onChange={(privacyData) => handleClubPrivacyChange(privacyData)}
+      />
+      <NotificationSetting
+        notifications={notificationItems}
+        setNotifications={setNotificationItems}
+      />
+    </section>
+  )
 }

@@ -9,12 +9,11 @@ import {
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 
-export type EarningsChartFilter = "month" | "6-month" | "1-year"
+export type EarningsChartFilter = "month" | "year"
 
 const FILTER_OPTIONS: Array<{ value: EarningsChartFilter; label: string }> = [
   { value: "month", label: "Month" },
-  { value: "6-month", label: "6 Month" },
-  { value: "1-year", label: "1 Year" },
+  { value: "year", label: "Year" },
 ]
 
 type EarningsPeriodFilterProps = {

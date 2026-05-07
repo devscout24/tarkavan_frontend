@@ -5,7 +5,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: "https://tarkavan.thenightowl.team/api",
   withCredentials: true,
 });
 
@@ -30,12 +30,18 @@ api.interceptors.request.use(async (config) => {
     ...config.params, 
   };
 
+  // Set Content-Type for all requests
+  config.headers.set("Content-Type", "application/json");
+  config.headers.set("Accept", "application/json");
+
   if (token) {
     config.headers.set("Authorization", `Bearer ${token}`);
   }
 
+  
   return config;
 });
+
 
 export default api;
 

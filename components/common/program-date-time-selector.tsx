@@ -4,6 +4,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { format, isSameDay, eachDayOfInterval } from "date-fns"
+import { IoIosArrowDown } from "react-icons/io";
 
 const timeSlots = [
   "12:15 PM",
@@ -28,16 +29,19 @@ type ProgramDateTimeSelectorProps = {
   programStartDate?: Date
   programEndDate?: Date
   programTimes?: Array<{ id: number; time: string; is_available: boolean }>
+  isOwner?: boolean
 }
 
 export default function ProgramDateTimeSelector({ 
   role = "player", 
   programStartDate, 
   programEndDate,
-  programTimes = []
+  programTimes = [] ,
+  isOwner = false,
 }: ProgramDateTimeSelectorProps) {
   const [date, setDate] = useState<Date | undefined>(programStartDate)
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
+  const [isExpandTimeSlots, setIsExpandTimeSlots] = useState(false)  
 
   // Use program times if available, otherwise fallback to hardcoded times
   let displayTimes: string[] = []
@@ -141,29 +145,29 @@ export default function ProgramDateTimeSelector({
         }}
       />
 
-      <div className="flex items-center justify-between gap-2 px-1 pt-1">
-        <p className="text-xl font-medium text-[#191919]">{dateLabel}</p>
-        <button
-          type="button"
-          className="inline-flex items-center gap-0.5 text-base font-normal text-[#5C5C5C]"
-        >
-          EDST
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 20 20"
-            className="mt-1 h-4 w-4"
-            fill="none"
+        <div className=""> 
+          <div className="flex items-center justify-between gap-2 px-1 pt-1">
+            <p className="text-xl font-medium text-[#191919]">{isOwner ? "View times" : dateLabel}</p>
+            <button
+              onClick={()=> setIsExpandTimeSlots(prev => !prev) }
+              type="button"
+              className="inline-flex items-center gap-0.5 text-base font-normal text-[#5C5C5C]"
+            >
+              EDST
+              <IoIosArrowDown className={`${isExpandTimeSlots ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
+           
+          <div
+            className={`
+              text-primary text-sm font-medium px-1 border border-brand
+              overflow-hidden transition-all duration-300
+              ${isExpandTimeSlots ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'} '}
+            `}
           >
-            <path
-              d="M5.5 7.5L10 12l4.5-4.5"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
-      </div>
+            ADSDS
+          </div>
+        </div>
 
       {/* Time slots */}
       {date && normalizedTimes.length > 0 && (
@@ -195,10 +199,12 @@ export default function ProgramDateTimeSelector({
 
       {/* payment */}
       {role !== "coach" && (
-        <div className="flex items-center justify-between gap-4 border-t border-[#DEDEDE] pt-4">
+        <div className="flex items-center justify-between gap-4 flex-wrap border-t border-[#DEDEDE] pt-4">
           <p className="text-lg font-medium text-[#191919]">Total: $100.00</p>
-          <Button className="h-10 rounded-xl bg-brand text-lg font-medium text-primary hover:bg-brand/80 hover:text-primary cursor-pointer  ">
-            Proceed to Payment
+          <Button
+              disabled={isOwner} 
+          className="h-10 rounded-xl bg-brand text-lg font-medium text-primary hover:bg-brand/80 hover:text-primary cursor-pointer  ">
+            {isOwner ? "Can not book own program" : "Proceed to Payment"}
           </Button>
         </div>
       )}

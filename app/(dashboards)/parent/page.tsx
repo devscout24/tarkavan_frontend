@@ -120,7 +120,7 @@ const ArrowIcon = ({ className }: { className?: string }) => (
 )
 
 const quickActions = [
-  { icon: <AddChildIcon />, label: "Add Your Children", active: false },
+  { icon: <AddChildIcon />, label: "Add Your Children", active: true },
   {
     icon: <ProgramsOutlineIcon />,
     label: "Explore Programs",
@@ -280,7 +280,7 @@ export default function Page() {
                       ? handleAddChildren
                       : undefined
                   }
-                  className={`group transition-alcursor-pointer flex w-full cursor-pointer items-center justify-between rounded-[16px] border px-4 py-4 text-left ${
+                  className={`group transition-alcursor-pointer flex w-full cursor-pointer items-center justify-between rounded-[16px] border px-4 py-4 text-left transition-all duration-200 ${
                     action.active
                       ? "border-brand bg-brand"
                       : "border-secondary bg-secondary/25 hover:border-brand hover:bg-brand"

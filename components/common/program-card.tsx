@@ -86,7 +86,7 @@ export default function ProgramCard({
           height={1000}
           src={imageSrc}
           alt={imageAlt}
-          className="w-full object-cover"
+          className="w-full h-full object-fill  "
         />
 
         {discountLabel && (

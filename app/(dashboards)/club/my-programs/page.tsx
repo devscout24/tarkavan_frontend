@@ -41,12 +41,14 @@ interface Program {
   sport_option: string | null
   sport: string
   program_price: number
+  price: number
   discount_price: number
   upto_age: number
   program_location: string
   program_start: string
   program_end: string
   program_photo: string
+  photo: string
   status: string
   club_name: string
   coach_name: string
@@ -87,7 +89,7 @@ export default function UpcomingEventPage() {
   const [programsData, setProgramsData] = useState<ProgramsData | null>(null)
   const [loading, setLoading] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
-
+  console.log("programsData", programsData)
   const programActions = [
     { 
       label: "Edit Programs", 
@@ -188,7 +190,7 @@ export default function UpcomingEventPage() {
               <Image
                 width={1000}
                 height={1000}
-                src={programsData.latest_upcoming_program.program_photo || "/images/player1.png"}
+                src={programsData.latest_upcoming_program.photo || "/images/player1.png"}
                 alt={programsData.latest_upcoming_program.program_name}
                 className="h-full max-h-55 w-full object-fill lg:max-w-[288px]"
               />
@@ -272,11 +274,11 @@ export default function UpcomingEventPage() {
               id={program.id.toString()}
               title={program.program_name}
               type={program.coach_name}
-              schedule={program.time}
+              schedule={moment(program.times[0].time).format('LT')}
               duration={`${moment(program.program_start).format("MMM Do YY") } - ${moment(program.program_end).format("MMM Do YY")}`}
-              currentPrice={program.discount_price ? `$${program.program_price - program.discount_price  }` : `$${program.program_price}`}
-              previousPrice={String(program.program_price)}
-              imageSrc={program.program_photo}
+              currentPrice={program.price ? `$${program.price - program.discount_price  }` : `$${program.program_price}`}
+              previousPrice={String(program.discount_price + program.price )}
+              imageSrc={program.photo}
               imageAlt={program.program_name}
               buttonLabel="View Details"
               onClick={() => router.push(`/club/my-programs/${program.id}`)}

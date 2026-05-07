@@ -9,8 +9,7 @@ import AboutProgram from "../../../../../components/common/about-program"
 import ProgramReview from "../../../../../components/common/program-review"
 import ProgramHead from "../../../../../components/common/program-head"
 import ProgramFeedbackCard from "../../../../../components/common/program-feedback-card"
-import ProgramCoachCard from "../../../../../components/common/program-coach-card"
-import { ProgramCalendar } from "../../../../../components/common/program-calendar"
+import ProgramCoachCard from "../../../../../components/common/program-coach-card" 
 
 
 
@@ -121,11 +120,11 @@ export default function ParentProgramDetailsPage() {
         {/* right side */}
         <div className="flex-1">
           <ProgramCoachCard />
-          <ProgramCalendar
+          {/* <ProgramCalendar
             startDate={programStartDate}
             endDate={programEndDate}
             timeSlotsByDate={timeSlotsByDate}
-          />
+          /> */}
         </div>
       </div>
     </section>

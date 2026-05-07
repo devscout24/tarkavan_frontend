@@ -197,15 +197,26 @@ export type TProgram = {
   program_price: number
   discount_price: number
   upto_age: number
+  age_limit: number
   program_location: string
-  program_start: string // ISO date
-  program_end: string   // ISO date
-  program_photo: string
+  start_date: string // ISO date
+  end_date: string   // ISO date
+  photo: string
   status: "active" | "inactive" | string
   about_program: string
   time: string
   times: TTimeSlot[]
   goals: TGoal[]
+  provider: {
+  type: string;
+  id: number;
+  user_id: number;
+  name: string;
+  logo: string;
+  city: string;
+  country: string;
+  is_verified: boolean;
+}
 }
 
 export type TSportOption = {

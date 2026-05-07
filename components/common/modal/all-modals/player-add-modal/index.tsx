@@ -58,10 +58,7 @@ export default function PlayerAddModal() {
   }, [])
 
   
-
-  // Define comprehensive data interface for all wizard steps
-
-
+ 
   // Memoized handlers to prevent unnecessary re-renders of child components
   const handleCoreIdentityChange = useCallback(
     (value: WizardState["forms"]["coreIdentity"]) =>
@@ -514,7 +511,7 @@ export default function PlayerAddModal() {
  
 
   return (
-    <div className="bg-[#090B10]">
+    <div className="bg-[#090B10]  ">
       {currentStep === 1 ? (
         <CoreIdentity
           currentStep={currentStep}

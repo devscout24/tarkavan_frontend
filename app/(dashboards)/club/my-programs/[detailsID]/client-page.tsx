@@ -1,8 +1,7 @@
 "use client"
 
 import AboutProgram from "@/components/common/about-program"
-import CommonBtn from "@/components/common/common-btn"
-import { ProgramCalendar } from "@/components/common/program-calendar"
+import CommonBtn from "@/components/common/common-btn" 
 import ProgramCoachCard from "@/components/common/program-coach-card"
 import ProgramDetailsBanner from "@/components/common/program-details-banner"
 import ProgramFeedbackCard from "@/components/common/program-feedback-card"
@@ -18,6 +17,7 @@ import { useEffect, useState } from "react"
 import { getProgramDetails } from "../../action"
 import { TProgramDetails } from "@/types"
 import moment from "moment"
+import ProgramDateTimeSelector from "@/components/common/program-date-time-selector"
  
 
 
@@ -46,7 +46,7 @@ export default function ClubProgramDetailsClientPage() {
     null
   )
   const [selectedFilter, setSelectedFilter] = useState<string>("most_recent")
-
+ 
   useEffect(() => {
     if (!detailsID) return
 
@@ -113,11 +113,11 @@ export default function ClubProgramDetailsClientPage() {
       <ProgramDetailsBanner
         title={programDetail?.program.program_name || ""}
         category={programDetail?.program?.sport_option?.name || ""}
-        duration={moment.duration(moment(programDetail?.program?.program_end).diff(moment(programDetail?.program?.program_start))).humanize()}
-        dateRange={`${moment(programDetail?.program?.program_start).format("MMM Do YY")} - ${moment(programDetail?.program?.program_end).format("MMM Do YY")}`}
+        duration={moment.duration(moment(programDetail?.program?.end_date).diff(moment(programDetail?.program?.start_date))).humanize()}
+        dateRange={`${moment(programDetail?.program?.start_date).format("MMM Do YY")} - ${moment(programDetail?.program?.end_date).format("MMM Do YY")}`}
         location={programDetail?.program?.program_location || ""}
-        ageRange={`Ages: ${programDetail?.program?.upto_age || ""}`}
-        program_photo={programDetail?.program?.program_photo || ""}
+        ageRange={`Ages: ${programDetail?.program?.age_limit || ""}`}
+        program_photo={programDetail?.program?.photo || ""}
       />
 
       {/* layout */}
@@ -155,12 +155,11 @@ export default function ClubProgramDetailsClientPage() {
 
         {/* right side */}
         <div className="flex-1">
-          <ProgramCoachCard showMessageButton={false} imageUrl={programDetail?.club?.club_logo || ""} />
-          <ProgramCalendar
-            startDate={programStartDate}
-            endDate={programEndDate}
-            timeSlotsByDate={timeSlotsByDate}
-          />
+          <ProgramCoachCard showMessageButton={false} imageUrl={programDetail?.program?.provider?.logo || ""} name={programDetail?.program?.provider?.name || ""} 
+          location={`${programDetail?.program?.provider?.city || ""}, ${programDetail?.program?.provider?.country || ""}`}
+          verified={programDetail?.program?.provider?.is_verified}
+          /> 
+          <ProgramDateTimeSelector isOwner={true} />
         </div>
       </div>
     </section>

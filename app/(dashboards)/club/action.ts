@@ -279,7 +279,7 @@ export async function getProgramList() {
 
 export async function getProgramDetails(program_id: string) {
     try {
-    const res = await api.get(`/club/program/view/${program_id}`)
+    const res = await api.get(`/program/details/${program_id}`)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {

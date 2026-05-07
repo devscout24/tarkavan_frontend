@@ -47,13 +47,13 @@ export default function ProgramCoachCard({
         className
       )}
     >
-      <div className="relative">
+      <div className="relative max-h-100 ">
         <Image
           width={1000}
           height={1000}
           src={imageUrl}
           alt={imageAlt}
-          className="w-full object-cover object-center"
+          className="w-full object-cover object-center min-h-100 "
         />
 
         <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/95 via-black/40 to-black/20" />

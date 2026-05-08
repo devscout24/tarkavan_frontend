@@ -59,6 +59,45 @@ export default function CoachProfileSetup({
   const [isLoading, setIsLoading] = useState(false)
   const formDataRef = useRef(formData)
 
+  // Check and update user status from coach profile API
+  useEffect(() => {
+    const checkCoachProfile = async () => {
+      try {
+        const token = localStorage.getItem("go_elite_token")
+        const rawUser = localStorage.getItem("go_elite_user")
+        
+        if (!token || !rawUser) return
+        
+        const user = JSON.parse(rawUser)
+        
+        // Only check if user is currently "pending"
+        if (user.status === "pending") {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://tarkavan.thenightowl.team/api"}/coach/profile`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          })
+          
+          if (response.ok) {
+            const data = await response.json()
+            console.log('👨‍🏫 COACH PROFILE API RESPONSE:', data)
+            
+            if (data.data?.user_status === "approve") {
+              console.log('✅ UPDATING USER STATUS FROM PENDING TO APPROVED')
+              const updatedUser = { ...user, status: "approved" }
+              localStorage.setItem("go_elite_user", JSON.stringify(updatedUser))
+            }
+          }
+        }
+      } catch (error) {
+        console.error('❌ ERROR CHECKING COACH PROFILE:', error)
+      }
+    }
+    
+    checkCoachProfile()
+  }, [])
+
   // Update ref whenever formData changes
   useEffect(() => {
     formDataRef.current = formData
@@ -153,10 +192,12 @@ export default function CoachProfileSetup({
     try {
       // Always read the latest snapshot from the ref (updated every render)
       const currentFormData = formDataRef.current
+      console.log('📋 FORM SUBMISSION DATA:', currentFormData)
 
       // Validate form
       const validation = validateForm(currentFormData)
       if (!validation.isValid) {
+        console.log('❌ FORM VALIDATION FAILED:', validation.errors)
         validation.errors.forEach((error) => {
           toast.error(error)
         })
@@ -164,9 +205,14 @@ export default function CoachProfileSetup({
         return
       }
 
+      console.log('✅ FORM VALIDATION PASSED')
       const apiFormData = convertToFormData(currentFormData)
+      console.log('📤 FORM DATA FOR API:', apiFormData)
+      
       const result: CoachProfileApiResult =
         await createOrUpdateCoachProfile(apiFormData)
+
+      console.log('🎯 API RESULT:', result)
 
       if (result.success) {
         toast.success(result.message || "Coach profile created successfully!")
@@ -176,11 +222,12 @@ export default function CoachProfileSetup({
         // Redirect to clean dashboard URL (no query params → modal won't reopen)
         window.location.replace("/coach")
       } else {
+        console.log('❌ API FAILED:', result)
         toast.error(result.message || "Failed to create coach profile")
       }
     } catch (err) {
+      console.error('❌ SUBMISSION ERROR:', err)
       toast.error("An unexpected error occurred")
-      console.error("Profile submission error:", err)
     } finally {
       setIsLoading(false)
     }

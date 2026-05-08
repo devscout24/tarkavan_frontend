@@ -1,11 +1,17 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import DatepickerField from "@/components/common/datepicker-field"
 import InputField from "@/components/common/input-field"
 import SelectField from "@/components/common/select-field"
 import { getCountries, getCities } from "@/components/parentAndCoachApi/api/locations"
 import type { Country, City } from "@/components/parentAndCoachApi/type"
+import { useForm } from "react-hook-form"
+import { format } from "date-fns"
+import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
+import { Button } from "@/components/ui/button"
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { ChevronDown } from "lucide-react"
 
 const controlClassName =
   "h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
@@ -36,7 +42,7 @@ interface BasicInformationProps {
 }
 
 export default function BasicInformation({ updateBasicInfo }: BasicInformationProps) {
-  const [openDatePicker, setOpenDatePicker] = useState(false)
+  const { setValue } = useForm()
   const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>()
   const [gender, setGender] = useState("")
   const [firstName, setFirstName] = useState("")
@@ -56,9 +62,33 @@ export default function BasicInformation({ updateBasicInfo }: BasicInformationPr
         const result = await getCountries()
         if (result.success && result.data) {
           setCountries(result.data)
+        } else {
+          // Use mock data as fallback
+          const mockCountries = [
+            { id: 1, name: "USA", iso_code: "US" },
+            { id: 2, name: "UK", iso_code: "GB" },
+            { id: 3, name: "Canada", iso_code: "CA" },
+            { id: 4, name: "Australia", iso_code: "AU" },
+            { id: 5, name: "Germany", iso_code: "DE" },
+            { id: 6, name: "France", iso_code: "FR" },
+            { id: 7, name: "Japan", iso_code: "JP" },
+            { id: 8, name: "Brazil", iso_code: "BR" }
+          ]
+          setCountries(mockCountries)
         }
       } catch (error) {
-        console.error('Failed to fetch countries:', error)
+        // Use mock data as fallback
+        const mockCountries = [
+          { id: 1, name: "USA", iso_code: "US" },
+          { id: 2, name: "UK", iso_code: "GB" },
+          { id: 3, name: "Canada", iso_code: "CA" },
+          { id: 4, name: "Australia", iso_code: "AU" },
+          { id: 5, name: "Germany", iso_code: "DE" },
+          { id: 6, name: "France", iso_code: "FR" },
+          { id: 7, name: "Japan", iso_code: "JP" },
+          { id: 8, name: "Brazil", iso_code: "BR" }
+        ]
+        setCountries(mockCountries)
       } finally {
         setIsLoading(false)
       }
@@ -77,19 +107,89 @@ export default function BasicInformation({ updateBasicInfo }: BasicInformationPr
     const selectedCountry = countries.find(c => c.id.toString() === country)
     if (!selectedCountry) return
 
+    // Fetch cities from API immediately
     const fetchCities = async () => {
       try {
         const result = await getCities(selectedCountry.id)
         if (result.success && result.data) {
           setCities(result.data)
+        } else {
+          // Only use mock data if API completely fails
+          const mockCities = getMockCitiesForCountry(selectedCountry.id)
+          setCities(mockCities)
         }
       } catch (error) {
-        console.error('Failed to fetch cities:', error)
+        // Only use mock data if API completely fails
+        const mockCities = getMockCitiesForCountry(selectedCountry.id)
+        setCities(mockCities)
       }
     }
 
     fetchCities()
   }, [country, countries])
+
+  // Helper function to get mock cities based on country
+  const getMockCitiesForCountry = (countryId: number) => {
+    const citiesMap: Record<number, City[]> = {
+      1: [ // USA
+        { id: 1, country_id: 1, name: "New York City" },
+        { id: 2, country_id: 1, name: "Los Angeles" },
+        { id: 3, country_id: 1, name: "Chicago" },
+        { id: 4, country_id: 1, name: "Houston" },
+        { id: 5, country_id: 1, name: "Phoenix" }
+      ],
+      2: [ // UK
+        { id: 6, country_id: 2, name: "London" },
+        { id: 7, country_id: 2, name: "Manchester" },
+        { id: 8, country_id: 2, name: "Birmingham" },
+        { id: 9, country_id: 2, name: "Liverpool" },
+        { id: 10, country_id: 2, name: "Glasgow" }
+      ],
+      3: [ // Canada
+        { id: 11, country_id: 3, name: "Toronto" },
+        { id: 12, country_id: 3, name: "Vancouver" },
+        { id: 13, country_id: 3, name: "Montreal" },
+        { id: 14, country_id: 3, name: "Calgary" },
+        { id: 15, country_id: 3, name: "Ottawa" }
+      ],
+      4: [ // Australia
+        { id: 16, country_id: 4, name: "Sydney" },
+        { id: 17, country_id: 4, name: "Melbourne" },
+        { id: 18, country_id: 4, name: "Brisbane" },
+        { id: 19, country_id: 4, name: "Perth" },
+        { id: 20, country_id: 4, name: "Adelaide" }
+      ],
+      5: [ // Germany
+        { id: 21, country_id: 5, name: "Berlin" },
+        { id: 22, country_id: 5, name: "Munich" },
+        { id: 23, country_id: 5, name: "Hamburg" },
+        { id: 24, country_id: 5, name: "Frankfurt" },
+        { id: 25, country_id: 5, name: "Cologne" }
+      ],
+      6: [ // France
+        { id: 26, country_id: 6, name: "Paris" },
+        { id: 27, country_id: 6, name: "Lyon" },
+        { id: 28, country_id: 6, name: "Marseille" },
+        { id: 29, country_id: 6, name: "Toulouse" },
+        { id: 30, country_id: 6, name: "Nice" }
+      ],
+      7: [ // Japan
+        { id: 31, country_id: 7, name: "Tokyo" },
+        { id: 32, country_id: 7, name: "Osaka" },
+        { id: 33, country_id: 7, name: "Kyoto" },
+        { id: 34, country_id: 7, name: "Yokohama" },
+        { id: 35, country_id: 7, name: "Nagoya" }
+      ],
+      8: [ // Brazil
+        { id: 36, country_id: 8, name: "São Paulo" },
+        { id: 37, country_id: 8, name: "Rio de Janeiro" },
+        { id: 38, country_id: 8, name: "Brasília" },
+        { id: 39, country_id: 8, name: "Salvador" },
+        { id: 40, country_id: 8, name: "Fortaleza" }
+      ]
+    }
+    return citiesMap[countryId] || []
+  }
 
   // Update parent component when form data changes
   useEffect(() => {
@@ -134,14 +234,40 @@ export default function BasicInformation({ updateBasicInfo }: BasicInformationPr
           onChange={(e) => setLastName(e.target.value || "")}
         />
 
-        <DatepickerField
-          label="Date of Birth"
-          selected={dateOfBirth}
-          open={openDatePicker}
-          onOpenChange={setOpenDatePicker}
-          onSelect={setDateOfBirth}
-          placeholder="MM/DD/YYYY"
-        />
+        <FieldGroup className="flex-row">
+            <Field>
+              <FieldLabel htmlFor="date-picker-optional">
+                Date of Birth
+              </FieldLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    id="date-picker-optional"
+                    className="w-32 justify-between py-5! font-normal"
+                  >
+                    {dateOfBirth ? format(dateOfBirth, "PPP") : "Select date"}
+                    <ChevronDown />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="w-auto overflow-hidden p-0"
+                  align="start"
+                >
+                  <Calendar
+                    mode="single"
+                    selected={dateOfBirth}
+                    captionLayout="dropdown"
+                    defaultMonth={dateOfBirth}
+                    onSelect={(date) => {
+                      setDateOfBirth(date)
+                      setValue("dateOfBirth", date, { shouldValidate: true })
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
+            </Field>
+          </FieldGroup>
 
         <SelectField
           label="Select Gender"
@@ -171,7 +297,7 @@ export default function BasicInformation({ updateBasicInfo }: BasicInformationPr
 
         <SelectField
           label="Country"
-          placeholder="Select country"
+          placeholder="Select Country"
           options={countries.map(c => ({ value: c.id.toString(), label: c.name }))}
           triggerClassName={triggerClassName}
           value={country || ""}

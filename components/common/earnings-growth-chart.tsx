@@ -4,7 +4,7 @@ import EarningsPeriodFilter, {
   type EarningsChartFilter,
 } from "@/components/common/earnings-period-filter"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -35,62 +35,105 @@ type SeriesData = {
   helperDots: number[]
 }
 
-function getChartConfig(): Record<EarningsChartFilter, SeriesData> {
-  const now = new Date()
-  const currentMonth = now.getMonth()
-  const currentWeek = Math.min(4, Math.max(0, Math.ceil(now.getDate() / 7) - 1))
-
-  return {
-    month: {
-      labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Current Week"],
-      values: [480, 610, 690, 650, 780],
-      accentIndex: currentWeek,
-      helperDots: [120, 105, 135, 110, 150],
-    },
-    "6-month": {
-      labels: [
-        "Jan-Feb",
-        "Mar-Apr",
-        "May-Jun",
-        "Jul-Aug",
-        "Sep-Oct",
-        "Nov-Dec",
-      ],
-      values: [510, 730, 750, 620, 610, 950],
-      accentIndex: Math.floor(currentMonth / 2),
-      helperDots: [140, 220, 220, 180, 300, 150],
-    },
-    "1-year": {
-      labels: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
-      values: [430, 500, 580, 760, 710, 680, 620, 600, 650, 730, 820, 920],
-      accentIndex: currentMonth,
-      helperDots: [90, 120, 145, 155, 180, 165, 150, 140, 180, 220, 250, 280],
-    },
+interface EarningsResponse {
+  status: boolean
+  message: string
+  data: {
+    applied_filter: string
+    monthly_growth: {
+      labels: string[]
+      values: number[]
+    }
   }
 }
 
 const Y_MAX = 1200
 const Y_STEP = 300
 
-export default function EarningsGrowthChart() {
-  const [filter, setFilter] = useState<EarningsChartFilter>("month")
+// Calculate dynamic Y-axis max based on data values
+const calculateDynamicYMax = (values: number[]) => {
+  if (!values || values.length === 0) return 1200
+  const maxValue = Math.max(...values)
+  return Math.max(300, Math.ceil(maxValue / 100) * 110) // Round up to nearest 100, then add 10% padding
+}
+
+interface EarningsGrowthChartProps {
+  labels?: string[]
+  values?: number[]
+  currentFilter?: string
+  onFilterChange?: (filter: EarningsChartFilter) => void
+}
+
+export default function EarningsGrowthChart({ 
+  labels = [], 
+  values = [], 
+  currentFilter = "month",
+  onFilterChange
+}: EarningsGrowthChartProps) {
+  const [filter, setFilter] = useState<EarningsChartFilter>(currentFilter as EarningsChartFilter)
+  const [apiData, setApiData] = useState<{ labels: string[]; values: number[] } | null>(null)
+  const [loading, setLoading] = useState(false)
   const isMobile = useIsMobile()
 
-  const chartConfig = useMemo(() => getChartConfig(), [])
-  const data = chartConfig[filter]
+  const fetchEarningsData = async (filterValue: EarningsChartFilter) => {
+    try {
+      setLoading(true)
+      const token = localStorage.getItem('go_elite_token') || sessionStorage.getItem('go_elite_token')
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/coach/earnings/view?filter=${filterValue}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const result: EarningsResponse = await response.json()
+      
+      if (result.status && result.data?.monthly_growth) {
+        setApiData(result.data.monthly_growth)
+      } else {
+        console.warn("Invalid response structure:", result)
+      }
+    } catch (error) {
+      console.error("Error fetching earnings data:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    // If props are provided, use them; otherwise fetch data
+    if (labels.length > 0 && values.length > 0) {
+      setApiData({ labels, values })
+    } else {
+      fetchEarningsData(filter)
+    }
+  }, [filter, labels, values])
+
+  const handleFilterChange = (newFilter: EarningsChartFilter) => {
+    setFilter(newFilter)
+    onFilterChange?.(newFilter)
+  }
+
+  // Use API data if available, otherwise use empty data
+  const data = apiData || { labels: [], values: [], accentIndex: 0, helperDots: [] }
+  
+  // Generate helper dots and accent index based on actual data
+  const enrichedData = {
+    ...data,
+    accentIndex: currentFilter === "year"
+      ? new Date().getMonth()
+      : filter === "month"
+      ? Math.min(4, Math.max(0, Math.ceil(new Date().getDate() / 7) - 1))
+      : Math.floor(new Date().getMonth() / 2),
+    helperDots: data.values?.map((val: number) => val * 0.2) || [],
+  }
 
   // Dynamic title and description based on filter
   const getTitleAndDescription = () => {
@@ -100,20 +143,16 @@ export default function EarningsGrowthChart() {
           title: "Weekly Revenue Growth",
           description: "Comparative analysis for current week"
         }
-      case "6-month":
+      case "year":
         return {
           title: "Monthly Revenue Growth", 
-          description: "Comparative analysis for current month"
+          description: "Monthly earnings breakdown for the year"
         }
-      case "1-year":
-        return {
-          title: "Yearly Revenue Growth",
-          description: "Comparative analysis for current year"
-        }
+      
       default:
         return {
-          title: "Weekly Revenue Growth",
-          description: "Comparative analysis for current week"
+          title: "Monthly Revenue Growth",
+          description: "Monthly earnings breakdown for the year"
         }
     }
   }
@@ -126,7 +165,7 @@ export default function EarningsGrowthChart() {
 
     const helperDataset: ChartDataset<"line", number[]> = {
       label: "Helper dots",
-      data: data.helperDots,
+      data: enrichedData.helperDots,
       showLine: false,
       pointRadius: basePointSize,
       pointHoverRadius: basePointSize,
@@ -137,7 +176,7 @@ export default function EarningsGrowthChart() {
 
     const baselineDataset: ChartDataset<"line", number[]> = {
       label: "Baseline dots",
-      data: data.helperDots.map(() => 28),
+      data: enrichedData.helperDots.map(() => 28),
       showLine: false,
       pointRadius: basePointSize,
       pointHoverRadius: basePointSize,
@@ -148,7 +187,7 @@ export default function EarningsGrowthChart() {
 
     const revenueDataset: ChartDataset<"line", number[]> = {
       label: "Revenue",
-      data: data.values,
+      data: enrichedData.values,
       borderColor: "#C6F57A",
       borderWidth: 2,
       tension: 0.42,
@@ -164,10 +203,10 @@ export default function EarningsGrowthChart() {
     }
 
     return {
-      labels: data.labels,
+      labels: enrichedData.labels,
       datasets: [baselineDataset, helperDataset, revenueDataset],
     }
-  }, [data, isMobile])
+  }, [enrichedData, isMobile])
 
   const chartOptions = useMemo<ChartOptions<"line">>(() => {
     return {
@@ -230,7 +269,7 @@ export default function EarningsGrowthChart() {
           ticks: {
             color: (ctx) => {
               const tickIndex = Number(ctx.tick.value)
-              return tickIndex === data.accentIndex
+              return tickIndex === enrichedData.accentIndex
                 ? "#C6F57A"
                 : "rgba(255,255,255,0.34)"
             },
@@ -238,22 +277,18 @@ export default function EarningsGrowthChart() {
               const tickIndex = Number(ctx.tick.value)
               return {
                 size: isMobile ? 10 : 14,
-                weight: tickIndex === data.accentIndex ? 600 : 500,
+                weight: tickIndex === enrichedData.accentIndex ? 600 : 500,
               }
             },
             autoSkip: true,
             maxTicksLimit:
-              filter === "1-year"
+              filter === "year"
                 ? isMobile
                   ? 4
                   : 12
-                : filter === "6-month"
-                  ? isMobile
-                    ? 4
-                    : data.labels.length
-                  : isMobile
+                : isMobile
                     ? 3
-                    : data.labels.length,
+                    : 5,
             maxRotation: 0,
             minRotation: 0,
             padding: isMobile ? 6 : 12,
@@ -262,7 +297,7 @@ export default function EarningsGrowthChart() {
         y: {
           type: "linear",
           min: 0,
-          max: Y_MAX,
+          max: enrichedData.values?.length > 0 ? calculateDynamicYMax(enrichedData.values) : Y_MAX,
           ticks: {
             stepSize: Y_STEP,
             color: "rgba(255,255,255,0.34)",
@@ -284,7 +319,24 @@ export default function EarningsGrowthChart() {
         },
       },
     }
-  }, [data.accentIndex, data.labels.length, filter, isMobile])
+  }, [enrichedData.accentIndex, enrichedData.labels?.length, filter, isMobile, enrichedData.values])
+
+  if (loading) {
+    return (
+      <section className="w-full min-w-0 rounded-3xl border border-secondary/50 bg-primary/50 p-4 sm:p-5 md:p-6">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:gap-4">
+          <div className="min-w-0">
+            <div className="h-7 w-32 bg-white/10 rounded-md animate-pulse mb-2"></div>
+            <div className="h-4 w-48 bg-white/5 rounded-md animate-pulse"></div>
+          </div>
+          <div className="h-11 w-24 bg-white/10 rounded-xl animate-pulse"></div>
+        </div>
+        <div className="h-56 w-full bg-white/5 rounded-xl animate-pulse flex items-center justify-center">
+          <div className="text-white/50 text-sm">Loading chart...</div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="w-full min-w-0 rounded-3xl border border-secondary/50 bg-primary/50 p-4 sm:p-5 md:p-6">
@@ -300,7 +352,7 @@ export default function EarningsGrowthChart() {
 
         <EarningsPeriodFilter
           value={filter}
-          onValueChange={setFilter}
+          onValueChange={handleFilterChange}
           className="w-full sm:w-auto"
         />
       </div>

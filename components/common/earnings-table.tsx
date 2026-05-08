@@ -28,6 +28,14 @@ type EarningsTableProps = {
 }
 
 export default function EarningsTable({ earnings }: EarningsTableProps) {
+  if (earnings.length === 0) {
+    return (
+      <div className="rounded-2xl border border-secondary/40 bg-primary/30 p-8 text-center">
+        <p className="text-lg text-white/70">No data for client</p>
+      </div>
+    )
+  }
+
   return (
     <>
       <div className="space-y-3 lg:hidden">

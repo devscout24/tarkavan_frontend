@@ -64,23 +64,24 @@ export default function UploadPhoto({
 
       {previewUrl ? (
         <div className="mt-5 flex items-center justify-center">
-          <div
-            className="relative flex items-center justify-center rounded-2xl border-2 border-dashed border-white/40 bg-white/5 p-4"
-            style={{ width: 96, height: 96 }}
-          >
-            <Image
-              src={previewUrl}
-              alt="Selected coach profile"
-              width={80}
-              height={80}
-              className="rounded-full object-cover"
-              style={{ width: 80, height: 80 }}
-            />
+          <div className="relative group">
+            <div className="relative overflow-hidden rounded-2xl border-2 border-dashed border-white/40 bg-white/5 p-1 transition-all duration-200 hover:border-white/60 hover:bg-white/10">
+              <div className="relative overflow-hidden rounded-xl" style={{ width: 120, height: 120 }}>
+                <Image
+                  src={previewUrl}
+                  alt="Selected coach profile"
+                  fill
+                  className="object-cover transition-transform duration-200 group-hover:scale-105"
+                  sizes="120px"
+                  priority
+                />
+              </div>
+            </div>
             <button
               type="button"
               aria-label="Remove image"
               onClick={handleRemoveImage}
-              className="absolute top-1 right-1 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-white shadow hover:bg-red-700"
+              className="absolute -top-2 -right-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-red-600 text-white shadow-lg transition-all duration-200 hover:bg-red-700 hover:scale-110 opacity-0 group-hover:opacity-100"
             >
               <Icon
                 width="14"

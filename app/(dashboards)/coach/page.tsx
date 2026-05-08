@@ -14,74 +14,106 @@ import { toast } from "sonner"
 import PlusIcon from "@/components/icons/plus-icon" 
 import Loader from "@/components/common/loader"
 import { getCoachDashboard } from "./action"
+import api from "@/lib/api-fetcher"
 import { TDashboardResponse } from "@/types"
 import moment from "moment"
-
-const quickActions = [
-  {
-    icon:  <PlusIcon/>,
-    label: "Add Programs",
-    active: true,
-    link: "?add-new=program"
-  },
-  {
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        viewBox="0 0 20 20"
-        fill="none"
-      >
-        <path
-          d="M1.875 15.625V13.125H3.54167V15.625C3.54167 16.0852 3.91476 16.4583 4.375 16.4583H15.625C16.0852 16.4583 16.4584 16.0852 16.4584 15.625V13.125H18.125V15.625C18.125 17.0057 17.0057 18.125 15.625 18.125H4.375C2.99428 18.125 1.875 17.0057 1.875 15.625Z"
-          fill="white"
-        />
-        <path
-          d="M9.1654 1.875H10.8321V11.1133L13.7487 8.19662L14.9271 9.37501L9.99874 14.3034L5.07031 9.37501L6.2487 8.19662L9.1654 11.1133V1.875Z"
-          fill="white"
-        />
-      </svg>
-    ),
-    label: "Export Earnings",
-    active: false,
-  },
-]
 
 export default function CoachDashboardPage() {
   const [dashboardData, setDashboardData] = useState<TDashboardResponse | null>(null)
   const [loading, setLoading] = useState(true)
- 
+  const [exporting, setExporting] = useState(false)
 
+  // Handle export earnings PDF download
+  const handleExportEarnings = async () => {
+    if (exporting) return
+
+    setExporting(true)
+    
+    try {
+      const response = await api.get('/coach/earnings/export', {
+        responseType: 'blob',
+      })
+
+      // Create and trigger download
+      const blob = new Blob([response.data], { type: 'application/pdf' })
+      const url = URL.createObjectURL(blob)
+      const fileName = `earnings-export-${new Date().toISOString().split('T')[0]}.pdf`
+      
+      const link = document.createElement('a')
+      link.href = url
+      link.download = fileName
+      document.body.appendChild(link)
+      link.click()
+      
+      // Cleanup
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+      
+      toast.success('Earnings report downloaded successfully!')
+    } catch (error) {
+      toast.error('Failed to download earnings report')
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  const quickActions = [
+    {
+      icon:  <PlusIcon/>,
+      label: "Add Programs",
+      active: false,
+      link: "?add-new=program"
+    },
+    {
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+        >
+          <path
+            d="M1.875 15.625V13.125H3.54167V15.625C3.54167 16.0852 3.91476 16.4583 4.375 16.4583H15.625C16.0852 16.4583 16.4584 16.0852 16.4584 15.625V13.125H18.125V15.625C18.125 17.0057 17.0057 18.125 15.625 18.125H4.375C2.99428 18.125 1.875 17.0057 1.875 15.625Z"
+            fill="white"
+          />
+          <path
+            d="M9.1654 1.875H10.8321V11.1133L13.7487 8.19662L14.9271 9.37501L9.99874 14.3034L5.07031 9.37501L6.2487 8.19662L9.1654 11.1133V1.875Z"
+            fill="white"
+          />
+        </svg>
+      ),
+      label: "Export Earnings",
+      active: false,
+      onClick: handleExportEarnings,
+    },
+  ]
+ 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const res = await getCoachDashboard() 
-        if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
+        const res = await api.get('/coach/dashboard')
+        
+        if (res.data?.status && res.data.data) {
           setDashboardData(res.data.data)
         } else {
-          toast.error(res?.message || "Failed to fetch dashboard data")
+          toast.error(res.data?.message || "Failed to fetch coach overview data")
         }
       } catch (error) {
-        toast.error("An unexpected error occurred while fetching dashboard data")
+        toast.error("An unexpected error occurred while fetching coach overview data")
       } finally {
         setLoading(false)
       }
     }
 
-  fetchDashboardData()
-
-  const handleReload = () => {
     fetchDashboardData()
-  }
 
-  window.addEventListener("load_coach_dashboard", handleReload)
+    const handleReload = () => fetchDashboardData()
+    window.addEventListener("load_coach_dashboard", handleReload)
 
-  return () => {
-    window.removeEventListener("load_coach_dashboard", handleReload)
-  }
-
-
+    return () => {
+      window.removeEventListener("load_coach_dashboard", handleReload)
+    }
   }, [])
 
  

@@ -20,6 +20,24 @@ export async function getCoachDashboard() {
     }
   }
 }
+
+export async function getCoachOverview() {
+  try {
+    const res = await api.get(`/coach/dashboard`)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) { 
+      return err?.response?.data
+    }
+  
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+
 export async function createCoachProgram(data: FormData) {
   try {
     const res = await api.post(`/coach/program/add`, data)
@@ -105,5 +123,3 @@ export async function applyRecruitment(data: FormData) {
     }
   }
 }
-
- 

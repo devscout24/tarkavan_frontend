@@ -9,6 +9,7 @@ type CoachQuickAction = {
   label: string
   active?: boolean
   link?: string
+  onClick?: () => void
 }
 
  
@@ -29,7 +30,13 @@ export default function CoachQuickActions({
         <button
           key={action.label}
           type="button"
-          onClick={() =>  router.push(`${pathname}${action.link}`) }
+          onClick={() => {
+            if (action.onClick) {
+              action.onClick()
+            } else if (action.link) {
+              router.push(`${pathname}${action.link}`)
+            }
+          }}
           className={`group flex w-full cursor-pointer items-center justify-between rounded-[16px] border px-4 py-4 text-left transition-colors ${
             action.active
               ? "border-brand bg-brand"

@@ -1,7 +1,7 @@
 export type TPrivacyOption = {
   value: string
   title: string
-  description: string
+  description?: string
 }
 
 export type TChangePasswordData = {

@@ -24,7 +24,7 @@ export type BookingItem = {
   amount: string
   date: string
   status: BookingStatus
-  avatar: StaticImageData
+  avatar: string | StaticImageData
 }
 
 type BookingsTableProps = {

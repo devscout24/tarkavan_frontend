@@ -35,6 +35,7 @@ export default function EarningsPage() {
   const [earningsData, setEarningsData] = useState<EarningsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState("month")
+  const [exporting, setExporting] = useState(false)
 
   const fetchEarnings = async (filterValue: string) => {
     try {
@@ -66,6 +67,65 @@ export default function EarningsPage() {
       console.error("Error fetching earnings:", error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleExport = async () => {
+    try {
+      setExporting(true)
+      const token = localStorage.getItem('go_elite_token') || sessionStorage.getItem('go_elite_token')
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/coach/earnings/export`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/pdf, application/csv, application/vnd.ms-excel, */*',
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      // Get the blob from the response
+      const blob = await response.blob()
+      
+      // Determine file extension from content type
+      const contentType = response.headers.get('content-type') || ''
+      let fileExtension = 'pdf' // Default to PDF
+      
+      if (contentType.includes('csv')) {
+        fileExtension = 'csv'
+      } else if (contentType.includes('excel') || contentType.includes('spreadsheet')) {
+        fileExtension = 'xlsx'
+      } else if (contentType.includes('pdf')) {
+        fileExtension = 'pdf'
+      }
+      
+      // Create a download link
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.style.display = 'none'
+      a.href = url
+      
+      // Generate filename with current date and correct extension
+      const currentDate = new Date().toISOString().split('T')[0]
+      a.download = `earnings_export_${currentDate}.${fileExtension}`
+      
+      // Trigger download
+      document.body.appendChild(a)
+      a.click()
+      
+      // Clean up
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+      
+      console.log(`Earnings data exported successfully as ${fileExtension.toUpperCase()}`)
+    } catch (error) {
+      console.error("Error exporting earnings data:", error)
+    } finally {
+      setExporting(false)
     }
   }
 
@@ -108,7 +168,7 @@ export default function EarningsPage() {
     <section>
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-xl font-semibold text-white">Earnings</h2>
-        <Export onExport={() => console.log("Export earnings data")} />
+        <Export onExport={handleExport} loading={exporting} />
        
       </div>
 

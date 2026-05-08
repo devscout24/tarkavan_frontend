@@ -14,10 +14,8 @@ export default function RecruitmentSection({
   items,
   className,
 }: RecruitmentSectionProps) {
-
-  console.log("items", items)
  
-
+  
   return (
     <div className={cn("space-y-3", className)} >
       <div className="flex justify-start">

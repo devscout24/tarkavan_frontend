@@ -1,58 +1,65 @@
 "use client"
 
-import ProgramCard from "@/components/common/program-card" 
-import ProgramHead from "@/components/common/program-head"
+import ProgramCard from "@/components/common/program-card"
+import ProgramHead from "../../../../components/common/program-head"
 import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react" 
+import { getSportOptions } from "../../action"
+import { TSportOption } from "@/types"
+import moment from "moment" 
+import { TProgramUpcomming } from "@/types/upcomming.type"
+import { getAvailablePlayerParentProgram } from "../../player/programs/action"
 
-export default function ProgramPage() {
-  const programs = [
-    {
-      id: "1",
-      title: "Elite Hoops Leadership Academy",
-      coachName: "Elena Rodriguez",
-      schedule: "Tuesdays, 6:00 PM",
-      duration: "8 Weeks Program",
-      currentPrice: "$249",
-      imageSrc: "/images/player1.png",
-      imageAlt: "Program image",
-      buttonLabel: "View Details",
-    },
-    {
-      id: "2",
-      title: "Premier Soccer Striker Clinic",
-      coachName: "David Chen",
-      schedule: "Weekends, 10:00 AM",
-      duration: "4 Weeks Program",
-      currentPrice: "$199",
-      imageSrc: "/images/player2.png",
-      imageAlt: "Program image",
-      buttonLabel: "View Details",
-    },
-    {
-      id: "3",
-      title: "Mindset & Performance Coaching",
-      coachName: "Sarah Jenkins",
-      schedule: "Thursdays, 5:00 PM",
-      duration: "12 Weeks Program",
-      currentPrice: "$269",
-      previousPrice: "$299",
-      discountLabel: "10% Off",
-      imageSrc: "/images/player3.png",
-      imageAlt: "Program image",
-      buttonLabel: "View Details",
-    },
-  ]
-
+export default function ProgramPage() { 
+  
   const router = useRouter()
+
+    const  [programs, setPrograms] = useState<TProgramUpcomming[]>([])
+    const [sports, setSports] = useState<TSportOption[]>([])
+    const [selectedFilter, setSelectedFilter] = useState<string>("") 
+    console.log("programs:", programs) 
+    useEffect(() => {
+  
+      const getPrograms = async () => {
+        try{ 
+          const res = await getAvailablePlayerParentProgram(selectedFilter)   
+          if(res && "success" in res && res.success && res.data && "data" in res.data && res.data.data ) {
+              setPrograms(res.data.data.programs)
+            } 
+        }catch(err) {
+          console.error("Error fetching programs:", err)
+        }
+      } 
+      getPrograms() 
+    } , [selectedFilter])
+
+
+    useEffect(()=> { 
+      const getSportData = async () => {
+        try{
+
+          const res = await getSportOptions() 
+          if( res && "success" in res && res.success && res.data && "data" in res.data && res.data.data){ 
+            setSports(res.data.data)
+          }
+          
+          
+        }catch(err){
+            console.error("Error fetching sport data:", err)
+        }
+      }
+      getSportData()
+
+    }, [])
 
   return (
     <section>
       <ProgramHead
         title="Available Programs"
-        options={[{ id: 3, name: "All Sports" }]}
+        options={sports}
         placeholder="All Sports"
-        selectedFilter=""
-        setSelectedFilter={() => {}}
+        setSelectedFilter={setSelectedFilter}
+        selectedFilter={selectedFilter}
       />
 
       {/* programs cards */}
@@ -60,10 +67,24 @@ export default function ProgramPage() {
         {programs.map((program, index) => (
           <ProgramCard
             key={index}
-            {...program}
-            onClick={() => router.push(`/parent/programs/${program.id}`)}
-            viewOnly={false}
-          />
+            id={program.id}
+            title={program.program_name}
+            type={program.program_type}
+            schedule={moment(program.times[0].start_time, "HH:mm:ss").format("hh:mm A")}
+            duration={moment(program.program_start).format("MMM Do YY")}
+            currentPrice={String(program.discount_price)}
+            previousPrice={String(program.price)}
+           discountLabel={`${(
+            ((program.price - program.discount_price) / program.price) *
+            100
+          ).toFixed(2)}% Off`}
+            imageSrc={program.photo}
+            imageAlt={program.program_name}
+            sport={program.sport}
+            buttonLabel="View Details"
+            onClick={() => router.push(`/player/programs/${program.id}`) }
+            viewOnly={true}
+          /> 
         ))}
       </div>
     </section>

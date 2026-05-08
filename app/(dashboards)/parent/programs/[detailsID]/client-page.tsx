@@ -1,58 +1,78 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { eachDayOfInterval, format } from "date-fns"
+import AboutProgram from "@/components/common/about-program" 
+import ProgramCoachCard from "@/components/common/program-coach-card" 
+import ProgramDetailsBanner from "@/components/common/program-details-banner"
+import ProgramFeedbackCard from "@/components/common/program-feedback-card"
+import ProgramHead from "@/components/common/program-head"
+import ProgramReview from "@/components/common/program-review"
+import { Button } from "@/components/ui/button" 
 import { ArrowLeftIcon } from "lucide-react"
-import { useRouter } from "next/navigation"
-import ProgramDetailsBanner from "../../../../../components/common/program-details-banner"
-import AboutProgram from "../../../../../components/common/about-program"
-import ProgramReview from "../../../../../components/common/program-review"
-import ProgramHead from "../../../../../components/common/program-head"
-import ProgramFeedbackCard from "../../../../../components/common/program-feedback-card"
-import ProgramCoachCard from "../../../../../components/common/program-coach-card" 
+import { useRouter } from "next/navigation" 
+import { useEffect, useState } from "react" 
+import { useParams } from "next/navigation";
+import { toast } from "sonner"  
+import moment from "moment"
+import { TProgramDetailsParentAndPlayer } from "@/types"
+import ProgramDateTimeSelector from "@/components/common/program-date-time-selector" 
+import { getAvailablePlayerParentProgramDetails } from "@/app/(dashboards)/player/programs/action"
 
 
 
 
-export default function ParentProgramDetailsPage() {
-  const router = useRouter()
-  const programStartDate = new Date(2026, 3, 1)
-  const programEndDate = new Date(2026, 3, 15)
+export default function PlayerProgramDetailsClientPage() {
 
-  const timeSlotsByDate = eachDayOfInterval({
-    start: programStartDate,
-    end: programEndDate,
-  }).reduce<Record<string, string[]>>((acc, date) => {
-    acc[format(date, "yyyy-MM-dd")] = [
-      "09:00 AM",
-      "11:00 AM",
-      "02:00 PM",
-      "05:00 PM",
-    ]
-    return acc
-  }, {})
+  const router = useRouter() 
+  const params = useParams();
+  const id = params.detailsID
+  const [details , setDetails] = useState<TProgramDetailsParentAndPlayer | null>(null)
+ 
 
+  useEffect(()=> {
+
+    const getDetailsOfProgram = async () => {
+      if(!id) {
+        toast.error("Program ID is missing.")
+        setTimeout(() => {
+          router.push("/player/programs")
+        }, 1000)
+        return 
+      } 
+      try{ 
+        const res = await getAvailablePlayerParentProgramDetails(String(id)) 
+        if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){ 
+          setDetails(res.data.data.program)
+        } 
+      }catch(err){
+        console.error("Error fetching program details:", err)
+      }
+    }
+    
+    getDetailsOfProgram()
+
+  } , [id])
+ 
+ 
   return (
     <section className="text-white">
       {/* BACK BUTTON */}
       <Button
-        className="mb-[24px] cursor-pointer bg-transparent hover:underline"
+        className="cursor-pointer bg-transparent hover:underline"
         onClick={() => router.back()}
       >
-        <ArrowLeftIcon className="text-white" />
-        <span className="text-[16px] leading-[150%] font-normal text-white">
-          Back to Programs
-        </span>
+        <ArrowLeftIcon />
+        <span>Back to Programs</span>
       </Button>
 
       {/* program details banner */}
       <ProgramDetailsBanner
-        title="Varsity Prep Mentorship"
-        category="Football"
-        duration="12 Weeks Duration"
-        dateRange="01-04-2026 to 15-04-2026"
-        location="GoElite Sports Complex, Toronto"
-        ageRange="Ages 8-14"
+        title={details?.program_name || "Program Name"}
+        category={details?.sport || "Program Type"}
+        duration={moment.duration(moment(details?.end_date).diff(moment(details?.start_date))).humanize()}
+        dateRange={`${moment(details?.start_date).format("MMM Do YY")} - ${moment(details?.end_date).format("MMM Do YY")}`}
+        location={details?.location}
+        ageRange={`Age U${details?.age_limit}`}
+        program_photo={details?.photo || ""}
       />
 
       {/* layout */}
@@ -62,42 +82,35 @@ export default function ParentProgramDetailsPage() {
           {/* about program */}
           <AboutProgram
             sectionTitle="About This Program"
-            description="The Varsity Prep Mentorship is designed to bridge the gap between high school athletics and NCAA-level expectations. Our curriculum focuses on three core pillars: explosive physical development, tactical sports intelligence, and psychological resilience."
-            goals={[
-              {
-                id: 1,
-                goal: "Performance Goals: Increase vertical leap by 15%, improve 40-yard dash times, and optimize recovery cycles.",
-              },
-              {
-                id: 2,
-                goal: "Mentorship Goals: Develop leadership skills and understand the collegiate recruiting landscape.",
-              },
-            ]}
+            description={details?.about}
           />
 
           {/* program review */}
+          {details && details?.recent_feedback?.length > 0 && 
           <ProgramReview
-            rating={4.9}
-            totalReviews={47}
-            feedbackLabel="Total Feedback"
-            reviewLabel="Write a Review"
-            breakdown={[
-              { stars: 5, percentage: 85 },
-              { stars: 4, percentage: 12 },
-              { stars: 3, percentage: 3 },
-              { stars: 2, percentage: 0 },
-              { stars: 1, percentage: 0 },
-            ]}
+          rating={4.9}
+          totalReviews={47}
+          feedbackLabel="Total Feedback"
+          reviewLabel="Write a Review"
+          breakdown={[
+            { stars: 5, percentage: 85 },
+            { stars: 4, percentage: 12 },
+            { stars: 3, percentage: 3 },
+            { stars: 2, percentage: 0 },
+            { stars: 1, percentage: 0 },
+          ]}
           />
+        }
 
           {/* recent feedback */}
+          {details && details?.recent_feedback?.length > 0 && 
           <div className="mt-6">
             <ProgramHead
-              options={[{ id: 1, name: "Most Recent" }]}
+              options={[{ id: 5, name: "Most Recent" }]}
               placeholder="Choose short"
               title="Recent Feedback"
               selectedFilter=""
-              setSelectedFilter={() => {}}
+              setSelectedFilter={()=> {}}
             />
 
             <ProgramFeedbackCard
@@ -107,24 +120,31 @@ export default function ParentProgramDetailsPage() {
               rating={4.5}
               avatarUrl="/images/Dainel.png"
             />
-            <ProgramFeedbackCard
-              name="Sarah Jenkins"
-              date="September 28, 2023"
-              review="Very technical and precise instructions. The video analysis sessions were especially useful. Great energy and professional attitude."
-              rating={4.5}
-              avatarUrl="/images/Dainel.png"
-            />
           </div>
+          }
         </div>
 
         {/* right side */}
         <div className="flex-1">
-          <ProgramCoachCard />
-          {/* <ProgramCalendar
-            startDate={programStartDate}
-            endDate={programEndDate}
-            timeSlotsByDate={timeSlotsByDate}
-          /> */}
+          <ProgramCoachCard
+            bio=""
+            className=""
+            highlightedName=""
+            imageAlt=""
+            imageUrl={details?.provider?.logo || "/images/coach.png"}
+            location=""
+            messageLabel={`Message ${details?.provider?.type}`}
+            tags={[]}
+            name={details?.provider?.name || ""}
+            verifiedLabel={details?.provider?.type}
+          />
+          <ProgramDateTimeSelector 
+            programStartDate={details?.start_date}
+            programEndDate={details?.end_date}
+            price={details?.discount_price}
+            detailsID={String(id)}
+          />
+ 
         </div>
       </div>
     </section>

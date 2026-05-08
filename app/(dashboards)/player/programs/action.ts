@@ -36,3 +36,35 @@ export async function getAvailablePlayerParentProgramDetails(id: string) {
     }
   }
 }
+
+export async function bookPlayerParentBooking(data: FormData) {
+  try {
+    const res = await api.post(`/program/booking`, data)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+
+export async function getChildList() {
+  try {
+    const res = await api.get(`/parent/child/list`)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}

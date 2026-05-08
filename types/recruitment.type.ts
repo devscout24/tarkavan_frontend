@@ -26,3 +26,23 @@ type Recruitment = {
   profile_image: string | null;
 };
  
+
+type TCompetitionLevel = {
+  id: number
+  name: string
+}
+
+export type TTeamData = {
+  id: number
+  club_id: number
+  name: string
+  age_group: string
+  image: string
+  competition_level_id: number
+  gender: "male" | "female" | "other"
+  created_at: string
+  updated_at: string
+  total_players: number
+  total_coaches: number
+  competition_level: TCompetitionLevel
+}

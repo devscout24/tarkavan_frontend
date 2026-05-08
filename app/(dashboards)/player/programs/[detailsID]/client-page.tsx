@@ -1,8 +1,7 @@
 "use client"
 
 import AboutProgram from "@/components/common/about-program" 
-import ProgramCoachCard from "@/components/common/program-coach-card"
-import ProgramDateTimeSelector from "@/components/common/program-date-time-selector"
+import ProgramCoachCard from "@/components/common/program-coach-card" 
 import ProgramDetailsBanner from "@/components/common/program-details-banner"
 import ProgramFeedbackCard from "@/components/common/program-feedback-card"
 import ProgramHead from "@/components/common/program-head"
@@ -16,6 +15,7 @@ import { useParams } from "next/navigation";
 import { toast } from "sonner"  
 import moment from "moment"
 import { TProgramDetailsParentAndPlayer } from "@/types"
+import ProgramDateTimeSelector from "@/components/common/program-date-time-selector" 
 
 
 
@@ -26,7 +26,7 @@ export default function PlayerProgramDetailsClientPage() {
   const params = useParams();
   const id = params.detailsID
   const [details , setDetails] = useState<TProgramDetailsParentAndPlayer | null>(null)
-
+ 
 
   useEffect(()=> {
 
@@ -40,9 +40,8 @@ export default function PlayerProgramDetailsClientPage() {
       } 
       try{ 
         const res = await getAvailablePlayerParentProgramDetails(String(id)) 
-        if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
-          console.log("Fetched Program Details: ", res.data.data.program)
-          setDetails(res.data.data)
+        if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){ 
+          setDetails(res.data.data.program)
         } 
       }catch(err){
         console.error("Error fetching program details:", err)
@@ -52,8 +51,7 @@ export default function PlayerProgramDetailsClientPage() {
     getDetailsOfProgram()
 
   } , [id])
-
-  console.log("Program Details: ", details)
+ 
  
   return (
     <section className="text-white">
@@ -74,6 +72,7 @@ export default function PlayerProgramDetailsClientPage() {
         dateRange={`${moment(details?.start_date).format("MMM Do YY")} - ${moment(details?.end_date).format("MMM Do YY")}`}
         location={details?.location}
         ageRange={`Age U${details?.age_limit}`}
+        program_photo={details?.photo || ""}
       />
 
       {/* layout */}
@@ -127,13 +126,25 @@ export default function PlayerProgramDetailsClientPage() {
 
         {/* right side */}
         <div className="flex-1">
-          <ProgramCoachCard />
-          <ProgramDateTimeSelector/>
-          {/* <ProgramCalendar
-            startDate={programStartDate}
-            endDate={programEndDate}
-            timeSlotsByDate={timeSlotsByDate}
-          /> */}
+          <ProgramCoachCard
+            bio=""
+            className=""
+            highlightedName=""
+            imageAlt=""
+            imageUrl={details?.provider?.logo || "/images/coach.png"}
+            location=""
+            messageLabel={`Message ${details?.provider?.type}`}
+            tags={[]}
+            name={details?.provider?.name || ""}
+            verifiedLabel={details?.provider?.type}
+          />
+          <ProgramDateTimeSelector 
+            programStartDate={details?.start_date}
+            programEndDate={details?.end_date}
+            price={details?.discount_price}
+            detailsID={String(id)}
+          />
+ 
         </div>
       </div>
     </section>

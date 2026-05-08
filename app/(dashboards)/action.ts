@@ -184,6 +184,39 @@ export async function getPlayerDashboard() {
     }
   }
 } 
+ 
+ 
+export async function getAvailableMonth({program_id}: {program_id: string }) {
+  try {
+    const res = await api.get(`/program/{{program_id}}/available-slots?month`)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+} 
+ 
+export async function getAvailableTimes({program_id , date}: {program_id: string , date: string}) {
+  try {
+    const res = await api.get(`/program/${program_id}/available-times?date=${date}`)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+} 
 
  
 

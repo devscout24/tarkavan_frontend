@@ -15,15 +15,7 @@ import { toast } from "sonner";
 
 export default  function ProfileSettingPage() {
 
-
-
-
-
-
-
-
-
-
+ 
 
 
   const [playerProfile, setPlayerProfile] = useState<TPlayerProfileSetting>()
@@ -80,13 +72,10 @@ export default  function ProfileSettingPage() {
         } 
         setProfileImage("")
     }catch(error){
-      console.error(error)
-      console.log("error", error)
+      console.error(error) 
     }
-  }
-
-  handleProfileImageChange()
-
+  } 
+  handleProfileImageChange() 
  }, [profileImage])
 
 

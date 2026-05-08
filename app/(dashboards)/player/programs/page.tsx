@@ -8,6 +8,7 @@ import { getSportOptions } from "../../action"
 import { TSportOption } from "@/types"
 import moment from "moment"
 import { getAvailablePlayerParentProgram } from "./action"
+import { TProgramUpcomming } from "@/types/upcomming.type"
 
 export default function ProgramPage() { 
   
@@ -15,7 +16,8 @@ export default function ProgramPage() {
 
     const  [programs, setPrograms] = useState<TProgramUpcomming[]>([])
     const [sports, setSports] = useState<TSportOption[]>([])
-    const [selectedFilter, setSelectedFilter] = useState<string>("")  
+    const [selectedFilter, setSelectedFilter] = useState<string>("") 
+    console.log("programs:", programs) 
     useEffect(() => {
   
       const getPrograms = async () => {
@@ -68,12 +70,15 @@ export default function ProgramPage() {
             id={program.id}
             title={program.program_name}
             type={program.program_type}
-            schedule={program.time}
+            schedule={moment(program.times[0].start_time, "HH:mm:ss").format("hh:mm A")}
             duration={moment(program.program_start).format("MMM Do YY")}
-            currentPrice={String(program.program_price)}
-            previousPrice={String(program.discount_price + program.program_price)}
-            discountLabel={`${Math.round((program.discount_price / (program.discount_price + program.program_price)) * 100)}% Off`}
-            imageSrc={program.program_photo}
+            currentPrice={String(program.discount_price)}
+            previousPrice={String(program.price)}
+           discountLabel={`${(
+            ((program.price - program.discount_price) / program.price) *
+            100
+          ).toFixed(2)}% Off`}
+            imageSrc={program.photo}
             imageAlt={program.program_name}
             sport={program.sport}
             buttonLabel="View Details"

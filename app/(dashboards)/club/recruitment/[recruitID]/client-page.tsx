@@ -155,7 +155,7 @@ export default function ClubRecruitmentClientPage() {
                     </div>
                   </TableCell>
                   <TableCell className={columnBorderClass}>
-                    {data.recruitment.team_name}
+                    {data.recruitment.team_name} 
                   </TableCell>
                   <TableCell className={columnBorderClass}>
                     {moment(data.recruitment.end_date).format("MMM Do YY")}

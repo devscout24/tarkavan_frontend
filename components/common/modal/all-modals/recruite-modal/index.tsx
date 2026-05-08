@@ -25,12 +25,12 @@ import { getCoachPositions, getPlayerPosition } from "@/app/(dashboards)/action"
 import { getTeams } from "@/app/(dashboards)/club/teams/action"
 import { getRecruitmentDetails } from "@/app/(dashboards)/club/recruitment/action"
 import CommonBtn from "@/components/common/common-btn"
+import { sortPositions } from "@/lib/sort-position"
+import { TPlayerSportOption, TTeamData } from "@/types" 
+import { Input } from "@/components/ui/input"
+import { getHighestNumber } from "@/lib/get-highest-number"
 
-type Option = {
-  label: string
-  value: string
-}
-
+ 
 type RecruitType = "coach" | "player"
 
 type RecruitmentFormPayload = {
@@ -51,8 +51,8 @@ type RecruitmentFormProps = {
   experiencePlaceholder?: string
   tryoutPlaceholder?: string
   descriptionPlaceholder?: string
-  positions?: Option[]
-  teams?: Option[]
+  positions?: TPlayerSportOption[]
+  teams?: TPlayerSportOption[]
   defaultValues?: Partial<RecruitmentFormPayload>
   onCancel?: () => void
   onSubmit?: (payload: RecruitmentFormPayload) => void
@@ -79,20 +79,20 @@ export default function RecruitmentForm({
   )
   const [position, setPosition] = useState(defaultValues?.position ?? "")
   const [team, setTeam] = useState(defaultValues?.team ?? "")
-  const [positions, setPositions] = useState<Option[]>([])
-  const [teams, setTeams] = useState<Option[]>([])
-  const [coachPositions, setCoachPositions] = useState<Option[]>([])
+  const [positions, setPositions] = useState<TPlayerSportOption[]>([])
+  const [teams, setTeams] = useState<TTeamData[]>([])
+  const [coachPositions, setCoachPositions] = useState<TPlayerSportOption[]>([])
   const [coachPosition, setCoachPosition] = useState<string>("")
   const [experience, setExperience] = useState(defaultValues?.experience ?? "")
   const [tryoutDates, setTryoutDates] = useState(
     defaultValues?.tryoutDates ?? ""
   )
-  const [ageGroup, setAgeGroup] = useState("13")
+  const [ageGroup, setAgeGroup] = useState("")
   const [description, setDescription] = useState(
     defaultValues?.description ?? ""
   )
  
-
+// get positions
   useEffect(() => {
     const getPositions = async () => {
       try {
@@ -105,33 +105,11 @@ export default function RecruitmentForm({
           "data" in res.data &&
           res.data.data
         ) {
-          const positionsData = res.data.data.map(
-            (position: { id: number; name: string }) => ({
-              label: position.name,
-              value: String(position.id),
-            })
-          )
+          // sortPositions 
 
           // Sort positions in the specified order: GK, CB, RB, LB, DM, CM, AM, RW, LW, ST
-          const positionOrder = [
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-          ]
-          const sortedPositions = positionsData.sort((a: Option, b: Option) => {
-            const aIndex = positionOrder.indexOf(a.value)
-            const bIndex = positionOrder.indexOf(b.value)
-            return aIndex - bIndex
-          })
-
-          setPositions(sortedPositions)
+ 
+          setPositions(sortPositions(res.data.data))
         }
       } catch (error) {
         console.error("Error fetching positions:", error)
@@ -140,6 +118,7 @@ export default function RecruitmentForm({
     getPositions()
   }, [])
 
+  // get teams
   useEffect(() => {
     const getTeam = async () => {
       try {
@@ -151,14 +130,8 @@ export default function RecruitmentForm({
           res.data &&
           "data" in res.data &&
           res.data.data
-        ) {
-          const teamsData = res.data.data.map(
-            (team: { id: number; name: string }) => ({
-              label: team.name,
-              value: String(team.id),
-            })
-          )
-          setTeams(teamsData)
+        ) { 
+          setTeams(res.data.data)
         }
       } catch (error) {
         console.error("Error fetching teams:", error)
@@ -210,7 +183,9 @@ export default function RecruitmentForm({
           "data" in res.data &&
           res.data.data
         ) {
-          const recruitment = res.data.data
+          console.log(res.data.data)
+          const recruitment = res.data.data.recruitment
+
 
           // Populate form with recruitment data
           setRecruitType(recruitment.recruitment_type)
@@ -243,7 +218,7 @@ export default function RecruitmentForm({
       formData.append("experience", experience.trim())
       formData.append("end_date", tryoutDates.trim())
       formData.append("description", description.trim())
-      formData.append("upto_age", ageGroup)
+      formData.append("upto_age", String(getHighestNumber(ageGroup)))
 
       const res = await addRecruitment(formData)
 
@@ -372,11 +347,11 @@ export default function RecruitmentForm({
               >
                 {positions.map((option) => (
                   <SelectItem
-                    key={option.value}
-                    value={option.value}
+                    key={option.id}
+                    value={String(option.id)}
                     className="hover:bg-brand!"
                   >
-                    {option.label}
+                    {option.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -397,11 +372,11 @@ export default function RecruitmentForm({
               >
                 {coachPositions.map((option) => (
                   <SelectItem
-                    key={option.value}
-                    value={option.value}
+                    key={option.id}
+                    value={String(option.id)}
                     className="hover:bg-brand!"
                   >
-                    {option.label}
+                    {option.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -412,32 +387,15 @@ export default function RecruitmentForm({
         {recruitType === "player" && (
           <div className="flex flex-col">
             <span className="text-sm">Age Group</span>
-            <Select value={ageGroup} onValueChange={setAgeGroup}>
-              <SelectTrigger className={`mt-1 w-full py-5.5 text-white`}>
-                <SelectValue placeholder="Select Age Group" />
-              </SelectTrigger>
-              <SelectContent position="popper">
-                <SelectItem value="8" className="hover:bg-brand!">
-                  U03 - U08
-                </SelectItem>
-                <SelectItem value="12" className="hover:bg-brand!">
-                  U09 - U12
-                </SelectItem>
-                <SelectItem value="17" className="hover:bg-brand!">
-                  U13 - U17
-                </SelectItem>
-                <SelectItem value="21" className="hover:bg-brand!">
-                  U18 - U21
-                </SelectItem>
-                <SelectItem value="30" className="hover:bg-brand!">
-                  U21 - U30
-                </SelectItem>
-                <SelectItem value="200" className="hover:bg-brand!">
-                  30+
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <Input
+              placeholder="e.g U14 or U16-U20"
+              value={ageGroup}
+              onChange={(e) => setAgeGroup(e.target.value)}
+              className={`mt-1  border-neutral-700 bg-neutral-800 py-5 placeholder:text-neutral-300 placeholder:opacity-100`}
+            />
           </div>
+
+ 
         )}
 
         <div className="space-y-2">
@@ -452,11 +410,11 @@ export default function RecruitmentForm({
             >
               {teams.map((option) => (
                 <SelectItem
-                  key={option.value}
-                  value={option.value}
+                  key={option.id}
+                  value={String(option.id)}
                   className="hover:bg-brand!"
                 >
-                  {option.label}
+                  {option.name}
                 </SelectItem>
               ))}
             </SelectContent>

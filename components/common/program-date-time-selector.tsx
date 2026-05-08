@@ -2,9 +2,21 @@
 
 import { Calendar } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
-import { format, isSameDay, eachDayOfInterval } from "date-fns"
-import { IoIosArrowDown } from "react-icons/io";
+import { useEffect, useState } from "react" 
+import { isSameDay, eachDayOfInterval, parseISO } from "date-fns"
+import { IoIosCheckmark } from "react-icons/io";
+import { TTimeSlot } from "@/types"
+import moment from "moment"
+import { getAvailableTimes } from "@/app/(dashboards)/action"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { getChildList } from "@/app/(dashboards)/player/programs/action"
 
 const timeSlots = [
   "12:15 PM",
@@ -17,7 +29,6 @@ const timeSlots = [
   "2:00 PM",
 ]
 
-// শুধু এই dates গুলো available (example)
 const availableDates = [
   new Date(2026, 3, 20),
   new Date(2026, 3, 22),
@@ -26,98 +37,151 @@ const availableDates = [
 
 type ProgramDateTimeSelectorProps = {
   role?: "coach" | "player" | "parent" | "club"
-  programStartDate?: Date
-  programEndDate?: Date
+  programStartDate?: string | Date
+  programEndDate?: string | Date
   programTimes?: Array<{ id: number; time: string; is_available: boolean }>
   isOwner?: boolean
+  availableTimes?: TTimeSlot[] 
+  price?: number
+  detailsID: string 
 }
 
-export default function ProgramDateTimeSelector({ 
-  role = "player", 
-  programStartDate, 
+export default function ProgramDateTimeSelector({
+  role = "player",
+  programStartDate,
   programEndDate,
-  programTimes = [] ,
-  isOwner = false,
+  programTimes = [],
+  isOwner = false,  
+  price ,
+  detailsID,
 }: ProgramDateTimeSelectorProps) {
-  const [date, setDate] = useState<Date | undefined>(programStartDate)
-  const [selectedTime, setSelectedTime] = useState<string | null>(null)
-  const [isExpandTimeSlots, setIsExpandTimeSlots] = useState(false)  
-
-  // Use program times if available, otherwise fallback to hardcoded times
-  let displayTimes: string[] = []
-   
   
+ 
+  const startDate =
+    programStartDate
+      ? typeof programStartDate === "string"
+        ? parseISO(programStartDate)
+        : programStartDate
+      : undefined
+
+  const endDate =
+    programEndDate
+      ? typeof programEndDate === "string"
+        ? parseISO(programEndDate)
+        : programEndDate
+      : undefined
+
+  const [date, setDate] = useState<Date | undefined>(startDate)
+  const user = localStorage.getItem("go_elite_user") ? JSON.parse(String(localStorage.getItem("go_elite_user"))) : null
+  
+
+  let displayTimes: string[] = []
+
   if (programTimes && programTimes.length > 0) {
-    // Get the time strings from the program times
-    const timeStrings = programTimes.map(t => t.time).filter(Boolean) 
-    
-    // Check if any of the time strings contain commas (indicating they're joined)
-    const allTimes = timeStrings.flatMap(timeStr => {
-      if (typeof timeStr === 'string' && timeStr.includes(',')) {
-        // Split comma-separated times
-        return timeStr.split(',').map(t => t.trim()).filter(t => t !== '')
+    const timeStrings = programTimes.map(t => t.time).filter(Boolean)
+
+    displayTimes = timeStrings.flatMap(timeStr => {
+      if (typeof timeStr === "string" && timeStr.includes(",")) {
+        return timeStr.split(",").map(t => t.trim()).filter(Boolean)
       }
       return timeStr
     })
-    
-    displayTimes = allTimes
   } else {
     displayTimes = timeSlots
   }
 
  
-  
-  // Extra safety: ensure we have an array of strings
-  const normalizedTimes = displayTimes.map(time => String(time)).filter(time => time.trim() !== '')
-  
+
+  const programDates =
+    startDate && endDate
+      ? eachDayOfInterval({
+          start: startDate,
+          end: endDate,
+        })
+      : []
+
+  const isProgramDate = (day: Date) =>
+    programDates.some(d => isSameDay(d, day))
+
+  const isAvailableDate = (day: Date) =>
+    availableDates.some(d => isSameDay(d, day))
+
+  const canSelectDate = (day: Date) =>
+    programDates.length > 0 ? isProgramDate(day) : isAvailableDate(day)
+
+    const [selectedDate, setSelectedDate] = useState<Date | string>("")
+    const [selectedTime, setSelectedTime] = useState<TTimeSlot>()  
+    const [availableTimes, setAvailableTimes] = useState<TTimeSlot[]>([])
+    useEffect(() => {
+      if(!selectedDate) {
+        return
+      }
+
+      const fetchAvailableTimes = async () => {
+        try{
+
+          const res  = await getAvailableTimes({ program_id: detailsID , date: String(moment(selectedDate).format("YYYY-MM-DD")) })
+          if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
+            setAvailableTimes(res.data.data.times)
+          }
+
+        }catch(err) {
+          console.error("Error fetching available times:", err)
+        }
+
+      }
+      fetchAvailableTimes()
+
+    } , [selectedDate])
+
+    useEffect(() => {
+      const getChild = async () => {
+        try{
+          const res = await getChildList()
+          console.log(res)
+        }catch(error) {
+          console.error("Error fetching child list:", error)
+        }
+      }
+      getChild()
+    } , [])
+
+
+    const handleBooking = async () => {
+      const data = {
+         program_id: detailsID,
+         athlete_profile_id: 123,
+      }
+      try{
+
+      }catch(err){
+        console.error("Error booking program:", err)
+      }
+    }
  
 
-  const dateLabel = date ? format(date, "EEEE d MMMM") : role === "coach" ? "Program Schedule" : "Select a date"
-
-  // Generate program date range for coach
-  const programDates = programStartDate && programEndDate 
-    ? eachDayOfInterval({ start: programStartDate, end: programEndDate })
-    : []
-
-  // Check if a date is a program date
-  const isProgramDate = (day: Date) => {
-    return programDates.some(d => isSameDay(d, day))
-  }
-
-  // Check if a date is available (for non-coach roles)
-  const isAvailableDate = (day: Date) => {
-    return availableDates.some(d => isSameDay(d, day))
-  }
-
   return (
-    <div className="space-y-6 rounded-2xl bg-white p-4 sm:p-6 mt-4    ">
-      {/* Calendar */}
+    <div className="space-y-6 rounded-2xl bg-white p-4 sm:p-6 mt-4">
+
+      {/* Calendar (UNCHANGED UI) */}
       <Calendar
-        className="w-full bg-transparent p-0 [aria-multiselectable='false']:w-stretch!     "
+        className="w-full bg-transparent p-0 [aria-multiselectable='false']:w-stretch!"
         mode="single"
         buttonVariant="ghost"
         selected={date}
-        defaultMonth={programStartDate}
+        defaultMonth={startDate}
         onSelect={(d) => {
-          if (d) {
-            setDate(d)
-            setSelectedTime(null) // date change হলে time reset
+          if (d && canSelectDate(d)) {
+            setDate(d) 
+            setSelectedDate(d)
           }
         }}
-        disabled={(day) => {
-          if (role === "coach") {
-            // For coach, only program dates are selectable
-            return !isProgramDate(day)
-          } else {
-            // For other roles, use available dates logic
-            return !isAvailableDate(day)
-          }
-        }}
+        disabled={(day) => !canSelectDate(day)}
         modifiers={{
-          program_date: programDates
+          program_date: programDates,
         }}
         modifiersClassNames={{
-          program_date: "bg-brand/40 text-brand hover:bg-brand/20"
+          program_date: "bg-brand rounded-md mx-0.5  text-primary! hover:bg-brand opacity-100!"
         }}
         classNames={{
           root: "w-full",
@@ -125,74 +189,55 @@ export default function ProgramDateTimeSelector({
           month_caption: "h-10 justify-start px-0",
           caption_label:
             "text-xl font-semibold tracking-tight text-[#171717]",
-          nav: "  top-0 gap-1",
+          nav: "top-0 gap-1",
           button_previous:
-            "absolute right-10 cursor-pointer size-8 rounded-md text-[#8D8D8D] hover:bg-[#F5F5F5] hover:text-[#171717]",
+            "absolute right-10 cursor-pointer size-8 rounded-md text-primary hover:bg-[#F5F5F5] hover:text-[#171717]",
           button_next:
-            " absolute right-0 cursor-pointer size-8 rounded-md text-[#8D8D8D] hover:bg-[#F5F5F5] hover:text-[#171717]",
+            "absolute right-0 cursor-pointer size-8 rounded-md text-primary  hover:bg-[#F5F5F5] hover:text-primary",
           weekdays: "mt-1",
-          weekday: "text-sm font-normal text-[#7A7A7A]",
-          week: "mt-1",
+          weekday: "text-sm font-normal text-primary    ",
+          week: "mt-1  ",
           day: "aspect-square",
-          day_button: "size-11 rounded-xl text-lg font-normal text-[#232323] hover:bg-[#F5F5F5]",
+          day_button:
+            "size-11 rounded-xl text-lg font-normal hover:bg-[#F5F5F5]   ",
           selected:
-            "bg-brand! text-white hover:bg-brand/70 hover:text-primary rounded-xl  ",
-          today:
-            "bg-[#ECECEC] text-[#272727] rounded-xl data-[selected=true]:bg-[#101010] data-[selected=true]:text-white",
+            "bg-brand! text-white hover:bg-brand/70 hover:text-primary rounded-xl",
+          today: 
+            "bg-[#ECECEC] text-[#272727] rounded-xl data-[selected=true]:bg-[#101010] data-[selected=true]:text-white ",
           outside:
-            "text-[#B7B7B7] line-through opacity-100 aria-selected:text-[#B7B7B7]",
-          disabled: role === "coach" ? "text-[#C0C0C0] opacity-50" : "text-[#C0C0C0] line-through opacity-100",
+            "text-[#B7B7B7] line-through  aria-selected:text-[#B7B7B7]",
+          // disabled:
+          //   role === "coach"
+          //     ? "text-[#C0C0C0] opacity-50"
+          //     : "text-[#C0C0C0] line-through opacity-100",
         }}
-      />
+      /> 
 
-        <div className=""> 
-          <div className="flex items-center justify-between gap-2 px-1 pt-1">
-            <p className="text-xl font-medium text-[#191919]">{isOwner ? "View times" : dateLabel}</p>
-            <button
-              onClick={()=> setIsExpandTimeSlots(prev => !prev) }
-              type="button"
-              className="inline-flex items-center gap-0.5 text-base font-normal text-[#5C5C5C]"
-            >
-              EDST
-              <IoIosArrowDown className={`${isExpandTimeSlots ? 'rotate-180' : ''}`} />
-            </button>
-          </div>
-           
-          <div
-            className={`
-              text-primary text-sm font-medium px-1 border border-brand
-              overflow-hidden transition-all duration-300
-              ${isExpandTimeSlots ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'} '}
-            `}
-          >
-            ADSDS
-          </div>
-        </div>
-
-      {/* Time slots */}
-      {date && normalizedTimes.length > 0 && (
+      {/* times */}
+      {date && availableTimes && availableTimes?.length > 0 && (
         <>
           <div className="mb-2 text-sm font-medium text-[#191919]">
             Available Times:
           </div>
+
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            {normalizedTimes.map((time, index) => {
- 
-              return (
-                <Button
-                  key={`time-${index}`}
-                  variant="outline"
-                  className={
-                    selectedTime === time
-                      ? "h-10 rounded-xl border-brand bg-brand text-lg font-medium text-primary hover:bg-brand/70  hover:text-primary"
-                      : "h-10 rounded-xl border-[#DEDEDE] bg-white text-lg font-medium text-[#202020] hover:bg-[#F8F8F8]"
-                  }
-                  onClick={() => setSelectedTime(time)}
-                >
-                  {time}
-                </Button>
-              )
-            })}
+            {availableTimes?.map((slot, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                className={`${slot.is_booked ? 'line-through' : ''} ${selectedTime?.id === slot.id ? "border-brand" : " border-[#DEDEDE]"} relative h-10 rounded-xl bg-white text-sm font-medium text-[#202020] hover:bg-[#F8F8F8]`}
+                onClick={() => setSelectedTime(slot)}
+                disabled={slot.is_booked}
+              >
+                {moment(slot.start_time, 'HH:mm').format('LT')} - {moment(slot.end_time, 'HH:mm').format('LT')}
+                
+                {selectedTime?.id === slot.id && 
+                <div className="absolute top-0 right-0 bg-brand rounded-2xl w-4 h-4   ">
+                   <IoIosCheckmark className="absolute top-0 right-0   " />
+                </div>
+                } 
+              </Button>
+            ))}
           </div>
         </>
       )}
@@ -200,16 +245,47 @@ export default function ProgramDateTimeSelector({
       {/* payment */}
       {role !== "coach" && (
         <div className="flex items-center justify-between gap-4 flex-wrap border-t border-[#DEDEDE] pt-4">
-          <p className="text-lg font-medium text-[#191919]">Total: $100.00</p>
-          <Button
-              disabled={isOwner} 
-          className="h-10 rounded-xl bg-brand text-lg font-medium text-primary hover:bg-brand/80 hover:text-primary cursor-pointer  ">
-            {isOwner ? "Can not book own program" : "Proceed to Payment"}
-          </Button>
+          <p className="text-lg font-medium text-[#191919]">
+            Total: $ {price}
+          </p>
+
+        {user && user.role == "player" ? 
+          <Dialog>
+            <DialogTrigger>
+              <Button
+                className="h-10 rounded-xl bg-brand text-lg font-medium text-primary hover:bg-brand/80 hover:text-primary cursor-pointer"
+                onClick={handleBooking}
+              >
+                {isOwner ? "Can not book own program" : "Proceed to Payment"}
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="text-xl font-semibold  ">Select child</DialogTitle> 
+                <DialogDescription>
+                  <p className="text-sm text-muted-foreground">
+                    Please select a child to proceed with the booking.
+                  </p>
+
+
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        :
+
+        user.role == "player" &&
+        <Button
+          disabled={isOwner}
+          className="h-10 rounded-xl bg-brand text-lg font-medium text-primary hover:bg-brand/80 hover:text-primacursor-pointer"
+          onClick={handleBooking}
+        >
+          {isOwner ? "Can not book own program" : "Proceed to Payment"}
+        </Button>
+        }
+
         </div>
       )}
-
-
     </div>
   )
 }

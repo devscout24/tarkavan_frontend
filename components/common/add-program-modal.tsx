@@ -11,6 +11,11 @@ import { toast } from "sonner"
 import { getSportOptions } from "@/app/(dashboards)/action"
 import useModal from "./modal/useModal"
 import { getHighestNumber } from "@/lib/get-highest-number"
+import TimePicker from "react-time-picker"
+import "react-time-picker/dist/TimePicker.css"
+import "react-clock/dist/Clock.css"
+ 
+
 
 type TSportOption = { id: number; name: string; audience: string; status: string }
 
@@ -125,8 +130,7 @@ const AddProgramPage: React.FC = () => {
     if (!editId) return
     getProgramDetails(String(editId))
       .then((res: any) => {
-        const p = res?.data?.data?.program
-        console.log("Fetched program details for editing:", p)
+        const p = res?.data?.data 
         if (!p) {
           toast.error("Failed to load program data")
           return
@@ -156,17 +160,17 @@ const AddProgramPage: React.FC = () => {
         setForm({
           sport: p.sport || "",
           name: p.program_name || "",
-          ageGroup: p.upto_age ? String(p.upto_age) : "",
-          price: p.program_price ? String(p.program_price) : "",
+          ageGroup: p.age_limit ? String(p.age_limit) : "",
+          price: p.price ? String(p.price) : "",
           discountPrice: p.discount_price ? String(p.discount_price) : "",
-          location: p.program_location || "",
-          start: p.program_start || "",
-          end: p.program_end || "",
-          about: p.about_program || "",
+          location: p.location || "",
+          start: p.start_date || "",
+          end: p.end_date || "",
+          about: p.about || "",
           goals: p.goals?.length ? p.goals.map((g: { goal: string }) => g.goal) : [""],
-          photo: p.program_photo || null,
+          photo: p.photo || null,
           type: p.program_type || "one_one",
-          sportOptionId: p.sport_option_id ? String(p.sport_option_id) : "",
+          sportOptionId: p.sport_option ? String(p.sport_option.id) : "",
           timeSlots: groupedSlots,
         })
       })
@@ -411,7 +415,7 @@ const AddProgramPage: React.FC = () => {
             <div className="flex flex-col">
               <span className="text-sm">Program Start</span>
               <Input
-                name="start"
+                name="start" 
                 value={form.start}
                 onChange={handleChange}
                 className={`mt-1 ${fieldCls}`}
@@ -463,19 +467,23 @@ const AddProgramPage: React.FC = () => {
                   <div className="flex flex-col gap-2 pl-2">
                     {slot.times.map((t, ti) => (
                       <div key={ti} className="flex items-center gap-2">
-                        <span className="min-w-fit text-xs text-neutral-400">Start</span>
-                        <Input
-                          type="time"
+                        <span className="min-w-fit text-xs text-neutral-400">Start</span> 
+                        <TimePicker
                           value={t.start}
-                          onChange={(e) => setTimeRange(si, ti, "start", e.target.value)}
-                          className={`flex-1 ${fieldCls}`}
+                          onChange={(value) =>  setTimeRange(si, ti, "start", value || "")  }
+                          disableClock
+                          format="HH:mm"
+                          className="flex-1"
                         />
-                        <span className="text-xs text-neutral-400">End</span>
-                        <Input
-                          type="time"
+                        
+ 
+                        <span className="text-xs text-neutral-400">End</span> 
+                        <TimePicker
                           value={t.end}
-                          onChange={(e) => setTimeRange(si, ti, "end", e.target.value)}
-                          className={`flex-1 ${fieldCls}`}
+                          onChange={(value) => setTimeRange(si, ti, "end", value || "")}
+                          disableClock
+                          format="HH:mm"
+                          className="flex-1 rounded-md!   "
                         />
                         {slot.times.length > 1 && (
                           <CommonBtn

@@ -1,7 +1,7 @@
-import ParentProgramDetailsPage from "./client-page"
+import PlayerProgramDetailsClientPage from "./client-page"
 
  
 
 export default function ProgramDetails() {
-  return <ParentProgramDetailsPage />
+  return <PlayerProgramDetailsClientPage />
 }

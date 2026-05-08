@@ -88,8 +88,7 @@ export default function UpcomingEventPage() {
 
   const [programsData, setProgramsData] = useState<ProgramsData | null>(null)
   const [loading, setLoading] = useState(false)
-  const [refreshKey, setRefreshKey] = useState(0)
-  console.log("programsData", programsData)
+  const [refreshKey, setRefreshKey] = useState(0) 
   const programActions = [
     { 
       label: "Edit Programs", 
@@ -164,6 +163,9 @@ export default function UpcomingEventPage() {
       window.removeEventListener('programDeleted', handleDashboardRefresh)
     }
   }, [])
+
+  console.log(programsData)
+
 
   return (
     <section>
@@ -268,13 +270,14 @@ export default function UpcomingEventPage() {
         {loading ? (
           <div className="col-span-full text-center text-primary">Loading programs...</div>
         ) : programsData && programsData.programs.length > 0 ? (
-          programsData.programs.map((program: Program) => (
+          programsData.programs.map((program: Program) => (  
+            
             <ProgramCard
               key={program.id}
               id={program.id.toString()}
               title={program.program_name}
               type={program.coach_name}
-              schedule={moment(program.times[0].time).format('LT')}
+              schedule={moment(program.times[0].start_time, "HH:mm:ss").format("hh:mm A")}
               duration={`${moment(program.program_start).format("MMM Do YY") } - ${moment(program.program_end).format("MMM Do YY")}`}
               currentPrice={program.price ? `$${program.price - program.discount_price  }` : `$${program.program_price}`}
               previousPrice={String(program.discount_price + program.price )}

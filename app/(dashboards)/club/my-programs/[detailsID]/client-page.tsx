@@ -15,44 +15,31 @@ import {
 } from "next/navigation"
 import { useEffect, useState } from "react"
 import { getProgramDetails } from "../../action"
-import { TProgramDetails } from "@/types"
+import { TProgramDetails, TTimeSlot } from "@/types"
 import moment from "moment"
 import ProgramDateTimeSelector from "@/components/common/program-date-time-selector"
+import { getAvailableTimes } from "@/app/(dashboards)/action"
  
 
 
  
 export default function ClubProgramDetailsClientPage() {
   const router = useRouter() 
-  const params = useParams()
-  const programStartDate = new Date(2026, 3, 1)
-  const programEndDate = new Date(2026, 3, 15)
-
-  const timeSlotsByDate = eachDayOfInterval({
-    start: programStartDate,
-    end: programEndDate,
-  }).reduce<Record<string, string[]>>((acc, date) => {
-    acc[format(date, "yyyy-MM-dd")] = [
-      "09:00 AM",
-      "11:00 AM",
-      "02:00 PM",
-      "05:00 PM",
-    ]
-    return acc
-  }, {})
+  const params = useParams() 
 
   const detailsID = params.detailsID
   const [programDetail, setProgramDetail] = useState<TProgramDetails | null>(
     null
-  )
-  const [selectedFilter, setSelectedFilter] = useState<string>("most_recent")
+  )  
+  const [selectedFilter, setSelectedFilter] = useState<string>("most_recent") 
+  
  
   useEffect(() => {
     if (!detailsID) return
 
     const getProgramDetail = async () => {
       try {
-        const res = await getProgramDetails(String(detailsID))
+        const res = await getProgramDetails(String(detailsID)) 
 
         if (
           res &&
@@ -63,6 +50,7 @@ export default function ClubProgramDetailsClientPage() {
           res.data.data
         ) {
           setProgramDetail(res.data.data)
+          console.log(res.data)
         }
       } catch (error) {
         console.error("Error fetching program details:", error)
@@ -83,6 +71,12 @@ export default function ClubProgramDetailsClientPage() {
 
 
   }, [detailsID])
+
+
+
+
+
+
 
   return (
     <section className="text-white">
@@ -105,19 +99,17 @@ export default function ClubProgramDetailsClientPage() {
              router.push(`?add-new=program`)
           }}
         />
-      </div>
-
-      {/* Add Program Modal handled by Modals component and URL param */}
+      </div> 
 
       {/* program details banner */}
       <ProgramDetailsBanner
-        title={programDetail?.program.program_name || ""}
-        category={programDetail?.program?.sport_option?.name || ""}
-        duration={moment.duration(moment(programDetail?.program?.end_date).diff(moment(programDetail?.program?.start_date))).humanize()}
-        dateRange={`${moment(programDetail?.program?.start_date).format("MMM Do YY")} - ${moment(programDetail?.program?.end_date).format("MMM Do YY")}`}
-        location={programDetail?.program?.program_location || ""}
-        ageRange={`Ages: ${programDetail?.program?.age_limit || ""}`}
-        program_photo={programDetail?.program?.photo || ""}
+        title={programDetail?.program_name || ""}
+        category={programDetail?.sport_option?.name || ""}
+        duration={moment.duration(moment(programDetail?.end_date).diff(moment(programDetail?.start_date))).humanize()}
+        dateRange={`${moment(programDetail?.start_date).format("MMM Do YY")} - ${moment(programDetail?.end_date).format("MMM Do YY")}`}
+        location={programDetail?.program_location || ""}
+        ageRange={`Ages: ${programDetail?.age_limit || ""}`}
+        program_photo={programDetail?.photo || "https://avatars.githubusercontent.com/u/6880091?v=4"}
       />
 
       {/* layout */}
@@ -127,8 +119,8 @@ export default function ClubProgramDetailsClientPage() {
           {/* about program */}
           <AboutProgram
             sectionTitle="About This Program"
-            description={programDetail?.program?.about_program || ""}
-            goals={programDetail?.program?.goals || []}
+            description={programDetail?.about_program || ""}
+            goals={programDetail?.goals || []}
           />
 
  
@@ -155,11 +147,17 @@ export default function ClubProgramDetailsClientPage() {
 
         {/* right side */}
         <div className="flex-1">
-          <ProgramCoachCard showMessageButton={false} imageUrl={programDetail?.program?.provider?.logo || ""} name={programDetail?.program?.provider?.name || ""} 
-          location={`${programDetail?.program?.provider?.city || ""}, ${programDetail?.program?.provider?.country || ""}`}
-          verified={programDetail?.program?.provider?.is_verified}
+          <ProgramCoachCard showMessageButton={false} imageUrl={programDetail?.provider?.logo || ""} name={programDetail?.provider?.name || ""} 
+          location={`${programDetail?.provider?.city || ""}, ${programDetail?.provider?.country || ""}`}
+          verified={programDetail?.provider?.is_verified}
           /> 
-          <ProgramDateTimeSelector isOwner={true} />
+          <ProgramDateTimeSelector 
+            isOwner={true} 
+            programStartDate={programDetail?.start_date}
+            programEndDate={programDetail?.end_date} 
+            price={programDetail?.price}
+            detailsID={String(detailsID)}
+          />
         </div>
       </div>
     </section>

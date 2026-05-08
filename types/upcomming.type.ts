@@ -1,3 +1,5 @@
+import { TTimeSlot } from "./club.type";
+
 type TProgramTime = {
   id: number;
   time: string;
@@ -18,7 +20,7 @@ type TSportOption = {
   name: string;
 };
 
-type TProgramUpcomming = {
+export type TProgramUpcomming = {
   id: number;
   program_type: "one_one" | "group";
   sport_option_id: number;
@@ -27,7 +29,7 @@ type TProgramUpcomming = {
   program_name: string;
   sport: string;
 
-  program_price: number;
+  price: number;
   discount_price: number;
 
   upto_age: number;
@@ -37,13 +39,13 @@ type TProgramUpcomming = {
   program_start: string;
   program_end: string;
 
-  program_photo: string;
+  photo: string;
 
   coach_name: string;
   club_name?: string;
 
   time: string;
 
-  times: TProgramTime[];
+  times: TTimeSlot[];
   goals?: TGoal[];
 };

@@ -66,6 +66,7 @@ export default function SearchExplore() {
         data: formData,
         currentPage: String(currentPage),
       })
+      console.log(res)
 
       
       if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) { 
@@ -87,9 +88,7 @@ export default function SearchExplore() {
 
   fetchData();
   }, [filters, currentPage])
- 
-console.log("Search filters:", filters)
-
+  
   return (
     <section>
       <ExploreFilter filters={filters} setFilters={setFilters} initialState={initialState} />

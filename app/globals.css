@@ -171,3 +171,10 @@
 * {
   font-family: "Plus Jakarta Sans", sans-serif;
 }
+
+.rdp-month_grid{
+  width: 100%;
+}
+.rdp-month_grid td {
+  width: fit-content !important;
+}

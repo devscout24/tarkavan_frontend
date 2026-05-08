@@ -182,12 +182,8 @@ export type TMatchRequestByOthersClub = {
 
 
 
+ 
 export type TProgramDetails = {
-  program: TProgram
-  club: TClub
-}
-
-export type TProgram = {
   id: number
   program_name: string
   program_type: "group" | "individual" | string
@@ -195,6 +191,7 @@ export type TProgram = {
   sport_option: TSportOption
   sport: string
   program_price: number
+  price: number;
   discount_price: number
   upto_age: number
   age_limit: number
@@ -231,6 +228,8 @@ export type TTimeSlot = {
   start_time: string | null
   end_time: string | null
   is_available: boolean
+  is_booked?: boolean
+  is_past?: boolean
 }
 
 export type TGoal = {

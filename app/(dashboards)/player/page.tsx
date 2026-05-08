@@ -19,7 +19,7 @@ export default function PlayerDashboardPage() {
   const [openShareModal, setOpenShareModal] = useState(false)
 
   const [dashData, setDashData] = useState<TPlayerDashboard>()
-  console.log(dashData)
+  
   useEffect(() => {
     
     const getDashboard  = async () => {

@@ -193,12 +193,12 @@ export default function CoachProgramDetailsClientPage() {
             imageAlt={programData?.data?.coach?.name || "Coach"}
             showMessageButton={false}
           />
-          <ProgramDateTimeSelector
+          {/* <ProgramDateTimeSelector
             role="coach"
             programStartDate={programData?.data?.program?.program_start ? new Date(programData.data.program.program_start) : new Date()}
             programEndDate={programData?.data?.program?.program_end ? new Date(programData.data.program.program_end) : new Date()}
             programTimes={programData?.data?.program?.times || []}
-          />
+          /> */}
         </div>
       </div>
 

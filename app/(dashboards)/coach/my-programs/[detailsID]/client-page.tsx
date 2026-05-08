@@ -14,8 +14,7 @@ import { ArrowLeftIcon } from "lucide-react"
 import Loader from "@/components/common/loader"
 
 import { useRouter, useSearchParams, usePathname, useParams } from "next/navigation"
-import { getCoachProgramDetails } from "../../action"
-import ProgramDateTimeSelector from "@/components/common/program-date-time-selector"
+import { getCoachProgramDetails } from "../../action" 
 import Modals from "@/components/common/modal"
 import { ProgramUpdateProvider } from "@/components/common/program-update-context"
 

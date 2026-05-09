@@ -6,7 +6,8 @@ import { Textarea } from "../ui/textarea"
 import CommonBtn from "@/components/common/common-btn"
 import UploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
-import { createProgram, getProgramDetails, updateProgram } from "@/app/(dashboards)/club/action"
+import { getProgramDetails, updateProgram } from "@/app/(dashboards)/club/action"
+import { createProgram } from "@/lib/api-fetcher"
 import { toast } from "sonner"
 import { getSportOptions } from "@/app/(dashboards)/action"
 import useModal from "./modal/useModal"
@@ -192,20 +193,26 @@ const AddProgramPage: React.FC = () => {
       about_program: form.about,
       discount_price: form.discountPrice || "0",
       upto_age: String(getHighestNumber(form.ageGroup)),
-      sport_option_id: form.sportOptionId,
     }
 
     Object.entries(fields).forEach(([k, v]) => formData.append(k, v))
 
-    // Flatten timeSlots → program_times[N][slot_date/start_time/end_time]
+    // Add access_token
+    const token = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("go_elite_token="))
+      ?.split("=")[1];
+    
+    if (token) {
+      formData.append("access_token", token);
+    }
+
+    // Flatten timeSlots → program_times[N]
     let idx = 0
     form.timeSlots.forEach((slot) => {
-      if (!slot.date) return
       slot.times.forEach((t) => {
         if (!t.start || !t.end) return
-        formData.append(`program_times[${idx}][slot_date]`, slot.date)
-        formData.append(`program_times[${idx}][start_time]`, t.start)
-        formData.append(`program_times[${idx}][end_time]`, t.end)
+        formData.append(`program_times[${idx}]`, `${t.start}-${t.end}`)
         idx++
       })
     })

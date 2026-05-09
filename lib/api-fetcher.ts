@@ -30,8 +30,10 @@ api.interceptors.request.use(async (config) => {
     ...config.params, 
   };
 
-  // Set Content-Type for all requests
-  config.headers.set("Content-Type", "application/json");
+  // Set Content-Type for all requests unless it's FormData
+  if (!(config.data instanceof FormData)) {
+    config.headers.set("Content-Type", "application/json");
+  }
   config.headers.set("Accept", "application/json");
 
   if (token) {
@@ -42,6 +44,17 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
+
+// Create Program API
+export const createProgram = async (formData: FormData) => {
+  try {
+    const response = await api.post('/coach/program/add', formData);
+    return response.data;
+  } catch (error: any) {
+    console.error('Create program error:', error?.response?.data || error);
+    throw error;
+  }
+};
 
 export default api;
 

@@ -1,8 +1,21 @@
+"use client"
+
 import CommonBtn from "@/components/common/common-btn"
 import VisibilityEdit from "@/components/common/visibility-edit"
 import { Card } from "@/components/ui/card"
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
 
 export default function ProfileHeaderBar() {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  const handleEditProfile = () => {
+    const nextParams = new URLSearchParams(searchParams.toString())
+    nextParams.set("edit-coach-profile", "true")
+    router.replace(`${pathname}?${nextParams.toString()}`)
+  }
+
   return (
     <Card className="mb-5 flex-col items-start gap-3 rounded-[12px] border border-secondary/60 bg-secondary/40 px-5 py-3 sm:flex-row sm:items-center sm:justify-between xl:mb-6 xl:px-6 xl:py-4 2xl:mb-7 2xl:px-7 2xl:py-4.5">
       <VisibilityEdit />
@@ -11,6 +24,7 @@ export default function ProfileHeaderBar() {
         className="h-10 w-fit rounded-[8px] bg-brand px-4 font-medium text-primary hover:bg-brand xl:h-11 xl:px-5 xl:text-base 2xl:h-12 2xl:px-6 2xl:text-lg"
         size="sm"
         variant="default"
+        onClick={handleEditProfile}
       />
     </Card>
   )

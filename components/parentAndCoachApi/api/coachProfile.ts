@@ -104,5 +104,22 @@ export function convertToFormData(data: CoachProfileFormData): FormData {
   formData.append('city', data.city)
   formData.append('country', data.country)
   
+  // Social media links
+  if (data.facebook_link) {
+    formData.append('facebook_link', data.facebook_link)
+  }
+  if (data.twitter_link) {
+    formData.append('twitter_link', data.twitter_link)
+  }
+  if (data.instagram_link) {
+    formData.append('instagram_link', data.instagram_link)
+  }
+  if (data.tiktok_link) {
+    formData.append('tiktok_link', data.tiktok_link)
+  }
+  if (data.whatsapp_link) {
+    formData.append('whatsapp_link', data.whatsapp_link)
+  }
+  
   return formData
 }

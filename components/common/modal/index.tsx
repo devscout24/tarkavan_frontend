@@ -10,7 +10,8 @@ import AddFriendlyMatch from "./all-modals/add-friendly-match"
 import LogoutComfirmation from "./all-modals/logout-comfirmation"
 import Agreement from "@/app/(dashboards)/parent/component/aggrement"
 import CoachProfileSetup from "@/app/(dashboards)/coach/CoachProfileSetup"
-import ClubProfileSetup from "./all-modals/club-profile-setup" 
+import ClubProfileSetup from "./all-modals/club-profile-setup"
+import EditCoachProfileModal from "./all-modals/edit-coach-profile-modal" 
 
 export default function Modals() {
   const { Modal } = useModal()
@@ -129,10 +130,15 @@ export default function Modals() {
         </ScrollArea>
       </Modal>
 
- 
-
-
-
+      <Modal
+        modalId="edit-coach-profile"
+        openId="true"
+        className="h-dvh w-full max-w-[90vw] overflow-x-hidden overflow-y-auto rounded-2xl border-0 bg-primary p-0 shadow-2xl md:max-w-[85vw] lg:max-w-[88vw] xl:max-w-[82vw] 2xl:max-w-[60vw]"
+      >
+        <ScrollArea className="max-h-[90vh]">
+          <EditCoachProfileModal />
+        </ScrollArea>
+      </Modal>
 
     </>
   )

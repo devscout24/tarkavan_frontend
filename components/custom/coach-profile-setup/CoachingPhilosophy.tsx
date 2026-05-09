@@ -9,12 +9,14 @@ interface CoachingPhilosophyProps {
   updatePhilosophy?: (data: { philosophy: string; playerCentric: boolean; dataDriven: boolean }) => void
   onSubmit?: () => void
   isLoading?: boolean
+  isEditMode?: boolean
 }
 
 export default function CoachingPhilosophy({
   updatePhilosophy,
   onSubmit,
   isLoading = false,
+  isEditMode = false,
 }: CoachingPhilosophyProps) {
   const [philosophy, setPhilosophy] = useState("")
   const [playerCentric, setPlayerCentric] = useState(true)
@@ -112,7 +114,7 @@ export default function CoachingPhilosophy({
         <CommonBtn
           variant="default"
           size="lg"
-          text={isLoading ? "Submitting..." : "Finish & Create Profile"}
+          text={isLoading ? (isEditMode ? "Updating..." : "Submitting...") : (isEditMode ? "Update Profile" : "Finish & Create Profile")}
           className="h-12 w-60 rounded-xl bg-brand px-5 text-sm font-semibold text-primary hover:border hover:border-secondary hover:bg-transparent hover:text-white"
           iconRight={<BsArrowRight className="size-4" />}
           onClick={onSubmit}

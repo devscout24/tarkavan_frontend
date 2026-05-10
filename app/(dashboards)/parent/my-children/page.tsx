@@ -8,7 +8,7 @@ import { TChield } from "@/types"
 function MyChildrenPage() { 
   const [children, setChildren] = useState<TChield[]>([]) 
   const [error, setError] = useState<string | null>(null)
-
+console.log(children)
  
 
   useEffect(() => {

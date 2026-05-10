@@ -1,58 +1,56 @@
 "use client"
-import { Share2, SquarePen } from "lucide-react"
-import CommonBtn from "@/components/common/common-btn"
-import TrainingReminderCard from "@/components/custom/remiender"
-import PlayerStats from "./components/player-stats"
-import ScoutingStatus from "./components/scouting-status" 
-import { useRouter } from "next/navigation"
-import ShareModal from "@/components/common/modal/all-modals/share-modal"
-import { useEffect, useState } from "react"
-import Advertisement from "@/components/custom/advertisement"
-import { getPlayerDashboard } from "../action"
+
+import { useParams, useRouter } from "next/navigation"
+import PlayerStats from "../../player/components/player-stats";
 import { TPlayerDashboard, TPlayerStatsSummary } from "@/types/player.type"
-import moment from "moment"
+import Advertisement from "@/components/custom/advertisement"
+import CommonBtn from "@/components/common/common-btn";
+import { Share2, SquarePen } from "lucide-react";
+import { useEffect, useState } from "react";
+import ShareModal from "@/components/common/modal/all-modals/share-modal";
+import ScoutingStatus from "../../player/components/scouting-status";
+import TrainingReminderCard from "@/components/custom/remiender";
+import { getPlayerDashboard } from "../../action"; 
+import moment from "moment";
 
-export default function PlayerDashboardPage() {
-  const router = useRouter()
+export default function ChildDashboard() {
 
-  const [openShareModal, setOpenShareModal] = useState(false)
+    const params = useParams()
+    const child_id = params.child_id
+    const router = useRouter()
+    const [openShareModal, setOpenShareModal] = useState(false)
+    const [dashData, setDashData] = useState<TPlayerDashboard>()
 
-  const [dashData, setDashData] = useState<TPlayerDashboard>()
-  
-  useEffect(() => {
-    
-    const getDashboard  = async () => {
-      try {
-        const res = await getPlayerDashboard()
-
-        if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
-          setDashData(res.data.data)
+      useEffect(() => {
+        
+        const getDashboard  = async () => {    
+          try { 
+            const res = await getPlayerDashboard() 
+            if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
+              setDashData(res.data.data) 
+            }
+     
+          } catch (error) {
+            console.error(error)
+          } 
         }
- 
-      } catch (error) {
-        console.error(error)
-      } 
-    }
-    getDashboard()
-
-    const handleLoadDashboard = () => {
-      getDashboard()
-    }
-
-    window.addEventListener("load_coach_dashboard", handleLoadDashboard)
-
-    return () => {
-      window.removeEventListener("load_coach_dashboard", handleLoadDashboard)
-    }
-
-
-  }, [])
-
-  const playerId = dashData?.player_info?.id;
-   
+        getDashboard()
+    
+        const handleLoadDashboard = () => {
+          getDashboard()
+        }
+    
+        window.addEventListener("load_coach_dashboard", handleLoadDashboard)
+    
+        return () => {
+          window.removeEventListener("load_coach_dashboard", handleLoadDashboard)
+        }
+    
+    
+      }, [])
  
 
-  return (
+    return (
     <section className=" ">
       <h2 className="text-base font-bold text-white">Welcome, Daniel</h2>
       <p className="mt-1 text-base text-white">
@@ -104,7 +102,7 @@ export default function PlayerDashboardPage() {
               icon={<SquarePen />}
               className="w-full cursor-pointer bg-secondary py-6! text-white hover:bg-brand hover:text-primary"
               text={"Edit My Profile"}
-              onClick={() => router.push("/player/profile-settings")}
+              onClick={() => router.push(`/child-dashboard/${child_id}/profile-settings`)}
             />
             <CommonBtn
               variant={"default"}
@@ -116,10 +114,10 @@ export default function PlayerDashboardPage() {
             />
 
             <ShareModal
-              key={playerId}
+              key={String(child_id)}
               open={openShareModal}
               onOpenChange={setOpenShareModal}
-              url={`${typeof window !== "undefined" ? window.location.origin : ""}/profile/${playerId}`}
+              url={`${typeof window !== "undefined" ? window.location.origin : ""}/profile/${child_id}`}
               title="Watch my Player Card"
             />
 
@@ -139,5 +137,5 @@ export default function PlayerDashboardPage() {
         </div>
       </div>
     </section>
-  )
+    );
 }

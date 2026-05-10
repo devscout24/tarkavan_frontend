@@ -32,6 +32,7 @@ export default function PlayerAddModal() {
   const isUpdateChild = searchParams.get("update") === "child";
   const params = useParams();
   const edit_child_id = params.id; 
+  const child_id = params.child_id
   
   const { close } = useModal()
 
@@ -630,9 +631,8 @@ export default function PlayerAddModal() {
     } 
 
     if(isUpdateChild && user?.role === "parent"){
-        try {
-          console.log(edit_child_id)
-        const res = await updateChildProfile({ data: formData, child_id: String(edit_child_id) })
+        try { 
+        const res = await updateChildProfile({ data: formData, child_id: String(edit_child_id || child_id) })
         console.log(res)
  
         const response = res as {

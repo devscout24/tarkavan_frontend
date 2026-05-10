@@ -60,7 +60,7 @@ export default function ChildrenSection({
                 block_status={child?.block_status}
                 invitation_status={child?.invitation_status}
                 imageUrl={child?.profile_picture} 
-                name={child?.name}
+                name={`${child?.name} ${child?.last_name}`}
                 age={child?.age}
                 position={child?.primary_position?.name}
                 jerseyNumber={String(child?.jersey_number)}

@@ -141,7 +141,8 @@ export default function PlayerProgramDetailsClientPage() {
           <ProgramDateTimeSelector 
             programStartDate={details?.start_date}
             programEndDate={details?.end_date}
-            price={details?.discount_price}
+            price={details?.price}
+            priceToShow={Number(details?.price) - Number(details?.discount_price)}
             detailsID={String(id)}
           />
  

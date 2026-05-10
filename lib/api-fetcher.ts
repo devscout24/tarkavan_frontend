@@ -30,8 +30,15 @@ api.interceptors.request.use(async (config) => {
     ...config.params, 
   };
 
-  // Set Content-Type for all requests
-  config.headers.set("Content-Type", "application/json");
+  const isFormDataRequest =
+    typeof FormData !== "undefined" && config.data instanceof FormData;
+
+  // Let Axios/browser set multipart boundary automatically for FormData.
+  if (isFormDataRequest) {
+    config.headers.delete("Content-Type");
+  } else {
+    config.headers.set("Content-Type", "application/json");
+  }
   config.headers.set("Accept", "application/json");
 
   if (token) {

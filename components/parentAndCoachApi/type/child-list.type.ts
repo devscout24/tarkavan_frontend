@@ -1,3 +1,5 @@
+import { TChield } from "@/types";
+
 export interface Child {
   id: string;
   imageUrl: string;
@@ -17,5 +19,5 @@ export interface Child {
 export interface ParentChildListResponse {
   status: boolean;
   message: string;
-  data: Child[];
+  data: TChield[];
 }

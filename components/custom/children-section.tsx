@@ -2,34 +2,12 @@ import { Icon } from "./Icon"
 import CommonBtn from "../common/common-btn"
 import ChildCard from "./child-card"
 import AddChildCard from "./add-child-card"
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation" 
+import { TChield } from "@/types"
 
-interface Child {
-  id: string
-  imageUrl: string
-  name: string
-  age: number
-  position: string
-  jerseyNumber: number
-  location: string
-  isPublic: boolean
-  stats: {
-    games: number
-    goals: number
-    assists: number
-  }
-}
-
-import { Skeleton } from "@/components/ui/skeleton"
 
 interface ChildrenSectionProps {
-  items: Child[]
-  onAddChild?: () => void
-  onViewProfile?: (id: string) => void
-  onInvite?: (id: string) => void
-  onBlock?: (id: string) => void
-  onRemove?: (id: string) => void
-  onGetStarted?: () => void
+  items: TChield[] 
   emptyText?: string
 }
 
@@ -45,17 +23,13 @@ const AddChildIcon = () => (
 )
 
 export default function ChildrenSection({
-  items,
-  onAddChild,
-  onViewProfile,
-  onInvite,
-  onBlock,
-  onRemove,
-  onGetStarted,
+  items,   
   emptyText = "No children found.",
 }: ChildrenSectionProps) {
   const router = useRouter()
+  
 
+ 
   return (
     <section>
       {/* Header with Add Child Button */}
@@ -65,13 +39,13 @@ export default function ChildrenSection({
           size="default"
           icon={<AddChildIcon />}
           text="Add Child"
-          className="w-fit cursor-pointer bg-brand px-2 py-1.5 text-sm font-medium text-primary hover:border-brand hover:bg-transparent hover:text-[#ffffff] lg:py-1 lg:text-xs xl:py-1.5 xl:text-sm"
+          className="w-fit cursor-pointer bg-brand! px-2 py-1.5 text-sm font-medium text-primary hover:border-brand hover:bg-primary hover:text-primary lg:py-1 lg:text-xs xl:py-1.5 xl:text-sm"
           onClick={() => router.push("?add-new=player")}
         />
       </div>
 
       {/* Cards Grid */}
-      <div className="flex flex-col items-center gap-6 lg:flex-row lg:flex-wrap lg:items-stretch lg:justify-center xl:flex-nowrap xl:justify-start">
+      <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 ">
         {items.length === 0 ? (
           <div className="flex w-full flex-col items-center justify-center py-12">
             <p className="mb-4 text-lg text-white/80">{emptyText}</p>
@@ -81,19 +55,24 @@ export default function ChildrenSection({
           <>
             {items.map((child) => (
               <ChildCard
-                key={child.id}
-                imageUrl={child.imageUrl}
-                name={child.name}
-                age={child.age}
-                position={child.position}
-                jerseyNumber={child.jerseyNumber}
-                location={child.location}
-                isPublic={child.isPublic}
-                stats={child.stats}
-                onViewProfile={() => onViewProfile?.(child.id)}
-                onInvite={() => onInvite?.(child.id)}
-                onBlock={() => onBlock?.(child.id)}
-                onRemove={() => onRemove?.(child.id)}
+                key={child?.id}
+                id={String(child?.id)}
+                block_status={child?.block_status}
+                invitation_status={child?.invitation_status}
+                imageUrl={child?.profile_picture} 
+                name={child?.name}
+                age={child?.age}
+                position={child?.primary_position?.name}
+                jerseyNumber={String(child?.jersey_number)}
+                location={`${child?.city}, ${child?.country}`}
+                privacy_settings={child?.privacy_settings}
+                parentalControl={child?.parent_control}
+                stats={{
+                  games: child?.tolal_played_games,
+                  goals: child?.goals,
+                  assists: child?.assist,
+                }} 
+                user_id={String(child?.user_id)}
               />
             ))}
             <AddChildCard />

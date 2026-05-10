@@ -2,6 +2,7 @@ import CommonBtn from "@/components/common/common-btn"
 import AddChildCard from "@/components/custom/add-child-card"
 import ChildCard from "@/components/custom/child-card"
 import { Icon } from "@/components/custom/Icon"
+import { TChield } from "@/types"
 
  
 
@@ -22,7 +23,7 @@ interface Child {
 }
 
 interface ChildrenSectionProps {
-  children: Child[]
+  children: TChield[]
   onAddChild?: () => void
   onViewProfile?: (id: string) => void
   onInvite?: (id: string) => void
@@ -70,18 +71,23 @@ export default function ChildrenSection({
         {children.map((child) => (
           <ChildCard
             key={child.id}
-            imageUrl={child.imageUrl}
+            id={String(child.id)}
+            user_id={String(child.user_id)}
+            imageUrl={child?.profile_picture}
             name={child.name}
             age={child.age}
-            position={child.position}
-            jerseyNumber={child.jerseyNumber}
-            location={child.location}
-            isPublic={child.isPublic}
-            stats={child.stats}
-            onViewProfile={() => onViewProfile?.(child.id)}
-            onInvite={() => onInvite?.(child.id)}
-            onBlock={() => onBlock?.(child.id)}
-            onRemove={() => onRemove?.(child.id)}
+            position={child?.primary_position?.name}
+            jerseyNumber={String(child?.jersey_number)}
+            location={`${child?.city}, ${child?.country}`}
+            stats={{
+              games: child?.tolal_played_games || 0,
+              goals: child?.goals || 0,
+              assists: child?.assist || 0,
+            }}
+            invitation_status={child?.invitation_status}
+            privacy_settings={child?.privacy_settings}
+            block_status={child?.block_status}
+            parentalControl={child?.parent_control}
           />
         ))}
         <AddChildCard onGetStarted={onGetStarted} />

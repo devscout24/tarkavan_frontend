@@ -36,6 +36,15 @@ export default function Modals() {
         </ScrollArea>
       </Modal>
       <Modal
+        modalId="update"
+        openId="child"
+        className="max-w-full overflow-hidden! border border-brand/50 p-0! lg:max-w-[62%]! 2xl:max-w-[56%]!"
+      >
+        <ScrollArea className="max-h-[90vh]">
+          <PlayerAddModal />
+        </ScrollArea>
+      </Modal>
+      <Modal
         modalId="add-new"
         openId="team"
         className="max-w-full overflow-hidden! border border-brand/50 p-0! lg:max-w-[62%]! 2xl:max-w-[56%]!"

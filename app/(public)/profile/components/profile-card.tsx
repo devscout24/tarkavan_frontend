@@ -57,7 +57,9 @@ export default function ProfileCard({
       <div className="relative min-h-155 w-full">
         <Image
           src={String(basic_info?.image)}
-          alt="Shahin Tarkavan" 
+          alt="Shahin Tarkavan"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover object-top"
         />
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(8,10,18,0.15)_22%,rgba(8,10,18,0.82)_72%,rgba(8,10,18,0.97)_100%)]" />

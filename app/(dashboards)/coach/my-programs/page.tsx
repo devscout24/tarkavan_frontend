@@ -28,14 +28,10 @@ export default function UpcomingEventPage() {
       label: "Edit Programs", 
       onSelect: () => {
         if (program) {
-          sessionStorage.setItem("edit-program-data", JSON.stringify(program))
+          localStorage.setItem("edit_program_id", String(program.id))
         }
-        const nextParams = new URLSearchParams(searchParams.toString())
-        nextParams.set("edit-program", "program")
-        router.replace(
-          nextParams.toString()
-            ? `${pathname}?${nextParams.toString()}`
-            : pathname
+        router.push(
+          `/coach/my-programs/${program.id}?edit-program=program`
         )
       }
     },
@@ -94,6 +90,7 @@ export default function UpcomingEventPage() {
               size="sm"
               variant="default"
               onClick={() => {
+                localStorage.removeItem("edit_program_id")
                 const nextParams = new URLSearchParams(searchParams.toString())
                 nextParams.set("add-new", "program")
                 router.replace(
@@ -113,13 +110,13 @@ export default function UpcomingEventPage() {
               <Image
                 width={1000}
                 height={1000}
-                src={latestUpcomingProgram.program_photo || "/images/player1.png"}
+                src={latestUpcomingProgram.photo || "/images/player1.png"}
                 alt={latestUpcomingProgram.program_name || "Program photo"}
                 className="h-full max-h-55 w-full object-fill"
               />
   
               <span className="absolute bottom-3 left-3 rounded-full bg-[#16A34A] px-3 py-1 text-[10px] font-bold tracking-[0.08em] text-white uppercase">
-                {latestUpcomingProgram.status === "active" ? "In Progress" : latestUpcomingProgram.status}
+                {latestUpcomingProgram.status === "active" || !latestUpcomingProgram.status ? "In Progress" : latestUpcomingProgram.status}
               </span>
             </div>
   
@@ -130,7 +127,7 @@ export default function UpcomingEventPage() {
   
               <p className="mt-2 flex items-center gap-2 text-sm font-normal text-primary sm:text-base">
                 <UserRound className="size-4" />
-                Coach: {latestUpcomingProgram.coach_name}
+                Coach: {latestUpcomingProgram.provider?.name || "N/A"}
               </p>
   
               <div className="mt-4 flex gap-3 text-primary md:mt-5 md:gap-8">
@@ -139,7 +136,7 @@ export default function UpcomingEventPage() {
                     Schedule
                   </p>
                   <p className="text-sm font-normal text-primary sm:text-base lg:text-lg">
-                    {latestUpcomingProgram.time || "N/A"}
+                    {latestUpcomingProgram.times?.[0]?.time || "N/A"}
                   </p>
                 </div>
   
@@ -148,7 +145,7 @@ export default function UpcomingEventPage() {
                     Next Session
                   </p>
                   <p className="text-sm font-normal text-primary sm:text-base lg:text-lg">
-                    {latestUpcomingProgram.program_start ? new Date(latestUpcomingProgram.program_start).toLocaleDateString() : "N/A"}
+                    {latestUpcomingProgram.start_date ? new Date(latestUpcomingProgram.start_date).toLocaleDateString() : "N/A"}
                   </p>
                 </div>
               </div>
@@ -170,13 +167,9 @@ export default function UpcomingEventPage() {
                 size="sm"
                 variant="default"
                 onClick={() => {
-                  sessionStorage.setItem("edit-program-data", JSON.stringify(latestUpcomingProgram))
-                  const nextParams = new URLSearchParams(searchParams.toString())
-                  nextParams.set("edit-program", "program")
-                  router.replace(
-                    nextParams.toString()
-                      ? `${pathname}?${nextParams.toString()}`
-                      : pathname
+                  localStorage.setItem("edit_program_id", String(latestUpcomingProgram.id))
+                  router.push(
+                    `/coach/my-programs/${latestUpcomingProgram.id}?edit-program=program`
                   )
                 }}
               />
@@ -202,18 +195,18 @@ export default function UpcomingEventPage() {
       {programs.length > 0 ? (
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {programs.map((program) => {
-            const hasDiscount = program.discount_price && program.program_price > program.discount_price
+            const hasDiscount = program.discount_price && program.price > program.discount_price
             return (
               <ProgramCard
                 key={program.id}
                 id={program.id}
                 title={program.program_name}
-                type={program.coach_name}
-                schedule={program.time || "N/A"}
-                duration={`${new Date(program.program_start).toLocaleDateString()} - ${new Date(program.program_end).toLocaleDateString()}`}
-                currentPrice={`$${program.discount_price || program.program_price}`}
-                previousPrice={hasDiscount ? `$${program.program_price}` : undefined}
-                imageSrc={program.program_photo || "/images/player1.png"}
+                type={program.provider?.name || "N/A"}
+                schedule={program.times?.[0]?.time || "N/A"}
+                duration={`${program.start_date ? new Date(program.start_date).toLocaleDateString() : "N/A"} - ${program.end_date ? new Date(program.end_date).toLocaleDateString() : "N/A"}`}
+                currentPrice={`$${program.discount_price || program.price}`}
+                previousPrice={hasDiscount ? `$${program.price}` : undefined}
+                imageSrc={program.photo || "/images/player1.png"}
                 imageAlt={program.program_name}
                 buttonLabel="View Details"
                 onClick={() => router.push(`/coach/my-programs/${program.id}`)}

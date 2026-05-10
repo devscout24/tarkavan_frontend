@@ -90,16 +90,14 @@ export default function CoachProgramDetailsClientPage() {
           size="sm"
           variant="default"
           onClick={() => {
-            // Set program data in sessionStorage for edit modal
-            if (programData?.data?.program) {
-              sessionStorage.setItem("edit-program-data", JSON.stringify(programData.data.program))
+            // Set program ID in localStorage for edit modal
+            if (programData?.data?.program?.id) {
+              localStorage.setItem("edit_program_id", String(programData.data.program.id))
+            } else if (params.detailsID) {
+              localStorage.setItem("edit_program_id", String(params.detailsID))
             }
-            const nextParams = new URLSearchParams(searchParams.toString())
-            nextParams.set("edit-program", "program")
             router.replace(
-              nextParams.toString()
-                ? `${pathname}?${nextParams.toString()}`
-                : pathname
+              `${pathname}?edit-program=program`
             )
           }}
         />

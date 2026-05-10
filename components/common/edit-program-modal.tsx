@@ -46,7 +46,7 @@ const fieldCls =
 const selectCls =
   "mt-1 w-full border-neutral-700 bg-neutral-800 py-5 text-white data-[placeholder]:text-neutral-300"
 
-const AddProgramPage: React.FC = () => {
+const EditProgramPage: React.FC = () => {
   const { close } = useModal()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -125,15 +125,78 @@ const AddProgramPage: React.FC = () => {
       .catch(console.error)
   }, [])
 
-  // ─── Load program for editing (Not needed for AddProgramPage) ─────────────────
+  // ─── Load program for editing ─────────────────────────────────────────────────
+  const [editId, setEditId] = useState<string | null>(null)
   const searchParams = useSearchParams()
-  const isModalOpen = searchParams.get("add-new") === "program"
+  const isModalOpen = searchParams.get("edit-program") === "program"
 
   useEffect(() => {
-    if (isModalOpen) {
+    if (!isModalOpen) return
+
+    const id = localStorage.getItem("edit_program_id")
+    setEditId(id)
+
+    if (!id) {
       setForm(initialForm)
+      return
     }
-  }, [isModalOpen])
+
+    getProgramDetails(id)
+      .then((res: any) => {
+        const p = res?.data?.data 
+        if (!p) {
+          toast.error("Failed to load program data")
+          return
+        }
+
+        // Map each time slot to its own individual block instead of grouping them
+        const groupedSlots: TTimeSlot[] = (() => {
+          if (!p.times?.length) return [{ date: "", times: [{ start: "", end: "" }] }]
+          
+          return p.times.map((t: any) => {
+            let fallbackDate = p.start_date || p.program_start || ""
+            if (fallbackDate && fallbackDate.includes("T")) {
+              fallbackDate = fallbackDate.split("T")[0]
+            }
+            const date = t.slot_date || fallbackDate
+            
+            let parsedStart = ""
+            let parsedEnd = ""
+            if (t.time && t.time.includes("-")) {
+              const parts = t.time.split("-")
+              parsedStart = parts[0]?.trim() || ""
+              parsedEnd = parts[1]?.trim() || ""
+            }
+
+            return {
+              date,
+              times: [{
+                start: t.start_time || parsedStart,
+                end: t.end_time || parsedEnd
+              }]
+            }
+          })
+        })()
+
+        setForm({
+          sport: p.sport || "",
+          name: p.program_name || "",
+          ageGroup: p.age_limit ? String(p.age_limit) : "",
+          price: p.price ? String(p.price) : "",
+          discountPrice: p.discount_price ? String(p.discount_price) : "",
+          location: p.location || "",
+          start: p.start_date || p.program_start || "",
+          end: p.end_date || p.program_end || "",
+          about: p.about || "",
+          goals: p.goals?.length ? p.goals.map((g: { goal: string }) => g.goal) : [""],
+          photo: p.photo || p.program_photo || null,
+          type: p.program_type || "one_one",
+          sportOptionId: p.sport_option ? String(p.sport_option.id) : "",
+          timeSlots: groupedSlots,
+        })
+      })
+      .catch(console.error)
+  }, [isModalOpen, searchParams])
 
   // ─── Build FormData ───────────────────────────────────────────────────────────
   const buildFormData = async () => {
@@ -164,7 +227,7 @@ const AddProgramPage: React.FC = () => {
       formData.append("access_token", token);
     }
 
-    // Flatten timeSlots → program_times[N] and slot_dates[N]
+    // Flatten timeSlots → program_times[N] and program_dates[N]
     let idx = 0
     form.timeSlots.forEach((slot) => {
       slot.times.forEach((t) => {
@@ -219,12 +282,27 @@ const AddProgramPage: React.FC = () => {
     }
   }
 
+  const handleUpdate = async () => {
+    if (isSubmitting || !editId) return
+    setIsSubmitting(true)
+    try {
+      const res: any = await updateProgram({ program_id: editId, data: await buildFormData() })
+      res?.success || res?.status
+        ? onSuccess("Program updated successfully!")
+        : toast.error(res?.message || "Failed to update program.")
+      close("add-new", ["program"])
+    } catch {
+      toast.error("Failed to update program. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   // ─── Render ───────────────────────────────────────────────────────────────────
   return (
     <div className="mx-auto w-full p-0">
       <div className="flex flex-col gap-4 rounded-2xl bg-neutral-900 p-8 text-white">
-        <h2 className="mb-2 text-2xl font-semibold">Add Program</h2>
+        <h2 className="mb-2 text-2xl font-semibold">{editId ? "Edit Program" : "Add Program"}</h2>
 
         {/* Photo Upload */}
         <div className="mb-2">
@@ -528,11 +606,11 @@ const AddProgramPage: React.FC = () => {
             className="w-fit px-10 hover:border-brand hover:bg-brand hover:text-primary"
           />
           <CommonBtn
-            text={isSubmitting ? "Saving..." : "Save Program"}
+            text={isSubmitting ? "Saving..." : editId ? "Update Program" : "Save Program"}
             size="lg"
             variant="default"
             className="w-fit bg-brand px-10 text-black hover:border hover:bg-transparent hover:text-white"
-            onClick={handleAdd}
+            onClick={editId ? handleUpdate : handleAdd}
           />
         </div>
       </div>
@@ -540,4 +618,4 @@ const AddProgramPage: React.FC = () => {
   )
 }
 
-export default AddProgramPage
+export default EditProgramPage

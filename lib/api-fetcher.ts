@@ -10,24 +10,24 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
-  let token: string | undefined; 
+  let token: string | undefined;
 
   if (typeof window === "undefined") {
     // Server side
     const { cookies } = await import("next/headers");
     const cookieStore = await cookies();
-    token = cookieStore.get("go_elite_token")?.value;   
+    token = cookieStore.get("go_elite_token")?.value;
   } else {
     // Client side
     token = document.cookie
       .split("; ")
       .find((row) => row.startsWith("go_elite_token="))
       ?.split("=")[1];
- 
-  } 
+
+  }
 
   config.params = {
-    ...config.params, 
+    ...config.params,
   };
 
   // Set Content-Type for all requests unless it's FormData
@@ -40,7 +40,7 @@ api.interceptors.request.use(async (config) => {
     config.headers.set("Authorization", `Bearer ${token}`);
   }
 
-  
+
   return config;
 });
 
@@ -52,6 +52,16 @@ export const createProgram = async (formData: FormData) => {
     return response.data;
   } catch (error: any) {
     console.error('Create program error:', error?.response?.data || error);
+    throw error;
+  }
+};
+
+export const updateProgram = async ({ program_id, data }: { program_id: string; data: FormData }) => {
+  try {
+    const response = await api.post(`/coach/program/update/${program_id}`, data);
+    return response.data;
+  } catch (error: any) {
+    console.error('Update program error:', error?.response?.data || error);
     throw error;
   }
 };

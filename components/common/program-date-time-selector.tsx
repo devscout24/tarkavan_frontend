@@ -90,7 +90,7 @@ export default function ProgramDateTimeSelector({
   const currentUser = localStorage.getItem("go_elite_user")
     ? JSON.parse(localStorage.getItem("go_elite_user") as string)
     : null
- 
+
   useEffect(() => {
     const storedUser = localStorage.getItem("go_elite_user")
 
@@ -208,9 +208,7 @@ export default function ProgramDateTimeSelector({
         athlete_profile_id: selectedChildId ? selectedChildId : child_id,
         booking_time_id: selectedTime?.id,
         amount: Number(price),
-        date: selectedTime?.slot_date
-          ? String(moment(selectedTime.slot_date).format("YYYY-MM-DD"))
-          : String(moment(selectedDate).format("YYYY-MM-DD")),
+        date: String(moment(selectedDate).format("YYYY-MM-DD")),
       }
 
       const formData = new FormData()
@@ -257,9 +255,7 @@ export default function ProgramDateTimeSelector({
         athlete_profile_id: String(currentUser?.profile_id),
         booking_time_id: selectedTime?.id,
         amount: Number(price),
-        date: selectedTime?.slot_date
-          ? String(moment(selectedTime.slot_date).format("YYYY-MM-DD"))
-          : String(moment(selectedDate).format("YYYY-MM-DD")),
+        date: String(moment(selectedDate).format("YYYY-MM-DD")),
       }
 
       const formData = new FormData()
@@ -475,13 +471,15 @@ export default function ProgramDateTimeSelector({
                 disabled={isOwner}
                 size={"lg"}
                 variant={"outline"}
-                className="hover:text-primacursor-pointer h-10 rounded-xl bg-brand text-lg font-medium text-primary hover:bg-brand/80 w-fit  border-0 px-3   "
+                className="hover:text-primacursor-pointer h-10 w-fit rounded-xl border-0 bg-brand px-3 text-lg font-medium text-primary hover:bg-brand/80"
                 onClick={() =>
                   child_id ? handleBooking("parent") : handleBooking("player")
                 }
                 isLoading={loading}
-                text={isOwner ? "Can not book own program" : "Proceed to Payment"}
-              /> 
+                text={
+                  isOwner ? "Can not book own program" : "Proceed to Payment"
+                }
+              />
             )
           )}
         </div>

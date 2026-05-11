@@ -1,25 +1,35 @@
 "use client"
 import React, { useEffect, useState } from "react"
 import { Input } from "../ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select"
 import { Textarea } from "../ui/textarea"
 import CommonBtn from "@/components/common/common-btn"
 import UploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
-import { getProgramDetails, createProgram } from "@/app/(dashboards)/club/action"
+import { getProgramDetails } from "@/app/(dashboards)/club/action"
 import { toast } from "sonner"
-import { useSearchParams } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import { getSportOptions } from "@/app/(dashboards)/action"
 import useModal from "./modal/useModal"
 import CountryCitySelector from "./country-city-selector"
 import { getHighestNumber } from "@/lib/get-highest-number"
+import api from "@/lib/api-fetcher"
 import TimePicker from "react-time-picker"
 import "react-time-picker/dist/TimePicker.css"
 import "react-clock/dist/Clock.css"
- 
 
-
-type TSportOption = { id: number; name: string; audience: string; status: string }
+type TSportOption = {
+  id: number
+  name: string
+  audience: string
+  status: string
+}
 
 type TTimeRange = { start: string; end: string }
 type TTimeSlot = { date: string; times: TTimeRange[] }
@@ -50,14 +60,18 @@ const selectCls =
 
 const AddProgramPage: React.FC = () => {
   const { close } = useModal()
+  const pathname = usePathname()
+  const isCoachDashboard = pathname?.startsWith("/coach")
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [sportOptions, setSportOptions] = useState<TSportOption[]>([])
   const [form, setForm] = useState(initialForm)
 
-  const set = (name: string, value: string) => setForm((p) => ({ ...p, [name]: value }))
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    set(e.target.name, e.target.value)
+  const set = (name: string, value: string) =>
+    setForm((p) => ({ ...p, [name]: value }))
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => set(e.target.name, e.target.value)
 
   // ─── Goal handlers ───────────────────────────────────────────────────────────
   const handleGoalChange = (idx: number, value: string) =>
@@ -76,11 +90,17 @@ const AddProgramPage: React.FC = () => {
   const addSlot = () =>
     setForm((p) => ({
       ...p,
-      timeSlots: [...p.timeSlots, { date: "", times: [{ start: "", end: "" }] }],
+      timeSlots: [
+        ...p.timeSlots,
+        { date: "", times: [{ start: "", end: "" }] },
+      ],
     }))
 
   const removeSlot = (si: number) =>
-    setForm((p) => ({ ...p, timeSlots: p.timeSlots.filter((_, i) => i !== si) }))
+    setForm((p) => ({
+      ...p,
+      timeSlots: p.timeSlots.filter((_, i) => i !== si),
+    }))
 
   const setSlotDate = (si: number, date: string) =>
     setForm((p) => {
@@ -109,7 +129,12 @@ const AddProgramPage: React.FC = () => {
       return { ...p, timeSlots }
     })
 
-  const setTimeRange = (si: number, ti: number, field: "start" | "end", value: string) =>
+  const setTimeRange = (
+    si: number,
+    ti: number,
+    field: "start" | "end",
+    value: string
+  ) =>
     setForm((p) => {
       const timeSlots = [...p.timeSlots]
       const times = [...timeSlots[si].times]
@@ -160,20 +185,20 @@ const AddProgramPage: React.FC = () => {
     const token = document.cookie
       .split("; ")
       .find((row) => row.startsWith("go_elite_token="))
-      ?.split("=")[1];
-    
+      ?.split("=")[1]
+
     if (token) {
-      formData.append("access_token", token);
+      formData.append("access_token", token)
     }
 
-    // Flatten timeSlots → program_times[N] and slot_dates[N]
+    // Flatten timeSlots → program_times[N] and program_dates[N]
     let idx = 0
     form.timeSlots.forEach((slot) => {
       slot.times.forEach((t) => {
         if (!t.start || !t.end) return
         formData.append(`program_times[${idx}]`, `${t.start}-${t.end}`)
         if (slot.date) {
-          formData.append(`slot_dates[${idx}]`, slot.date)
+          formData.append(`program_dates[${idx}]`, slot.date)
         }
         idx++
       })
@@ -188,7 +213,7 @@ const AddProgramPage: React.FC = () => {
       const ext = blob.type.split("/")[1]?.toLowerCase() || "jpg"
       formData.append(
         "program_photo",
-        new File([blob], `program-photo.${ext}`, { type: blob.type }),
+        new File([blob], `program-photo.${ext}`, { type: blob.type })
       )
     }
 
@@ -206,20 +231,26 @@ const AddProgramPage: React.FC = () => {
     if (isSubmitting) return
     setIsSubmitting(true)
     try {
-      const res: any = await createProgram(await buildFormData())
+      const formData = await buildFormData()
+      const endpoint = isCoachDashboard
+        ? "/coach/program/add"
+        : "/club/program/add"
+      const res = await api.post(endpoint, formData)
       console.log("Create Program Response:", res)
-      res?.success || res?.status
+      res?.data?.success || res?.status === 200
         ? onSuccess("Program created successfully!")
-        : toast.error(res?.message || "Failed to create program.")
+        : toast.error(res?.data?.message || "Failed to create program.")
       close("add-new", ["program"])
-    } catch {
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to create program. Please try again."
+      )
       toast.error("Failed to create program. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
   }
-
-
 
   // ─── Render ───────────────────────────────────────────────────────────────────
   return (
@@ -232,7 +263,8 @@ const AddProgramPage: React.FC = () => {
           <UploadPhoto
             onFileSelect={(file) => {
               const reader = new FileReader()
-              reader.onload = () => setForm((p) => ({ ...p, photo: reader.result as string }))
+              reader.onload = () =>
+                setForm((p) => ({ ...p, photo: reader.result as string }))
               reader.readAsDataURL(file)
             }}
             title="UPLOAD PHOTO"
@@ -295,7 +327,11 @@ const AddProgramPage: React.FC = () => {
               </SelectTrigger>
               <SelectContent position="popper">
                 {sportOptions.map((s) => (
-                  <SelectItem key={s.id} value={s.name} className="hover:bg-brand!">
+                  <SelectItem
+                    key={s.id}
+                    value={s.name}
+                    className="hover:bg-brand!"
+                  >
                     {s.name}
                   </SelectItem>
                 ))}
@@ -367,27 +403,27 @@ const AddProgramPage: React.FC = () => {
           </div>
 
           {/* Program Start / End */}
- 
-            <div className="flex flex-col">
-              <span className="text-sm">Program Start</span>
-              <Input
-                name="start" 
-                value={form.start}
-                onChange={handleChange}
-                className={`mt-1 ${fieldCls}`}
-                type="date"
-              />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm">Program End</span>
-              <Input
-                name="end"
-                value={form.end}
-                onChange={handleChange}
-                className={`mt-1 ${fieldCls}`}
-                type="date"
-              />
-            </div> 
+
+          <div className="flex flex-col">
+            <span className="text-sm">Program Start</span>
+            <Input
+              name="start"
+              value={form.start}
+              onChange={handleChange}
+              className={`mt-1 ${fieldCls}`}
+              type="date"
+            />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm">Program End</span>
+            <Input
+              name="end"
+              value={form.end}
+              onChange={handleChange}
+              className={`mt-1 ${fieldCls}`}
+              type="date"
+            />
+          </div>
 
           {/* ── Program Times (date + time slots) ── */}
           <div className="col-span-full flex flex-col gap-2">
@@ -401,7 +437,9 @@ const AddProgramPage: React.FC = () => {
                 >
                   {/* Date row */}
                   <div className="mb-3 flex items-center gap-2">
-                    <span className="min-w-fit text-xs text-neutral-400">Date</span>
+                    <span className="min-w-fit text-xs text-neutral-400">
+                      Date
+                    </span>
                     <Input
                       type="date"
                       value={slot.date}
@@ -423,23 +461,28 @@ const AddProgramPage: React.FC = () => {
                   <div className="flex flex-col gap-2 pl-2">
                     {slot.times.map((t, ti) => (
                       <div key={ti} className="flex items-center gap-2">
-                        <span className="min-w-fit text-xs text-neutral-400">Start</span> 
+                        <span className="min-w-fit text-xs text-neutral-400">
+                          Start
+                        </span>
                         <TimePicker
                           value={t.start}
-                          onChange={(value) =>  setTimeRange(si, ti, "start", value || "")  }
+                          onChange={(value) =>
+                            setTimeRange(si, ti, "start", value || "")
+                          }
                           disableClock
                           format="HH:mm"
                           className="flex-1"
                         />
-                        
- 
-                        <span className="text-xs text-neutral-400">End</span> 
+
+                        <span className="text-xs text-neutral-400">End</span>
                         <TimePicker
                           value={t.end}
-                          onChange={(value) => setTimeRange(si, ti, "end", value || "")}
+                          onChange={(value) =>
+                            setTimeRange(si, ti, "end", value || "")
+                          }
                           disableClock
                           format="HH:mm"
-                          className="flex-1 rounded-md!   "
+                          className="flex-1 rounded-md!"
                         />
                         {slot.times.length > 1 && (
                           <CommonBtn
@@ -460,7 +503,7 @@ const AddProgramPage: React.FC = () => {
                     size="sm"
                     variant="outline"
                     onClick={() => addTimeRange(si)}
-                    className="ml-auto mt-4 w-fit px-2  hover:border-brand hover:bg-brand hover:text-primary"
+                    className="mt-4 ml-auto w-fit px-2 hover:border-brand hover:bg-brand hover:text-primary"
                   />
                 </div>
               ))}

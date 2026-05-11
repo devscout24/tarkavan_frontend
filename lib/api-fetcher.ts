@@ -24,8 +24,13 @@ api.interceptors.request.use(async (config) => {
     ...config.params,
   };
 
-  // Set Content-Type for all requests
-  config.headers.set("Content-Type", "application/json");
+  const isFormData = config.data instanceof FormData
+
+  if (!isFormData) {
+    config.headers.set("Content-Type", "application/json");
+  } else {
+    config.headers.delete("Content-Type")
+  }
   config.headers.set("Accept", "application/json");
 
   if (token) {

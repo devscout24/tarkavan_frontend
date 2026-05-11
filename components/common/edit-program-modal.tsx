@@ -1,14 +1,28 @@
 "use client"
 import React, { useEffect, useState } from "react"
 import { Input } from "../ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select"
 import { Textarea } from "../ui/textarea"
 import CommonBtn from "@/components/common/common-btn"
 import UploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
-import { getProgramDetails, createProgram, updateProgram } from "@/app/(dashboards)/club/action"
+import {
+  getProgramDetails,
+  createProgram,
+  updateProgram,
+} from "@/app/(dashboards)/club/action"
+import {
+  createCoachProgram,
+  updateCoachProgram,
+} from "@/app/(dashboards)/coach/action"
 import { toast } from "sonner"
-import { useSearchParams } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import { getSportOptions } from "@/app/(dashboards)/action"
 import useModal from "./modal/useModal"
 import CountryCitySelector from "./country-city-selector"
@@ -16,10 +30,13 @@ import { getHighestNumber } from "@/lib/get-highest-number"
 import TimePicker from "react-time-picker"
 import "react-time-picker/dist/TimePicker.css"
 import "react-clock/dist/Clock.css"
- 
 
-
-type TSportOption = { id: number; name: string; audience: string; status: string }
+type TSportOption = {
+  id: number
+  name: string
+  audience: string
+  status: string
+}
 
 type TTimeRange = { start: string; end: string }
 type TTimeSlot = { date: string; times: TTimeRange[] }
@@ -50,14 +67,18 @@ const selectCls =
 
 const EditProgramPage: React.FC = () => {
   const { close } = useModal()
+  const pathname = usePathname()
+  const isCoachDashboard = pathname?.startsWith("/coach")
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [sportOptions, setSportOptions] = useState<TSportOption[]>([])
   const [form, setForm] = useState(initialForm)
 
-  const set = (name: string, value: string) => setForm((p) => ({ ...p, [name]: value }))
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    set(e.target.name, e.target.value)
+  const set = (name: string, value: string) =>
+    setForm((p) => ({ ...p, [name]: value }))
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => set(e.target.name, e.target.value)
 
   // ─── Goal handlers ───────────────────────────────────────────────────────────
   const handleGoalChange = (idx: number, value: string) =>
@@ -76,11 +97,17 @@ const EditProgramPage: React.FC = () => {
   const addSlot = () =>
     setForm((p) => ({
       ...p,
-      timeSlots: [...p.timeSlots, { date: "", times: [{ start: "", end: "" }] }],
+      timeSlots: [
+        ...p.timeSlots,
+        { date: "", times: [{ start: "", end: "" }] },
+      ],
     }))
 
   const removeSlot = (si: number) =>
-    setForm((p) => ({ ...p, timeSlots: p.timeSlots.filter((_, i) => i !== si) }))
+    setForm((p) => ({
+      ...p,
+      timeSlots: p.timeSlots.filter((_, i) => i !== si),
+    }))
 
   const setSlotDate = (si: number, date: string) =>
     setForm((p) => {
@@ -109,7 +136,12 @@ const EditProgramPage: React.FC = () => {
       return { ...p, timeSlots }
     })
 
-  const setTimeRange = (si: number, ti: number, field: "start" | "end", value: string) =>
+  const setTimeRange = (
+    si: number,
+    ti: number,
+    field: "start" | "end",
+    value: string
+  ) =>
     setForm((p) => {
       const timeSlots = [...p.timeSlots]
       const times = [...timeSlots[si].times]
@@ -145,7 +177,7 @@ const EditProgramPage: React.FC = () => {
 
     getProgramDetails(id)
       .then((res: any) => {
-        const p = res?.data?.data 
+        const p = res?.data?.data
         if (!p) {
           toast.error("Failed to load program data")
           return
@@ -153,15 +185,16 @@ const EditProgramPage: React.FC = () => {
 
         // Map each time slot to its own individual block instead of grouping them
         const groupedSlots: TTimeSlot[] = (() => {
-          if (!p.times?.length) return [{ date: "", times: [{ start: "", end: "" }] }]
-          
+          if (!p.times?.length)
+            return [{ date: "", times: [{ start: "", end: "" }] }]
+
           return p.times.map((t: any) => {
             let fallbackDate = p.start_date || p.program_start || ""
             if (fallbackDate && fallbackDate.includes("T")) {
               fallbackDate = fallbackDate.split("T")[0]
             }
             const date = t.slot_date || fallbackDate
-            
+
             let parsedStart = ""
             let parsedEnd = ""
             if (t.time && t.time.includes("-")) {
@@ -172,10 +205,12 @@ const EditProgramPage: React.FC = () => {
 
             return {
               date,
-              times: [{
-                start: t.start_time || parsedStart,
-                end: t.end_time || parsedEnd
-              }]
+              times: [
+                {
+                  start: t.start_time || parsedStart,
+                  end: t.end_time || parsedEnd,
+                },
+              ],
             }
           })
         })()
@@ -187,12 +222,18 @@ const EditProgramPage: React.FC = () => {
           price: p.price ? String(p.price) : "",
           discountPrice: p.discount_price ? String(p.discount_price) : "",
           location: p.location || "",
-          country: p.location?.includes(",") ? p.location.split(",")[0].trim() : p.location || "",
-          city: p.location?.includes(",") ? p.location.split(",")[1].trim() : "",
+          country: p.location?.includes(",")
+            ? p.location.split(",")[0].trim()
+            : p.location || "",
+          city: p.location?.includes(",")
+            ? p.location.split(",")[1].trim()
+            : "",
           start: p.start_date || p.program_start || "",
           end: p.end_date || p.program_end || "",
           about: p.about || "",
-          goals: p.goals?.length ? p.goals.map((g: { goal: string }) => g.goal) : [""],
+          goals: p.goals?.length
+            ? p.goals.map((g: { goal: string }) => g.goal)
+            : [""],
           photo: p.photo || p.program_photo || null,
           type: p.program_type || "one_one",
           sportOptionId: p.sport_option ? String(p.sport_option.id) : "",
@@ -225,10 +266,10 @@ const EditProgramPage: React.FC = () => {
     const token = document.cookie
       .split("; ")
       .find((row) => row.startsWith("go_elite_token="))
-      ?.split("=")[1];
-    
+      ?.split("=")[1]
+
     if (token) {
-      formData.append("access_token", token);
+      formData.append("access_token", token)
     }
 
     // Flatten timeSlots → program_times[N] and program_dates[N]
@@ -238,7 +279,7 @@ const EditProgramPage: React.FC = () => {
         if (!t.start || !t.end) return
         formData.append(`program_times[${idx}]`, `${t.start}-${t.end}`)
         if (slot.date) {
-          formData.append(`slot_dates[${idx}]`, slot.date)
+          formData.append(`program_dates[${idx}]`, slot.date)
         }
         idx++
       })
@@ -253,7 +294,7 @@ const EditProgramPage: React.FC = () => {
       const ext = blob.type.split("/")[1]?.toLowerCase() || "jpg"
       formData.append(
         "program_photo",
-        new File([blob], `program-photo.${ext}`, { type: blob.type }),
+        new File([blob], `program-photo.${ext}`, { type: blob.type })
       )
     }
 
@@ -273,7 +314,10 @@ const EditProgramPage: React.FC = () => {
     if (isSubmitting) return
     setIsSubmitting(true)
     try {
-      const res: any = await createProgram(await buildFormData())
+      const formData = await buildFormData()
+      const res: any = isCoachDashboard
+        ? await createCoachProgram(formData)
+        : await createProgram(formData)
       console.log("Create Program Response:", res)
       res?.success || res?.status
         ? onSuccess("Program created successfully!")
@@ -290,7 +334,13 @@ const EditProgramPage: React.FC = () => {
     if (isSubmitting || !editId) return
     setIsSubmitting(true)
     try {
-      const res: any = await updateProgram({ program_id: editId, data: await buildFormData() })
+      const formData = await buildFormData()
+      const res: any = isCoachDashboard
+        ? await updateCoachProgram(editId, formData)
+        : await updateProgram({
+            program_id: editId,
+            data: formData,
+          })
       res?.success || res?.status
         ? onSuccess("Program updated successfully!")
         : toast.error(res?.message || "Failed to update program.")
@@ -306,14 +356,17 @@ const EditProgramPage: React.FC = () => {
   return (
     <div className="mx-auto w-full p-0">
       <div className="flex flex-col gap-4 rounded-2xl bg-neutral-900 p-8 text-white">
-        <h2 className="mb-2 text-2xl font-semibold">{editId ? "Edit Program" : "Add Program"}</h2>
+        <h2 className="mb-2 text-2xl font-semibold">
+          {editId ? "Edit Program" : "Add Program"}
+        </h2>
 
         {/* Photo Upload */}
         <div className="mb-2">
           <UploadPhoto
             onFileSelect={(file) => {
               const reader = new FileReader()
-              reader.onload = () => setForm((p) => ({ ...p, photo: reader.result as string }))
+              reader.onload = () =>
+                setForm((p) => ({ ...p, photo: reader.result as string }))
               reader.readAsDataURL(file)
             }}
             title="UPLOAD PHOTO"
@@ -376,7 +429,11 @@ const EditProgramPage: React.FC = () => {
               </SelectTrigger>
               <SelectContent position="popper">
                 {sportOptions.map((s) => (
-                  <SelectItem key={s.id} value={s.name} className="hover:bg-brand!">
+                  <SelectItem
+                    key={s.id}
+                    value={s.name}
+                    className="hover:bg-brand!"
+                  >
                     {s.name}
                   </SelectItem>
                 ))}
@@ -450,27 +507,27 @@ const EditProgramPage: React.FC = () => {
           </div>
 
           {/* Program Start / End */}
- 
-            <div className="flex flex-col">
-              <span className="text-sm">Program Start</span>
-              <Input
-                name="start" 
-                value={form.start}
-                onChange={handleChange}
-                className={`mt-1 ${fieldCls}`}
-                type="date"
-              />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm">Program End</span>
-              <Input
-                name="end"
-                value={form.end}
-                onChange={handleChange}
-                className={`mt-1 ${fieldCls}`}
-                type="date"
-              />
-            </div> 
+
+          <div className="flex flex-col">
+            <span className="text-sm">Program Start</span>
+            <Input
+              name="start"
+              value={form.start}
+              onChange={handleChange}
+              className={`mt-1 ${fieldCls}`}
+              type="date"
+            />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm">Program End</span>
+            <Input
+              name="end"
+              value={form.end}
+              onChange={handleChange}
+              className={`mt-1 ${fieldCls}`}
+              type="date"
+            />
+          </div>
 
           {/* ── Program Times (date + time slots) ── */}
           <div className="col-span-full flex flex-col gap-2">
@@ -484,7 +541,9 @@ const EditProgramPage: React.FC = () => {
                 >
                   {/* Date row */}
                   <div className="mb-3 flex items-center gap-2">
-                    <span className="min-w-fit text-xs text-neutral-400">Date</span>
+                    <span className="min-w-fit text-xs text-neutral-400">
+                      Date
+                    </span>
                     <Input
                       type="date"
                       value={slot.date}
@@ -506,23 +565,28 @@ const EditProgramPage: React.FC = () => {
                   <div className="flex flex-col gap-2 pl-2">
                     {slot.times.map((t, ti) => (
                       <div key={ti} className="flex items-center gap-2">
-                        <span className="min-w-fit text-xs text-neutral-400">Start</span> 
+                        <span className="min-w-fit text-xs text-neutral-400">
+                          Start
+                        </span>
                         <TimePicker
                           value={t.start}
-                          onChange={(value) =>  setTimeRange(si, ti, "start", value || "")  }
+                          onChange={(value) =>
+                            setTimeRange(si, ti, "start", value || "")
+                          }
                           disableClock
                           format="HH:mm"
                           className="flex-1"
                         />
-                        
- 
-                        <span className="text-xs text-neutral-400">End</span> 
+
+                        <span className="text-xs text-neutral-400">End</span>
                         <TimePicker
                           value={t.end}
-                          onChange={(value) => setTimeRange(si, ti, "end", value || "")}
+                          onChange={(value) =>
+                            setTimeRange(si, ti, "end", value || "")
+                          }
                           disableClock
                           format="HH:mm"
-                          className="flex-1 rounded-md!   "
+                          className="flex-1 rounded-md!"
                         />
                         {slot.times.length > 1 && (
                           <CommonBtn
@@ -543,7 +607,7 @@ const EditProgramPage: React.FC = () => {
                     size="sm"
                     variant="outline"
                     onClick={() => addTimeRange(si)}
-                    className="ml-auto mt-4 w-fit px-2  hover:border-brand hover:bg-brand hover:text-primary"
+                    className="mt-4 ml-auto w-fit px-2 hover:border-brand hover:bg-brand hover:text-primary"
                   />
                 </div>
               ))}
@@ -614,7 +678,13 @@ const EditProgramPage: React.FC = () => {
             className="w-fit px-10 hover:border-brand hover:bg-brand hover:text-primary"
           />
           <CommonBtn
-            text={isSubmitting ? "Saving..." : editId ? "Update Program" : "Save Program"}
+            text={
+              isSubmitting
+                ? "Saving..."
+                : editId
+                  ? "Update Program"
+                  : "Save Program"
+            }
             size="lg"
             variant="default"
             className="w-fit bg-brand px-10 text-black hover:border hover:bg-transparent hover:text-white"

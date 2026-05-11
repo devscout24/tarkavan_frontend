@@ -95,24 +95,38 @@ export default function CoachLeftColumn() {
             console.log('🔍 Coach Profile API Response:', profileResult.data)
             setProfileData(profileResult.data)
           }
+        } else {
+          console.error('Profile response not ok:', profileResponse.status)
         }
 
         // Fetch cities data
-        const citiesResponse = await fetch(`${baseUrl}/locations/cities`)
-        if (citiesResponse.ok) {
-          const citiesResult = await citiesResponse.json()
-          if (citiesResult.status) {
-            setCities(citiesResult.data)
+        try {
+          const citiesResponse = await fetch(`${baseUrl}/locations/cities`)
+          if (citiesResponse.ok) {
+            const citiesResult = await citiesResponse.json()
+            if (citiesResult.status) {
+              setCities(citiesResult.data)
+            }
+          } else {
+            console.error('Cities response not ok:', citiesResponse.status)
           }
+        } catch (error) {
+          console.error('Error fetching cities:', error)
         }
 
         // Fetch countries data
-        const countriesResponse = await fetch(`${baseUrl}/locations/countries`)
-        if (countriesResponse.ok) {
-          const countriesResult = await countriesResponse.json()
-          if (countriesResult.status) {
-            setCountries(countriesResult.data)
+        try {
+          const countriesResponse = await fetch(`${baseUrl}/locations/countries`)
+          if (countriesResponse.ok) {
+            const countriesResult = await countriesResponse.json()
+            if (countriesResult.status) {
+              setCountries(countriesResult.data)
+            }
+          } else {
+            console.error('Countries response not ok:', countriesResponse.status)
           }
+        } catch (error) {
+          console.error('Error fetching countries:', error)
         }
       } catch (error) {
         console.error('Error fetching coach profile data:', error)

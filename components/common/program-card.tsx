@@ -1,5 +1,12 @@
 "use client"
-import { Calendar, Clock3, Edit2, ThermometerIcon, Trash2, UserRound } from "lucide-react"
+import {
+  Calendar,
+  Clock3,
+  Edit2,
+  ThermometerIcon,
+  Trash2,
+  UserRound,
+} from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -21,10 +28,11 @@ import { BsThreeDots } from "react-icons/bs"
 import { deleteProgram } from "@/app/(dashboards)/club/action"
 import { toast } from "sonner"
 
-type ProgramCardProps = { 
+type ProgramCardProps = {
   title?: string
   sport?: string
   type?: string
+  coachName?: string
   schedule?: string
   duration?: string
   currentPrice?: string
@@ -37,7 +45,7 @@ type ProgramCardProps = {
   onClick?: () => void
   showThreeDotsMenu?: boolean
   threeDotsItems?: ThreeDotsMenuItem[]
-  id?: string | number 
+  id?: string | number
   viewOnly: boolean
 }
 
@@ -45,6 +53,7 @@ export default function ProgramCard({
   title,
   sport,
   type,
+  coachName,
   schedule,
   duration,
   currentPrice,
@@ -54,24 +63,22 @@ export default function ProgramCard({
   imageAlt,
   buttonLabel,
   className,
-  onClick, 
-  viewOnly = false ,
-  id
-}: ProgramCardProps) { 
-
-  const handleDelete = async () => { 
+  onClick,
+  viewOnly = false,
+  id,
+}: ProgramCardProps) {
+  const handleDelete = async () => {
     try {
       const res = await deleteProgram(id as string)
-       
-      if(res && 'success' in res && res.success) {
+
+      if (res && "success" in res && res.success) {
         toast.success("Program deleted successfully")
-        window.dispatchEvent(new Event('programDeleted'))
+        window.dispatchEvent(new Event("programDeleted"))
       }
-    } catch (err) { 
+    } catch (err) {
       toast.error("Failed to delete program")
     }
   }
-
 
   return (
     <Card
@@ -80,13 +87,13 @@ export default function ProgramCard({
         className
       )}
     >
-      <div className="relative max-h-48 w-full overflow-hidden">
+      <div className="relative h-89.5 w-full overflow-hidden">
         <Image
           width={1000}
           height={1000}
           src={imageSrc}
           alt={imageAlt}
-          className="w-full h-full object-fill  "
+          className="h-full w-full object-fill"
         />
 
         {discountLabel && (
@@ -96,21 +103,18 @@ export default function ProgramCard({
         )}
       </div>
 
-      <CardContent className="h-full flex flex-col justify-between  p-4">
-        <div className="flex items-start justify-between gap-4 h-15.5 ">
-          <div className="max-w-[70%]  ">
-            <h3 className="text-lg leading-tight font-semibold line-clamp-2 overflow-hidden text-ellipsis ">
+      <CardContent className="flex h-full flex-col justify-between p-4">
+        <div className="flex h-15.5 items-start justify-between gap-4">
+          <div className="max-w-[70%]">
+            <h3 className="line-clamp-2 overflow-hidden text-lg leading-tight font-semibold text-ellipsis">
               {title}
             </h3>
 
-            <p className="">
-              {sport}
-            </p>
-
+            <p className="">{sport}</p>
           </div>
 
           <div className="text-right">
-            <p className="text-lg leading-none font-bold text-brand">
+            <p className="text-lg leading-none font-bold text-brand!">
               {currentPrice}
             </p>
             <p className="mt-1 text-lg text-white/70 line-through">
@@ -122,34 +126,54 @@ export default function ProgramCard({
         <div className="space-y-2 text-[14px] font-light text-white/80">
           <div className="flex items-center gap-2">
             <UserRound className="size-4" />
-            <span>Type: {type === "one_one" ? "Single" : "Group"}</span>
+            <span>
+              {coachName
+                ? `Coach: ${coachName}`
+                : `Type: ${type === "one_one" ? "Single" : "Group"}`}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <Clock3 className="size-4" />
             <span>{schedule}</span>
           </div>
-          <div className="flex items-center gap-2"> 
+          <div className="flex items-center gap-2">
             <Calendar className="size-4" />
             <span>{duration}</span>
           </div>
-        </div> 
+        </div>
         <div className="flex gap-4">
-          <CommonBtn text={buttonLabel}  className="flex-1 h-11 rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90   " size={"lg"} variant={"default"} onClick={onClick} />
-          {!viewOnly && 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className=" border-brand! py-5     ">
-                <BsThreeDots/>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuGroup> 
-                <DropdownMenuItem onClick={() => onClick?.()} className=" hover:bg-brand! justify-between   " >Edit <Edit2/></DropdownMenuItem>
-                <DropdownMenuItem onClick={handleDelete} className=" hover:bg-brand! justify-between    " >Delete <Trash2/></DropdownMenuItem>
-              </DropdownMenuGroup> 
-            </DropdownMenuContent>
-          </DropdownMenu>
-          }
+          <CommonBtn
+            text={buttonLabel}
+            className="h-11 flex-1 rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90"
+            size={"lg"}
+            variant={"default"}
+            onClick={onClick}
+          />
+          {!viewOnly && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="border-brand! py-5">
+                  <BsThreeDots />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    onClick={() => onClick?.()}
+                    className="justify-between hover:bg-brand!"
+                  >
+                    Edit <Edit2 />
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={handleDelete}
+                    className="justify-between hover:bg-brand!"
+                  >
+                    Delete <Trash2 />
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </CardContent>
     </Card>
@@ -163,16 +187,16 @@ export function ProgramCardSkeleton() {
         <Skeleton className="h-full w-full rounded-none" />
       </div>
 
-      <CardContent className="h-full flex flex-col justify-between p-4">
-        <div className="flex items-start justify-between gap-4 h-15.5">
+      <CardContent className="flex h-full flex-col justify-between p-4">
+        <div className="flex h-15.5 items-start justify-between gap-4">
           <Skeleton className="h-6 w-[70%]" />
           <div className="text-right">
-            <Skeleton className="h-5 w-16 mb-1" />
-            <Skeleton className="h-4 w-12 ml-auto" />
+            <Skeleton className="mb-1 h-5 w-16" />
+            <Skeleton className="ml-auto h-4 w-12" />
           </div>
         </div>
 
-        <div className="space-y-3 mt-4">
+        <div className="mt-4 space-y-3">
           <div className="flex items-center gap-2">
             <Skeleton className="size-4 rounded-full" />
             <Skeleton className="h-4 w-32" />
@@ -185,10 +209,10 @@ export function ProgramCardSkeleton() {
             <Skeleton className="size-4 rounded-full" />
             <Skeleton className="h-4 w-40" />
           </div>
-        </div> 
+        </div>
 
-        <div className="flex gap-4 mt-6">
-          <Skeleton className="flex-1 h-11 rounded-xl" />
+        <div className="mt-6 flex gap-4">
+          <Skeleton className="h-11 flex-1 rounded-xl" />
           <Skeleton className="h-11 w-11 rounded-full" />
         </div>
       </CardContent>

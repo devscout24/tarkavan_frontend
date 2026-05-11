@@ -2,11 +2,14 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { CalendarDays, Clock3, MapPin, Users } from "lucide-react"
 import Image from "next/image"
+import { differenceInCalendarDays, parseISO, format } from "date-fns"
 
 type ProgramDetailsBannerProps = {
   title?: string
   category?: string
   duration?: string
+  startDate?: string
+  endDate?: string
   dateRange?: string
   location?: string
   ageRange?: string
@@ -14,16 +17,56 @@ type ProgramDetailsBannerProps = {
   className?: string
 }
 
+const calculateDuration = (startDate?: string, endDate?: string): string => {
+  if (!startDate || !endDate) return ""
+
+  const totalDays =
+    differenceInCalendarDays(parseISO(endDate), parseISO(startDate)) + 1
+
+  if (totalDays < 0) return ""
+  if (totalDays < 7) {
+    return `${totalDays} day${totalDays === 1 ? "" : "s"}`
+  }
+
+  const weeks = Math.floor(totalDays / 7)
+  const remainingDays = totalDays % 7
+
+  if (remainingDays === 0) {
+    return `${weeks} week${weeks === 1 ? "" : "s"}`
+  }
+
+  return `${weeks} week${weeks === 1 ? "" : "s"} ${remainingDays} day${remainingDays === 1 ? "" : "s"}`
+}
+
 export default function ProgramDetailsBanner({
   title = "Varsity Prep Mentorship",
   category = "Football",
   duration = "12 Weeks Duration",
+  startDate,
+  endDate,
   dateRange = "01-03-2026 to 15-05-2026",
   location = "GoElite Sports Complex, Toronto",
   ageRange = "Ages 8-14",
   program_photo = "/images/programsBannerImg.png",
   className,
 }: ProgramDetailsBannerProps) {
+  const displayDuration =
+    startDate && endDate ? calculateDuration(startDate, endDate) : duration
+  const sanitize = (s?: string) => s?.replace(/[,\s]+$/g, "")?.trim() || ""
+  const displayLocation = sanitize(location) || "N/A"
+  console.log("ProgramDetailsBanner props:", {
+    startDate,
+    endDate,
+    displayDuration,
+    location: displayLocation,
+  })
+  const displayDateRange =
+    startDate && endDate
+      ? `${format(parseISO(startDate), "dd-MM-yyyy")} to ${format(
+          parseISO(endDate),
+          "dd-MM-yyyy"
+        )}`
+      : dateRange
   return (
     <div
       className={cn(
@@ -44,13 +87,13 @@ export default function ProgramDetailsBanner({
 
       <div className="absolute inset-x-0 bottom-0 z-10 p-4 md:p-6">
         <div className="flex items-center gap-2">
-          <Badge className="h-auto rounded-md bg-brand/50  px-2 py-1 text-[14px] font-semibold tracking-wide text-primary uppercase">
+          <Badge className="h-auto rounded-md bg-brand/50 px-2 py-1 text-[14px] font-semibold tracking-wide text-primary uppercase">
             {category}
           </Badge>
 
-          <p className="flex items-center gap-1 text-xs text-white/80 md:text-sm">
+          <p className="flex items-center gap-1 text-xs text-gray-400! md:text-sm">
             <Clock3 className="size-3.5" />
-            {duration}
+            {displayDuration} duration
           </p>
         </div>
 
@@ -61,12 +104,12 @@ export default function ProgramDetailsBanner({
         <ul className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-white/85 md:text-base">
           <li className="flex items-center gap-1.5">
             <CalendarDays className="size-4" />
-            {dateRange}
+            {displayDateRange}
           </li>
 
           <li className="flex items-center gap-1.5">
             <MapPin className="size-4" />
-            {location}
+            {displayLocation}
           </li>
 
           <li className="flex items-center gap-1.5">

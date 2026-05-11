@@ -138,7 +138,7 @@ export default function ProgramCard({
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="size-4" />
-            <span>{duration}</span>
+            <span>{duration} program</span>
           </div>
         </div>
         <div className="flex gap-4">

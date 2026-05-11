@@ -287,7 +287,11 @@ export default function UpcomingEventPage() {
                     id={program.id}
                     title={program.program_name}
                     coachName={program.provider?.name || "N/A"}
-                    schedule={program.times?.[0]?.time || "N/A"}
+                    schedule={formatScheduleLabel(
+                      program.start_date,
+                      program.end_date,
+                      program.times?.[0]?.time
+                    )}
                     duration={formatDuration(
                       program.start_date,
                       program.end_date

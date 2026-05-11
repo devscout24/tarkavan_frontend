@@ -26,6 +26,7 @@ import {
 import Lottie from "lottie-react"
 import animationData from "../../../../public/searching.json"
 import { useRouter } from "next/navigation"
+import { MatchedChild } from "@/components/parentAndCoachApi"
 
 interface AdvertisementProps {
   imageUrl: string | StaticImageData
@@ -39,7 +40,7 @@ interface AdvertisementProps {
   is_applied?: boolean
   recruitId?: string
   application_status: string
-  matched_children: TChield[]
+  matched_children: MatchedChild[]
 }
 
 const TimerIcon = () => (
@@ -199,14 +200,14 @@ export default function AdvertisementParent({
                         onValueChange={(value) => setSelectedChildId(value)}
                         defaultValue={selectedChildId}
                       >
-                      <SelectTrigger className="w-full ">
+                      <SelectTrigger className="w-full text-primary ">
                         <SelectValue placeholder="Select a child" />
                       </SelectTrigger>
                       <SelectContent position="popper">
                         <SelectGroup>
                           {matched_children.map((child) => ( 
                             <SelectItem value={String(child.id)} key={child.id} className="cursor-pointer hover:bg-brand!   ">
-                              {child.name} {child.last_name}
+                              {child.name} 
                             </SelectItem> 
                           ))}
                         </SelectGroup>

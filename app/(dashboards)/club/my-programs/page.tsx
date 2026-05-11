@@ -55,11 +55,15 @@ interface Program {
   time: string
   times: ProgramTime[]
   goals: ProgramGoal[]
+  start_date: string
+  end_date: string
 }
 
 interface ProgramsData {
   latest_upcoming_program: Program | null
   programs: Program[]
+  start_date: string
+  end_date: string
   pagination: {
     current_page: number
     last_page: number
@@ -164,8 +168,7 @@ export default function UpcomingEventPage() {
     }
   }, [])
 
-  console.log(programsData)
-
+ 
 
   return (
     <section>
@@ -217,8 +220,8 @@ export default function UpcomingEventPage() {
                   <p className="text-sm font-normal text-primary/50! sm:text-base">
                     Schedule
                   </p>
-                  <p className="text-sm font-normal text-primary! sm:text-base lg:text-lg">
-                    {moment(programsData.latest_upcoming_program.program_start).format("MMM Do YY")}
+                  <p className="text-sm font-normal text-primary! sm:text-base lg:text-lg"> 
+                    {moment(programsData.latest_upcoming_program.start_date).add(3, 'days').calendar()}
                   </p>
                 </div>
 

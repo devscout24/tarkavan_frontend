@@ -214,16 +214,16 @@ export default function Page() {
                     className="max-w-[320px] min-w-[320px] shrink-0"
                   >
                     <AdvertisementParent
-                      imageUrl={opportunity.image_url || advertisementImage}
-                      positions={opportunity.positions || "Various"}
-                      teamName={opportunity.team_name || "Team"}
-                      ageGroup={opportunity.age_group || "U16"}
+                      imageUrl={opportunity.team.image || advertisementImage}
+                      positions={opportunity.position.name || "Various"}
+                      teamName={opportunity.team.name || "Team"}
+                      ageGroup={String(opportunity.upto_age) || "U16"}
                       tryoutDate={opportunity.tryout_date || "TBD"}
                       description={
                         opportunity.description || "Opportunity available."
                       }  
                       application_status={  "pending"}
-                      recruitId={opportunity.id}
+                      recruitId={String(opportunity.id)}
                       matched_children={opportunity.matched_children || []}
                     />
                   </div>

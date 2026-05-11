@@ -39,6 +39,22 @@ export async function getTeamDetails(team_id: string) {
       status: 500,
     }
   }
+} 
+
+export async function releasePlayer(team_player_id: string) {
+  try {
+    const res = await api.get(`/club/team/player/release/${team_player_id}`) 
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
 }
 
 

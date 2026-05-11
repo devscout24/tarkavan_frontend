@@ -8,19 +8,7 @@ export interface DashboardSummary {
   total_upcoming_programs: number
 }
 
-export interface RecentOpportunity {
-  id: string
-  title?: string
-  description?: string
-  team_name?: string
-  age_group?: string
-  tryout_date?: string
-  positions?: string
-  image_url?: string
-  created_at?: string
-  matched_children?: TChield[]
-}
-
+ 
 export interface UpcomingProgramReminder {
   id: string
   title?: string
@@ -33,7 +21,7 @@ export interface UpcomingProgramReminder {
 
 export interface DashboardData {
   summary: DashboardSummary
-  recent_opportunities: RecentOpportunity[]
+  recent_opportunities: RecruitmentDetails[]
   upcoming_program_reminders: UpcomingProgramReminder[]
 }
 
@@ -49,3 +37,55 @@ export interface DashboardApiResult {
   message?: string
   status?: number
 }
+
+type RecruitmentDetails = {
+  id: number;
+  club: Club;
+  position: Position;
+  team: Team;
+  experience: string;
+  description: string;
+  upto_age: number;
+  tryout_date: string;
+  matched_children: MatchedChild[];
+};
+
+type Club = {
+  id: number;
+  club_name: string;
+  club_logo: string;
+  city: string;
+  state: string | null;
+  country: string;
+  city_id: number | null;
+  country_id: number | null;
+};
+
+type Position = {
+  id: number;
+  name: string;
+};
+
+type Team = {
+  id: number;
+  name: string;
+  age_group: string;
+  image: string;
+  competition_level: string;
+};
+
+export type MatchedChild = {
+  id: number;
+  name: string;
+  age: number;
+  location: Location;
+  primary_position: Position;
+  secondary_position: Position;
+};
+
+type Location = {
+  city_id: number | null;
+  city: string;
+  country_id: number | null;
+  country: string;
+};

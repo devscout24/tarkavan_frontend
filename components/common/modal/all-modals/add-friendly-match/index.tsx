@@ -29,6 +29,7 @@ import { getTeams } from "@/app/(dashboards)/club/teams/action"
 import { toast } from "sonner"
 import useModal from "../../useModal"
 import CommonBtn from "@/components/common/common-btn"
+import { getHighestNumber } from "@/lib/get-highest-number"
 
 type TeamOption = {
   label: string
@@ -91,8 +92,7 @@ export type AddFriendlyMatchProps = {
   defaultDate?: Date
   defaultLocation?: string
   defaultFieldOpportunity?: FieldOpportunity
-  onCancel?: () => void
-  onSubmit?: (payload: AddFriendlyMatchPayload) => void
+  onCancel?: () => void 
 }
 
 const defaultTeams: TeamOption[] = [
@@ -126,8 +126,7 @@ export default function AddFriendlyMatch({
   defaultDate,
   defaultLocation = "",
   defaultFieldOpportunity = "we-have-a-field",
-  onCancel,
-  onSubmit,
+  onCancel, 
 }: AddFriendlyMatchProps) {
   const { close } = useModal()
   const [team, setTeam] = React.useState(defaultTeam)
@@ -136,7 +135,9 @@ export default function AddFriendlyMatch({
   const [fieldOpportunity, setFieldOpportunity] =
     React.useState<FieldOpportunity>(defaultFieldOpportunity)
   const [dateOpen, setDateOpen] = React.useState(false)
-  const [availableTeams, setAvailableTeams] = React.useState<TeamOption[]>(teams)
+  const [availableTeams, setAvailableTeams] =
+    React.useState<TeamOption[]>(teams)
+  const [ageGroup, setAgeGroup] = React.useState("")
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
@@ -155,54 +156,72 @@ export default function AddFriendlyMatch({
       nextParams.toString() ? `${pathname}?${nextParams.toString()}` : pathname
     )
   }
-  
-    React.useEffect(() => {
-      const getData = async () => {
-        try{
-          const res = await getTeams()  
-          
-          if (res && typeof res === "object" && "success" in res && res.success && "data" in res) {
-            const typedRes = res as GetTeamsResponse
-            if (typedRes.data && typedRes.data.data) {
-              const teamOptions: TeamOption[] = typedRes.data.data.map((team: Team) => ({
+
+  React.useEffect(() => {
+    const getData = async () => {
+      try {
+        const res = await getTeams()
+
+        if (
+          res &&
+          typeof res === "object" &&
+          "success" in res &&
+          res.success &&
+          "data" in res
+        ) {
+          const typedRes = res as GetTeamsResponse
+          if (typedRes.data && typedRes.data.data) {
+            const teamOptions: TeamOption[] = typedRes.data.data.map(
+              (team: Team) => ({
                 label: team.name,
                 value: team.id.toString(),
-              }))
-              setAvailableTeams(teamOptions)
-            }
+              })
+            )
+            setAvailableTeams(teamOptions)
           }
-        }catch(err){
-          console.error("Error fetching teams data:", err)
         }
+      } catch (err) {
+        console.error("Error fetching teams data:", err)
       }
-      getData()
-    }, [])
+    }
+    getData()
+  }, [])
 
   const handleSubmit = async () => {
     setLoading(true)
 
     const formData = new FormData()
     formData.append("club_team_id", team)
-    formData.append("available_date", date ? date.toISOString().split('T')[0] : "")
+    formData.append(
+      "available_date",
+      date ? date.toISOString().split("T")[0] : ""
+    )
     formData.append("location", location.trim())
     formData.append("field_opportunity", fieldOpportunity)
+    formData.append("age_group", getHighestNumber(ageGroup)?.toString() || "")
 
-    try{
+    try {
       const res = await addUpdateMatch(formData)
-      
-      if (typeof res === "object" && res !== null && "success" in res && res.success) {
+
+      if (
+        typeof res === "object" &&
+        res !== null &&
+        "success" in res &&
+        res.success
+      ) {
         toast.success("Match created successfully")
         setLoading(false)
-        window.dispatchEvent(new CustomEvent('matchAdd'))
+        window.dispatchEvent(new CustomEvent("matchAdd"))
         close("add-new", ["friendly-match"])
         return
       }
-      
-      const fallbackMessage = "Failed to create match. Please check your inputs."
-      const message = 
-        typeof res === "object" && 
-        res !== null && 
-        "message" in res && 
+
+      const fallbackMessage =
+        "Failed to create match. Please check your inputs."
+      const message =
+        typeof res === "object" &&
+        res !== null &&
+        "message" in res &&
         typeof res.message === "string"
           ? res.message
           : fallbackMessage
@@ -212,8 +231,6 @@ export default function AddFriendlyMatch({
       console.error("Error submitting friendly match:", error)
       toast.error("Failed to create match. Please try again.")
     }
-
-
   }
 
   return (
@@ -244,12 +261,27 @@ export default function AddFriendlyMatch({
               position="popper"
             >
               {availableTeams.map((option) => (
-                <SelectItem key={option.value} value={option.value} className="hover:bg-brand!  "  >
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  className="hover:bg-brand!"
+                >
                   {option.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        {/* Age Group */}
+        <div className="flex flex-col">
+          <span className="text-sm">Age Group</span>
+          <Input
+            placeholder="e.g U14 or U16-U20"
+            value={ageGroup}
+            onChange={(e) => setAgeGroup(e.target.value)}
+            className={`mt-1 py-5 `}
+          />
         </div>
 
         <div className="flex flex-col gap-2">
@@ -346,7 +378,7 @@ export default function AddFriendlyMatch({
           </RadioGroup>
         </div>
 
-        <div className="flex items-center justify-end  gap-4 pt-4">
+        <div className="flex items-center justify-end gap-4 pt-4">
           <Button
             type="button"
             variant="outline"
@@ -356,18 +388,15 @@ export default function AddFriendlyMatch({
           >
             {cancelLabel}
           </Button>
- 
+
           <CommonBtn
             variant="default"
             size="default"
             onClick={handleSubmit}
             text={submitLabel}
             isLoading={loading}
-            className="h-11 w-fit  rounded-xl bg-brand px-6 text-[15px] font-semibold text-primary hover:bg-brand/95"
-           />
-
-
-
+            className="h-11 w-fit rounded-xl bg-brand px-6 text-[15px] font-semibold text-primary hover:bg-brand/95"
+          />
         </div>
       </CardContent>
     </Card>

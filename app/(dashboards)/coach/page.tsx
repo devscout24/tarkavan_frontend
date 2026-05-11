@@ -88,6 +88,8 @@ export default function CoachDashboardPage() {
       onClick: handleExportEarnings,
     },
   ]
+
+  console.log(dashboardData)
  
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -175,7 +177,8 @@ export default function CoachDashboardPage() {
                       description={opportunity.description || "No description provided."}
                       headline={opportunity.headline } 
                       is_applied={opportunity.is_applied} 
-                      application_status={String(opportunity.id)}
+                      application_status={String(opportunity.is_applied ? "applied" : "not applied")}
+                      recruitId={String(opportunity.id)} 
                     />
                   </div>
                 ))

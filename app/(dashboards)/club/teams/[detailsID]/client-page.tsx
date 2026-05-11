@@ -3,7 +3,9 @@ import MemberSection from "./components/member-section"
 import { type TeamMember } from "./components/member-card"
 import { getTeamDetails } from "../action"
 import { useParams } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import { TTeamDetails } from "@/types/team.type"
+import { details } from "motion/react-client"
 
 const coachMembers: TeamMember[] = [
   {
@@ -51,10 +53,11 @@ const playerMembers: TeamMember[] = [
   },
 ]
 
-export default async function ClubTeamDetailsClientPage() {
+export default function ClubTeamDetailsClientPage() {
   const params = useParams()
   const team_id = params.detailsID
-
+  const [teamDetails, setTeamDetails] = useState<TTeamDetails | null>(null)
+  console.log(teamDetails)
   useEffect(() => {
     const getTeamData = async () => {
       try {
@@ -65,29 +68,39 @@ export default async function ClubTeamDetailsClientPage() {
           "success" in res &&
           res.success &&
           "data" in res
-        ) {
-          console.log(res.data.data)
+        ) { 
+          setTeamDetails(res.data.data)
         }
       } catch (error) {
         console.error(error)
       }
     }
     getTeamData()
+
+    // const getTeamDetails = () => {
+    //      getTeamData()
+    // }
+
   }, [team_id])
 
   return (
     <div className="space-y-4 bg-[#050713]">
-      <MemberSection
-        title="Professional Coaches"
-        actionText="All Coachs"
-        members={coachMembers}
-      />
+      {/* {teamDetails && teamDetails?.coaches.length > 0 && (
+        <MemberSection
+          title="Professional Coaches"
+          actionText="All Coachs"
+          members={coachMembers}
+        />
+      )} */}
 
-      <MemberSection
-        title="Professional Players"
-        actionText="All Players"
-        members={playerMembers}
-      />
+      {teamDetails && teamDetails?.players.length > 0 && (
+        <MemberSection
+          title="Professional Players"
+          actionText="All Players"
+          members={teamDetails.players}
+          team_id={String(teamDetails?.team?.id)}
+        />
+      )}
     </div>
   )
 }

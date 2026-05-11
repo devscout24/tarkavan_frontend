@@ -52,12 +52,19 @@ export default function Advertisement({
   headline, 
   hideDetails = false, 
   recruitId,
-  application_status
+  application_status ,
+  is_applied
 }: AdvertisementProps) {
 
 
   const [loading, setLoading] = useState(false)
   const handleApply = async () => { 
+    console.log(recruitId)
+
+    if(!recruitId){
+      toast.error("Recruitment ID is missing. Cannot apply.")
+      return
+    }
    try{
     setLoading(true)
 
@@ -65,9 +72,10 @@ export default function Advertisement({
     formData.append("recruitment_id", recruitId || "");
 
     const res = await applyRecruitment(formData)
+    console.log("Apply response:", res)
     if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
       toast.success("Application submitted successfully") 
-      window.dispatchEvent(new Event("load_coach_dashboard"))
+      window.dispatchEvent(new CustomEvent("load_coach_dashboard"))
       setLoading(false)
     } else {
       toast.error("Failed to submit application")

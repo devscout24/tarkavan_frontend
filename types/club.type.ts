@@ -1,4 +1,4 @@
-import { Goal } from "lucide-react"
+ 
 
 export type TSubscriptionPlan = {
   id: number

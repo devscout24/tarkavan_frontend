@@ -86,9 +86,18 @@ export default function ProgramDateTimeSelector({
     : undefined
 
   const [date, setDate] = useState<Date | undefined>(startDate)
-  const user = localStorage.getItem("go_elite_user")
-    ? JSON.parse(String(localStorage.getItem("go_elite_user")))
+  const [user, setUser] = useState<{ role?: string } | null>(null)
+  const currentUser = localStorage.getItem("go_elite_user")
+    ? JSON.parse(localStorage.getItem("go_elite_user") as string)
     : null
+ 
+  useEffect(() => {
+    const storedUser = localStorage.getItem("go_elite_user")
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
+    }
+  }, [])
 
   let displayTimes: string[] = []
 
@@ -159,6 +168,7 @@ export default function ProgramDateTimeSelector({
     }
     fetchAvailableTimes()
   }, [selectedDate])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const getChild = async () => {
@@ -209,11 +219,14 @@ export default function ProgramDateTimeSelector({
       formData.append("booking_time_id", String(data.booking_time_id))
       formData.append("amount", String(data.amount))
       formData.append("date", data.date)
+
       try {
+        setLoading(true)
         const res = await bookProgram(formData)
-         console.log(res)
         if (res?.status === false && res?.message) {
           toast.error(res.message)
+          setLoading(false)
+          return
         }
         if (
           res &&
@@ -223,20 +236,67 @@ export default function ProgramDateTimeSelector({
           "data" in res.data &&
           res.data.data
         ) {
-          console.log(res.data.data)
           const { checkout_url } = res.data.data
           if (checkout_url) {
+            setLoading(false)
             window.location.href = checkout_url
           } else {
             toast.error("Checkout URL not found.")
+            setLoading(false)
           }
         }
       } catch (err) {
+        setLoading(false)
         console.error("Error booking program:", err)
       }
     }
 
     if (bookBy === "player") {
+      const data = {
+        program_id: detailsID,
+        athlete_profile_id: String(currentUser?.profile_id),
+        booking_time_id: selectedTime?.id,
+        amount: Number(price),
+        date: selectedTime?.slot_date
+          ? String(moment(selectedTime.slot_date).format("YYYY-MM-DD"))
+          : String(moment(selectedDate).format("YYYY-MM-DD")),
+      }
+
+      const formData = new FormData()
+      formData.append("program_id", String(data.program_id))
+      formData.append("athlete_profile_id", String(data.athlete_profile_id))
+      formData.append("booking_time_id", String(data.booking_time_id))
+      formData.append("amount", String(data.amount))
+      formData.append("date", data.date)
+
+      try {
+        setLoading(true)
+        const res = await bookProgram(formData)
+        if (res?.status === false && res?.message) {
+          toast.error(res.message)
+          setLoading(false)
+        }
+        if (
+          res &&
+          "success" in res &&
+          res.success &&
+          res.data &&
+          "data" in res.data &&
+          res.data.data
+        ) {
+          const { checkout_url } = res.data.data
+          if (checkout_url) {
+            setLoading(false)
+            window.location.href = checkout_url
+          } else {
+            toast.error("Checkout URL not found.")
+            setLoading(false)
+          }
+        }
+      } catch (err) {
+        setLoading(false)
+        console.error("Error booking program:", err)
+      }
     }
   }
 
@@ -321,13 +381,13 @@ export default function ProgramDateTimeSelector({
       )}
 
       {/* payment */}
-      {user.role !== "coach" && (
+      {user?.role !== "coach" && (
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#DEDEDE] pt-4">
           <p className="text-lg font-medium text-primary!">
             Total: $ {priceToShow}
           </p>
 
-          {user && user.role == "parent" && !child_id ? (
+          {user?.role === "parent" && !child_id ? (
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger>
                 <Button className="h-10 cursor-pointer rounded-xl bg-brand text-lg font-medium text-primary hover:bg-brand/80 hover:text-primary">
@@ -401,6 +461,8 @@ export default function ProgramDateTimeSelector({
                         text="Continue to Payment"
                         className="w-fit cursor-pointer border-0 bg-brand px-4 text-primary hover:bg-brand"
                         onClick={() => handleBooking("parent")}
+                        disabled={!selectedChildId || isOwner}
+                        isLoading={loading}
                       />
                     </div>
                   </DialogDescription>
@@ -408,14 +470,18 @@ export default function ProgramDateTimeSelector({
               </DialogContent>
             </Dialog>
           ) : (
-            user.role == "player" || child_id && (
-              <Button
+            (user?.role === "player" || Boolean(child_id)) && (
+              <CommonBtn
                 disabled={isOwner}
-                className="hover:text-primacursor-pointer h-10 rounded-xl bg-brand text-lg font-medium text-primary hover:bg-brand/80"
-                onClick={() => child_id ? handleBooking("parent") : handleBooking("player")}
-              >
-                {isOwner ? "Can not book own program" : "Proceed to Payment"}
-              </Button>
+                size={"lg"}
+                variant={"outline"}
+                className="hover:text-primacursor-pointer h-10 rounded-xl bg-brand text-lg font-medium text-primary hover:bg-brand/80 w-fit  border-0 px-3   "
+                onClick={() =>
+                  child_id ? handleBooking("parent") : handleBooking("player")
+                }
+                isLoading={loading}
+                text={isOwner ? "Can not book own program" : "Proceed to Payment"}
+              /> 
             )
           )}
         </div>

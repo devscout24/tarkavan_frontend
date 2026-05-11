@@ -1,7 +1,9 @@
-import PlayerProgramDetailsClientPage from "@/app/(dashboards)/parent/programs/[detailsID]/client-page";
+import ProgramDetailsPage from "@/app/(dashboards)/common-pages/program-details";
+
+ 
 
 export default function ChildProgramDetailsPage(){
 
-    return <PlayerProgramDetailsClientPage/>
+    return <ProgramDetailsPage/>
 
 }

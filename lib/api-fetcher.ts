@@ -16,10 +16,7 @@ api.interceptors.request.use(async (config) => {
 
     const headerStore = await headers();
     const referer = headerStore.get("referer");
-    const routerStateTree = headerStore.get("next-router-state-tree");
-
-    console.log("[API SERVER] referer:", referer);
-    console.log("[API SERVER] next-router-state-tree:", routerStateTree);
+    const routerStateTree = headerStore.get("next-router-state-tree"); 
 
     if (referer) {
       try {
@@ -40,8 +37,7 @@ api.interceptors.request.use(async (config) => {
       const match = decoded.match(/"child_id","(\d+)"/);
       childId = match?.[1] ?? undefined;
     }
-
-    console.log("[API SERVER] childId:", childId);
+ 
   } else {
     token = document.cookie
       .split("; ")

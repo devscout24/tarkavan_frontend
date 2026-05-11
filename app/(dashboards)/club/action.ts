@@ -203,25 +203,7 @@ export async function updateTeam(team_id: string) {
   }
 }
 
-export async function teamPlayerList(team_id: string) {
-  
-  try {
-    const res = await api.get(`/club/team/players/list/${team_id}`)
-    return { success: true, data: res.data }
-  } catch (err: unknown) {
-    if (axios.isAxiosError<TApiError>(err)) {
-      return err?.response?.data
-    }
-  
-    return {
-      success: false,
-      message: "Unexpected error",
-      status: 500,
-    }
-  }
-}
-
-
+ 
 
 // club program actions
 export async function createProgram(data: FormData) {

@@ -24,6 +24,23 @@ export async function getTeams() {
   }
 }
 
+export async function getTeamDetails(team_id: string) {
+  try {
+    const res = await api.get(`/club/team/players/list/${team_id}`)
+    revalidatePath("/club/teams", "page")
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+
 
 
 

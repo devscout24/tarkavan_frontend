@@ -21,7 +21,7 @@ import { useMemo, useState } from "react"
 import moment from "moment" 
 import CommonBtn from "./common-btn"
 import { ImDownload } from "react-icons/im";
-import { getPaymentExport } from "@/app/(dashboards)/parent/payments/action"
+import { getPaymentExport } from "@/app/(dashboards)/common-pages/paument-page/action"
 import { downloadPdf } from "@/lib/downloadPdf"
  
 

@@ -1,6 +1,9 @@
+"use client"
 import MemberSection from "./components/member-section"
 import { type TeamMember } from "./components/member-card"
-import { teamPlayerList } from "../../action";
+import { getTeamDetails } from "../action"
+import { useParams } from "next/navigation"
+import { useEffect } from "react"
 
 const coachMembers: TeamMember[] = [
   {
@@ -48,19 +51,32 @@ const playerMembers: TeamMember[] = [
   },
 ]
 
- 
 export default async function ClubTeamDetailsClientPage() {
+  const params = useParams()
+  const team_id = params.detailsID
 
-  try{
-
-    const res = await teamPlayerList("4"); 
-
-  }catch(error){
-    console.error(error);
-  }
+  useEffect(() => {
+    const getTeamData = async () => {
+      try {
+        const res = await getTeamDetails(String(team_id))
+        if (
+          res &&
+          typeof res === "object" &&
+          "success" in res &&
+          res.success &&
+          "data" in res
+        ) {
+          console.log(res.data.data)
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    getTeamData()
+  }, [team_id])
 
   return (
-    <div className="space-y-4 bg-[#050713] ">
+    <div className="space-y-4 bg-[#050713]">
       <MemberSection
         title="Professional Coaches"
         actionText="All Coachs"

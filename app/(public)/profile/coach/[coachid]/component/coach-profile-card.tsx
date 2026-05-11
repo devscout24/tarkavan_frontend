@@ -56,9 +56,10 @@ export default function CoachProfileCard({
 
       <div className="relative min-h-155 w-full">
         <Image
-          src={String(basic_info?.image)}
+          src={basic_info?.image || "/images/bannerbg.png"}
           alt="Shahin Tarkavan"
-          fill
+          width={1000}
+          height={500}
           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover object-top"
         />

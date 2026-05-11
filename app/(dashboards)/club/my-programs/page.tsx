@@ -197,7 +197,7 @@ export default function UpcomingEventPage() {
                 className="h-full max-h-55 w-full object-fill lg:max-w-[288px]"
               />
 
-              <span className="absolute bottom-3 left-3 rounded-full bg-[#16A34A] px-3 py-1 text-[10px] font-bold tracking-[0.08em] text-white uppercase">
+              <span className="absolute bottom-3 left-3 rounded-full bg-[#16A34A] px-3 py-1 text-[10px] font-bold tracking-[0.08em] text-primary uppercase">
                 In Progress
               </span>
             </div>
@@ -207,26 +207,26 @@ export default function UpcomingEventPage() {
                 {programsData.latest_upcoming_program.program_name}
               </h3>
 
-              <p className="mt-2 flex items-center gap-2 text-sm font-normal text-primary sm:text-base">
+              <p className="mt-2 flex items-center gap-2 text-sm font-normal text-primary! sm:text-base">
                 <UserRound className="size-4" />
                 Coach: {programsData.latest_upcoming_program.coach_name}
               </p>
 
-              <div className="mt-4 flex gap-3 text-primary md:mt-5 md:gap-8">
+              <div className="mt-4 flex gap-3 text-primary! md:mt-5 md:gap-8">
                 <div>
-                  <p className="text-sm font-normal text-primary/50 sm:text-base">
+                  <p className="text-sm font-normal text-primary/50! sm:text-base">
                     Schedule
                   </p>
-                  <p className="text-sm font-normal text-primary sm:text-base lg:text-lg">
+                  <p className="text-sm font-normal text-primary! sm:text-base lg:text-lg">
                     {moment(programsData.latest_upcoming_program.program_start).format("MMM Do YY")}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-sm font-normal text-primary/50 sm:text-base">
+                  <p className="text-sm font-normal text-primary/50! sm:text-base">
                     Next Session
                   </p>
-                  <p className="text-sm font-normal text-primary sm:text-base lg:text-lg">
+                  <p className="text-sm font-normal text-primary! sm:text-base lg:text-lg">
                     {moment(programsData.latest_upcoming_program.program_end).format("MMM Do YY")}
                   </p>
                 </div>
@@ -234,11 +234,11 @@ export default function UpcomingEventPage() {
             </div>
 
             <div className="flex flex-col gap-4 px-4 pb-5 sm:flex-row sm:items-end sm:justify-between sm:px-6 md:flex-col md:items-end md:justify-center md:px-6 md:py-6">
-              <div className="w-full rounded-xl border border-primary/35 px-4 py-2 text-right text-primary sm:w-auto">
-                <p className="text-xs font-medium opacity-75 sm:text-sm">
+              <div className="w-full rounded-xl border border-primary/35 px-4 py-2 text-right text-primary! sm:w-auto">
+                <p className="text-xs font-medium opacity-75 sm:text-sm text-primary/50!">
                   Sport
                 </p>
-                <p className="text-[14px] font-medium text-primary sm:text-base lg:text-lg">
+                <p className="text-[14px] font-medium text-primary! sm:text-base lg:text-lg">
                   {programsData.latest_upcoming_program.sport}
                 </p>
               </div>

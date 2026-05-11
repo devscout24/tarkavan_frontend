@@ -92,6 +92,8 @@ export default function RecruitmentForm({
     defaultValues?.description ?? ""
   )
  
+ 
+
 // get positions
   useEffect(() => {
     const getPositions = async () => {
@@ -104,11 +106,7 @@ export default function RecruitmentForm({
           res.data &&
           "data" in res.data &&
           res.data.data
-        ) {
-          // sortPositions 
-
-          // Sort positions in the specified order: GK, CB, RB, LB, DM, CM, AM, RW, LW, ST
- 
+        ) { 
           setPositions(sortPositions(res.data.data))
         }
       } catch (error) {
@@ -117,6 +115,9 @@ export default function RecruitmentForm({
     }
     getPositions()
   }, [])
+
+
+
 
   // get teams
   useEffect(() => {
@@ -151,14 +152,8 @@ export default function RecruitmentForm({
           res.data &&
           "data" in res.data &&
           res.data.data
-        ) {
-          const teamsData = res.data.data.map(
-            (team: { id: number; name: string }) => ({
-              label: team.name,
-              value: String(team.id),
-            })
-          )
-          setCoachPositions(teamsData)
+        ) { 
+          setCoachPositions(res.data.data)
         }
       } catch (error) {
         console.error("Error fetching teams:", error)
@@ -221,7 +216,7 @@ export default function RecruitmentForm({
       formData.append("upto_age", String(getHighestNumber(ageGroup)))
 
       const res = await addRecruitment(formData)
-
+      console.log(res)
       if (
         typeof res === "object" &&
         res !== null &&

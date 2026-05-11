@@ -259,6 +259,7 @@ const AddProgramPage: React.FC = () => {
       res?.success || res?.status
         ? onSuccess("Program updated successfully!")
         : toast.error(res?.message || "Failed to update program.")
+        window.dispatchEvent(new CustomEvent("programevent"))
       close("add-new", ["program"])
     } catch {
       toast.error("Failed to update program. Please try again.")

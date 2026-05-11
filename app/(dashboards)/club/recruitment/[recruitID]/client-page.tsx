@@ -40,7 +40,7 @@ export default function ClubRecruitmentClientPage() {
   const router = useRouter()
   const params = useParams()
   const [data, setData] = useState<TCoachApplication[]>([])
-
+  console.log(data)
   useEffect(() => {
     const handleGetRecruitDetails = async () => {
       try {
@@ -87,6 +87,7 @@ export default function ClubRecruitmentClientPage() {
         applicantId: applicantId as string,
         status: formData,
       }) 
+      console.log(res)
       if (
         res &&
         "success" in res &&
@@ -130,9 +131,9 @@ export default function ClubRecruitmentClientPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((data) => (
+              {data.map((data , i) => (
                 <TableRow
-                  key={data.name}
+                  key={i}
                   className="border-t border-white/20 hover:bg-transparent"
                 >
                   <TableCell
@@ -167,7 +168,7 @@ export default function ClubRecruitmentClientPage() {
                     <div className="flex items-center justify-center gap-5 text-white">
                       <FiEye
                         className="text-lg text-brand"
-                        onClick={() => router.push(`/profile/${data.user_id}`)}
+                        onClick={() => router.push(`/profile/player/${data.profile_id}`)}
                       />
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>

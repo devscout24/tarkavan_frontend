@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Country, City } from "country-state-city";
-import { u } from "motion/react-client";
 
 type CityType = {
   name: string;
@@ -12,25 +11,40 @@ type CityType = {
 
 export default function CountryCitySelector(
   {
-    onSelect ,
+    onSelect,
     onReset,
-    className
+    className,
+    initialCountry,
+    initialCity
   }
   :
   {
     className?: string,
-    onReset?: (country: "" , city: "") => void,
-    onSelect: (data:{country_name: string , city_name: string}) => void
+    onReset?: (country: "", city: "") => void,
+    onSelect: (data: { country_name: string; city_name: string }) => void,
+    initialCountry?: string,
+    initialCity?: string
   }
 ) {
+  const countries = Country.getAllCountries();
+
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [cities, setCities] = useState<CityType[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>("");
 
-  const countries = Country.getAllCountries();
-
-
- 
+  useEffect(() => {
+    if (initialCountry) {
+      const country = countries.find(c => c.name === initialCountry || c.isoCode === initialCountry);
+      if (country) {
+        setSelectedCountry(country.isoCode);
+        const cityList = City.getCitiesOfCountry(country.isoCode);
+        setCities(cityList as CityType[]);
+      }
+    }
+    if (initialCity) {
+      setSelectedCity(initialCity);
+    }
+  }, [initialCountry, initialCity, countries]);
 
   const handleCountryChange = (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -43,19 +57,18 @@ export default function CountryCitySelector(
     setSelectedCity("");
   };
 
+  useEffect(() => {
+    const selectedCountryObj = countries.find(
+      (c) => c.isoCode === selectedCountry
+    );
 
-useEffect(() => {
-  const selectedCountryObj = countries.find(
-    (c) => c.isoCode === selectedCountry
-  );
+    const data = {
+      country_name: selectedCountryObj?.name || "",
+      city_name: selectedCity || "",
+    };
 
-  const data = {
-    country_name: selectedCountryObj?.name || "",
-    city_name: selectedCity || "",
-  };
-
-  onSelect(data);
-}, [selectedCity, selectedCountry]);
+    onSelect(data);
+  }, [selectedCity, selectedCountry]);
 
 
   return (

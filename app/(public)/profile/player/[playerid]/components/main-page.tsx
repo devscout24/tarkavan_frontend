@@ -68,7 +68,7 @@ export default function ProfilePage({ data   }: ProfilePageProps) {
   mapPosition.push(data?.position_info?.primary_position)
   mapPosition.push(data?.position_info?.secondary_position)
   const columnBorderClass = "border-r border-white/15 last:border-r-0"
- 
+    
 
   return (
     <>
@@ -167,9 +167,9 @@ export default function ProfilePage({ data   }: ProfilePageProps) {
                     </TableRow>
                   </TableHeader>
                   <TableBody className="text-white">
-                    {data?.season_stats_last_five_years?.map((stat) => (
+                    {data?.season_stats_last_five_years?.map((stat , i) => (
                       <TableRow
-                        key={stat.season_year}
+                        key={i}
                         className="border-t border-white/20 hover:bg-transparent"
                       >
                         <TableCell

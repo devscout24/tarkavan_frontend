@@ -29,7 +29,7 @@ export default function ProfileCard({
       </div>
 
       {/* stars */}
-      <div className="  flex w-full flex-col justify-end items-end gap-2 px-5 pt-5  ">
+      <div className="  flex w-full flex-col justify-end items-end gap-2 px-5 pt-5 absolute top-0 right-0 z-2    ">
         {/* provincial votes */}
           <HoverCard openDelay={0}>
             <HoverCardTrigger className=" relative    ">
@@ -56,8 +56,11 @@ export default function ProfileCard({
 
       <div className="relative min-h-155 w-full">
         <Image
-          src={String(basic_info?.image)}
-          alt="Shahin Tarkavan" 
+          src={basic_info?.image || "/images/bannerbg.png"}
+          alt="Shahin Tarkavan"
+          width={1000}
+          height={500}
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover object-top"
         />
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(8,10,18,0.15)_22%,rgba(8,10,18,0.82)_72%,rgba(8,10,18,0.97)_100%)]" />

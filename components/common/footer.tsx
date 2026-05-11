@@ -49,8 +49,9 @@ export default function Footer() {
       <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-120 h-10 opacity-50 ">
         <Image
           src="/images/light.png"
-          alt="Footer Background"
-          fill
+          alt="Footer Background" 
+          width={500}
+          height={2}
           className="pointer-events-none    "
         />
       </div>

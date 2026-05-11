@@ -17,6 +17,8 @@ import SelectPosition from "./components/position-map"
 import { playerProfileUpdate } from "@/app/(dashboards)/player/profile/action"
 import { TCompletePlayerData } from "@/types"
 import useModal from "../../useModal"
+import { addChild, updateChildProfile } from "@/app/(dashboards)/parent/action"
+import { useParams } from "next/navigation";
 
 
 export default function PlayerAddModal() {
@@ -26,8 +28,23 @@ export default function PlayerAddModal() {
   const pathname = usePathname()
   const currentStep = wizardState.currentStep
   const totalSteps = 8
-  const isUpdate = searchParams.get("update");
+  const isUpdatePlayer = searchParams.get("update") === "player";
+  const isUpdateChild = searchParams.get("update") === "child";
+  const params = useParams();
+  const edit_child_id = params.id; 
+  const child_id = params.child_id
+  
   const { close } = useModal()
+
+  const getToastMessage = (maybe: unknown, fallback: string) => {
+    if (typeof maybe === "string") return maybe
+    try {
+      if (maybe == null) return fallback
+      return JSON.stringify(maybe)
+    } catch (e) {
+      return fallback
+    }
+  }
 
   // Function to reset wizard state
   const resetWizardState = useCallback(() => {
@@ -291,7 +308,7 @@ export default function PlayerAddModal() {
           user.profile_id = response?.data?.data?.id
           localStorage.setItem("go_elite_user", JSON.stringify(user))
 
-          toast.success(response.data.message || "Player added successfully")
+          toast.success(getToastMessage(response.data?.message ?? response.message, "Player added successfully"))
           resetWizardState()
 
           const nextParams = new URLSearchParams(searchParams.toString())
@@ -303,7 +320,7 @@ export default function PlayerAddModal() {
           )
         } else {
           toast.error(
-            response.data?.message || response.message || "Failed to add player"
+            getToastMessage(response.data?.message ?? response.message, "Failed to add player")
           )
         }
       } catch (error) {
@@ -312,24 +329,138 @@ export default function PlayerAddModal() {
       }
     }
 
-    if (user?.role === "parent") {
+    if (user?.role === "parent" && !isUpdateChild) {
       // Parent role specific data collection
-      const parentData = {
-        firstName: completeData.firstName,
-        lastName: completeData.lastName,
-        email: completeData.email,
-        dateOfBirth: completeData.dateOfBirth,
-        gender: completeData.gender,
-        nationality: completeData.nationality,
-        sport: completeData.sport,
-        profilePhotos: wizardState.forms.coreIdentity.profilePhotos,
+      const backendAllowedStrengthTypes = new Set(["mental", "physical", "technical"  , "tactical" , "attacking" , "defending" , "aerial" ])
+
+      const strengths: Array<{
+        strength_type: string
+        strength_name: string
+      }> = Object.entries(completeData.strengths.selectedByCategory)
+        .filter(([, strength_name]) => Boolean(strength_name?.trim()))
+        .map(([strength_type, strength_name]) => ({
+          strength_type: strength_type.trim().toLowerCase(),
+          strength_name: strength_name.trim(),
+        }))
+        .filter((item) => backendAllowedStrengthTypes.has(item.strength_type))
+
+      const formData = new FormData()
+
+      const appendText = (key: string, value: string | undefined | null) => {
+        if (value == null || value === "") {
+          return
+        }
+        formData.append(key, value)
+      }
+
+      const toDateOnly = (value?: string) => {
+        if (!value) {
+          return undefined
+        }
+
+        return value.split("T")[0]
+      } 
+
+      appendText("name", completeData.firstName)
+      appendText("last_name", completeData.lastName)
+      appendText("city", completeData.city)
+      appendText("country", completeData.country)
+      appendText("dob", toDateOnly(completeData.dateOfBirth))
+      appendText("gender", completeData.gender)
+      appendText("nationality", completeData.nationality)
+      appendText("email", completeData.email)
+      appendText("sports_selection", completeData.sport)
+      appendText("jersey_number", completeData.jerseyNumber)
+      appendText("dominant_foot", completeData.dominantFoot)
+      appendText("club_team", completeData.clubTeam)
+      appendText("primary_position", completeData.primaryPosition)
+      appendText("secondary_position", completeData.secondaryPosition)
+      appendText("athlete_biography", completeData.biography)
+      appendText("privacy_settings", completeData.privacySettings.visibility)
+      appendText(
+        "total_played_games",
+        completeData.seasonStats.values.outfieldGamesPlayed
+      )
+      appendText("goals", completeData.seasonStats.values.outfieldGoals)
+      appendText("assist", completeData.seasonStats.values.outfieldAssists)
+      appendText(
+        "yellow_cards",
+        completeData.seasonStats.values.outfieldYellowCards
+      )
+      appendText("red_cards", completeData.seasonStats.values.outfieldRedCards)
+      appendText(
+        "clean_sheets",
+        completeData.seasonStats.values.goalkeeperCleanSheets
+      )
+      appendText(
+        "total_saves",
+        completeData.seasonStats.values.goalkeeperTotalSaves
+      )
+
+      strengths.forEach((item, index) => {
+        appendText(`strengths[${index}][strength_type]`, item.strength_type)
+        appendText(`strengths[${index}][strength_name]`, item.strength_name)
+      })
+
+      appendText("title[0]", completeData.achievements.title)
+      appendText("description[0]", completeData.achievements.description)
+      appendText(
+        "date_earned[0]",
+        toDateOnly(completeData.achievements.dateEarned)
+      )
+
+      const achievementFile = completeData.achievements.uploadedAssets[0]?.file
+      if (achievementFile != null) {
+        formData.append("image[0]", achievementFile as Blob)
+      }
+
+      const profileImageFile = wizardState.forms.coreIdentity.profilePhotos[0]
+      if (profileImageFile instanceof File) {
+        formData.append("profile_image", profileImageFile)
+      }
+ 
+
+      completeData.highlights.uploadedItems
+        .filter((item) => item.type === "video" && item.file instanceof File)
+        .forEach((item, index) => {
+          formData.append(`reels[${index}]`, item.file as File)
+        })
+
+      const firstLink = completeData.highlights.uploadedItems.find(
+        (item) => item.type === "link"
+      )
+      const firstLinkTitle = firstLink?.title
+      const firstLinkSource = firstLink?.source ?? null
+      if (firstLinkTitle) {
+        appendText("link[0]", firstLinkTitle)
+        appendText("link_status[0]", firstLinkSource)
+      } else {
+        appendText("link[0]", completeData.highlights.showcaseValue)
+        appendText(
+          "link_status[0]",
+          completeData.highlights.selectedShowcaseSource
+        )
       }
  
 
       try {
-        // TODO: Call API to save parent profile data
-        // await saveParentProfile(parentData)
+        const res = await addChild(formData)
+
+        console.log(res)
+         
+        if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
+          toast.success(getToastMessage(res.data.message, "Child added successfully"))
+          resetWizardState()
+          close("add-new")
+          window.dispatchEvent(new CustomEvent('child_added')) 
+        }
+        else if (res && 'success' in res && res.success && res.data && res.data.status === false){
+          toast.error(getToastMessage(res.data.message, "Failed to add child"))
+        }
+
       } catch (error) {
+        console.log(error)
+        toast.error("Failed to add child")
         console.error("Error saving parent profile:", error)
       }
     }
@@ -348,10 +479,7 @@ export default function PlayerAddModal() {
   const handleUpdateProfile = async () => {
     setUpdating(true)
     const completeData = collectCompletePlayerData()
-
-    if (user?.role === "player") {
-      // Format strengths data properly
-      const backendAllowedStrengthTypes = new Set(["mental", "physical", "technical"  , "tactical" , "attacking" , "defending" , "aerial" ])
+          const backendAllowedStrengthTypes = new Set(["mental", "physical", "technical"  , "tactical" , "attacking" , "defending" , "aerial" ])
 
       const strengths: Array<{
         strength_type: string
@@ -462,6 +590,7 @@ export default function PlayerAddModal() {
         )
       }
 
+    if (user?.role === "player") { 
       try {
         const res = await playerProfileUpdate(formData)  
 
@@ -479,16 +608,10 @@ export default function PlayerAddModal() {
 
         if (response.success && response.data?.status) {
           setUpdating(false)
-          toast.success(response.data.message || "Player updated successfully")
-          
-          
-          window.dispatchEvent(new CustomEvent('player_profile_updated'))
-          
-         
+          toast.success(getToastMessage(response.data.message, "Player updated successfully")) 
+          window.dispatchEvent(new CustomEvent('player_profile_updated')) 
           close("update")
-          resetWizardState()
-
-          
+          resetWizardState() 
           const nextParams = new URLSearchParams(searchParams.toString())
           nextParams.delete("update")
           router.replace(
@@ -497,7 +620,7 @@ export default function PlayerAddModal() {
         } else {
           setUpdating(false)
           toast.error(
-            response.data?.message || response.message || "Failed to update player"
+            getToastMessage(response.data?.message ?? response.message, "Failed to update player")
           )
         }
       } catch (error) {
@@ -506,6 +629,47 @@ export default function PlayerAddModal() {
         console.error("Error saving player profile:", error)
       }
     } 
+
+    if(isUpdateChild && user?.role === "parent"){
+        try { 
+        const res = await updateChildProfile({ data: formData, child_id: String(edit_child_id || child_id) })
+        console.log(res)
+ 
+        const response = res as {
+          success?: boolean
+          message?: string
+          data?: {
+            status?: boolean
+            message?: string
+            data?: {
+              id?: number
+            }
+          }
+        }
+
+        if (response?.success && response?.data?.status) {
+          setUpdating(false)
+          toast.success("Child profile updated successfully") 
+          window.dispatchEvent(new CustomEvent('player_profile_updated')) 
+          close("update")
+          resetWizardState() 
+          const nextParams = new URLSearchParams(searchParams.toString())
+          nextParams.delete("update")
+          router.replace(
+            nextParams.toString() ? `${pathname}?${nextParams.toString()}` : pathname
+          )
+        } else {
+          setUpdating(false)
+          toast.error(
+            getToastMessage(response?.data?.message ?? response?.message, "Failed to update player")
+          )
+        }
+      } catch (error) {
+        setUpdating(false)
+        toast.error("Failed to add player")
+        console.error("Error saving player profile:", error)
+      }
+    }
   }
 
  
@@ -592,7 +756,7 @@ export default function PlayerAddModal() {
             className="w-36 cursor-pointer bg-brand px-5 py-2 font-semibold text-primary hover:bg-secondary/20 hover:text-white"
           />
         ) : (
-          isUpdate ? 
+          isUpdatePlayer || isUpdateChild ? 
           <CommonBtn
             variant="default"
             size="lg"
@@ -602,6 +766,8 @@ export default function PlayerAddModal() {
             className="w-fit cursor-pointer bg-brand px-5 py-2 font-semibold text-primary hover:bg-secondary/20 hover:text-white"
           />
           :
+
+
           <CommonBtn
             variant="default"
             size="lg"

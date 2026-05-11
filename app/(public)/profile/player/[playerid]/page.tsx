@@ -18,7 +18,7 @@ export default async function ProfilePageFinal({ params }: ProfilePageProps) {
   const res = await getPlayerProfile(String(playerid)) 
     let data = null
   if( res && "success" in res && res.success && res.data && "data" in res.data && res.data.data ) { 
-    data = res.data.data
+    data = res.data.data 
   }
   
   return <ProfilePage data={data as TPlayerProfile} />

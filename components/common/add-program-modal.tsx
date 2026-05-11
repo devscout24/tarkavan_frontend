@@ -6,12 +6,12 @@ import { Textarea } from "../ui/textarea"
 import CommonBtn from "@/components/common/common-btn"
 import UploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
-import { getProgramDetails } from "@/app/(dashboards)/club/action"
-import { createProgram, updateProgram } from "@/lib/api-fetcher"
+import { getProgramDetails, createProgram } from "@/app/(dashboards)/club/action"
 import { toast } from "sonner"
 import { useSearchParams } from "next/navigation"
 import { getSportOptions } from "@/app/(dashboards)/action"
 import useModal from "./modal/useModal"
+import CountryCitySelector from "./country-city-selector"
 import { getHighestNumber } from "@/lib/get-highest-number"
 import TimePicker from "react-time-picker"
 import "react-time-picker/dist/TimePicker.css"
@@ -31,6 +31,8 @@ const initialForm = {
   price: "",
   discountPrice: "",
   location: "",
+  country: "",
+  city: "",
   start: "",
   end: "",
   timeSlots: [{ date: "", times: [{ start: "", end: "" }] }] as TTimeSlot[],
@@ -144,7 +146,7 @@ const AddProgramPage: React.FC = () => {
       program_type: form.type,
       program_name: form.name,
       program_price: form.price,
-      program_location: form.location,
+      program_location: `${form.country}, ${form.city}`,
       program_start: form.start,
       program_end: form.end,
       about_program: form.about,
@@ -198,8 +200,6 @@ const AddProgramPage: React.FC = () => {
     toast.success(message)
     window.dispatchEvent(new Event("programevent"))
     close("add-new", ["program"])
-    close("edit-program", ["program"])
-    close("editID")
   }
 
   const handleAdd = async () => {
@@ -218,6 +218,7 @@ const AddProgramPage: React.FC = () => {
       setIsSubmitting(false)
     }
   }
+
 
 
   // ─── Render ───────────────────────────────────────────────────────────────────
@@ -354,12 +355,14 @@ const AddProgramPage: React.FC = () => {
           {/* Program Location */}
           <div className="flex flex-col">
             <span className="text-sm">Program Location</span>
-            <Input
-              name="location"
-              value={form.location}
-              onChange={handleChange}
-              placeholder="Program Location"
-              className={fieldCls}
+            <CountryCitySelector
+              onSelect={(data) => {
+                setForm((p) => ({
+                  ...p,
+                  country: data.country_name,
+                  city: data.city_name,
+                }))
+              }}
             />
           </div>
 

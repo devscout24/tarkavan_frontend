@@ -13,24 +13,32 @@ import VisibilityBadge from "./visibility-badge"
 import Image from "next/image"
 import { TbCurrentLocation } from "react-icons/tb"
 import InviteForm from "./InviteForm"
+import { blockChild, removeChild } from "@/app/(dashboards)/parent/action"
+import { toast } from "sonner"
+import { CiTrash } from "react-icons/ci";
+import { BiBlock } from "react-icons/bi";
+import { FcInvite } from "react-icons/fc";
+import { useRouter } from "next/navigation"
+
 
 interface ChildCardProps {
+  id: string
   imageUrl: string
   name: string
   age: number
   position: string
-  jerseyNumber: number
+  user_id: string
+  block_status: boolean
+  invitation_status: boolean
+  jerseyNumber: string
   location: string
-  isPublic: boolean
+  privacy_settings: string
+  parentalControl: string
   stats?: {
     games: number
     goals: number
     assists: number
-  }
-  onViewProfile?: () => void
-  onInvite?: () => void
-  onBlock?: () => void
-  onRemove?: () => void
+  } 
   isDropdown?: boolean
   adText?: string
 }
@@ -75,22 +83,7 @@ const LocationIcon = () => (
   </Icon>
 )
 
-const LockIcon = () => (
-  <Icon width="16" height="16" viewBox="0 0 16 16">
-    <path
-      d="M12.6667 7.33337H3.33333C2.59695 7.33337 2 7.93033 2 8.66671V13.3334C2 14.0698 2.59695 14.6667 3.33333 14.6667H12.6667C13.403 14.6667 14 14.0698 14 13.3334V8.66671C14 7.93033 13.403 7.33337 12.6667 7.33337Z"
-      stroke="white"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M4.66602 7.33337V4.66671C4.66602 3.78265 5.01721 2.93481 5.64233 2.30968C6.26745 1.68456 7.11529 1.33337 7.99935 1.33337C8.88341 1.33337 9.73125 1.68456 10.3564 2.30968C10.9815 2.93481 11.3327 3.78265 11.3327 4.66671V7.33337"
-      stroke="white"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </Icon>
-)
+ 
 
 const ThreeDotsIcon = () => (
   <Icon width="20" height="20" viewBox="0 0 20 20">
@@ -103,22 +96,24 @@ const ThreeDotsIcon = () => (
 
 export default function ChildCard({
   imageUrl,
+  id,
+  user_id,
   name,
+  block_status ,
+  invitation_status,
   age,
   position,
   jerseyNumber,
   location,
-  isPublic,
+  privacy_settings,
   stats,
-  onViewProfile,
-  onInvite,
-  onBlock,
-  onRemove,
+  parentalControl , 
   isDropdown = true,
   adText,
+
 }: ChildCardProps) {
   const [showInviteForm, setShowInviteForm] = useState(false)
-
+  const router = useRouter()
   const handleInvite = () => {
     setShowInviteForm(true)
   }
@@ -126,6 +121,47 @@ export default function ChildCard({
   const handleCloseInviteForm = () => {
     setShowInviteForm(false)
   }
+
+
+  const handleRemove = async () => {
+    try{ 
+      const res = await removeChild(id) 
+      if(res && "success" in res && res.success && res.data) {
+        toast.success(res.data.message || "Child removed successfully")
+        window.dispatchEvent(new Event("child_added"))
+      } 
+    }catch(err) {
+      console.error("Failed to remove child:", err)
+    }
+  }
+  const handleBlock = async () => {
+    try{ 
+      const res = await blockChild(id)  
+      const response = res as {
+        success?: boolean;
+        data?: {
+          status?: boolean;
+          message?: string;
+        };
+      };
+
+      if (response?.success) {
+        toast.success(
+          response?.data?.message || "Child blocked successfully"
+        );
+
+        window.dispatchEvent(new Event("child_added"));
+      } else {
+        toast.error("Failed to block child");
+      }
+    }catch(err) {
+      console.error("Failed to block child:", err)
+    }
+  }
+
+
+
+
 
   return (
     <div className="overflow-hidden rounded-[8px] border border-secondary/50">
@@ -139,15 +175,16 @@ export default function ChildCard({
           className="block h-full max-h-45 w-full object-cover lg:max-h-40 xl:max-h-45"
         />
         {/* Badge */}
-        {isPublic ? (
+        {privacy_settings ? (
           <VisibilityBadge
-            isPublic={isPublic}
+            privacy_settings={privacy_settings}
+            block_status={block_status}
             className="absolute top-4 right-4 lg:top-3 lg:right-3 lg:scale-90 xl:top-4 xl:right-4 xl:scale-100"
           />
         ) : (
           <div className="absolute top-4 right-4 lg:top-3 lg:right-3 lg:scale-90 xl:top-4 xl:right-4 xl:scale-100">
             <span className="inline-flex items-center justify-center rounded-full px-3 py-2 text-base leading-[120%] font-normal text-white lg:px-2.5 lg:py-1.5 lg:text-sm xl:px-3 xl:py-2 xl:text-base bg-secondary">
-              PRIVATE
+              {block_status ? "BLOCKED" : privacy_settings }
             </span>
           </div>
         )}
@@ -178,10 +215,12 @@ export default function ChildCard({
         </div>
 
         {/* Parental Control */}
+        {parentalControl && 
         <div className="flex items-center gap-1.5">
           <TbCurrentLocation className="text-white" />
-          <p className="text-item">Parental Control Active</p>
+          <p className="text-item">{parentalControl}</p>
         </div>
+        }
 
         {/* Stats */}
         {stats && (
@@ -225,8 +264,8 @@ export default function ChildCard({
             variant="outline"
             size="lg"
             text="View Profile"
-            className="h-10 flex-1 cursor-pointer border-brand bg-transparent text-sm font-medium text-white transition-all hover:bg-brand hover:text-primary lg:h-9 lg:text-xs xl:h-10 xl:text-sm"
-            onClick={onViewProfile}
+            className="h-10 flex-1 cursor-pointer border-brand bg-transparent! text-sm font-medium text-white transition-all hover:bg-brand! hover:text-primary lg:h-9 lg:text-xs xl:h-10 xl:text-sm"
+            onClick={() =>  router.push(`/child-dashboard/${id}`) }
           />
           {isDropdown && (
             <DropdownMenu>
@@ -242,21 +281,24 @@ export default function ChildCard({
               >
                 <DropdownMenuItem
                   onSelect={handleInvite}
-                  className="w-full cursor-pointer px-4 py-2 text-center text-sm font-normal text-primary outline-none hover:bg-brand"
+                  className="w-full cursor-pointer px-4 py-2 text-center text-sm font-normal text-primary outline-none hover:bg-brand flex items-center justify-between gap-1 "
                 >
-                  Invite
+                  <span>Invite</span>
+                  <FcInvite />
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onSelect={onBlock}
-                  className="w-full cursor-pointer px-4 py-2 text-center text-sm font-normal text-primary outline-none hover:bg-brand/90"
+                  onSelect={handleBlock}
+                  className="w-full cursor-pointer px-4 py-2 text-center text-sm font-normal text-primary outline-none hover:bg-brand/90 flex items-center justify-between gap-1"
                 >
-                  Block
+                  <span>Block</span>
+                  <BiBlock />
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onSelect={onRemove}
-                  className="w-full cursor-pointer px-4 py-2 text-center text-sm font-normal text-primary outline-none hover:bg-brand"
+                  onSelect={handleRemove}
+                  className="w-full cursor-pointer px-4 py-2  text-sm font-normal text-primary outline-none hover:bg-brand flex items-center justify-between gap-1"
                 >
-                  Remove
+                  <span>Remove</span>
+                  <CiTrash />
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -265,7 +307,7 @@ export default function ChildCard({
       </div>
     
     {/* Invite Form Modal */}
-    {showInviteForm && <InviteForm onClose={handleCloseInviteForm} />}
+    {showInviteForm && <InviteForm onClose={handleCloseInviteForm} id={id} />}
     </div>
   )
 }

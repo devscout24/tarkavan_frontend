@@ -15,6 +15,7 @@ type Recruitment = {
 
  export  type TCoachApplication = {
   application_id: number;
+  profile_id: number;
   type: string;
   status: string;
   name: string;

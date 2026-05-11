@@ -82,8 +82,8 @@ export default function RadarChart(
   }
 
   const config = {
-    responsive: true,
-    maintainAspectRatio: false,
+    // responsive: true,
+    // maintainAspectRatio: false,
     // type: 'radar',
     data: data,
     options: options,

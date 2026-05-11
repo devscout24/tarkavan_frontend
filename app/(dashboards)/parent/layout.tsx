@@ -71,11 +71,11 @@ export default function ParentDashboardLayout({
         url: "/parent/programs",
         icon: FaGraduationCap,
       },
-      {
-        title: "Upcoming events",
-        url: "/parent/upcoming-events",
-        icon: Calendars,
-      },
+      // {
+      //   title: "Upcoming events",
+      //   url: "/parent/upcoming-events",
+      //   icon: Calendars,
+      // },
       {
         title: "Search & Explore",
         url: "/parent/search-explore",

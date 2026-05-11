@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import { Icon } from "@/components/custom/Icon"
 import { getDashboard } from "@/components/parentAndCoachApi"
 import type { DashboardData, DashboardApiResult } from "@/components/parentAndCoachApi"
+import AdvertisementParent from "./component/parent-advertisement"
 
 const ChildrenIcon = () => (
   <Icon width="18" height="14" viewBox="0 0 18 14">
@@ -120,29 +121,17 @@ const ArrowIcon = ({ className }: { className?: string }) => (
 )
 
 const quickActions = [
-  { icon: <AddChildIcon />, label: "Add Your Children", active: true },
-  {
-    icon: <ProgramsOutlineIcon />,
-    label: "Explore Programs",
-    active: false,
-  },
-  { icon: <BillingIcon />, label: "View Billing History", active: false },
+  { label: "Add Your Children", active: true },
+  { label: "Explore Programs", active: false, },
+  { label: "View Billing History", active: false },
 ]
 
 export default function Page() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
-  const [appliedAdvertisements, setAppliedAdvertisements] = useState<string[]>(
-    () => {
-      if (typeof window !== "undefined") {
-        const saved = localStorage.getItem("parentAppliedAdvertisements")
-        return saved ? JSON.parse(saved) : []
-      }
-      return []
-    }
-  )
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null) 
+ console.log("Dashboard Data:", dashboardData)
 
   const handleAddChildren = () => {
     const nextParams = new URLSearchParams(searchParams.toString())
@@ -151,23 +140,7 @@ export default function Page() {
       nextParams.toString() ? `${pathname}?${nextParams.toString()}` : pathname
     )
   }
-
-  const handleApplyAdvertisement = (teamName: string) => {
-    if (!appliedAdvertisements.includes(teamName)) {
-      const newApplied = [...appliedAdvertisements, teamName]
-      setAppliedAdvertisements(newApplied)
-      if (typeof window !== "undefined") {
-        localStorage.setItem(
-          "parentAppliedAdvertisements",
-          JSON.stringify(newApplied)
-        )
-      }
-      toast.success(`Successfully applied to ${teamName}!`)
-    } else {
-      toast.info(`You have already applied to ${teamName}`)
-    }
-  }
-
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -240,7 +213,7 @@ export default function Page() {
                     key={opportunity.id}
                     className="max-w-[320px] min-w-[320px] shrink-0"
                   >
-                    <Advertisement
+                    <AdvertisementParent
                       imageUrl={opportunity.image_url || advertisementImage}
                       positions={opportunity.positions || "Various"}
                       teamName={opportunity.team_name || "Team"}
@@ -250,6 +223,8 @@ export default function Page() {
                         opportunity.description || "Opportunity available."
                       }  
                       application_status={  "pending"}
+                      recruitId={opportunity.id}
+                      matched_children={opportunity.matched_children || []}
                     />
                   </div>
                 ))
@@ -278,7 +253,12 @@ export default function Page() {
                   onClick={
                     action.label === "Add Your Children"
                       ? handleAddChildren
-                      : undefined
+                      : 
+                      action.label === "View Billing History" ? 
+                      () => router.push("/parent/payments") :
+                      action.label === "Explore Programs" ?
+                      () => router.push("/parent/programs") :
+                      undefined
                   }
                   className={`group transition-alcursor-pointer flex w-full cursor-pointer items-center justify-between rounded-[16px] border px-4 py-4 text-left transition-all duration-200 ${
                     action.active
@@ -286,16 +266,7 @@ export default function Page() {
                       : "border-secondary bg-secondary/25 hover:border-brand hover:bg-brand"
                   }`}
                 >
-                  <span className="flex items-center gap-3">
-                    <span
-                      className={`h-5 w-5 shrink-0 transition-colors duration-200 ${
-                        action.active
-                          ? "text-primary"
-                          : "text-white group-hover:text-primary"
-                      }`}
-                    >
-                      {action.icon}
-                    </span>
+                  <span className="flex items-center gap-3"> 
                     <span
                       className={`text-[15px] leading-[150%] transition-all duration-200 ${
                         action.active
@@ -305,14 +276,7 @@ export default function Page() {
                     >
                       {action.label}
                     </span>
-                  </span>
-                  <ArrowIcon
-                    className={`transition-colors duration-200 ${
-                      action.active
-                        ? "text-primary"
-                        : "text-white group-hover:text-black"
-                    }`}
-                  />
+                  </span> 
                 </button>
               ))}
             </div>

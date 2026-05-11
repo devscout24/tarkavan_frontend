@@ -17,8 +17,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useMemo, useState } from "react"
-import Export from "./export"
+import { useMemo, useState } from "react" 
+import moment from "moment" 
+import CommonBtn from "./common-btn"
+import { ImDownload } from "react-icons/im";
+import { getPaymentExport } from "@/app/(dashboards)/common-pages/paument-page/action"
+import { downloadPdf } from "@/lib/downloadPdf"
+ 
+
+
 
 interface PaymentTableProps {
   payments?: ParentPaymentItem[]
@@ -61,7 +68,7 @@ const getProgramName = (payment: ParentPaymentItem) =>
   String(payment.program_name ?? payment.programName ?? "--")
 
 const getChildName = (payment: ParentPaymentItem) =>
-  String(payment.child_name ?? payment.childName ?? payment.player_name ?? "--")
+  String(payment.child_name ?? payment.childName ?? payment.player_name ??  payment.child)
 
 export default function PaymentTable({ payments = [] }: PaymentTableProps) {
   const selectItemClassName: string =
@@ -75,6 +82,52 @@ export default function PaymentTable({ payments = [] }: PaymentTableProps) {
 
     return payments.filter((payment) => getPaymentStatus(payment) === statusFilter)
   }, [payments, statusFilter])
+
+
+  const handleExport = async (booking_id: string) => {
+    try{
+
+      const res = await getPaymentExport(booking_id)
+      console.log("Export response:", res)
+      const resAny = res as any
+      if (res && "success" in res && res.success && "data" in resAny && resAny.data) {
+        let blob: Blob
+
+        // Server returns base64 string for binary payloads
+        if (typeof resAny.data === "string") {
+          const contentType = resAny.contentType || "application/pdf"
+          const binary = atob(resAny.data)
+          const len = binary.length
+          const bytes = new Uint8Array(len)
+          for (let i = 0; i < len; i++) {
+            bytes[i] = binary.charCodeAt(i)
+          }
+          blob = new Blob([bytes], { type: contentType })
+        } else {
+          // Fallback: if server returned binary directly
+          blob = new Blob([resAny.data], { type: "application/pdf" })
+        }
+
+        const url = URL.createObjectURL(blob)
+        const fileName = `earnings-export-${new Date().toISOString().split("T")[0]}.pdf`
+
+        const link = document.createElement("a")
+        link.href = url
+        link.download = fileName
+        document.body.appendChild(link)
+        link.click()
+
+        // Cleanup
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+      }
+
+    }catch(err){
+      console.error("Export failed:", err)
+    }
+  }
+ 
+
 
   return (
     <div className="mx-1 mt-6 text-white">
@@ -103,11 +156,7 @@ export default function PaymentTable({ payments = [] }: PaymentTableProps) {
           </SelectContent>
         </Select>
 
-        {/* Export Component on Right */}
-        <Export
-          onExport={() =>  {}}
-          className="flex-shrink-0"
-        />
+        
       </div>
 
       <div className="mx-auto mt-4 max-w-[95vw] [&>div]:rounded-lg [&>div]:border">
@@ -156,10 +205,17 @@ export default function PaymentTable({ payments = [] }: PaymentTableProps) {
                     {formatCurrency(payment.total ?? payment.total_amount)}
                   </TableCell>
                   <TableCell className={columnBorderClass}>
-                    {formatDate(payment.date ?? payment.payment_date)}
+                    {moment(formatDate(payment.date ?? payment.payment_date)).format("MMM Do YY")}
                   </TableCell>
-                  <TableCell className={columnBorderClass}>
+                  <TableCell className={`${columnBorderClass} flex items-center justify-between  `}>
                     {getPaymentStatus(payment)}
+                    <CommonBtn
+                      variant="outline"
+                      size="sm"
+                      icon={<ImDownload />}
+                      onClick={()=> handleExport(String(payment.id))}
+                      className="ml-2 bg-transparent! hover:bg-transparent border-0! text-brand hover:text-brand! cursor-pointer       "
+                    />
                   </TableCell>
                 </TableRow>
               ))

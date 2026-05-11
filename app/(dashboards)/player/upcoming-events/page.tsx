@@ -41,12 +41,10 @@ export default function UpcomingEventPage() {
     },
   ]
 
-  // const navigate = useNavigate()
+  return ( 
 
- 
-
-  return (
     <section>
+
       <PlayerActivePrograms />
 
       {/* upcoming events content */}

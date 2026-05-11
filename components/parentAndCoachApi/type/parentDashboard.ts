@@ -1,5 +1,7 @@
 // Parent Dashboard Types
 
+import { TChield } from "@/types"
+
 export interface DashboardSummary {
   total_children: number
   total_upcoming_recruitments: number
@@ -16,6 +18,7 @@ export interface RecentOpportunity {
   positions?: string
   image_url?: string
   created_at?: string
+  matched_children?: TChield[]
 }
 
 export interface UpcomingProgramReminder {

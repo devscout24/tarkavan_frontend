@@ -3,20 +3,47 @@
 import { useState } from "react"
 import CommonBtn from "../common/common-btn"
 import { toast } from "sonner"
+import { childInvite } from "@/app/(dashboards)/parent/action"
 
 interface InviteFormProps {
   onClose: () => void
 }
 
-export default function InviteForm({ onClose }: InviteFormProps) {
+export default function InviteForm({ onClose, id }: InviteFormProps & { id: string }) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Validate form
     if (!email || !password) {
       toast.error("Please fill in all fields")
       return
+    }
+
+    try{
+
+      const formData = new FormData()
+      formData.append("email", email)
+      formData.append("password", password)
+      formData.append("child_id", id)
+
+      const res = await childInvite(formData)
+      
+ 
+      if(!res?.status){
+        toast.error(res?.message)
+        return
+      }
+
+      if(res?.status){ 
+        toast.success("Invitation sent successfully!")
+      } 
+
+    }catch(err){
+      console.error(err)
+      toast.error("Failed to send invitation. Please try again.")
+      return
+
     }
     
     // Show success message

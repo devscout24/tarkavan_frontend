@@ -12,14 +12,21 @@ import { Textarea } from "../ui/textarea"
 import CommonBtn from "@/components/common/common-btn"
 import UploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
-import { getProgramDetails } from "@/app/(dashboards)/club/action"
+import {
+  getProgramDetails,
+  createProgram,
+  updateProgram,
+} from "@/app/(dashboards)/club/action"
+import {
+  createCoachProgram,
+  updateCoachProgram,
+} from "@/app/(dashboards)/coach/action"
 import { toast } from "sonner"
 import { usePathname, useSearchParams } from "next/navigation"
 import { getSportOptions } from "@/app/(dashboards)/action"
 import useModal from "./modal/useModal"
 import CountryCitySelector from "./country-city-selector"
 import { getHighestNumber } from "@/lib/get-highest-number"
-import api from "@/lib/api-fetcher"
 import TimePicker from "react-time-picker"
 import "react-time-picker/dist/TimePicker.css"
 import "react-clock/dist/Clock.css"
@@ -58,7 +65,7 @@ const fieldCls =
 const selectCls =
   "mt-1 w-full border-neutral-700 bg-neutral-800 py-5 text-white data-[placeholder]:text-neutral-300"
 
-const AddProgramPage: React.FC = () => {
+const EditProgramPage: React.FC = () => {
   const { close } = useModal()
   const pathname = usePathname()
   const isCoachDashboard = pathname?.startsWith("/coach")
@@ -152,15 +159,89 @@ const AddProgramPage: React.FC = () => {
       .catch(console.error)
   }, [])
 
-  // ─── Load program for editing (Not needed for AddProgramPage) ─────────────────
+  // ─── Load program for editing ─────────────────────────────────────────────────
+  const [editId, setEditId] = useState<string | null>(null)
   const searchParams = useSearchParams()
-  const isModalOpen = searchParams.get("add-new") === "program"
+  const isModalOpen = searchParams.get("edit-program") === "program"
 
   useEffect(() => {
-    if (isModalOpen) {
+    if (!isModalOpen) return
+
+    const id = localStorage.getItem("edit_program_id")
+    setEditId(id)
+
+    if (!id) {
       setForm(initialForm)
+      return
     }
-  }, [isModalOpen])
+
+    getProgramDetails(id)
+      .then((res: any) => {
+        const p = res?.data?.data
+        if (!p) {
+          toast.error("Failed to load program data")
+          return
+        }
+
+        // Map each time slot to its own individual block instead of grouping them
+        const groupedSlots: TTimeSlot[] = (() => {
+          if (!p.times?.length)
+            return [{ date: "", times: [{ start: "", end: "" }] }]
+
+          return p.times.map((t: any) => {
+            let fallbackDate = p.start_date || p.program_start || ""
+            if (fallbackDate && fallbackDate.includes("T")) {
+              fallbackDate = fallbackDate.split("T")[0]
+            }
+            const date = t.slot_date || fallbackDate
+
+            let parsedStart = ""
+            let parsedEnd = ""
+            if (t.time && t.time.includes("-")) {
+              const parts = t.time.split("-")
+              parsedStart = parts[0]?.trim() || ""
+              parsedEnd = parts[1]?.trim() || ""
+            }
+
+            return {
+              date,
+              times: [
+                {
+                  start: t.start_time || parsedStart,
+                  end: t.end_time || parsedEnd,
+                },
+              ],
+            }
+          })
+        })()
+
+        setForm({
+          sport: p.sport || "",
+          name: p.program_name || "",
+          ageGroup: p.age_limit ? String(p.age_limit) : "",
+          price: p.price ? String(p.price) : "",
+          discountPrice: p.discount_price ? String(p.discount_price) : "",
+          location: p.location || "",
+          country: p.location?.includes(",")
+            ? p.location.split(",")[0].trim()
+            : p.location || "",
+          city: p.location?.includes(",")
+            ? p.location.split(",")[1].trim()
+            : "",
+          start: p.start_date || p.program_start || "",
+          end: p.end_date || p.program_end || "",
+          about: p.about || "",
+          goals: p.goals?.length
+            ? p.goals.map((g: { goal: string }) => g.goal)
+            : [""],
+          photo: p.photo || p.program_photo || null,
+          type: p.program_type || "one_one",
+          sportOptionId: p.sport_option ? String(p.sport_option.id) : "",
+          timeSlots: groupedSlots,
+        })
+      })
+      .catch(console.error)
+  }, [isModalOpen, searchParams])
 
   // ─── Build FormData ───────────────────────────────────────────────────────────
   const buildFormData = async () => {
@@ -225,6 +306,8 @@ const AddProgramPage: React.FC = () => {
     toast.success(message)
     window.dispatchEvent(new Event("programevent"))
     close("add-new", ["program"])
+    close("edit-program", ["program"])
+    close("editID")
   }
 
   const handleAdd = async () => {
@@ -232,21 +315,38 @@ const AddProgramPage: React.FC = () => {
     setIsSubmitting(true)
     try {
       const formData = await buildFormData()
-      const endpoint = isCoachDashboard
-        ? "/coach/program/add"
-        : "/club/program/add"
-      const res = await api.post(endpoint, formData)
+      const res: any = isCoachDashboard
+        ? await createCoachProgram(formData)
+        : await createProgram(formData)
       console.log("Create Program Response:", res)
-      res?.data?.success || res?.status === 200
+      res?.success || res?.status
         ? onSuccess("Program created successfully!")
-        : toast.error(res?.data?.message || "Failed to create program.")
+        : toast.error(res?.message || "Failed to create program.")
       close("add-new", ["program"])
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message ||
-          "Failed to create program. Please try again."
-      )
+    } catch {
       toast.error("Failed to create program. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleUpdate = async () => {
+    if (isSubmitting || !editId) return
+    setIsSubmitting(true)
+    try {
+      const formData = await buildFormData()
+      const res: any = isCoachDashboard
+        ? await updateCoachProgram(editId, formData)
+        : await updateProgram({
+            program_id: editId,
+            data: formData,
+          })
+      res?.success || res?.status
+        ? onSuccess("Program updated successfully!")
+        : toast.error(res?.message || "Failed to update program.")
+      close("add-new", ["program"])
+    } catch {
+      toast.error("Failed to update program. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
@@ -256,7 +356,9 @@ const AddProgramPage: React.FC = () => {
   return (
     <div className="mx-auto w-full p-0">
       <div className="flex flex-col gap-4 rounded-2xl bg-neutral-900 p-8 text-white">
-        <h2 className="mb-2 text-2xl font-semibold">Add Program</h2>
+        <h2 className="mb-2 text-2xl font-semibold">
+          {editId ? "Edit Program" : "Add Program"}
+        </h2>
 
         {/* Photo Upload */}
         <div className="mb-2">
@@ -392,6 +494,8 @@ const AddProgramPage: React.FC = () => {
           <div className="flex flex-col">
             <span className="text-sm">Program Location</span>
             <CountryCitySelector
+              initialCountry={form.country}
+              initialCity={form.city}
               onSelect={(data) => {
                 setForm((p) => ({
                   ...p,
@@ -574,11 +678,17 @@ const AddProgramPage: React.FC = () => {
             className="w-fit px-10 hover:border-brand hover:bg-brand hover:text-primary"
           />
           <CommonBtn
-            text={isSubmitting ? "Saving..." : "Save Program"}
+            text={
+              isSubmitting
+                ? "Saving..."
+                : editId
+                  ? "Update Program"
+                  : "Save Program"
+            }
             size="lg"
             variant="default"
             className="w-fit bg-brand px-10 text-black hover:border hover:bg-transparent hover:text-white"
-            onClick={handleAdd}
+            onClick={editId ? handleUpdate : handleAdd}
           />
         </div>
       </div>
@@ -586,4 +696,4 @@ const AddProgramPage: React.FC = () => {
   )
 }
 
-export default AddProgramPage
+export default EditProgramPage

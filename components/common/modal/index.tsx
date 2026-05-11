@@ -4,13 +4,15 @@ import TeamAddModal from "./all-modals/team-add-modal"
 import useModal from "./useModal"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import AddProgramPage from "@/components/common/add-program-modal" 
+import EditProgramPage from "@/components/common/edit-program-modal" 
 import ReviewModal from "./all-modals/review-modal"
 import ConfirmPayModal from "./all-modals/confirm-pay-modal"
 import AddFriendlyMatch from "./all-modals/add-friendly-match"
 import LogoutComfirmation from "./all-modals/logout-comfirmation"
 import Agreement from "@/app/(dashboards)/parent/component/aggrement"
 import CoachProfileSetup from "@/app/(dashboards)/coach/CoachProfileSetup"
-import ClubProfileSetup from "./all-modals/club-profile-setup" 
+import ClubProfileSetup from "./all-modals/club-profile-setup"
+import EditCoachProfileModal from "./all-modals/edit-coach-profile-modal" 
 
 export default function Modals() {
   const { Modal } = useModal()
@@ -61,6 +63,15 @@ export default function Modals() {
       >
         <ScrollArea className="max-h-[90vh]">
           <AddProgramPage />
+        </ScrollArea>
+      </Modal> 
+      <Modal
+        modalId="edit-program"
+        openId="program"  
+        className="max-w-full overflow-hidden! border border-brand/50 p-0! lg:max-w-[62%]! 2xl:max-w-[56%]!"
+      >
+        <ScrollArea className="max-h-[90vh]">
+          <EditProgramPage />
         </ScrollArea>
       </Modal> 
       <Modal
@@ -138,10 +149,15 @@ export default function Modals() {
         </ScrollArea>
       </Modal>
 
- 
-
-
-
+      <Modal
+        modalId="edit-coach-profile"
+        openId="true"
+        className="h-dvh w-full max-w-[90vw] overflow-x-hidden overflow-y-auto rounded-2xl border-0 bg-primary p-0 shadow-2xl md:max-w-[85vw] lg:max-w-[88vw] xl:max-w-[82vw] 2xl:max-w-[60vw]"
+      >
+        <ScrollArea className="max-h-[90vh]">
+          <EditCoachProfileModal />
+        </ScrollArea>
+      </Modal>
 
     </>
   )

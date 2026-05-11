@@ -9,7 +9,7 @@ import AboutProgram from "../../../../../components/common/about-program"
 import ProgramReview from "../../../../../components/common/program-review"
 import ProgramHead from "../../../../../components/common/program-head"
 import ProgramFeedbackCard from "../../../../../components/common/program-feedback-card"
-import ProgramCoachCard from "../../../../../components/common/program-coach-card" 
+import ProgramCoachCard from "../../../../../components/common/program-coach-card"
 
 export default function UpcomingEventDetails() {
   const router = useRouter()
@@ -46,7 +46,8 @@ export default function UpcomingEventDetails() {
       <ProgramDetailsBanner
         title="Elite Technical Clinic"
         category="Football"
-        duration="1 Day Event"
+        startDate={eventStartDate.toISOString()}
+        endDate={eventEndDate.toISOString()}
         dateRange="15-03-2026"
         location="West Side Sports Complex, Field 4"
         ageRange="Ages 12-18"

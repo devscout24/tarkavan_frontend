@@ -3,6 +3,7 @@ import CertificationsAndCredentials from "@/components/custom/coach-profile-setu
 import CoachProfileSetupHeader from "@/components/custom/coach-profile-setup/coach-profile-setup-header"
 import CoachingPhilosophy from "@/components/custom/coach-profile-setup/CoachingPhilosophy"
 import ExperienceAndEducation from "@/components/custom/coach-profile-setup/ExperienceAndEducation"
+import SocialMediaLinks, { type SocialMediaData } from "@/components/custom/coach-profile-setup/SocialMediaLinks"
 import SportsAndSpecialties from "@/components/custom/coach-profile-setup/SportsAndSpecialties"
 import UploadPhoto from "@/components/custom/coach-profile-setup/UploadPhoto"
 import React, { useState, useEffect, useCallback, useRef } from "react"
@@ -20,6 +21,7 @@ interface CoachProfileSetupProps {
   currentStep?: number
   updatePhotoUploaded?: (uploaded: boolean) => void
   updateBasicInfo?: (info: unknown) => void
+  isEditMode?: boolean
 }
 
 const STORAGE_KEY = "coach_profile_draft"
@@ -47,12 +49,18 @@ const getInitialFormData = (): CoachProfileFormData => ({
   },
   city: "",
   country: "",
+  facebook_link: "",
+  twitter_link: "",
+  instagram_link: "",
+  tiktok_link: "",
+  whatsapp_link: "",
 })
 
 export default function CoachProfileSetup({
   currentStep,
   updatePhotoUploaded,
   updateBasicInfo,
+  isEditMode = false,
 }: CoachProfileSetupProps) {
   const [formData, setFormData] =
     useState<CoachProfileFormData>(getInitialFormData)
@@ -295,6 +303,20 @@ export default function CoachProfileSetup({
     [updateFormData]
   )
 
+  // Stable callback for SocialMediaLinks
+  const handleSocialMediaUpdate = useCallback(
+    (data: SocialMediaData) => {
+      updateFormData({
+        facebook_link: data.facebook_link || "",
+        twitter_link: data.twitter_link || "",
+        instagram_link: data.instagram_link || "",
+        tiktok_link: data.tiktok_link || "",
+        whatsapp_link: data.whatsapp_link || "",
+      })
+    },
+    [updateFormData]
+  )
+
   // Stable callback for CoachingPhilosophy
   const handlePhilosophyUpdate = useCallback(
     (data: {
@@ -332,10 +354,13 @@ export default function CoachProfileSetup({
           updateCredentials={handleCredentialsUpdate}
         />
 
+        <SocialMediaLinks updateSocialMedia={handleSocialMediaUpdate} />
+
         <CoachingPhilosophy
           updatePhilosophy={handlePhilosophyUpdate}
           onSubmit={handleSubmit}
           isLoading={isLoading}
+          isEditMode={isEditMode}
         />
       </div>
     </section>

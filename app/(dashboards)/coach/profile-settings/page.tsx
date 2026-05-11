@@ -1,6 +1,7 @@
 "use client"
 
 import ChangePassword from "@/components/common/change-password"
+import Loader from "@/components/common/loader"
 
 declare global {
   interface Window {
@@ -11,11 +12,7 @@ import NotificationSetting from "@/components/common/notification-setting"
 import PrivacySetting from "@/components/common/privacy-setting"
 import PrivacySettingsCoach from "@/components/common/privacy-settings-coach"
 import ProfileTop from "@/components/common/profile-top"
-import {
-  TChangePasswordData,
-  TNotificationItem,
-  TPrivacyOption,
-} from "@/types"
+import { TChangePasswordData, TNotificationItem, TPrivacyOption } from "@/types"
 import { useEffect, useState } from "react"
 
 export default function ProfileSettingPage() {
@@ -29,29 +26,31 @@ export default function ProfileSettingPage() {
         const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/parent/profile`
         console.log("Environment variable:", process.env.NEXT_PUBLIC_API_URL)
         console.log("Full API URL:", apiUrl)
-        
-        const token = localStorage.getItem('go_elite_token') || sessionStorage.getItem('go_elite_token')
+
+        const token =
+          localStorage.getItem("go_elite_token") ||
+          sessionStorage.getItem("go_elite_token")
         console.log("Token found:", !!token)
-        
+
         const response = await fetch(apiUrl, {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
           },
         })
-        
+
         console.log("Response status:", response.status)
         console.log("Response headers:", response.headers)
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
-        
+
         const result = await response.json()
         console.log("API Response:", result)
-        
+
         if (result.status && result.data) {
           setProfileData(result.data)
           console.log("Profile data set:", result.data)
@@ -60,15 +59,18 @@ export default function ProfileSettingPage() {
         }
       } catch (error) {
         console.error("Error fetching profile:", error)
-        console.error("Error details:", error instanceof Error ? error.message : "Unknown error")
-        
+        console.error(
+          "Error details:",
+          error instanceof Error ? error.message : "Unknown error"
+        )
+
         // Fallback to mock data for development
         console.log("Using fallback mock data")
         setProfileData({
           name: "Mehedi Noor Khan",
           email: "mehedinoork@gmail.com",
           profile_image: "https://tarkavan.thenightowl.team/",
-          privacy_settings: null
+          privacy_settings: null,
         })
       } finally {
         setLoading(false)
@@ -81,14 +83,19 @@ export default function ProfileSettingPage() {
   // Test function - run this in browser console to test API directly
   window.testApi = async () => {
     try {
-      const token = localStorage.getItem('go_elite_token') || sessionStorage.getItem('go_elite_token')
+      const token =
+        localStorage.getItem("go_elite_token") ||
+        sessionStorage.getItem("go_elite_token")
       console.log("Test API - Token found:", !!token)
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/parent/profile`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      })
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/parent/profile`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       console.log("Test API Response:", response)
       const data = await response.json()
       console.log("Test API Data:", data)
@@ -100,16 +107,21 @@ export default function ProfileSettingPage() {
   const updateProfile = async (formData: FormData) => {
     try {
       console.log("Updating profile with FormData")
-      const token = localStorage.getItem('go_elite_token') || sessionStorage.getItem('go_elite_token')
+      const token =
+        localStorage.getItem("go_elite_token") ||
+        sessionStorage.getItem("go_elite_token")
       console.log("Token found for update:", !!token)
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/parent/profile/update`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: formData,
-      })
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/parent/profile/update`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      )
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
@@ -132,33 +144,30 @@ export default function ProfileSettingPage() {
     }
   }
 
-
-
-
   const PRIVACY_OPTIONS: TPrivacyOption[] = [
     {
       value: "public",
       title: "Public Profile",
-     
     },
     {
       value: "private",
       title: "Private Profile",
-    
     },
     {
       value: "players",
       title: "Athletes Only",
-     
     },
     {
       value: "coach_and_players",
       title: "Coaches & Athletes",
-     
-    }, 
+    },
   ]
 
-  const handleClubPrivacyChange = async (privacyData: { privacy_settings: string; allow_parent_player_reviews: number; visible_reviews: number }) => {
+  const handleClubPrivacyChange = async (privacyData: {
+    privacy_settings: string
+    allow_parent_player_reviews: number
+    visible_reviews: number
+  }) => {
     // Update local state immediately for better UX
     setProfileData((prev: any) => ({
       ...prev,
@@ -169,9 +178,12 @@ export default function ProfileSettingPage() {
 
     const formData = new FormData()
     formData.append("privacy_settings", privacyData.privacy_settings)
-    formData.append("allow_parent_player_reviews", privacyData.allow_parent_player_reviews.toString())
+    formData.append(
+      "allow_parent_player_reviews",
+      privacyData.allow_parent_player_reviews.toString()
+    )
     formData.append("visible_reviews", privacyData.visible_reviews.toString())
-    
+
     const result = await updateProfile(formData)
     if (result.success) {
       console.log("Privacy settings updated successfully")
@@ -181,7 +193,7 @@ export default function ProfileSettingPage() {
       // You might want to refetch the profile data here
     }
   }
-  
+
   const [passwordFormData, setPasswordFormData] = useState<TChangePasswordData>(
     {
       current_password: "",
@@ -199,7 +211,7 @@ export default function ProfileSettingPage() {
     if (image instanceof File) {
       const formData = new FormData()
       formData.append("profile_image", image)
-      
+
       const result = await updateProfile(formData)
       if (result.success) {
         console.log("Profile image updated successfully")
@@ -212,7 +224,7 @@ export default function ProfileSettingPage() {
   const handleEditProfileModdal = async (name: string) => {
     const formData = new FormData()
     formData.append("name", name)
-    
+
     const result = await updateProfile(formData)
     if (result.success) {
       setEditProfileModalOpen(false)
@@ -234,19 +246,11 @@ export default function ProfileSettingPage() {
     TNotificationItem[]
   >(DEFAULT_NOTIFICATIONS)
 
-
-
-
-
-
-
-
-
   if (loading) {
     return (
       <section className="text-white">
-        <div className="p-8">
-          <p>Loading profile data...</p>
+        <div className="flex items-center justify-center py-20">
+          <Loader />
         </div>
       </section>
     )
@@ -276,7 +280,9 @@ export default function ProfileSettingPage() {
       <PrivacySettingsCoach
         privacyOptions={PRIVACY_OPTIONS}
         initialValue={profileData?.privacy_settings || "public"}
-        initialAllowParentPlayerReviews={profileData?.allow_parent_player_reviews}
+        initialAllowParentPlayerReviews={
+          profileData?.allow_parent_player_reviews
+        }
         initialVisibleReviews={profileData?.visible_reviews}
         onChange={(privacyData) => handleClubPrivacyChange(privacyData)}
       />

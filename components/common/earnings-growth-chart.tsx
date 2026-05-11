@@ -3,6 +3,7 @@
 import EarningsPeriodFilter, {
   type EarningsChartFilter,
 } from "@/components/common/earnings-period-filter"
+import Loader from "@/components/common/loader"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useMemo, useState, useEffect } from "react"
 import {
@@ -64,37 +65,47 @@ interface EarningsGrowthChartProps {
   onFilterChange?: (filter: EarningsChartFilter) => void
 }
 
-export default function EarningsGrowthChart({ 
-  labels = [], 
-  values = [], 
+export default function EarningsGrowthChart({
+  labels = [],
+  values = [],
   currentFilter = "month",
-  onFilterChange
+  onFilterChange,
 }: EarningsGrowthChartProps) {
-  const [filter, setFilter] = useState<EarningsChartFilter>(currentFilter as EarningsChartFilter)
-  const [apiData, setApiData] = useState<{ labels: string[]; values: number[] } | null>(null)
+  const [filter, setFilter] = useState<EarningsChartFilter>(
+    currentFilter as EarningsChartFilter
+  )
+  const [apiData, setApiData] = useState<{
+    labels: string[]
+    values: number[]
+  } | null>(null)
   const [loading, setLoading] = useState(false)
   const isMobile = useIsMobile()
 
   const fetchEarningsData = async (filterValue: EarningsChartFilter) => {
     try {
       setLoading(true)
-      const token = localStorage.getItem('go_elite_token') || sessionStorage.getItem('go_elite_token')
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/coach/earnings/view?filter=${filterValue}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      })
+      const token =
+        localStorage.getItem("go_elite_token") ||
+        sessionStorage.getItem("go_elite_token")
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/coach/earnings/view?filter=${filterValue}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
       const result: EarningsResponse = await response.json()
-      
+
       if (result.status && result.data?.monthly_growth) {
         setApiData(result.data.monthly_growth)
       } else {
@@ -122,16 +133,22 @@ export default function EarningsGrowthChart({
   }
 
   // Use API data if available, otherwise use empty data
-  const data = apiData || { labels: [], values: [], accentIndex: 0, helperDots: [] }
-  
+  const data = apiData || {
+    labels: [],
+    values: [],
+    accentIndex: 0,
+    helperDots: [],
+  }
+
   // Generate helper dots and accent index based on actual data
   const enrichedData = {
     ...data,
-    accentIndex: currentFilter === "year"
-      ? new Date().getMonth()
-      : filter === "month"
-      ? Math.min(4, Math.max(0, Math.ceil(new Date().getDate() / 7) - 1))
-      : Math.floor(new Date().getMonth() / 2),
+    accentIndex:
+      currentFilter === "year"
+        ? new Date().getMonth()
+        : filter === "month"
+          ? Math.min(4, Math.max(0, Math.ceil(new Date().getDate() / 7) - 1))
+          : Math.floor(new Date().getMonth() / 2),
     helperDots: data.values?.map((val: number) => val * 0.2) || [],
   }
 
@@ -141,18 +158,18 @@ export default function EarningsGrowthChart({
       case "month":
         return {
           title: "Weekly Revenue Growth",
-          description: "Comparative analysis for current week"
+          description: "Comparative analysis for current week",
         }
       case "year":
         return {
-          title: "Monthly Revenue Growth", 
-          description: "Monthly earnings breakdown for the year"
+          title: "Monthly Revenue Growth",
+          description: "Monthly earnings breakdown for the year",
         }
-      
+
       default:
         return {
           title: "Monthly Revenue Growth",
-          description: "Monthly earnings breakdown for the year"
+          description: "Monthly earnings breakdown for the year",
         }
     }
   }
@@ -282,13 +299,7 @@ export default function EarningsGrowthChart({
             },
             autoSkip: true,
             maxTicksLimit:
-              filter === "year"
-                ? isMobile
-                  ? 4
-                  : 12
-                : isMobile
-                    ? 3
-                    : 5,
+              filter === "year" ? (isMobile ? 4 : 12) : isMobile ? 3 : 5,
             maxRotation: 0,
             minRotation: 0,
             padding: isMobile ? 6 : 12,
@@ -297,7 +308,10 @@ export default function EarningsGrowthChart({
         y: {
           type: "linear",
           min: 0,
-          max: enrichedData.values?.length > 0 ? calculateDynamicYMax(enrichedData.values) : Y_MAX,
+          max:
+            enrichedData.values?.length > 0
+              ? calculateDynamicYMax(enrichedData.values)
+              : Y_MAX,
           ticks: {
             stepSize: Y_STEP,
             color: "rgba(255,255,255,0.34)",
@@ -319,20 +333,19 @@ export default function EarningsGrowthChart({
         },
       },
     }
-  }, [enrichedData.accentIndex, enrichedData.labels?.length, filter, isMobile, enrichedData.values])
+  }, [
+    enrichedData.accentIndex,
+    enrichedData.labels?.length,
+    filter,
+    isMobile,
+    enrichedData.values,
+  ])
 
   if (loading) {
     return (
       <section className="w-full min-w-0 rounded-3xl border border-secondary/50 bg-primary/50 p-4 sm:p-5 md:p-6">
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:gap-4">
-          <div className="min-w-0">
-            <div className="h-7 w-32 bg-white/10 rounded-md animate-pulse mb-2"></div>
-            <div className="h-4 w-48 bg-white/5 rounded-md animate-pulse"></div>
-          </div>
-          <div className="h-11 w-24 bg-white/10 rounded-xl animate-pulse"></div>
-        </div>
-        <div className="h-56 w-full bg-white/5 rounded-xl animate-pulse flex items-center justify-center">
-          <div className="text-white/50 text-sm">Loading chart...</div>
+        <div className="flex items-center justify-center py-20">
+          <Loader />
         </div>
       </section>
     )

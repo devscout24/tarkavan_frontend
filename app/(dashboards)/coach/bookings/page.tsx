@@ -5,6 +5,7 @@ import BookingsTable, {
   type BookingStatus,
 } from "@/components/common/bookings-table"
 import StatusFilterSelect from "@/components/common/status-filter-select"
+import Loader from "@/components/common/loader"
 import api from "@/lib/api-fetcher"
 import { useEffect, useMemo, useState } from "react"
 
@@ -134,7 +135,9 @@ export default function BookingsPage() {
       </div>
 
       {loading ? (
-        <p className="py-8 text-center text-white/70">Loading bookings...</p>
+        <div className="flex items-center justify-center py-20">
+          <Loader />
+        </div>
       ) : filteredBookings.length === 0 ? (
         <p className="py-8 text-center text-white/70">No Bookings yet</p>
       ) : (

@@ -24,6 +24,11 @@ export interface CoachProfileFormData {
   }
   city: string
   country: string
+  facebook_link?: string
+  twitter_link?: string
+  instagram_link?: string
+  tiktok_link?: string
+  whatsapp_link?: string
 }
 
 export interface CurrentRole {

@@ -45,6 +45,7 @@ export default function Modal({
     return (
       <Drawer open={modal === openId} onOpenChange={handleOpenChange}>
         <DrawerContent
+          aria-describedby={undefined}
           className={cn(
             "max-h-[90vh] w-full overflow-x-scroll px-2 py-4 sm:px-6    ",
             className
@@ -62,6 +63,7 @@ export default function Modal({
   return (
     <Dialog open={modal === openId} onOpenChange={handleOpenChange}  >
       <DialogContent
+        aria-describedby={undefined}
         className={cn(
           "max-h-[90dvh] w-full max-w-[95vw] overflow-x-scroll px-2 py-4 sm:px-6 **:data-[slot='dialog-close']:bg-brand bg-transparent   ",
           className

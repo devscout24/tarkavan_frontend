@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import SelectField from "@/components/common/select-field"
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -50,21 +51,23 @@ export default function SportsAndSpecialties({
   >([])
   const [isLoading, setIsLoading] = useState(true)
 
-  // Fetch sport options and coach positions on component mount
-  const localInitRef = useRef(false)
-  useEffect(() => {
-    // initialize from initialData once
-    if (initialData && !localInitRef.current) {
-      // Only initialize if initialData has at least one meaningful value
-      const hasRealData = Object.values(initialData).some((v) => v)
-      if (!hasRealData) return
+  const resolveOptionValue = (
+    options: { value: string; label: string }[],
+    rawValue?: string
+  ) => {
+    if (!rawValue) return ""
 
-      if (initialData.sport) setSport(initialData.sport)
-      if (initialData.role) setRole(initialData.role)
-      if (initialData.coachingTitles)
-        setCoachingTitles(initialData.coachingTitles.filter(Boolean))
-      localInitRef.current = true
-    }
+    const exactMatch = options.find((option) => option.value === rawValue)
+    if (exactMatch) return exactMatch.value
+
+    const labelMatch = options.find(
+      (option) =>
+        option.label.trim().toLowerCase() === rawValue.trim().toLowerCase()
+    )
+    return labelMatch?.value || rawValue
+  }
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const [sportsResult, positionsResult] = await Promise.all([
@@ -105,6 +108,17 @@ export default function SportsAndSpecialties({
 
     fetchData()
   }, [])
+
+  useEffect(() => {
+    if (!initialData) return
+
+    if (initialData.coachingTitles) {
+      setCoachingTitles(initialData.coachingTitles.filter(Boolean))
+    }
+
+    setSport(resolveOptionValue(formattedSportOptions, initialData.sport))
+    setRole(resolveOptionValue(formattedRoleOptions, initialData.role))
+  }, [initialData, formattedSportOptions, formattedRoleOptions])
 
   // Update parent component when sports data changes
   // Helper to push updates to parent from user actions
@@ -152,17 +166,57 @@ export default function SportsAndSpecialties({
       <div className="mt-1 h-px w-full bg-[repeating-linear-gradient(90deg,rgba(255,255,255,0.12)_0,rgba(255,255,255,0.12)_12px,transparent_12px,transparent_22px)]" />
 
       <div className="mt-5 space-y-4">
-        <SelectField
+        {/* <SelectField
           label="Sport Selection"
           placeholder="Select Sport"
           options={formattedSportOptions}
-          triggerClassName={triggerClassName}
+          triggerClassName={`${triggerClassName} py-6!  `}
           value={sport}
           onValueChange={(v) => {
             setSport(v)
             pushUpdate({ sport: v })
           }}
-        />
+        /> */}
+
+        <div className="space-y-2">
+          {/* <label className="text-sm font-medium text-white">
+            Role Selection
+          </label> */}
+          <Select>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="light">Light</SelectItem>
+                <SelectItem value="dark">Dark</SelectItem>
+                <SelectItem value="system">System</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          {/* <Select
+            defaultValue={role}
+            onValueChange={(v) => {
+              setRole(v)
+              pushUpdate({ role: v })
+            }}
+          >
+            <SelectTrigger className={triggerClassName}>
+              <SelectValue placeholder="Select Current Role" />
+            </SelectTrigger>
+            <SelectContent className="bg-secondary/90 text-white">
+              {formattedSportOptions.map((option) => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  className="text-white hover:bg-brand hover:text-primary focus:bg-brand focus:text-primary"
+                >
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select> */}
+        </div>
 
         <div className="space-y-2">
           <label className="text-sm font-medium text-white">

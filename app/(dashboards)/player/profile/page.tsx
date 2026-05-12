@@ -119,7 +119,7 @@ export default function PlayerProfile() {
             />
             <Bio description={String(playerData?.basic_info?.biography)} />
             <Achievements achievements={playerData?.achievements} />
-            <SocialLinks  />
+            <SocialLinks  profileUrl="profile/player" />
           </div>
           <div className="flex-7">
             {/* player stats */}

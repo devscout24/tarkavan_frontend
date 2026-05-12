@@ -53,14 +53,14 @@ export default function UpcomingEventPage() {
       </h2>
       {/* programs cards */}
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {programs.map((program, index) => (
+        {/* {programs.map((program, index) => (
           <ProgramCard
             key={index} 
             {...program}
             onClick={() =>  {} }
             viewOnly={false}
           />
-        ))}
+        ))} */}
       </div>
     </section>
   )

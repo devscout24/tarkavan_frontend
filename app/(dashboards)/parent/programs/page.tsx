@@ -82,7 +82,8 @@ export default function ProgramPage() {
             imageAlt={program.program_name}
             sport={program.sport}
             buttonLabel="View Details"
-            onClick={() => router.push(`/parent/programs/${program.id}`) }
+            // onClick={() => router.push() }
+            editLink={`/parent/programs/${program.id}`}
             viewOnly={true}
           /> 
         ))}

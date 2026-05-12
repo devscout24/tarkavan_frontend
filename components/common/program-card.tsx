@@ -168,6 +168,7 @@ export default function ProgramCard({
             className="h-11 flex-1 rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90"
             size={"lg"}
             variant={"default"} 
+            onClick={() => router.push(editLink)}
           />
           {!viewOnly && (
             <DropdownMenu>

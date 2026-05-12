@@ -10,6 +10,7 @@ interface SocialLinksProps {
   twitterUrl?: string
   whatsappUrl?: string
   onClick?: () => void
+  profileUrl?: string
 }
 
 import { IoLogoFacebook } from "react-icons/io5"
@@ -27,6 +28,7 @@ export default function SocialLinks({
   twitterUrl = "#",
   whatsappUrl = "#",
   onClick,
+  profileUrl
 }: SocialLinksProps) {
   const socialLinks = [
     { icon: IoLogoFacebook, url: facebookUrl, label: "Facebook" },
@@ -87,7 +89,7 @@ export default function SocialLinks({
       key={"shareUrl"}
       open={openShareModal}
       onOpenChange={setOpenShareModal}
-      url={`${window.location.origin}/profile/player/${profileId}`}
+      url={`${window.location.origin}/${profileUrl}/${profileId}`}  
       title="Watch my Player Card"
       />
       }

@@ -82,7 +82,7 @@ export default function ChildDashboard() {
                     tryoutDate={moment(opportunity.tryout_date).format("MMM Do YY")}
                     description={opportunity.description}
                     recruitId={String(opportunity.id)}
-                    application_status={opportunity.application_status}
+                    // application_status={opportunity.application_status}
                   />
                 </div>
               ))} 

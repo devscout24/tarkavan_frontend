@@ -15,6 +15,7 @@ import {
   WhatsappIcon,
   XIcon,
 } from "./icons"
+import SocialLinks from "@/app/(dashboards)/player/components/social-links"
 
 interface CoachProfileData {
   id: number
@@ -254,42 +255,7 @@ export default function CoachLeftColumn() {
         </div>
       </Card>
 
-      <Card className="rounded-[12px] border border-secondary/60 bg-primary px-5 py-4 xl:px-6 xl:py-5 2xl:px-7 2xl:py-6">
-        <div className="flex flex-wrap items-center gap-3 xl:flex-nowrap xl:justify-between">
-          <div className="flex items-center gap-4 xl:gap-5 xl:[&_svg]:scale-110 2xl:[&_svg]:scale-125">
-            {/* Debug: Show all social media icons temporarily */}
-            <div className="cursor-pointer transition-opacity hover:opacity-80">
-              <FacebookIcon />
-            </div>
-            <div className="cursor-pointer transition-opacity hover:opacity-80">
-              <InstagramIcon />
-            </div>
-            <div className="cursor-pointer transition-opacity hover:opacity-80">
-              <TiktokIcon />
-            </div>
-            <div className="cursor-pointer transition-opacity hover:opacity-80">
-              <XIcon />
-            </div>
-            <div className="cursor-pointer transition-opacity hover:opacity-80">
-              <WhatsappIcon />
-            </div>
-
-            {/* Original conditional rendering */}
-            {/* {profileData.facebook_link && <FacebookIcon />}
-            {profileData.instagram_link && <InstagramIcon />}
-            {profileData.tiktok_link && <TiktokIcon />}
-            {profileData.twitter_link && <XIcon />}
-            {profileData.whatsapp_link && <WhatsappIcon />} */}
-          </div>
-          <CommonBtn
-            variant="default"
-            size="lg"
-            text="Profile Share"
-            icon={<ProfileShareIcon />}
-            className="h-10 w-fit rounded-[10px] bg-brand px-4 text-sm font-semibold text-primary hover:bg-brand/90 xl:h-11 xl:px-5 xl:text-base 2xl:h-12 2xl:px-6 2xl:text-lg xl:[&_svg]:scale-110"
-          />
-        </div>
-      </Card>
+      <SocialLinks profileUrl={`profile/coach`} />
     </aside>
   )
 }

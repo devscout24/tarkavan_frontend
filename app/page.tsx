@@ -10,25 +10,33 @@ import HowGoEliteWorks from "@/components/custom/how-to"
 import StartJourney from "@/components/custom/journy"
 import ToComplite from "@/components/custom/to-complite"
 import AthletesAndCoaches from "@/components/custom/trusted"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { getLandingPageData } from "./action"
 
 export default function Page() {
 
+  const [allData, setAllData] = useState(null)
+  console.log(allData)
   useEffect(() => {
-
     const getData = async () => {
-      try{
-
+      try {
         const res = await getLandingPageData()
         console.log(res)
-      }catch(error){
+        if (
+          res &&
+          typeof res === "object" &&
+          "success" in res &&
+          res.success &&
+          "data" in res
+        ) {
+          setAllData(res.data.data)
+        }
+      } catch (error) {
         console.error(error)
       }
     }
     getData()
-
-  } , [])
+  }, [])
 
   return (
     <>

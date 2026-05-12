@@ -41,6 +41,9 @@ export default function SelectField({
   onValueChange,
   error,
 }: SelectFieldProps) {
+
+  console.log(options)
+
   return (
     <div className={`space-y-2 ${className}`}>
       <label className={cn("text-sm font-medium text-white", labelClassName)}>

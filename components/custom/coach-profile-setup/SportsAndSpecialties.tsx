@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Input } from "@/components/ui/input"
 import SelectField from "@/components/common/select-field"
 import {
@@ -12,7 +12,10 @@ import {
 } from "@/components/ui/select"
 import { getCoachPositions } from "@/components/parentAndCoachApi/api/coachPositions"
 import { getSportOptions } from "@/components/parentAndCoachApi/api/sportOptions"
-import type { CoachPosition, SportOption } from "@/components/parentAndCoachApi/type"
+import type {
+  CoachPosition,
+  SportOption,
+} from "@/components/parentAndCoachApi/type"
 
 const triggerClassName =
   "h-11 w-full rounded-xl border-white/10 bg-secondary/10 px-3 text-sm text-white data-placeholder:text-white/50"
@@ -20,50 +23,81 @@ const triggerClassName =
 const titleInputClassName =
   "h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
 
-
 interface SportsAndSpecialtiesProps {
   updateSports?: (sports: unknown) => void
+  initialData?: {
+    sport?: string
+    role?: string
+    coachingTitles?: string[]
+  }
 }
 
-export default function SportsAndSpecialties({ updateSports }: SportsAndSpecialtiesProps) {
+export default function SportsAndSpecialties({
+  updateSports,
+  initialData,
+}: SportsAndSpecialtiesProps) {
   const [sport, setSport] = useState("")
   const [role, setRole] = useState("")
   const [titleInput, setTitleInput] = useState("")
   const [coachingTitles, setCoachingTitles] = useState<string[]>([])
   const [sportOptions, setSportOptions] = useState<SportOption[]>([])
   const [roleOptions, setRoleOptions] = useState<CoachPosition[]>([])
-  const [formattedSportOptions, setFormattedSportOptions] = useState<{value: string, label: string}[]>([])
-  const [formattedRoleOptions, setFormattedRoleOptions] = useState<{value: string, label: string}[]>([])
+  const [formattedSportOptions, setFormattedSportOptions] = useState<
+    { value: string; label: string }[]
+  >([])
+  const [formattedRoleOptions, setFormattedRoleOptions] = useState<
+    { value: string; label: string }[]
+  >([])
   const [isLoading, setIsLoading] = useState(true)
 
   // Fetch sport options and coach positions on component mount
+  const localInitRef = useRef(false)
   useEffect(() => {
+    // initialize from initialData once
+    if (initialData && !localInitRef.current) {
+      // Only initialize if initialData has at least one meaningful value
+      const hasRealData = Object.values(initialData).some((v) => v)
+      if (!hasRealData) return
+
+      if (initialData.sport) setSport(initialData.sport)
+      if (initialData.role) setRole(initialData.role)
+      if (initialData.coachingTitles)
+        setCoachingTitles(initialData.coachingTitles.filter(Boolean))
+      localInitRef.current = true
+    }
     const fetchData = async () => {
       try {
         const [sportsResult, positionsResult] = await Promise.all([
           getSportOptions(),
-          getCoachPositions()
+          getCoachPositions(),
         ])
 
         if (sportsResult.success && sportsResult.data) {
-          const formattedSports = sportsResult.data.map(sport => ({
+          const formattedSports = sportsResult.data.map((sport) => ({
             value: sport.id.toString(),
-            label: sport.name
+            label: sport.name,
           }))
           setSportOptions(sportsResult.data)
           setFormattedSportOptions(formattedSports)
         }
 
-        if (positionsResult && 'success' in positionsResult && positionsResult.success && positionsResult.data) {
-          const formattedPositions = positionsResult?.data?.map((position: {id: number, name: string}) => ({
-            value: position.id.toString(),
-            label: position.name
-          }))
+        if (
+          positionsResult &&
+          "success" in positionsResult &&
+          positionsResult.success &&
+          positionsResult.data
+        ) {
+          const formattedPositions = positionsResult?.data?.map(
+            (position: { id: number; name: string }) => ({
+              value: position.id.toString(),
+              label: position.name,
+            })
+          )
           setRoleOptions(positionsResult.data)
           setFormattedRoleOptions(formattedPositions)
         }
       } catch (error) {
-        console.error('Failed to fetch options:', error)
+        console.error("Failed to fetch options:", error)
       } finally {
         setIsLoading(false)
       }
@@ -73,15 +107,19 @@ export default function SportsAndSpecialties({ updateSports }: SportsAndSpecialt
   }, [])
 
   // Update parent component when sports data changes
-  useEffect(() => {
-    if (updateSports) {
-      updateSports({
-        sport,
-        role,
-        coachingTitles,
-      })
-    }
-  }, [sport, role, coachingTitles, updateSports])
+  // Helper to push updates to parent from user actions
+  const pushUpdate = (next: {
+    sport?: string
+    role?: string
+    coachingTitles?: string[]
+  }) => {
+    if (!updateSports) return
+    updateSports({
+      sport: next.sport ?? sport,
+      role: next.role ?? role,
+      coachingTitles: next.coachingTitles ?? coachingTitles,
+    })
+  }
 
   const addTitle = () => {
     const normalized = titleInput.trim().replace(/\s+/g, " ")
@@ -92,14 +130,18 @@ export default function SportsAndSpecialties({ updateSports }: SportsAndSpecialt
     )
 
     if (!exists) {
-      setCoachingTitles((prev) => [...prev, normalized])
+      const next = [...coachingTitles, normalized]
+      setCoachingTitles(next)
+      pushUpdate({ coachingTitles: next })
     }
 
     setTitleInput("")
   }
 
   const removeTitle = (titleToRemove: string) => {
-    setCoachingTitles((prev) => prev.filter((title) => title !== titleToRemove))
+    const next = coachingTitles.filter((title) => title !== titleToRemove)
+    setCoachingTitles(next)
+    pushUpdate({ coachingTitles: next })
   }
 
   return (
@@ -116,7 +158,10 @@ export default function SportsAndSpecialties({ updateSports }: SportsAndSpecialt
           options={formattedSportOptions}
           triggerClassName={triggerClassName}
           value={sport}
-          onValueChange={setSport}
+          onValueChange={(v) => {
+            setSport(v)
+            pushUpdate({ sport: v })
+          }}
         />
 
         <div className="space-y-2">
@@ -159,7 +204,13 @@ export default function SportsAndSpecialties({ updateSports }: SportsAndSpecialt
           <label className="text-sm font-medium text-white">
             Role Selection
           </label>
-          <Select value={role} onValueChange={setRole}>
+          <Select
+            value={role}
+            onValueChange={(v) => {
+              setRole(v)
+              pushUpdate({ role: v })
+            }}
+          >
             <SelectTrigger className={triggerClassName}>
               <SelectValue placeholder="Select Current Role" />
             </SelectTrigger>

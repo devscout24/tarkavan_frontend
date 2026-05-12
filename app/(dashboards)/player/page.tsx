@@ -50,8 +50,8 @@ export default function PlayerDashboardPage() {
 
   const playerId = dashData?.player_info?.id;
    
+  console.log("Dashboard Data:", dashData)
  
-
   return (
     <section className=" ">
       <h2 className="text-base font-bold text-white">Welcome, Daniel</h2>
@@ -83,8 +83,8 @@ export default function PlayerDashboardPage() {
                     ageGroup={String(opportunity.upto_age)}
                     tryoutDate={moment(opportunity.tryout_date).format("MMM Do YY")}
                     description={opportunity.description}
-                    recruitId={String(opportunity.id)}
-                    application_status={opportunity.application_status}
+                    recruitId={String(opportunity.id)} 
+                    is_applied={opportunity.application_status === "applied"}
                   />
                 </div>
               ))} 

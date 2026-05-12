@@ -93,24 +93,7 @@ export default function UpcomingEventPage() {
   const [programsData, setProgramsData] = useState<ProgramsData | null>(null)
   const [loading, setLoading] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)  
-  const programActions = [
-    { 
-      label: "Edit Programs", 
-      onSelect: () => {
-        const nextParams = new URLSearchParams(searchParams.toString())
-        nextParams.set("add-new", "program")
-        router.replace(
-          nextParams.toString()
-            ? `${pathname}?${nextParams.toString()}`
-            : pathname
-        )
-      }
-    }, 
-    {
-      label: "Delete Programs",
-      onSelect: () => {},
-    },
-  ]
+ 
  
 
   useEffect(() => {
@@ -286,9 +269,8 @@ export default function UpcomingEventPage() {
               previousPrice={String(program.discount_price + program.price )}
               imageSrc={program.photo}
               imageAlt={program.program_name}
-              buttonLabel="View Details"
-              onClick={() => router.push(`/club/my-programs/${program.id}`)}
-              threeDotsItems={programActions}
+              buttonLabel="View Details" 
+              editLink={`/club/my-programs/${program.id}/add-new=program`}
               viewOnly={false}
             />
           ))

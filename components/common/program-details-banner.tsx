@@ -54,12 +54,7 @@ export default function ProgramDetailsBanner({
     startDate && endDate ? calculateDuration(startDate, endDate) : duration
   const sanitize = (s?: string) => s?.replace(/[,\s]+$/g, "")?.trim() || ""
   const displayLocation = sanitize(location) || "N/A"
-  console.log("ProgramDetailsBanner props:", {
-    startDate,
-    endDate,
-    displayDuration,
-    location: displayLocation,
-  })
+ 
   const displayDateRange =
     startDate && endDate
       ? `${format(parseISO(startDate), "dd-MM-yyyy")} to ${format(
@@ -76,10 +71,11 @@ export default function ProgramDetailsBanner({
       aria-label={title}
     >
       <Image
-        src={program_photo}
+        src={program_photo || "/images/bannerbg.png"}
         alt={title}
         width={1000}
         height={1000}
+        loading="eager"
         className="h-full max-h-80 w-full object-cover"
       />
 

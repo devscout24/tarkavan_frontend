@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
+import { getApiBaseUrl } from "@/lib/url-utils"
 
 interface CoachProfileData {
   profile: {
@@ -20,24 +21,23 @@ export default function CoachBioCard() {
     const fetchBioData = async () => {
       try {
         const token = localStorage.getItem("go_elite_token")
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://tarkavan.thenightowl.team/api"
+        const baseUrl = getApiBaseUrl()
 
         const response = await fetch(`${baseUrl}/coach/profile`, {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         })
 
         if (response.ok) {
           const result = await response.json()
           if (result.status) {
-            console.log(' Coach Bio API Response:', result.data)
             setProfileData(result.data)
           }
         }
       } catch (error) {
-        console.error('Error fetching coach bio data:', error)
+        console.error("Error fetching coach bio data:", error)
       } finally {
         setLoading(false)
       }
@@ -50,9 +50,9 @@ export default function CoachBioCard() {
     return (
       <Card className="rounded-[12px] border border-secondary/60 bg-primary p-6 xl:p-7 2xl:p-8">
         <div className="animate-pulse">
-          <div className="h-20 bg-secondary/20 rounded mb-4"></div>
-          <div className="h-32 bg-secondary/20 rounded mb-4"></div>
-          <div className="h-16 bg-secondary/20 rounded"></div>
+          <div className="mb-4 h-20 rounded bg-secondary/20"></div>
+          <div className="mb-4 h-32 rounded bg-secondary/20"></div>
+          <div className="h-16 rounded bg-secondary/20"></div>
         </div>
       </Card>
     )
@@ -69,7 +69,7 @@ export default function CoachBioCard() {
   }
 
   const badges = profileData?.badges || []
-  
+
   return (
     <Card className="rounded-[12px] border border-secondary/60 bg-primary p-6 xl:p-7 2xl:p-8">
       <h5 className="text-base leading-[150%] font-bold text-white xl:text-lg 2xl:text-xl">
@@ -78,7 +78,7 @@ export default function CoachBioCard() {
       <p className="mt-2 text-sm leading-[150%] text-white/85 xl:mt-3 xl:text-base 2xl:text-lg">
         {profileData?.profile?.bio || "No bio available"}
       </p>
-      
+
       {badges.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-2 xl:mt-5 xl:gap-3">
           {badges.map((badge, index) => (

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Input } from "@/components/ui/input"
 import { MessageCircle, Phone, Video, Camera, Globe } from "lucide-react"
 
@@ -22,6 +22,18 @@ export default function SocialMediaLinks({
   initialData = {},
 }: SocialMediaLinksProps) {
   const [socialData, setSocialData] = useState<SocialMediaData>(initialData)
+  const localInitRef = useRef(false)
+
+  // Initialize from initialData when it arrives
+  useEffect(() => {
+    if (!initialData || localInitRef.current) return
+    // Only initialize if initialData has at least one meaningful value
+    const hasRealData = Object.values(initialData).some((v) => v)
+    if (!hasRealData) return
+
+    setSocialData(initialData)
+    localInitRef.current = true
+  }, [initialData])
 
   const handleInputChange = (field: keyof SocialMediaData, value: string) => {
     const updatedData = { ...socialData, [field]: value || undefined }
@@ -65,9 +77,7 @@ export default function SocialMediaLinks({
   return (
     <section className="rounded-2xl border border-white/8 bg-secondary/20 p-5 text-white md:p-6">
       <div className="pb-4">
-        <h3 className="text-lg font-semibold text-white">
-          Social Media Links
-        </h3>
+        <h3 className="text-lg font-semibold text-white">Social Media Links</h3>
         <div className="mt-3 h-px w-full bg-[repeating-linear-gradient(90deg,rgba(255,255,255,0.12)_0,rgba(255,255,255,0.12)_12px,transparent_12px,transparent_22px)]" />
       </div>
 

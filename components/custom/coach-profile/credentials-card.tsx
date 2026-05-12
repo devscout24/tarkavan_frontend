@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
+import { getApiBaseUrl } from "@/lib/url-utils"
 import { NscaIcon, UsabIcon } from "./icons"
 
 interface CoachProfileData {
@@ -22,24 +23,23 @@ export default function CredentialsCard() {
     const fetchCredentialsData = async () => {
       try {
         const token = localStorage.getItem("go_elite_token")
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://tarkavan.thenightowl.team/api"
+        const baseUrl = getApiBaseUrl()
 
         const response = await fetch(`${baseUrl}/coach/profile/data/edit`, {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         })
 
         if (response.ok) {
           const result = await response.json()
           if (result.status) {
-            console.log('🏆 Credentials API Response:', result.data)
             setProfileData(result.data)
           }
         }
       } catch (error) {
-        console.error('Error fetching credentials data:', error)
+        console.error("Error fetching credentials data:", error)
       } finally {
         setLoading(false)
       }
@@ -52,10 +52,10 @@ export default function CredentialsCard() {
     return (
       <Card className="rounded-[12px] border border-secondary/60 bg-primary p-6 xl:p-7 2xl:p-8">
         <div className="animate-pulse">
-          <div className="h-20 bg-secondary/20 rounded mb-4"></div>
+          <div className="mb-4 h-20 rounded bg-secondary/20"></div>
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="h-20 bg-secondary/20 rounded"></div>
-            <div className="h-20 bg-secondary/20 rounded"></div>
+            <div className="h-20 rounded bg-secondary/20"></div>
+            <div className="h-20 rounded bg-secondary/20"></div>
           </div>
         </div>
       </Card>
@@ -83,9 +83,12 @@ export default function CredentialsCard() {
       <div className="mt-4 grid gap-4 md:grid-cols-2 xl:mt-5 xl:gap-5">
         {credentials.length > 0 ? (
           credentials.map((credential, index) => (
-            <div key={credential.id} className="flex items-start gap-3 rounded-[10px] border border-secondary/60 bg-white/5 p-3 xl:gap-4 xl:p-4 2xl:p-5">
+            <div
+              key={credential.id}
+              className="flex items-start gap-3 rounded-[10px] border border-secondary/60 bg-white/5 p-3 xl:gap-4 xl:p-4 2xl:p-5"
+            >
               <div className="grid h-10 w-10 place-items-center rounded-[8px] bg-secondary/10 xl:h-11 xl:w-11 2xl:h-12 2xl:w-12">
-                {credential.type === 'usab' ? <UsabIcon /> : <NscaIcon />}
+                {credential.type === "usab" ? <UsabIcon /> : <NscaIcon />}
               </div>
               <div>
                 <p className="text-base leading-[150%] font-semibold text-white xl:text-lg 2xl:text-xl">
@@ -98,8 +101,10 @@ export default function CredentialsCard() {
             </div>
           ))
         ) : (
-          <div className="text-center text-white/70 py-8">
-            <p className="text-sm xl:text-base">No certified credentials available</p>
+          <div className="py-8 text-center text-white/70">
+            <p className="text-sm xl:text-base">
+              No certified credentials available
+            </p>
           </div>
         )}
       </div>

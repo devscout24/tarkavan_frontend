@@ -222,7 +222,7 @@ export default function Page() {
                       description={
                         opportunity.description || "Opportunity available."
                       }  
-                      application_status={  "pending"}
+                      application_status={"pending"}
                       recruitId={String(opportunity.id)}
                       matched_children={opportunity.matched_children || []}
                     />

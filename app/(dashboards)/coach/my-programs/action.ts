@@ -3,14 +3,10 @@
 import api from "@/lib/api-fetcher"
 import { TApiError } from "@/types"
 import axios from "axios"
-import { revalidatePath } from "next/cache"
 
-
-
-export async function getTeams() {
+export async function addCoachProgram(data: FormData) {
   try {
-    const res = await api.get("/club/team/list")
-    revalidatePath("/club/teams", "page")
+    const res = await api.post("/coach/program/add", data)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {
@@ -24,26 +20,9 @@ export async function getTeams() {
   }
 }
 
-export async function getTeamDetails(team_id: string) {
+export async function updateCoachProgram({ program_id, data }: { program_id: string; data: FormData }) {
   try {
-    const res = await api.get(`/club/team/players/list/${team_id}`)
-    revalidatePath("/club/teams", "page")
-    return { success: true, data: res.data }
-  } catch (err: unknown) {
-    if (axios.isAxiosError<TApiError>(err)) {
-      return err?.response?.data
-    }
-    return {
-      success: false,
-      message: "Unexpected error",
-      status: 500,
-    }
-  }
-} 
-
-export async function releasePlayer(team_player_id: string) {
-  try {
-    const res = await api.get(`/club/team/player/release/data?team_player_id=${team_player_id}`) 
+    const res = await api.post(`/coach/program/update/${program_id}`, data)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {
@@ -57,27 +36,18 @@ export async function releasePlayer(team_player_id: string) {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export async function deleteCoachProgram({ program_id}: { program_id: string}) {
+  try {
+    const res = await api.delete(`/coach/program/delete/${program_id}`)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}

@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { resolveAssetUrl } from "@/lib/url-utils"
 import { MapPin } from "lucide-react"
 import Image from "next/image"
 import { BiMessageSquareDetail } from "react-icons/bi"
@@ -27,7 +28,7 @@ const defaultTags: string[] = []
 
 export default function ProgramCoachCard({
   name,
-  role ,
+  role,
   bio,
   tags = defaultTags,
   imageUrl = "/images/coach.png",
@@ -47,13 +48,13 @@ export default function ProgramCoachCard({
         className
       )}
     >
-      <div className="relative max-h-100 ">
+      <div className="relative max-h-100">
         <Image
           width={1000}
           height={1000}
-          src={imageUrl}
+          src={resolveAssetUrl(imageUrl) || "/images/coach.png"}
           alt={imageAlt}
-          className="w-full object-cover object-center min-h-100 "
+          className="min-h-100 w-full object-cover object-center"
         />
 
         <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/95 via-black/40 to-black/20" />
@@ -66,7 +67,7 @@ export default function ProgramCoachCard({
 
         <div className="absolute inset-x-0 bottom-0 p-4">
           <h3 className="text-[32px]! leading-[0.95] font-extrabold text-white">
-            {name} 
+            {name}
           </h3>
 
           <p className="mt-1 text-base font-medium text-white">{role}</p>
@@ -76,12 +77,9 @@ export default function ProgramCoachCard({
               <MapPin className="h-4 w-4" />
               <p>{location}</p>
             </div>
-          ) : (
-            bio ?
+          ) : bio ? (
             <p className="mt-1 text-base leading-7 text-white/40">{bio}</p>
-            :
-            null
-          )}
+          ) : null}
 
           <div className="mt-3 flex flex-wrap gap-2">
             {tags.map((tag) => (

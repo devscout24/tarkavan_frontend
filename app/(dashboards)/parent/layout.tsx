@@ -112,6 +112,7 @@ export default function ParentDashboardLayout({
             height={1000}
             src={"/images/sidebarbg.png"}
             alt="side-bar-bg"
+            loading="eager"
             className="absolute top-1/2 left-0 w-full -translate-y-1/2"
           />
           <SidebarHeader className="border-b border-secondary py-4.5">

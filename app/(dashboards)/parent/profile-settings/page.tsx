@@ -25,7 +25,7 @@ export default  function ProfileSettingPage() {
     const getPlayerProfileInfo = async () => {
       try{
         const res = await getPlayerProfileSetting()
-        console.log(res)
+         
         
         if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
           setPlayerProfile(res.data.data)
@@ -64,8 +64,8 @@ export default  function ProfileSettingPage() {
       if (profileImage instanceof File) {
         formData.append("profile_image", profileImage);
       } 
-      const res = await playerSettingUpdate(formData) 
-      console.log(res)
+      const res = await playerSettingUpdate(formData)  
+      
       if(res && "success" in res && res.success && res.data && "data" in res.data) {
           setPlayerProfile(res.data.data)
           toast.success("Profile image updated successfully") 

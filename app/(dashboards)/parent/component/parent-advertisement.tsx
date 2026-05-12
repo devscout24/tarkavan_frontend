@@ -75,8 +75,7 @@ export default function AdvertisementParent({
   headline,
   hideDetails = false,
   recruitId,
-  matched_children ,
-  application_status,
+  matched_children , 
 }: AdvertisementProps) {
   const [loading, setLoading] = useState(false) 
   const [isModalOpen, setIsModalOpen] = useState(false)

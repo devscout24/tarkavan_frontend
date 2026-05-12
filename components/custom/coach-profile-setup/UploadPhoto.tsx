@@ -8,11 +8,13 @@ import { Icon } from "@/components/custom/Icon"
 interface UploadPhotoProps {
   updatePhotoUploaded?: (uploaded: boolean) => void
   onFileSelect?: (file: File | null) => void
+  initialPreviewUrl?: string
 }
 
 export default function UploadPhoto({
   updatePhotoUploaded,
   onFileSelect,
+  initialPreviewUrl,
 }: UploadPhotoProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>("")
@@ -25,6 +27,14 @@ export default function UploadPhoto({
       updatePhotoUploaded(!!previewUrl)
     }
   }, [previewUrl, updatePhotoUploaded])
+
+  // initialize preview from prop (backend image)
+  useEffect(() => {
+    if (initialPreviewUrl) {
+      setPreviewUrl(initialPreviewUrl)
+      setFileName(initialPreviewUrl.split("/").pop() || "")
+    }
+  }, [initialPreviewUrl])
 
   // Handle file selection and convert to base64
   const handleFileSelect = (file: File) => {
@@ -64,9 +74,12 @@ export default function UploadPhoto({
 
       {previewUrl ? (
         <div className="mt-5 flex items-center justify-center">
-          <div className="relative group">
+          <div className="group relative">
             <div className="relative overflow-hidden rounded-2xl border-2 border-dashed border-white/40 bg-white/5 p-1 transition-all duration-200 hover:border-white/60 hover:bg-white/10">
-              <div className="relative overflow-hidden rounded-xl" style={{ width: 120, height: 120 }}>
+              <div
+                className="relative overflow-hidden rounded-xl"
+                style={{ width: 120, height: 120 }}
+              >
                 <Image
                   src={previewUrl}
                   alt="Selected coach profile"
@@ -81,7 +94,7 @@ export default function UploadPhoto({
               type="button"
               aria-label="Remove image"
               onClick={handleRemoveImage}
-              className="absolute -top-2 -right-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-red-600 text-white shadow-lg transition-all duration-200 hover:bg-red-700 hover:scale-110 opacity-0 group-hover:opacity-100"
+              className="absolute -top-2 -right-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-red-600 text-white opacity-0 shadow-lg transition-all duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-red-700"
             >
               <Icon
                 width="14"

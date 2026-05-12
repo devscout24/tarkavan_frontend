@@ -215,8 +215,8 @@ export default function RecruitmentForm({
       formData.append("description", description.trim())
       formData.append("upto_age", String(getHighestNumber(ageGroup)))
 
-      const res = await addRecruitment(formData)
-      console.log(res)
+      const res = await addRecruitment(formData) 
+      
       if (
         typeof res === "object" &&
         res !== null &&

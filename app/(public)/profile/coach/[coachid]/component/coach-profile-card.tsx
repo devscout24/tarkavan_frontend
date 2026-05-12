@@ -59,6 +59,7 @@ export default function CoachProfileCard({
           src={basic_info?.image || "/images/bannerbg.png"}
           alt="Shahin Tarkavan"
           width={1000}
+          loading="eager"
           height={500}
           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover object-top"

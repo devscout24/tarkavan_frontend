@@ -16,8 +16,7 @@ interface AdvertisementProps {
   headline?: string 
   hideDetails?: boolean
   is_applied?: boolean 
-  recruitId?: string
-  application_status: string
+  recruitId?: string 
 }
 
 const TimerIcon = () => (
@@ -51,15 +50,13 @@ export default function Advertisement({
   description,
   headline, 
   hideDetails = false, 
-  recruitId,
-  application_status ,
+  recruitId, 
   is_applied
 }: AdvertisementProps) {
 
 
   const [loading, setLoading] = useState(false)
-  const handleApply = async () => { 
-    console.log(recruitId)
+  const handleApply = async () => {  
 
     if(!recruitId){
       toast.error("Recruitment ID is missing. Cannot apply.")
@@ -138,12 +135,12 @@ export default function Advertisement({
         <CommonBtn
           variant="default"
           size="lg"
-          text={application_status === "applied" ? "Applied" : "Apply"}
+          text={is_applied ? "Applied" : "Apply"}
           className={`h-10 w-full cursor-pointer text-base font-medium transition-all  shrink-0 ${
-             application_status === "applied" ? "bg-gray-500 text-white hover:bg-gray-600" : "bg-brand text-zinc-950 hover:bg-brand/90"
+             is_applied ? "bg-gray-500 text-white hover:bg-gray-600" : "bg-brand text-zinc-950 hover:bg-brand/90"
           }`}
           onClick={handleApply}
-          disabled={loading || application_status === "applied"}
+          disabled={loading || is_applied}
           isLoading={loading}
         />
       </div>

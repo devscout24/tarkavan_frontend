@@ -3,8 +3,7 @@ import RecruitmentForm from "./all-modals/recruite-modal"
 import TeamAddModal from "./all-modals/team-add-modal"
 import useModal from "./useModal"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import AddProgramPage from "@/components/common/add-program-modal" 
-import EditProgramPage from "@/components/common/edit-program-modal" 
+import AddProgramPage from "@/components/common/add-program-modal"  
 import ReviewModal from "./all-modals/review-modal"
 import ConfirmPayModal from "./all-modals/confirm-pay-modal"
 import AddFriendlyMatch from "./all-modals/add-friendly-match"
@@ -64,16 +63,7 @@ export default function Modals() {
         <ScrollArea className="max-h-[90vh]">
           <AddProgramPage />
         </ScrollArea>
-      </Modal> 
-      <Modal
-        modalId="edit-program"
-        openId="program"  
-        className="max-w-full overflow-hidden! border border-brand/50 p-0! lg:max-w-[62%]! 2xl:max-w-[56%]!"
-      >
-        <ScrollArea className="max-h-[90vh]">
-          <EditProgramPage />
-        </ScrollArea>
-      </Modal> 
+      </Modal>  
       <Modal
         modalId="review"
         openId="program"

@@ -21,11 +21,12 @@ export default function Page() {
       try{
 
         const res = await getLandingPageData()
-
+        console.log(res)
       }catch(error){
         console.error(error)
       }
     }
+    getData()
 
   } , [])
 

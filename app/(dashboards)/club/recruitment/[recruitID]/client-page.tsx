@@ -86,8 +86,7 @@ export default function ClubRecruitmentClientPage() {
       const res = await changeStatus({
         applicantId: applicantId as string,
         status: formData,
-      }) 
-      console.log(res)
+      })  
       if (
         res &&
         "success" in res &&

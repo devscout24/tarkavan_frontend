@@ -17,7 +17,7 @@ export default function PLayerProgramPage({ child_id }: { child_id: string }) {
     const  [programs, setPrograms] = useState<TProgramUpcomming[]>([])
     const [sports, setSports] = useState<TSportOption[]>([])
     const [selectedFilter, setSelectedFilter] = useState<string>("") 
-    
+     console.log(programs)
     useEffect(() => {
   
       const getPrograms = async () => {
@@ -79,9 +79,9 @@ export default function PLayerProgramPage({ child_id }: { child_id: string }) {
             imageSrc={program.photo}
             imageAlt={program.program_name}
             sport={program.sport}
-            buttonLabel="View Details"
-            onClick={() => router.push(child_id ? `/child-dashboard/${child_id}/programs/${program.id}` : `/player/programs/${program.id}`) }
+            buttonLabel="View Details" 
             viewOnly={true}
+            editLink={child_id ? `/child-dashboard/${child_id}/programs/${program.id}` : `/player/programs/${program.id}`}
           /> 
         ))}
       </div>

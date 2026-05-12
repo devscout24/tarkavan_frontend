@@ -123,3 +123,20 @@ export async function applyRecruitment(data: FormData) {
     }
   }
 }
+
+export async function getCoachEditData() {
+  try {
+    const res = await api.get(`/coach/profile/data/edit`)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) { 
+      return err?.response?.data
+    }
+  
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}

@@ -46,33 +46,36 @@ export type TeamMember = {
 
 type TeamMemberCardProps = {
   member: TPlayerTeam
-  actionLabel?: string 
+  actionLabel?: string
   allTeams: TTeamDetailsForClub[]
   team_id: string
 }
 
 export default function TeamMemberCard({
   member,
-  actionLabel = "View Profile", 
-  allTeams ,
-  team_id
+  actionLabel = "View Profile",
+  allTeams,
+  team_id,
 }: TeamMemberCardProps) {
-
-
   const handleReleasePlayer = async () => {
- 
-    if(!member.team_player_id) {
+    if (!member.team_player_id) {
       toast.error("Invalid team player ID")
       return
     }
 
+    try {
+      const response = await releasePlayer(String(member.team_player_id))
 
-    try{
-
-      const res = await releasePlayer(String(member.team_player_id))
-      console.log(res)
-
-    }catch(error){
+      if (
+        response &&
+        "data" in response &&
+        response.data &&
+        response.data.status
+      ) {
+        toast.success("Player released successfully")
+        window.dispatchEvent(new CustomEvent("teamDetailsRefetch"))
+      }
+    } catch (error) {
       console.error("Error releasing player:", error)
     }
   }
@@ -82,21 +85,22 @@ export default function TeamMemberCard({
       <div className="relative h-46 w-full">
         <Image
           src={member.profile_image}
-          alt={member.profile_image ?? member.name} 
-          className="object-cover max-h-46 h-46 "
+          alt={member.profile_image ?? member.name}
+          className="h-46 max-h-46 object-cover"
           width={1000}
           height={400}
         />
       </div>
 
-      <CardContent className="h-full flex flex-col justify-between  space-y-2.5 bg-[#11131c] p-4">
+      <CardContent className="flex h-full flex-col justify-between space-y-2.5 bg-[#11131c] p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
             <h3 className="text-xl leading-tight font-medium text-white">
               {member.name}
             </h3>
             <p className="text-sm text-white/60!">
-              Age:{member.age} | {member.position} | Jersey: {member.jersey_number}
+              Age:{member.age} | {member.position} | Jersey:{" "}
+              {member.jersey_number}
             </p>
           </div>
           <button
@@ -112,12 +116,18 @@ export default function TeamMemberCard({
         <div className="space-y-1 text-sm text-white/75">
           <p className="flex items-center gap-1.5">
             <MapPin className="size-3.5" />
-            <span>{member.city}, {member.country}</span> 
+            <span>
+              {member.city}, {member.country}
+            </span>
             {/* location */}
           </p>
           <p className="flex items-center gap-1.5">
             <Lock className="size-3.5" />
-            <span>{member.is_parent_child ? "Parental Control Active" : "Parental Control Inactive"}</span>
+            <span>
+              {member.is_parent_child
+                ? "Parental Control Active"
+                : "Parental Control Inactive"}
+            </span>
           </p>
         </div>
 
@@ -141,7 +151,7 @@ export default function TeamMemberCard({
         <div className="flex gap-3">
           <Button
             type="button"
-            onClick={() =>  {}}
+            onClick={() => {}}
             className="h-9 flex-1 rounded-md bg-brand text-sm font-semibold text-primary hover:bg-brand"
           >
             <Shield className="size-3.5" />
@@ -175,13 +185,22 @@ export default function TeamMemberCard({
                 <DropdownMenuSubTrigger>Transfer to</DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
                   <DropdownMenuSubContent>
-                    <DropdownMenuItem className="" disabled>Please select one</DropdownMenuItem>
-                    <DropdownMenuSeparator/>
-                    {allTeams.length > 1 ? 
-                      allTeams.map((team)=> ( 
-                      team.id === Number(team_id) ? null : <DropdownMenuItem key={team.id} className="cursor-pointer hover:bg-brand">{team.name}</DropdownMenuItem>
-                      ))
-                    : "" }
+                    <DropdownMenuItem className="" disabled>
+                      Please select one
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    {allTeams.length > 1
+                      ? allTeams.map((team) =>
+                          team.id === Number(team_id) ? null : (
+                            <DropdownMenuItem
+                              key={team.id}
+                              className="cursor-pointer hover:bg-brand"
+                            >
+                              {team.name}
+                            </DropdownMenuItem>
+                          )
+                        )
+                      : ""}
                   </DropdownMenuSubContent>
                 </DropdownMenuPortal>
               </DropdownMenuSub>

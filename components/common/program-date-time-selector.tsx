@@ -140,7 +140,7 @@ export default function ProgramDateTimeSelector({
   const [allChields, setAllChields] = useState<TChield[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedChildId, setSelectedChildId] = useState<string>("")
-
+ 
   useEffect(() => {
     if (!selectedDate) {
       return
@@ -151,7 +151,7 @@ export default function ProgramDateTimeSelector({
         const res = await getAvailableTimes({
           program_id: detailsID,
           date: String(moment(selectedDate).format("YYYY-MM-DD")),
-        })
+        }) 
         if (
           res &&
           "success" in res &&
@@ -174,7 +174,7 @@ export default function ProgramDateTimeSelector({
     const getChild = async () => {
       try {
         const res = await getChildList()
-        console.log(res)
+         
         if (
           res &&
           "success" in res &&
@@ -377,7 +377,6 @@ export default function ProgramDateTimeSelector({
       )}
 
       {/* payment */}
-      {user?.role !== "coach" && (
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#DEDEDE] pt-4">
           <p className="text-lg font-medium text-primary!">
             Total: $ {priceToShow}
@@ -482,8 +481,7 @@ export default function ProgramDateTimeSelector({
               />
             )
           )}
-        </div>
-      )}
+        </div> 
     </div>
   )
 }

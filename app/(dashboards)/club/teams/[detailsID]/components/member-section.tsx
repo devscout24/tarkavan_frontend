@@ -10,6 +10,7 @@ type MemberSectionProps = {
   members: TPlayerTeam[]
   showPlaceholder?: boolean
   team_id: string
+  allTeams: TTeamDetailsForClub[]
 }
 
 export default function MemberSection({
@@ -17,27 +18,11 @@ export default function MemberSection({
   actionText,
   members,
   showPlaceholder = true,
-  team_id
+  team_id ,
+  allTeams
 }: MemberSectionProps) {
 
-  const [allTeams, setAllTeams] = useState<TTeamDetailsForClub[]>([])
- 
-  useEffect(()=> {
 
-    const getTeamList = async () =>  {
-      try{
-        const res = await getTeams()
-        if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
-          setAllTeams(res.data.data)
-        }
-         
-      }catch(error){
-        console.error("Error fetching team data:", error)
-      }
-    }
-    getTeamList()
-
-  } , [])
 
 
   return (

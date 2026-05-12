@@ -25,6 +25,8 @@ export type TProgramDetailsParentAndPlayer = {
     city: string;
     country: string;
     is_verified: boolean;
+    email: string;
+    is_program_maker: boolean;
   };
   times: {
     id: number;

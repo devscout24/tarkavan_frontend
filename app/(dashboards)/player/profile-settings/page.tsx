@@ -20,9 +20,7 @@ export default function ProfileSettingPage() {
   useEffect(() => {
     const getPlayerProfileInfo = async () => {
       try {
-        const res = await getPlayerProfileSetting()
-        console.log(res)
-
+        const res = await getPlayerProfileSetting() 
         if (
           res &&
           "success" in res &&
@@ -67,7 +65,7 @@ export default function ProfileSettingPage() {
           formData.append("profile_image", profileImage)
         }
         const res = await playerSettingUpdate(formData)
-        console.log(res)
+         
         if (
           res &&
           "success" in res &&

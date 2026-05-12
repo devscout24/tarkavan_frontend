@@ -118,6 +118,7 @@ export default function PlayerDashboardLayout({
             width={1000}
             height={1000}
             alt="side-bar-bg"
+            loading="eager"
             className="absolute top-100 left-0 w-full"
           />
           <SidebarHeader className="border-b border-secondary py-4.5">

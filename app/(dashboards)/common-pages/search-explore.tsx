@@ -65,8 +65,7 @@ export default function SearchExplore() {
       const res = await getSearchList({
         data: formData,
         currentPage: String(currentPage),
-      })
-      console.log(res)
+      }) 
 
       
       if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) { 

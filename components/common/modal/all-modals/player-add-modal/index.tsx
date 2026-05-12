@@ -445,9 +445,7 @@ export default function PlayerAddModal() {
 
       try {
         const res = await addChild(formData)
-
-        console.log(res)
-         
+ 
         if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
           toast.success(getToastMessage(res.data.message, "Child added successfully"))
           resetWizardState()
@@ -633,7 +631,7 @@ export default function PlayerAddModal() {
     if(isUpdateChild && user?.role === "parent"){
         try { 
         const res = await updateChildProfile({ data: formData, child_id: String(edit_child_id || child_id) })
-        console.log(res)
+         
  
         const response = res as {
           success?: boolean

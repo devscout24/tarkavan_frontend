@@ -3,7 +3,9 @@ import CertificationsAndCredentials from "@/components/custom/coach-profile-setu
 import CoachProfileSetupHeader from "@/components/custom/coach-profile-setup/coach-profile-setup-header"
 import CoachingPhilosophy from "@/components/custom/coach-profile-setup/CoachingPhilosophy"
 import ExperienceAndEducation from "@/components/custom/coach-profile-setup/ExperienceAndEducation"
-import SocialMediaLinks, { type SocialMediaData } from "@/components/custom/coach-profile-setup/SocialMediaLinks"
+import SocialMediaLinks, {
+  type SocialMediaData,
+} from "@/components/custom/coach-profile-setup/SocialMediaLinks"
 import SportsAndSpecialties from "@/components/custom/coach-profile-setup/SportsAndSpecialties"
 import UploadPhoto from "@/components/custom/coach-profile-setup/UploadPhoto"
 import React, { useState, useEffect, useCallback, useRef } from "react"
@@ -16,6 +18,7 @@ import type {
   CoachProfileFormData,
   CoachProfileApiResult,
 } from "@/components/parentAndCoachApi/type/coachProfileTypes"
+import { getCoachEditData } from "./action"
 
 interface CoachProfileSetupProps {
   currentStep?: number
@@ -23,8 +26,6 @@ interface CoachProfileSetupProps {
   updateBasicInfo?: (info: unknown) => void
   isEditMode?: boolean
 }
-
-const STORAGE_KEY = "coach_profile_draft"
 
 const getInitialFormData = (): CoachProfileFormData => ({
   name: "",
@@ -65,7 +66,101 @@ export default function CoachProfileSetup({
   const [formData, setFormData] =
     useState<CoachProfileFormData>(getInitialFormData)
   const [isLoading, setIsLoading] = useState(false)
+  const [initialPreview, setInitialPreview] = useState<string | null>(null)
   const formDataRef = useRef(formData)
+
+  console.log(formData)
+
+  useEffect(() => {
+    const getCaochProfileData = async () => {
+      try {
+        const res = await getCoachEditData()
+        console.log(res)
+        type CoachEditPayload = {
+          name?: string
+          last_name?: string
+          dob?: string
+          gender?: string
+          nationality?: string
+          email?: string
+          sports?: string
+          current_role?: { name?: string }
+          years_of_experience?: string
+          highest_education?: string
+          coaching_education?: string
+          coaching_philosophy?: string
+          player_centric_approach?: boolean
+          data_driving_training?: boolean
+          coaching_titles?: Array<{ title?: string }>
+          city?: string
+          country?: string
+          facebook_link?: string
+          twitter_link?: string
+          instagram_link?: string
+          tiktok_link?: string
+          whatsapp_link?: string
+          coach_profile_pic?: string
+        }
+
+        if (
+          res &&
+          typeof res === "object" &&
+          "data" in res &&
+          res.data &&
+          typeof res.data === "object" &&
+          "data" in res.data &&
+          res.data.data
+        ) {
+          const d = res.data.data as CoachEditPayload
+          setFormData((prev) => ({
+            ...prev,
+            name: d.name || "",
+            last_name: d.last_name || "",
+            dob: d.dob || "",
+            gender:
+              d.gender === "male" ||
+              d.gender === "female" ||
+              d.gender === "other"
+                ? d.gender
+                : "male",
+            nationality: d.nationality || "",
+            email: d.email || "",
+            sports: d.sports || "",
+            current_role: d.current_role?.name || "",
+            years_of_experience: d.years_of_experience || "",
+            highest_education: d.highest_education || "",
+            coaching_education: d.coaching_education || "",
+            coaching_philosophy: d.coaching_philosophy || "",
+            player_centric_approach: !!d.player_centric_approach,
+            data_driving_training: !!d.data_driving_training,
+            coaching_title: d.coaching_titles
+              ? d.coaching_titles.map((t) => t.title || "")
+              : ["", ""],
+            city: d.city || "",
+            country: d.country || "",
+            facebook_link: d.facebook_link || "",
+            twitter_link: d.twitter_link || "",
+            instagram_link: d.instagram_link || "",
+            tiktok_link: d.tiktok_link || "",
+            whatsapp_link: d.whatsapp_link || "",
+          }))
+
+          if (d.coach_profile_pic) {
+            try {
+              const { resolveAssetUrl } = await import("@/lib/url-utils")
+              const preview = resolveAssetUrl(d.coach_profile_pic)
+              setInitialPreview(preview)
+            } catch {
+              // ignore
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching coach profile data:", error)
+      }
+    }
+    getCaochProfileData()
+  }, [])
 
   // Check and update user status from coach profile API
   useEffect(() => {
@@ -73,36 +168,37 @@ export default function CoachProfileSetup({
       try {
         const token = localStorage.getItem("go_elite_token")
         const rawUser = localStorage.getItem("go_elite_user")
-        
+
         if (!token || !rawUser) return
-        
+
         const user = JSON.parse(rawUser)
-        
+
         // Only check if user is currently "pending"
         if (user.status === "pending") {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://tarkavan.thenightowl.team/api"}/coach/profile`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || "https://tarkavan.thenightowl.team/api"}/coach/profile`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
             }
-          })
-          
+          )
+
           if (response.ok) {
             const data = await response.json()
-            console.log('👨‍🏫 COACH PROFILE API RESPONSE:', data)
-            
+
             if (data.data?.user_status === "approve") {
-              console.log('✅ UPDATING USER STATUS FROM PENDING TO APPROVED')
               const updatedUser = { ...user, status: "approved" }
               localStorage.setItem("go_elite_user", JSON.stringify(updatedUser))
             }
           }
         }
       } catch (error) {
-        console.error('❌ ERROR CHECKING COACH PROFILE:', error)
+        console.error("ERROR CHECKING COACH PROFILE:", error)
       }
     }
-    
+
     checkCoachProfile()
   }, [])
 
@@ -111,48 +207,10 @@ export default function CoachProfileSetup({
     formDataRef.current = formData
   }, [formData])
 
-  // Load saved form data from localStorage on mount
-  // Also clean up old keys that child components previously wrote directly
-  useEffect(() => {
-    // Clear stale child-component localStorage keys
-    localStorage.removeItem("coachProfileImage")
-    localStorage.removeItem("coachProfileImageName")
-    localStorage.removeItem("coach-profile-certifications")
-
-    try {
-      const savedData = localStorage.getItem(STORAGE_KEY)
-      if (savedData) {
-        const parsedData = JSON.parse(savedData)
-        setFormData((prev) => ({ ...prev, ...parsedData }))
-      }
-    } catch (err) {
-      console.warn("Failed to load saved form data:", err)
-    }
-  }, [])
-
-  // Save form data to localStorage whenever it changes
-  const saveToLocalStorage = (data: CoachProfileFormData) => {
-    try {
-      // Create a clean object without File objects for localStorage
-      const dataToSave: Partial<CoachProfileFormData> = {
-        ...data,
-        coach_profile_pic: undefined,
-        images: [],
-      }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave))
-    } catch (err) {
-      console.warn("Failed to save form data:", err)
-    }
-  }
-
-  // Update form data and save to localStorage
+  // Update form data in state
   const updateFormData = useCallback(
     (updates: Partial<CoachProfileFormData>) => {
-      setFormData((prev) => {
-        const newData = { ...prev, ...updates }
-        saveToLocalStorage(newData)
-        return newData
-      })
+      setFormData((prev) => ({ ...prev, ...updates }))
     },
     []
   )
@@ -200,12 +258,10 @@ export default function CoachProfileSetup({
     try {
       // Always read the latest snapshot from the ref (updated every render)
       const currentFormData = formDataRef.current
-      console.log('📋 FORM SUBMISSION DATA:', currentFormData)
 
       // Validate form
       const validation = validateForm(currentFormData)
       if (!validation.isValid) {
-        console.log('❌ FORM VALIDATION FAILED:', validation.errors)
         validation.errors.forEach((error) => {
           toast.error(error)
         })
@@ -213,28 +269,20 @@ export default function CoachProfileSetup({
         return
       }
 
-      console.log('✅ FORM VALIDATION PASSED')
       const apiFormData = convertToFormData(currentFormData)
-      console.log('📤 FORM DATA FOR API:', apiFormData)
-      
+
       const result: CoachProfileApiResult =
         await createOrUpdateCoachProfile(apiFormData)
 
-      console.log('🎯 API RESULT:', result)
-
       if (result.success) {
         toast.success(result.message || "Coach profile created successfully!")
-        localStorage.removeItem(STORAGE_KEY)
-
         setFormData(getInitialFormData())
         // Redirect to clean dashboard URL (no query params → modal won't reopen)
         window.location.replace("/coach")
       } else {
-        console.log('❌ API FAILED:', result)
         toast.error(result.message || "Failed to create coach profile")
       }
     } catch (err) {
-      console.error('❌ SUBMISSION ERROR:', err)
       toast.error("An unexpected error occurred")
     } finally {
       setIsLoading(false)
@@ -342,25 +390,65 @@ export default function CoachProfileSetup({
           <UploadPhoto
             updatePhotoUploaded={updatePhotoUploaded}
             onFileSelect={handleFileSelect}
+            initialPreviewUrl={initialPreview || undefined}
           />
-          <BasicInformation updateBasicInfo={handleBasicInfoUpdate} />
+          <BasicInformation
+            updateBasicInfo={handleBasicInfoUpdate}
+            initialData={{
+              firstName: formData.name,
+              lastName: formData.last_name,
+              dateOfBirth: formData.dob,
+              gender: formData.gender,
+              nationality: formData.nationality,
+              email: formData.email,
+              city: formData.city,
+              country: formData.country,
+            }}
+          />
         </div>
+        <SportsAndSpecialties
+          updateSports={handleSportsUpdate}
+          initialData={{
+            sport: formData.sports,
+            role: formData.current_role,
+            coachingTitles: formData.coaching_title,
+          }}
+        />
 
-        <SportsAndSpecialties updateSports={handleSportsUpdate} />
-
-        <ExperienceAndEducation updateExperience={handleExperienceUpdate} />
+        <ExperienceAndEducation
+          updateExperience={handleExperienceUpdate}
+          initialData={{
+            years: formData.years_of_experience,
+            education: formData.highest_education,
+            history: formData.coaching_education,
+          }}
+        />
 
         <CertificationsAndCredentials
           updateCredentials={handleCredentialsUpdate}
         />
 
-        <SocialMediaLinks updateSocialMedia={handleSocialMediaUpdate} />
+        <SocialMediaLinks
+          updateSocialMedia={handleSocialMediaUpdate}
+          initialData={{
+            facebook_link: formData.facebook_link,
+            twitter_link: formData.twitter_link,
+            instagram_link: formData.instagram_link,
+            tiktok_link: formData.tiktok_link,
+            whatsapp_link: formData.whatsapp_link,
+          }}
+        />
 
         <CoachingPhilosophy
           updatePhilosophy={handlePhilosophyUpdate}
           onSubmit={handleSubmit}
           isLoading={isLoading}
           isEditMode={isEditMode}
+          initialData={{
+            philosophy: formData.coaching_philosophy,
+            playerCentric: formData.player_centric_approach,
+            dataDriven: formData.data_driving_training,
+          }}
         />
       </div>
     </section>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -22,23 +22,46 @@ const yearsOptions = [
 
 interface ExperienceAndEducationProps {
   updateExperience?: (experience: unknown) => void
+  initialData?: {
+    years?: string
+    education?: string
+    history?: string
+  }
 }
 
-export default function ExperienceAndEducation({ updateExperience }: ExperienceAndEducationProps) {
+export default function ExperienceAndEducation({
+  updateExperience,
+  initialData,
+}: ExperienceAndEducationProps) {
   const [years, setYears] = useState("")
   const [education, setEducation] = useState("")
   const [history, setHistory] = useState("")
 
-  // Update parent component when experience data changes
+  const localInitRef = useRef(false)
   useEffect(() => {
-    if (updateExperience) {
-      updateExperience({
-        years,
-        education,
-        history,
-      })
-    }
-  }, [years, education, history, updateExperience])
+    if (!initialData || localInitRef.current) return
+    // Only initialize if initialData has at least one meaningful value
+    const hasRealData = Object.values(initialData).some((v) => v)
+    if (!hasRealData) return
+
+    if (initialData.years) setYears(initialData.years)
+    if (initialData.education) setEducation(initialData.education)
+    if (initialData.history) setHistory(initialData.history)
+    localInitRef.current = true
+  }, [initialData])
+
+  const pushUpdate = (next: {
+    years?: string
+    education?: string
+    history?: string
+  }) => {
+    if (!updateExperience) return
+    updateExperience({
+      years: next.years ?? years,
+      education: next.education ?? education,
+      history: next.history ?? history,
+    })
+  }
 
   return (
     <section className="rounded-2xl border border-white/8 bg-secondary/20 p-5 text-white md:p-6">
@@ -54,7 +77,13 @@ export default function ExperienceAndEducation({ updateExperience }: ExperienceA
           <label className="text-sm font-medium text-white">
             Years of Experience
           </label>
-          <Select value={years} onValueChange={setYears}>
+          <Select
+            value={years}
+            onValueChange={(v) => {
+              setYears(v)
+              pushUpdate({ years: v })
+            }}
+          >
             <SelectTrigger className={triggerClassName}>
               <SelectValue placeholder="Select experience range" />
             </SelectTrigger>
@@ -78,7 +107,11 @@ export default function ExperienceAndEducation({ updateExperience }: ExperienceA
           </label>
           <Input
             value={education}
-            onChange={(event) => setEducation(event.target.value)}
+            onChange={(event) => {
+              const v = event.target.value
+              setEducation(v)
+              pushUpdate({ education: v })
+            }}
             placeholder="e.g. M.S. in Sports Science"
             className="h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
           />
@@ -90,7 +123,11 @@ export default function ExperienceAndEducation({ updateExperience }: ExperienceA
           </label>
           <textarea
             value={history}
-            onChange={(event) => setHistory(event.target.value)}
+            onChange={(event) => {
+              const v = event.target.value
+              setHistory(v)
+              pushUpdate({ history: v })
+            }}
             placeholder="Briefly describe your coaching career journey..."
             rows={5}
             className="w-full rounded-xl border border-white/10 bg-secondary/10 px-3 py-2 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0 focus-visible:outline-none"

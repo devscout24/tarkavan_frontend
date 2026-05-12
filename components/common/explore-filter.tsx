@@ -7,7 +7,7 @@ import {
   Users,
   UsersRound,
 } from "lucide-react"
- 
+
 import {
   Select,
   SelectContent,
@@ -25,8 +25,6 @@ import {
   getSportOptions,
 } from "@/app/(dashboards)/action"
 import CountryCitySelector from "./country-city-selector"
-
- 
 
 type ExploreFilterState = {
   button_type: string
@@ -81,26 +79,19 @@ function ExploreFilter({
   const [sportsOptions, setSportsOptions] = useState<
     { id: number; name: string }[]
   >([])
- 
-
 
   useEffect(() => {
     const init = async () => {
-      const [sports ] = await Promise.all([
+      const [sports] = await Promise.all([
         getSportOptions(),
         getCountries(),
         getCities(),
       ])
       if (sports && "success" in sports && sports.success && sports.data)
         setSportsOptions(sports.data.data)
- 
-         
- 
     }
     init()
   }, [])
-
- 
 
   const updateFilter = <K extends keyof ExploreFilterState>(
     key: K,
@@ -111,12 +102,12 @@ function ExploreFilter({
 
   const handleSelectCountry = (country: string) => {
     setFilters((prev) => ({
-      ...prev, 
-      country_id: String(country), 
+      ...prev,
+      country_id: String(country),
     }))
   }
 
-  const handleSelectCity = (country: string, city:  string ) => {
+  const handleSelectCity = (country: string, city: string) => {
     setFilters((prev) => ({
       ...prev,
       location: `${city}, ${country}`,
@@ -177,21 +168,19 @@ function ExploreFilter({
             Quick Filters
           </div>
 
-          <div className="   flex-1 gap-3 flex  ">
+          <div className="flex flex-1 gap-3">
             {/* Location */}
             <CountryCitySelector
-              className="min-w-[300px]  "
-              onSelect={(data)=> { 
-                if(data.country_name){
+              className="min-w-[300px]"
+              onSelect={(data) => {
+                if (data.country_name) {
                   handleSelectCountry(data.country_name)
                 }
-                if(data.city_name){
+                if (data.city_name) {
                   handleSelectCity(data.country_name, data.city_name)
-                } 
-              } }
+                }
+              }}
             />
-
- 
 
             {/* Sports Select - dynamic from API */}
             <Select
@@ -231,10 +220,10 @@ function ExploreFilter({
               </SelectTrigger>
               <SelectContent position="popper">
                 <SelectItem value="8" className="hover:bg-brand!">
-                  U03 - U08
+                  U3 - U8
                 </SelectItem>
                 <SelectItem value="12" className="hover:bg-brand!">
-                  U09 - U12
+                  U9 - U12
                 </SelectItem>
                 <SelectItem value="17" className="hover:bg-brand!">
                   U13 - U17

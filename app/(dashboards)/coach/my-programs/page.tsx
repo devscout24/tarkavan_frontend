@@ -1,4 +1,5 @@
 "use client"
+
 import ProgramCard from "@/components/common/program-card"
 import ProgramFilterDropdown from "@/components/common/ProgramFilterDropdown"
 import CommonBtn from "@/components/common/common-btn"
@@ -100,29 +101,7 @@ export default function UpcomingEventPage() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const programActions = (program: any) => [
-    {
-      label: "Edit Programs",
-      onSelect: () => {
-        if (program) {
-          localStorage.setItem("edit_program_id", String(program.id))
-        }
-        router.push(`/coach/my-programs/${program.id}?edit-program=program`)
-      },
-    },
-    {
-      label: "Active Programs",
-      onSelect: () => {},
-    },
-    {
-      label: "Deactive Programs",
-      onSelect: () => {},
-    },
-    {
-      label: "Delete Programs",
-      onSelect: () => {},
-    },
-  ]
+ 
 
   const [programs, setPrograms] = useState<any[]>([])
   const [latestUpcomingProgram, setLatestUpcomingProgram] = useState<any>(null)
@@ -148,6 +127,18 @@ export default function UpcomingEventPage() {
       }
     }
     fetchPrograms()
+
+
+    const reloadData = ()=> {
+       fetchPrograms()
+    }
+
+    window.addEventListener("programDeleted", reloadData)
+
+    return () => {
+      window.removeEventListener("programDeleted", reloadData)
+    }
+
   }, [searchParams])
 
   return (
@@ -255,7 +246,7 @@ export default function UpcomingEventPage() {
                         String(latestUpcomingProgram.id)
                       )
                       router.push(
-                        `/coach/my-programs/${latestUpcomingProgram.id}?edit-program=program`
+                        `/coach/my-programs/${latestUpcomingProgram.id}?add-new=program`
                       )
                     }}
                   />
@@ -282,29 +273,53 @@ export default function UpcomingEventPage() {
             <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {programs.map((program) => {
                 return (
+                  // <ProgramCard
+                  //   key={program.id}
+                  //   id={program.id}
+                  //   title={program.program_name}
+                  //   coachName={program.provider?.name || "N/A"}
+                  //   schedule={formatScheduleLabel(
+                  //     program.start_date,
+                  //     program.end_date,
+                  //     program.times?.[0]?.time
+                  //   )}
+                  //   duration={formatDuration(
+                  //     program.start_date,
+                  //     program.end_date
+                  //   )}
+                  //   currentPrice={`$${program.discount_price || program.price}`}
+                  //   imageSrc={program.photo || "/images/player1.png"}
+                  //   imageAlt={program.program_name}
+                  //   buttonLabel="View Details"
+                  //   onClick={() =>
+                  //     router.push(`/coach/my-programs/${program.id}`)
+                  //   }
+                  //   threeDotsItems={programActions(program)}
+                  //   viewOnly={false}
+                  // />
                   <ProgramCard
                     key={program.id}
-                    id={program.id}
+                    id={program.id.toString()}
                     title={program.program_name}
-                    coachName={program.provider?.name || "N/A"}
-                    schedule={formatScheduleLabel(
-                      program.start_date,
-                      program.end_date,
-                      program.times?.[0]?.time
-                    )}
-                    duration={formatDuration(
-                      program.start_date,
-                      program.end_date
-                    )}
-                    currentPrice={`$${program.discount_price || program.price}`}
-                    imageSrc={program.photo || "/images/player1.png"}
-                    imageAlt={program.program_name}
-                    buttonLabel="View Details"
-                    onClick={() =>
-                      router.push(`/coach/my-programs/${program.id}`)
+                    type={program.coach_name}
+                    schedule={moment(
+                      program.times[0].start_time,
+                      "HH:mm:ss"
+                    ).format("hh:mm A")}
+                    duration={`${moment(program.program_start).format("MMM Do YY")} - ${moment(program.program_end).format("MMM Do YY")}`}
+                    currentPrice={
+                      program.price
+                        ? `$${program.price - program.discount_price}`
+                        : `$${program.program_price}`
                     }
-                    threeDotsItems={programActions(program)}
+                    previousPrice={String(
+                      program.discount_price + program.price
+                    )}
+                    imageSrc={program.photo}
+                    imageAlt={program.program_name}
+                    buttonLabel="View Details" 
                     viewOnly={false}
+                    editLink={`/coach/my-programs/${program.id}?add-new=program`}
                   />
                 )
               })}

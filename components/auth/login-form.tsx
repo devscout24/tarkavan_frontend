@@ -20,7 +20,7 @@ export default function LoginForm() {
     setLoading(true)
     try {
       const res = await loginUser({ email, password })
-      console.log(res)
+      
 
       if (res.data.status) {
         toast.success("Login successful! Welcome back.")

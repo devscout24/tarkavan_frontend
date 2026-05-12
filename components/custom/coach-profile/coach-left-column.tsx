@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import CommonBtn from "@/components/common/common-btn"
 import ProgramCoachCard from "@/components/common/program-coach-card"
 import { Card } from "@/components/ui/card"
+import { getApiBaseUrl } from "@/lib/url-utils"
 import {
   FacebookIcon,
   FullStarIcon,
@@ -79,57 +80,79 @@ export default function CoachLeftColumn() {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("go_elite_token")
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://tarkavan.thenightowl.team/api"
+        const baseUrl = getApiBaseUrl()
 
         // Fetch coach profile data
-        const profileResponse = await fetch(`${baseUrl}/coach/profile/data/edit`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+        const profileResponse = await fetch(
+          `${baseUrl}/coach/profile/data/edit`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
           }
-        })
+        )
 
         if (profileResponse.ok) {
           const profileResult = await profileResponse.json()
           if (profileResult.status) {
-            console.log('🔍 Coach Profile API Response:', profileResult.data)
             setProfileData(profileResult.data)
           }
         } else {
-          console.error('Profile response not ok:', profileResponse.status)
+          console.error("Profile response not ok:", profileResponse.status)
         }
 
         // Fetch cities data
         try {
-          const citiesResponse = await fetch(`${baseUrl}/locations/cities`)
+          const authHeaders: HeadersInit | undefined = token
+            ? {
+                Authorization: `Bearer ${token}`,
+              }
+            : undefined
+
+          const citiesResponse = await fetch(`${baseUrl}/locations/cities`, {
+            headers: authHeaders,
+          })
           if (citiesResponse.ok) {
             const citiesResult = await citiesResponse.json()
             if (citiesResult.status) {
               setCities(citiesResult.data)
             }
           } else {
-            console.error('Cities response not ok:', citiesResponse.status)
+            console.error("Cities response not ok:", citiesResponse.status)
           }
         } catch (error) {
-          console.error('Error fetching cities:', error)
+          console.error("Error fetching cities:", error)
         }
 
         // Fetch countries data
         try {
-          const countriesResponse = await fetch(`${baseUrl}/locations/countries`)
+          const countriesResponse = await fetch(
+            `${baseUrl}/locations/countries`,
+            {
+              headers: token
+                ? {
+                    Authorization: `Bearer ${token}`,
+                  }
+                : {},
+            }
+          )
           if (countriesResponse.ok) {
             const countriesResult = await countriesResponse.json()
             if (countriesResult.status) {
               setCountries(countriesResult.data)
             }
           } else {
-            console.error('Countries response not ok:', countriesResponse.status)
+            console.error(
+              "Countries response not ok:",
+              countriesResponse.status
+            )
           }
         } catch (error) {
-          console.error('Error fetching countries:', error)
+          console.error("Error fetching countries:", error)
         }
       } catch (error) {
-        console.error('Error fetching coach profile data:', error)
+        console.error("Error fetching coach profile data:", error)
       } finally {
         setLoading(false)
       }
@@ -140,30 +163,32 @@ export default function CoachLeftColumn() {
 
   const getCityName = () => {
     if (!profileData?.city_id) return profileData?.city || ""
-    const city = cities.find(c => c.id === profileData.city_id)
+    const city = cities.find((c) => c.id === profileData.city_id)
     return city?.name || profileData?.city || ""
   }
 
   const getCountryName = () => {
     if (!profileData?.country_id) return profileData?.country || ""
-    const country = countries.find(c => c.id === profileData.country_id)
+    const country = countries.find((c) => c.id === profileData.country_id)
     return country?.name || profileData?.country || ""
   }
 
   const getLocation = () => {
     const cityName = getCityName()
     const countryName = getCountryName()
-    return cityName && countryName ? `${cityName}, ${countryName}` : cityName || countryName || ""
+    return cityName && countryName
+      ? `${cityName}, ${countryName}`
+      : cityName || countryName || ""
   }
 
   if (loading) {
     return (
       <aside className="space-y-4 xl:space-y-5 2xl:space-y-6">
         <div className="animate-pulse">
-          <div className="h-64 bg-secondary/20 rounded-[12px]"></div>
+          <div className="h-64 rounded-[12px] bg-secondary/20"></div>
         </div>
         <div className="animate-pulse">
-          <div className="h-32 bg-secondary/20 rounded-[12px]"></div>
+          <div className="h-32 rounded-[12px] bg-secondary/20"></div>
         </div>
       </aside>
     )
@@ -181,7 +206,7 @@ export default function CoachLeftColumn() {
 
   const tags = [
     profileData.gender?.toUpperCase(),
-    ...profileData.coaching_titles.map(title => title.title.toUpperCase())
+    ...profileData.coaching_titles.map((title) => title.title.toUpperCase()),
   ]
 
   return (
@@ -233,22 +258,22 @@ export default function CoachLeftColumn() {
         <div className="flex flex-wrap items-center gap-3 xl:flex-nowrap xl:justify-between">
           <div className="flex items-center gap-4 xl:gap-5 xl:[&_svg]:scale-110 2xl:[&_svg]:scale-125">
             {/* Debug: Show all social media icons temporarily */}
-            <div className="cursor-pointer hover:opacity-80 transition-opacity">
+            <div className="cursor-pointer transition-opacity hover:opacity-80">
               <FacebookIcon />
             </div>
-            <div className="cursor-pointer hover:opacity-80 transition-opacity">
+            <div className="cursor-pointer transition-opacity hover:opacity-80">
               <InstagramIcon />
             </div>
-            <div className="cursor-pointer hover:opacity-80 transition-opacity">
+            <div className="cursor-pointer transition-opacity hover:opacity-80">
               <TiktokIcon />
             </div>
-            <div className="cursor-pointer hover:opacity-80 transition-opacity">
+            <div className="cursor-pointer transition-opacity hover:opacity-80">
               <XIcon />
             </div>
-            <div className="cursor-pointer hover:opacity-80 transition-opacity">
+            <div className="cursor-pointer transition-opacity hover:opacity-80">
               <WhatsappIcon />
             </div>
-            
+
             {/* Original conditional rendering */}
             {/* {profileData.facebook_link && <FacebookIcon />}
             {profileData.instagram_link && <InstagramIcon />}

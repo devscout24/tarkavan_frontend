@@ -28,8 +28,7 @@ export default function ProgramDetailsPage() {
   const currentUser = localStorage.getItem("go_elite_user")
     ? JSON.parse(localStorage.getItem("go_elite_user") as string)
     : null
-
-  console.log("Program ID from URL:", details )
+ 
 
   useEffect(() => {
     const getDetailsOfProgram = async () => {
@@ -70,6 +69,9 @@ export default function ProgramDetailsPage() {
     }
 
   }, [id])
+
+  console.log(details?.provider)
+ 
 
   return (
     <section className="text-white">
@@ -171,6 +173,7 @@ export default function ProgramDetailsPage() {
             tags={[]}
             name={details?.provider?.name || ""}
             verifiedLabel={details?.provider?.type}
+            showMessageButton={details?.provider?.is_program_maker ? false : true}
           />
           <ProgramDateTimeSelector
             programStartDate={details?.start_date}
@@ -180,6 +183,7 @@ export default function ProgramDetailsPage() {
             priceToShow={
               Number(details?.price) - Number(details?.discount_price)
             }
+            isOwner={details?.provider?.is_program_maker}
           />
         </div>
       </div>

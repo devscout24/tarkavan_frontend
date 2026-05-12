@@ -24,6 +24,8 @@ type Coach = {
   phone: string | null;
   address: string | null;
   profile_image: string;
+  city: string;
+  country: string;
 };
 
 export type TPlayerTeam = {

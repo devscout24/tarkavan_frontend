@@ -76,6 +76,23 @@ export async function endorseProfile(formData: FormData) {
   }
 }
 
+export async function storeVote(formData: FormData) {
+  try {
+    const res = await api.post(`/player/vote`, formData)
+    revalidatePath(`/profile/player/${formData.get("athlete_profile_id")}`)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+
  
 
 

@@ -13,7 +13,7 @@ import { IoLogoWhatsapp } from "react-icons/io5"
 import Nav from "@/components/common/nav"
 import Footer from "@/components/common/footer"
 import CommonBtn from "@/components/common/common-btn"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   HoverCard,
   HoverCardContent,
@@ -37,21 +37,56 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { storeVote } from "../../../action"
+import { domToPng } from "modern-screenshot" 
+import { StaticImageData } from "next/image"
+import { convertToJpg } from "@/lib/convertToJpg"
 // Inline type definitions for profile data
-
-interface Achievement {
-  id: number
-  title: string
-  description: string
-  date_earned: string
-  image: string | null
-}
 
 interface ProfilePageProps {
   data: TPlayerProfile
 }
 
 export default function ProfilePage({ data }: ProfilePageProps) {
+ 
+  const [rawImage, setRawImage] = useState<StaticImageData | string>("")
+  console.log("Raw image data:", rawImage)
+
+  useEffect(() => {
+  const run = async () => {
+    const el = document.getElementById("og_image")
+    if (!el) return
+
+    await document.fonts.ready
+
+    await Promise.all(
+      Array.from(document.images).map(
+        (img) =>
+          new Promise((res) => {
+            if (img.complete) res(null)
+            else img.onload = res
+          })
+      )
+    )
+
+    await new Promise((r) => requestAnimationFrame(() => r(null)))
+    await new Promise((r) => setTimeout(r, 1200))
+
+    const dataUrl = await domToPng(el, {
+      width: el.scrollWidth,
+      height: el.scrollHeight,
+      scale: 2,
+    }) 
+
+    const filnalImg = await convertToJpg(dataUrl)
+    
+    setRawImage(filnalImg)
+ 
+  }
+
+  run()
+}, [data])
+
   const [teamVoted, setTeamVoted] = useState(false)
   const [academyVoted, setAcademyVoted] = useState(false)
   const [loading, setLoading] = useState({
@@ -64,6 +99,16 @@ export default function ProfilePage({ data }: ProfilePageProps) {
   mapPosition.push(data?.position_info?.secondary_position)
   const columnBorderClass = "border-r border-white/15 last:border-r-0"
 
+  const handleVote = async (type: "team" | "academy") => {
+    try {
+      const formData = new FormData()
+
+      const res = await storeVote(formData)
+    } catch (err) {
+      console.error("Error voting:", err)
+    }
+  }
+
   return (
     <>
       <Nav />
@@ -74,6 +119,7 @@ export default function ProfilePage({ data }: ProfilePageProps) {
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
         }}
+        id="og_image"
       >
         <div className="flex flex-col items-center justify-center">
           <Logo className="w-full max-w-111.25!" />
@@ -282,8 +328,6 @@ export default function ProfilePage({ data }: ProfilePageProps) {
             </div>
           </div>
 
-          
-
           <div className="sticky bottom-0 mt-10 flex w-full flex-wrap justify-center gap-10 py-5 backdrop-blur-md">
             <CommonBtn
               size={"lg"}
@@ -304,13 +348,7 @@ export default function ProfilePage({ data }: ProfilePageProps) {
               variant={"default"}
               text={academyVoted ? "Voted" : "Professional Academy Vote"}
               className="w-fit cursor-pointer bg-red-500 px-10 text-primary hover:bg-red-500/80 hover:text-primary"
-              onClick={() => {
-                setLoading((prev) => ({ ...prev, academy: true }))
-                setTimeout(() => {
-                  setAcademyVoted((prev) => !prev)
-                  setLoading((prev) => ({ ...prev, academy: false }))
-                }, 2000)
-              }}
+              onClick={() => handleVote("academy")}
               isLoading={loading.academy}
             />
           </div>

@@ -20,6 +20,9 @@ import { FaWhatsapp } from "react-icons/fa6"
 import CommonBtn from "@/components/common/common-btn"
 import ShareModal from "@/components/common/modal/all-modals/share-modal"
 import { useEffect, useState } from "react"
+import { StaticImageData } from "next/image" 
+import { domToPng } from "modern-screenshot" 
+
 
 export default function SocialLinks({
   facebookUrl = "#",
@@ -48,6 +51,10 @@ export default function SocialLinks({
       setProfileId(parsed?.profile_id);
     }
   }, []);
+
+
+ 
+ 
 
   return (
     <Card className="mt-6 border border-secondary/20 bg-primary">
@@ -86,11 +93,11 @@ export default function SocialLinks({
       
       {profileId  && 
       <ShareModal
-      key={"shareUrl"}
-      open={openShareModal}
-      onOpenChange={setOpenShareModal}
-      url={`${window.location.origin}/${profileUrl}/${profileId}`}  
-      title="Watch my Player Card"
+        key={"shareUrl"}
+        open={openShareModal}
+        onOpenChange={setOpenShareModal}
+        url={`${window.location.origin}/${profileUrl}/${profileId}`}  
+        title="Watch my Player Card"
       />
       }
     </Card>

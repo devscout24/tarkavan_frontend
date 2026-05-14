@@ -359,9 +359,9 @@ export default function ProgramDateTimeSelector({
               <Button
                 key={index}
                 variant="outline"
-                className={`${slot.is_booked ? "line-through" : ""} ${selectedTime?.id === slot.id ? "border-brand" : "border-[#DEDEDE]"} relative h-10 rounded-xl bg-white text-sm font-medium text-[#202020] hover:bg-[#F8F8F8]`}
+                className={`${!slot.is_available ? "line-through" : ""} ${selectedTime?.id === slot.id ? "border-brand" : "border-[#DEDEDE]"} relative h-10 rounded-xl bg-white text-sm font-medium text-[#202020] hover:bg-[#F8F8F8]`}
                 onClick={() => setSelectedTime(slot)}
-                disabled={slot.is_booked}
+                disabled={!slot.is_available}
               >
                 {moment(slot.start_time, "HH:mm").format("LT")} -{" "}
                 {moment(slot.end_time, "HH:mm").format("LT")}

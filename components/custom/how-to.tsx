@@ -1,37 +1,12 @@
 "use client"
-
-import Image from "next/image"
+ 
 import GoEliteShap from "../icons/go-elite-shap"
 import Container from "../common/container"
+import { TStepsResponse } from "@/types"
 
-const steps = [
-  {
-    number: "1",
-    title: "Create Your Profile",
-    desc: "Sign up and build your sports profile with your experience, skills, and achievements.",
-    side: "left",
-  },
-  {
-    number: "2",
-    title: "Discover & Connect",
-    desc: "Find coaches, players, or teams that match your goals using smart filters.",
-    side: "right",
-  },
-  {
-    number: "3",
-    title: "Book Training",
-    desc: "Schedule sessions with certified coaches, pick dates and times that fit your calendar.",
-    side: "left",
-  },
-  {
-    number: "4",
-    title: "Grow Your Career",
-    desc: "Improve your skills, track progress, earn recognition, and build your sports career.",
-    side: "right",
-  },
-]
+ 
 
-export default function HowGoEliteWorks() {
+export default function HowGoEliteWorks({ data }: { data: TStepsResponse | undefined }) {
   return (
     <section className="w-full bg-[#060807] px-6 py-10 md:py-20 text-white">
       {/* Header */}
@@ -51,17 +26,17 @@ export default function HowGoEliteWorks() {
 
           {/* Steps */}
           <div className="flex flex-col gap-4 md:gap-10 lg:gap-14">
-            {steps.map((step) => (
+            {data?.steps.map((step, i) => (
               <div
-                key={step.number}
+                key={step.id  }
                 className={`flex w-full mt-2 md:mt-6 lg:mt-12 relative z-2  ${
-                  step.side === "right" ? "justify-end" : "justify-start"
+                  i%2 === 1 ? "justify-end" : "justify-start"
                 }`}
               >
                 <div className="relative flex gap-6  ">
                   {/* Large ghost number */}
                   <span className=" text-2xl md:text-5xl lg:text-[128px] leading-none font-bold text-secondary select-none">
-                    {step.number}
+                    {i+1}
                   </span>
 
                   {/* Content */}
@@ -70,7 +45,7 @@ export default function HowGoEliteWorks() {
                       {step.title}
                     </h3>
                     <p className="mt-2 text-base md:text-xl leading-relaxed text-white/80">
-                      {step.desc}
+                      {step.description}
                     </p>
                   </div>
                 </div>

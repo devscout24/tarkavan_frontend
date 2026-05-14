@@ -1,5 +1,18 @@
 import { TPlayerPosition } from "@/types/player.type"
-import SoccerLineUp, { type Team, type Player } from "react-soccer-lineup"
+import SoccerLineUp, { type Team } from "react-soccer-lineup"
+
+type Player = {
+  name?: string
+  number?: number | string
+  style?: {
+    color?: string
+    borderColor?: string
+    nameColor?: string
+    numberColor?: string
+    numberBackgroundColor?: string
+  }
+  offset?: { x?: number; y?: number }
+}
 
 type PositionMapProps = {
   data?: TPlayerPosition[] | null
@@ -27,12 +40,12 @@ const makeSlot = (
   code: string,
   label: string,
   offset?: { x?: number; y?: number }
-): Player => {
+): any => {
   const item = byCode[code]
   if (!item) return emptySlot()
 
   return {
-    number: item.id,
+    number: code,
     name: label,
     ...(offset ? { offset } : {}),
   }
@@ -43,49 +56,46 @@ export default function PositionMap({ data }: PositionMapProps) {
     ? data.filter((item): item is TPlayerPosition => !!item?.name)
     : []
 
-  const byCode = safeData.reduce<Record<string, TPlayerPosition>>((acc, item) => {
-    const code = extractShortCode(item.name)
-    if (!code) return acc
+  const byCode = safeData.reduce<Record<string, TPlayerPosition>>(
+    (acc, item) => {
+      const code = extractShortCode(item.name)
+      if (!code) return acc
 
-    if (code === "CB") {
-      if (!acc["RCB"]) {
-        acc["RCB"] = item
-      } else {
-        acc["LCB"] = item
+      if (code === "CB") {
+        if (!acc["RCB"]) {
+          acc["RCB"] = item
+        } else {
+          acc["LCB"] = item
+        }
+        return acc
       }
-      return acc
-    }
 
-    const normalized: Record<string, string> = {
-      DM: "CDM",
-      AM: "CAM",
-    }
-    acc[normalized[code] ?? code] = item
-    return acc
-  }, {})
+      const normalized: Record<string, string> = {
+        DM: "CDM",
+        AM: "CAM",
+      }
+      acc[normalized[code] ?? code] = item
+      return acc
+    },
+    {}
+  )
 
   const awayTeam: Team = {
     squad: {
       gk: makeSlot(byCode, "GK", "Goalkeeper"),
 
       df: [
-        makeSlot(byCode, "RB",  "Right Back"),
+        makeSlot(byCode, "RB", "Right Back"),
         makeSlot(byCode, "RCB", "Centre Back"),
         makeSlot(byCode, "LCB", "Centre Back"),
-        makeSlot(byCode, "LB",  "Left Back"),
+        makeSlot(byCode, "LB", "Left Back"),
       ],
 
-      cdm: [
-        makeSlot(byCode, "CDM", "Defensive Mid"),
-      ],
+      cdm: [makeSlot(byCode, "CDM", "Defensive Mid")],
 
-      cm: [
-        makeSlot(byCode, "CM", "Central Mid"),
-      ],
+      cm: [makeSlot(byCode, "CM", "Central Mid")],
 
-      cam: [
-        makeSlot(byCode, "CAM", "Attacking Mid"),
-      ],
+      cam: [makeSlot(byCode, "CAM", "Attacking Mid")],
 
       fw: [
         makeSlot(byCode, "RW", "Right Winger"),

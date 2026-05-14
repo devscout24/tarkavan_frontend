@@ -77,8 +77,7 @@ export default function RadarStrength({
                   text="Endorse"
                   size={"sm"}
                   variant={"outline"}
-                  disabled={loading}
-                  isLoading={loading}
+                  disabled={loading} 
                   onClick={() =>
                     handleEndorse({
                       strengthId: String(item.id),

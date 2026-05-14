@@ -19,10 +19,9 @@ export default function LoginForm() {
   const handleLogin = async () => {
     setLoading(true)
     try {
-      const res = await loginUser({ email, password })
-      
+      const res = await loginUser({ email, password }) 
 
-      if (res.data.status) {
+      if (res?.data?.status) {
         toast.success("Login successful! Welcome back.")
         await setAuthCookie(res.data.data.token)
         localStorage.setItem("go_elite_token", res.data.data.token)
@@ -37,7 +36,7 @@ export default function LoginForm() {
           profile_image: dbUser.profile_image,
           role: dbUser.role,
           status: dbUser.status,
-          profile_id: res.data.data.profile_id,
+          profile_id: res.data.data.profile_id, 
         }
         localStorage.setItem("go_elite_user", JSON.stringify(newUserData))
         setLoading(false)

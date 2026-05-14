@@ -2,13 +2,9 @@
 
 import { useEffect, useRef, useState } from "react"
 import Container from "../common/container"
+import { TLandingStats } from "@/types"
 
-const counters = [
-  { value: 10, suffix: "K+", desc: "Active Athletes" },
-  { value: 2500, suffix: "+", desc: "Certified Coaches" },
-  { value: 500, suffix: "+", desc: "Teams" },
-  { value: 10, suffix: "K+", desc: "Sessions Booked" },
-]
+
 
 function formatValue(value: number, suffix: string): string {
   if (suffix === "K+") return `${value}K+`
@@ -61,7 +57,7 @@ function CounterItem({ value, suffix, desc, triggered }: CounterItemProps) {
   )
 }
 
-export default function Counter() {
+export default function Counter({ data }: { data?: TLandingStats | null }) {
   const counterRef = useRef<HTMLDivElement>(null)
   const [triggered, setTriggered] = useState(false)
 
@@ -82,6 +78,13 @@ export default function Counter() {
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
+
+  const counters = [
+  { value: data?.active_athletes || 0, suffix: "+", desc: "Active Athletes" },
+  { value: data?.certified_coaches || 0, suffix: "+", desc: "Certified Coaches" },
+  { value: data?.teams || 0, suffix: "+", desc: "Teams" },
+  { value: data?.session_booked || 0, suffix: "+", desc: "Sessions Booked" },
+]
 
   return (
     <section className="w-full bg-[#060807] px-6 pb-10">

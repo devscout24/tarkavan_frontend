@@ -270,7 +270,7 @@ export default function UpcomingEventPage() {
               imageSrc={program.photo}
               imageAlt={program.program_name}
               buttonLabel="View Details" 
-              editLink={`/club/my-programs/${program.id}/add-new=program`}
+              editLink={`/club/my-programs/${program.id}?`}
               viewOnly={false}
             />
           ))

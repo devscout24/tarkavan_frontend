@@ -46,7 +46,7 @@ export default function ChildProfile() {
 
     const profileData = async () => {
       try {
-        const res = await getPlayerProfile(String(child_id)) 
+        const res = await getPlayerProfile(String(child_id))
         if (res && "success" in res && res.data && res.data.data) {
           setPlayerData(res.data.data)
         }
@@ -68,21 +68,20 @@ export default function ChildProfile() {
     }
   }, [child_id])
 
-    const mapPosition = []
-    mapPosition.push(playerData?.position_info?.primary_position)
-    mapPosition.push(playerData?.position_info?.secondary_position)
-    
-    const privacy = playerData?.basic_info?.privacy_settings ?? "public";
-  
-    const iconMap: Record<string, IconType> = {
-      public: FiGlobe,
-      coach_and_team: FaUsers,
-      private: FiLock,
-      only_player: FaUser,
-    };
-  
-    const Icon = iconMap[privacy] ?? FiGlobe;
+  const mapPosition = []
+  mapPosition.push(playerData?.position_info?.primary_position)
+  mapPosition.push(playerData?.position_info?.secondary_position)
 
+  const privacy = playerData?.basic_info?.privacy_settings ?? "public"
+
+  const iconMap: Record<string, IconType> = {
+    public: FiGlobe,
+    coach_and_team: FaUsers,
+    private: FiLock,
+    only_player: FaUser,
+  }
+
+  const Icon = iconMap[privacy] ?? FiGlobe
 
   return (
     <section className="text-white">
@@ -98,7 +97,9 @@ export default function ChildProfile() {
         <CommonBtn
           size={"lg"}
           variant={"default"}
-          onClick={() => router.push(child_id ? `?update=child` : `?update=player`)}
+          onClick={() =>
+            router.push(child_id ? `?update=child` : `?update=player`)
+          }
           text="Edit"
           icon={<Edit className="h-5 w-5" />}
           className="w-fit bg-brand px-3 text-primary hover:bg-brand/80"
@@ -207,17 +208,17 @@ export default function ChildProfile() {
                           </span>
                         </HoverCardTrigger>
                         <HoverCardContent>
-                          Provincial Team Vote: {playerData?.provencial_votes}{" "}
+                          Provincial Team Votes: {playerData?.provencial_votes}{" "}
                           votes
                         </HoverCardContent>
                       </HoverCard>
                       <div className="flex items-center gap-2">
                         <span className="block h-2 w-2 rounded-full bg-yellow-500" />
-                        <p className="text-white">Provincial Team</p>
+                        <p className="text-white">Provincial Team Votes</p>
                       </div>
                     </div>
 
-                    {/* Professional academy votes */}
+                    {/* Professional Academy Votess */}
                     <div className="grid grid-cols-2">
                       <HoverCard openDelay={0}>
                         <HoverCardTrigger className="relative w-fit">
@@ -227,13 +228,13 @@ export default function ChildProfile() {
                           </span>
                         </HoverCardTrigger>
                         <HoverCardContent>
-                          Professional Academy Vote:{" "}
+                          Professional Academy Votes:{" "}
                           {playerData?.professional_votes} votes
                         </HoverCardContent>
                       </HoverCard>
                       <div className="flex items-center gap-2">
                         <span className="block h-2 w-2 rounded-full bg-red-500" />
-                        <p className="text-white">Professional Academy</p>
+                        <p className="text-white">Professional Academy Votes</p>
                       </div>
                     </div>
                   </div>
@@ -249,7 +250,7 @@ export default function ChildProfile() {
             </h2>
 
             <div className="overflow-hidden rounded-xl bg-secondary/30">
-              <PositionMap data={mapPosition as TPlayerPosition[]}  />
+              <PositionMap data={mapPosition as TPlayerPosition[]} />
             </div>
           </div>
 

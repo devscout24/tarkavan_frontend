@@ -12,6 +12,7 @@ import CoachCard from "../components/coach-card"
 import Lottie from "lottie-react"
 import animationData from "@/public/searching.json"
 import SearchExploreSkeleton from "../components/skeleton-search-program"
+import { useRouter } from "next/navigation"
 
 
 
@@ -87,6 +88,12 @@ export default function SearchExplore() {
 
   fetchData();
   }, [filters, currentPage])
+
+
+  const router = useRouter()
+
+ 
+
   
   return (
     <section>
@@ -140,6 +147,7 @@ export default function SearchExplore() {
                 assists={String(item?.assists)} 
                 games={String(item?.games)}
                 goals={String(item?.goals)}
+                onClick={() => router.push(`/profile/player/${item?.athlete_profile_id}`)}
                 /> 
               )
             }

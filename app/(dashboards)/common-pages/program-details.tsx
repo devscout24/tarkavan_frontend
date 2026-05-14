@@ -25,6 +25,7 @@ export default function ProgramDetailsPage() {
   const [details, setDetails] = useState<TProgramDetailsParentAndPlayer | null>(
     null
   )
+ 
   const currentUser = localStorage.getItem("go_elite_user")
     ? JSON.parse(localStorage.getItem("go_elite_user") as string)
     : null
@@ -69,8 +70,7 @@ export default function ProgramDetailsPage() {
     }
 
   }, [id])
-
-  console.log(details?.provider)
+ 
  
 
   return (
@@ -178,7 +178,7 @@ export default function ProgramDetailsPage() {
           <ProgramDateTimeSelector
             programStartDate={details?.start_date}
             programEndDate={details?.end_date}
-            price={details?.discount_price}
+            price={details?.price}
             detailsID={String(id)}
             priceToShow={
               Number(details?.price) - Number(details?.discount_price)

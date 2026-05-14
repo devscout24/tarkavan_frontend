@@ -445,7 +445,7 @@ export default function PlayerAddModal() {
 
       try {
         const res = await addChild(formData)
-        console.log(res)
+ 
         if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
           toast.success(getToastMessage(res.data.message, "Child added successfully"))
           resetWizardState()

@@ -12,10 +12,11 @@ import ToComplite from "@/components/custom/to-complite"
 import AthletesAndCoaches from "@/components/custom/trusted"
 import { useEffect, useState } from "react"
 import { getLandingPageData } from "./action"
+import { THeroData, TLandingPageData } from "@/types/landing.type"
 
 export default function Page() {
 
-  const [allData, setAllData] = useState(null)
+  const [allData, setAllData] = useState<TLandingPageData | null>(null)
   console.log(allData)
   useEffect(() => {
     const getData = async () => {
@@ -42,13 +43,13 @@ export default function Page() {
     <>
       <Nav />
 
-      <Banner />
+      <Banner data={allData?.hero} />
 
-      <Counter />
+      <Counter data={allData?.stats} />
 
-      <Ecosystem />
+      <Ecosystem data={allData?.ecosystem} />
 
-      <HowGoEliteWorks />
+      <HowGoEliteWorks data={allData?.how_it_works} />
 
       <ToComplite />
 

@@ -31,7 +31,7 @@ export default function ProfileTop({
         <div className="flex items-center gap-4">
           <div className="relative border border-brand rounded-full overflow-hidden">
             <Image
-              src={profileTopInfo?.image}
+              src={profileTopInfo?.image || "/images/bannerbg.png"}
               alt={profileTopInfo?.name}
               width={80}
               height={80}

@@ -77,7 +77,7 @@ const strengthCategories: StrengthCategory[] = [
   },
 ]
 
-const MAX_STRENGTHS = 5
+const MAX_STRENGTHS = 7
 
 export default function Strengths({
   currentStep,

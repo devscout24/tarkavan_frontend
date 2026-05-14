@@ -1,8 +1,8 @@
 "use server"
 
-import api from "@/lib/api-fetcher"
+import api from "@/lib/api-fetcher" 
 import { TApiError } from "@/types"
-import axios from "axios"
+import axios from "axios" 
 
 export async function getLandingPageData() {
   try {
@@ -19,3 +19,4 @@ export async function getLandingPageData() {
     }
   }
 }
+ 

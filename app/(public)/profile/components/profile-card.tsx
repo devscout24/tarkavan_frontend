@@ -14,13 +14,12 @@ export default function ProfileCard({
   provincialVotes = 0,
   academyVotes = 0,
   basic_info,
-  position_info
+  position_info,
 }: {
   provincialVotes?: number
   academyVotes?: number
   basic_info: TPlayerBasicInfo
   position_info: TPlayerPositionInfo
-
 }) {
   return (
     <div className="relative overflow-hidden rounded-[22px] border border-brand/80 bg-[#0d0f16] shadow-[0_0_0_1px_rgba(178,246,111,0.2),0_18px_45px_rgba(0,0,0,0.5)]">
@@ -29,29 +28,32 @@ export default function ProfileCard({
       </div>
 
       {/* stars */}
-      <div className="  flex w-full flex-col justify-end items-end gap-2 px-5 pt-5 absolute top-0 right-0 z-2    ">
+      <div className="absolute top-0 right-0 z-2 flex w-full flex-col items-end justify-end gap-2 px-5 pt-5">
         {/* provincial votes */}
-          <HoverCard openDelay={0}>
-            <HoverCardTrigger className=" relative    ">
-              <FaStar className="text-7xl text-yellow-500" />
-              <span className=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 font-bold text-white text-2xl    ">{provincialVotes}</span>
-            </HoverCardTrigger>
-            <HoverCardContent>
-              Provincial Team Vote: {provincialVotes} votes
-            </HoverCardContent>
-          </HoverCard>
- 
+        <HoverCard openDelay={0}>
+          <HoverCardTrigger className="relative">
+            <FaStar className="text-7xl text-yellow-500" />
+            <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
+              {provincialVotes}
+            </span>
+          </HoverCardTrigger>
+          <HoverCardContent>
+            Provincial Team Votes: {provincialVotes} votes
+          </HoverCardContent>
+        </HoverCard>
 
-        {/* Professional academy votes */}
-          <HoverCard openDelay={0}>
-            <HoverCardTrigger className="relative">
-              <FaStar className="text-7xl text-red-500" />
-              <span className=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 font-bold text-white text-2xl    ">{academyVotes}</span>
-            </HoverCardTrigger>
-            <HoverCardContent>
-              Professional Academy Vote: {academyVotes} votes
-            </HoverCardContent>
-          </HoverCard> 
+        {/* Professional Academy Votess */}
+        <HoverCard openDelay={0}>
+          <HoverCardTrigger className="relative">
+            <FaStar className="text-7xl text-red-500" />
+            <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
+              {academyVotes}
+            </span>
+          </HoverCardTrigger>
+          <HoverCardContent>
+            Professional Academy Votes: {academyVotes} votes
+          </HoverCardContent>
+        </HoverCard>
       </div>
 
       <div className="relative min-h-155 w-full">
@@ -69,32 +71,41 @@ export default function ProfileCard({
         <div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-6">
           <h2 className="text-[42px] leading-[0.88] font-bold tracking-tight text-white">
             {basic_info?.name}
-            <span className="mt-1 block text-brand">{basic_info?.last_name}</span>
+            <span className="mt-1 block text-brand">
+              {basic_info?.last_name}
+            </span>
           </h2>
 
           <p className="mt-3 text-lg leading-tight text-white/92">
-            {position_info?.primary_position?.name} {position_info?.club_team ? `| ${position_info.club_team}` : ""}
+            {position_info?.primary_position?.name}{" "}
+            {position_info?.club_team ? `| ${position_info.club_team}` : ""}
           </p>
 
           <div className="mt-2 flex items-center gap-2 text-lg leading-tight text-white/92">
             <MapPin className="size-5 text-white/88" />
 
-            <span>{basic_info?.city} , {basic_info?.country} </span>
+            <span>
+              {basic_info?.city} , {basic_info?.country}{" "}
+            </span>
             <CiLock />
-            <span>{basic_info?.age >= 18 ? "No parental control" : "Parental Control Active"}</span>
+            <span>
+              {basic_info?.age >= 18
+                ? "No parental control"
+                : "Parental Control Active"}
+            </span>
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2.5">
             <span className="rounded-lg border border-white/20 bg-white/8 px-3 py-2 text-base leading-none font-medium text-white/92">
               <IoIosFootball />
             </span>
-            <span className="uppercase rounded-lg border border-white/20 bg-white/8 px-4 py-2 text-base font-medium text-white/92">
+            <span className="rounded-lg border border-white/20 bg-white/8 px-4 py-2 text-base font-medium text-white/92 uppercase">
               {basic_info?.gender}
             </span>
             <span className="rounded-lg border border-white/20 bg-white/8 px-4 py-2 text-base font-medium text-white/92">
               UNDER-{basic_info?.age}
             </span>
-            <span className="uppercase rounded-lg border border-white/20 bg-white/8 px-4 py-2 text-base font-medium text-white/92">
+            <span className="rounded-lg border border-white/20 bg-white/8 px-4 py-2 text-base font-medium text-white/92 uppercase">
               {position_info?.dominant_foot}
             </span>
           </div>

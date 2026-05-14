@@ -61,30 +61,37 @@ export default function PLayerProgramPage({ child_id }: { child_id: string }) {
       />
 
       {/* programs cards */}
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {programs.map((program, index) => (
-          <ProgramCard
-            key={index}
-            id={program.id}
-            title={program.program_name}
-            type={program.program_type}
-            schedule={moment(program.times[0].start_time, "HH:mm:ss").format("hh:mm A")}
-            duration={moment(program.program_start).format("MMM Do YY")}
-            currentPrice={String(program.price - program.discount_price)}
-            previousPrice={String(program.price)}
-           discountLabel={`${(
-            ((program.discount_price) / program.price) *
-            100
-          ).toFixed(2)}% Off`}
-            imageSrc={program.photo}
-            imageAlt={program.program_name}
-            sport={program.sport}
-            buttonLabel="View Details" 
-            viewOnly={true}
-            editLink={child_id ? `/child-dashboard/${child_id}/programs/${program.id}` : `/player/programs/${program.id}`}
-          /> 
-        ))}
-      </div>
+      {programs.length > 0 && 
+        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {programs.map((program, index) => (
+            <ProgramCard
+              key={index}
+              id={program.id}
+              title={program.program_name}
+              type={program.program_type}
+              schedule={moment(program.times[0].start_time, "HH:mm:ss").format("hh:mm A")}
+              duration={moment(program.program_start).format("MMM Do YY")}
+              currentPrice={String(program.price - program.discount_price)}
+              previousPrice={String(program.price)}
+              discountLabel={`${(
+              ((program.discount_price) / program.price) *
+                100
+              ).toFixed(2)}% Off`}
+              imageSrc={program.photo}
+              imageAlt={program.program_name}
+              sport={program.sport}
+              buttonLabel="View Details" 
+              viewOnly={true} 
+              editLink={child_id ? `/child-dashboard/${child_id}/programs/${program.id}` : `/player/programs/${program.id}`}
+            /> 
+          ))}
+        </div>
+      }
+      {programs.length === 0 && (
+        <div className="mt-6 text-center text-gray-500">
+          No programs available.
+        </div>
+      )}
     </section>
   )
 }

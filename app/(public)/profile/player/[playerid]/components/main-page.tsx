@@ -38,9 +38,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { storeVote } from "../../../action"
-import { domToPng } from "modern-screenshot" 
-import { StaticImageData } from "next/image"
-import { convertToJpg } from "@/lib/convertToJpg"
 // Inline type definitions for profile data
 
 interface ProfilePageProps {
@@ -48,44 +45,7 @@ interface ProfilePageProps {
 }
 
 export default function ProfilePage({ data }: ProfilePageProps) {
- 
-  const [rawImage, setRawImage] = useState<StaticImageData | string>("")
-  console.log("Raw image data:", rawImage)
-
-  useEffect(() => {
-  const run = async () => {
-    const el = document.getElementById("og_image")
-    if (!el) return
-
-    await document.fonts.ready
-
-    await Promise.all(
-      Array.from(document.images).map(
-        (img) =>
-          new Promise((res) => {
-            if (img.complete) res(null)
-            else img.onload = res
-          })
-      )
-    )
-
-    await new Promise((r) => requestAnimationFrame(() => r(null)))
-    await new Promise((r) => setTimeout(r, 1200))
-
-    const dataUrl = await domToPng(el, {
-      width: el.scrollWidth,
-      height: el.scrollHeight,
-      scale: 2,
-    }) 
-
-    const filnalImg = await convertToJpg(dataUrl)
-    
-    setRawImage(filnalImg)
- 
-  }
-
-  run()
-}, [data])
+  const [loadPage, setLoadPage] = useState(false)
 
   const [teamVoted, setTeamVoted] = useState(false)
   const [academyVoted, setAcademyVoted] = useState(false)
@@ -286,17 +246,17 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                               </span>
                             </HoverCardTrigger>
                             <HoverCardContent>
-                              Provincial Team Vote:{" "}
+                              Provincial Team Votes:{" "}
                               {data?.provencial_votes || 0} votes
                             </HoverCardContent>
                           </HoverCard>
                           <div className="flex items-center gap-2">
                             <span className="block h-2 w-2 rounded-full bg-yellow-500" />
-                            <p className="text-white">Provincial Team</p>
+                            <p className="text-white">Provincial Team Votes</p>
                           </div>
                         </div>
 
-                        {/* Professional academy votes */}
+                        {/* Professional Academy Votess */}
                         <div className="grid grid-cols-2">
                           <HoverCard openDelay={0}>
                             <HoverCardTrigger className="relative w-fit">
@@ -306,13 +266,15 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                               </span>
                             </HoverCardTrigger>
                             <HoverCardContent>
-                              Professional Academy Vote:{" "}
+                              Professional Academy Votes:{" "}
                               {data?.professional_votes || 0} votes
                             </HoverCardContent>
                           </HoverCard>
                           <div className="flex items-center gap-2">
                             <span className="block h-2 w-2 rounded-full bg-red-500" />
-                            <p className="text-white">Professional Academy</p>
+                            <p className="text-white">
+                              Professional Academy Votes
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -332,7 +294,7 @@ export default function ProfilePage({ data }: ProfilePageProps) {
             <CommonBtn
               size={"lg"}
               variant={"default"}
-              text={teamVoted ? "Voted" : "Provincial Team Vote"}
+              text={teamVoted ? "Voted" : " Provincial Team Votes"}
               className="w-fit cursor-pointer bg-yellow-500 px-10 text-primary hover:bg-yellow-500/80 hover:text-primary"
               onClick={() => {
                 setLoading((prev) => ({ ...prev, team: true }))
@@ -346,7 +308,7 @@ export default function ProfilePage({ data }: ProfilePageProps) {
             <CommonBtn
               size={"lg"}
               variant={"default"}
-              text={academyVoted ? "Voted" : "Professional Academy Vote"}
+              text={academyVoted ? "Voted" : "Professional Academy Votes"}
               className="w-fit cursor-pointer bg-red-500 px-10 text-primary hover:bg-red-500/80 hover:text-primary"
               onClick={() => handleVote("academy")}
               isLoading={loading.academy}

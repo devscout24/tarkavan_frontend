@@ -11,6 +11,8 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import Container from "../common/container"
+import { EcosystemSection } from "@/types"
+import { da } from "date-fns/locale"
 
 type EcosystemCardProps = {
   title: string
@@ -77,7 +79,29 @@ function EcosystemCard({
   )
 }
 
-export default function Ecosystem() {
+export default function Ecosystem({ data }: { data: EcosystemSection | undefined }) {
+
+  const ecosystemItems: EcosystemCardProps[] = [
+  {
+    title:  data?.cards[0]?.title || "For Players",
+    description:  data?.cards[0]?.description || "Build your sports profile, upload highlight videos, track your stats, and connect with professional coaches to accelerate your career.",
+    href: "auth?auth-tab=register?role=player",
+    ctaLabel: "Get Started",
+  },
+  {
+    title:  data?.cards[1]?.title || "For Coaches",
+    description:  data?.cards[1]?.description || "Create a coaching profile, offer training services, manage bookings, and earn revenue - all from one powerful dashboard.",
+    href: "auth?auth-tab=register?role=coach",
+    ctaLabel: "Get Started",
+  },
+  {
+    title:  data?.cards[2]?.title || "For Teams",
+    description:  data?.cards[2]?.description || "Discover talented players, connect with certified coaches, manage your roster, and schedule matches with other teams.",
+    href: "auth?auth-tab=register?role=club",
+    ctaLabel: "Get Started",
+  },
+]
+
   return (
     <section
       className="bg-[#060807]!"
@@ -94,19 +118,21 @@ export default function Ecosystem() {
               <p className="text-lg font-medium text-[#3EE4C2]">
                 Built For Everyone
               </p>
-
-              <h2
-                id="ecosystem-heading"
-                className=" text-xl md:text-2xl lg:text-4xl xl:text-[64px] leading-tight tracking-tight text-white"
-              >
-                One Platform, Three Ecosystems
-              </h2>
-
-              <p className="max-w-2xl text-base md:text-2xl leading-relaxed text-secondary">
-                Whether you&apos;re an athlete looking to level up, a coach
-                growing your business, or a team scouting talent - GoElite has
-                everything you need.
-              </p>
+              
+              {data?.header?.title && (
+                <h2
+                  id="ecosystem-heading"
+                  className=" text-xl md:text-2xl lg:text-4xl xl:text-[64px] leading-tight tracking-tight text-white"
+                >
+                  {data.header.title}
+                </h2>
+              )} 
+              
+              {data?.header?.description && (
+                 <p className="max-w-2xl text-base md:text-2xl leading-relaxed text-secondary">
+                  {data.header.description}
+                </p>
+              )}
             </div>
 
             <Image

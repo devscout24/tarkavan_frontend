@@ -34,35 +34,10 @@ interface Booking {
   status: string
 }
 
-const demoMatches: Booking[] = [
-  {
-    id: "1",
-    clubName: "CANADA STRIKERS FC",
-    clubImage: "https://avatars.githubusercontent.com/u/124599?v=4",
-    teamName: "U16 Elite Academy",
-    date: "Saturday, Oct 14th",
-    status: "Available",
-  },
-  {
-    id: "1",
-    clubName: "CANADA STRIKERS FC",
-    clubImage: "https://avatars.githubusercontent.com/u/124599?v=4",
-    teamName: "U16 Elite Academy",
-    date: "Saturday, Oct 14th",
-    status: "Available",
-  },
-  {
-    id: "1",
-    clubName: "CANADA STRIKERS FC",
-    clubImage: "https://avatars.githubusercontent.com/u/124599?v=4",
-    teamName: "U16 Elite Academy",
-    date: "Saturday, Oct 14th",
-    status: "Available",
-  },
-]
-
+ 
 export default function MatchTable({ matchRequests }: { matchRequests: TMatchRequestByOthersClub[] }) {
   const columnBorderClass = "border-r border-white/15 last:border-r-0"
+  console.log(matchRequests)
 
   const handleUpdateMatchStatus = async (bid_id: string, status: string) => {
     try{
@@ -114,23 +89,23 @@ export default function MatchTable({ matchRequests }: { matchRequests: TMatchReq
                 >
                   <div className="flex items-center gap-3">
                     <Image
-                      src={match.requested_club.team.image || ""}
-                      alt={match.requested_club.club_name}
+                      src={match?.requested_club?.club_logo || ""}
+                      alt={match?.requested_club?.club_name}
                       width={50}
                       height={50}
                       className="h-12.5 w-12.5 rounded-full"
                     />
-                    <span>{match.requested_club.club_name}</span>
+                    <span>{match?.requested_club?.club_name}</span>
                   </div>
                 </TableCell>
                 <TableCell className={columnBorderClass}>
-                  {match.requested_club.team.name}
+                  {match?.requested_club?.club_name}
                 </TableCell>
                 <TableCell className={columnBorderClass}>
-                  {moment(match.match.available_date).format("MMM Do YY")}
+                  {moment(match?.match?.available_date).format("MMM Do YY")}
                 </TableCell>
                 <TableCell className={columnBorderClass}>
-                  {match.status}
+                  {match?.status}
                 </TableCell>
                 <TableCell className={columnBorderClass}>
                   <div className="flex items-center justify-center gap-4">

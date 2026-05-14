@@ -35,7 +35,7 @@ export default function PlayerCard({
   parental_control,   
   games , 
   goals , 
-  assists
+  assists ,  
 }: PlayerCardProps) {
  
   
@@ -75,7 +75,7 @@ export default function PlayerCard({
         <div className="mb-4 flex items-center   ">
             <div className="flex-1">
                 <h3 className="text-xl font-bold text-white mb-2">{name}</h3>
-                <div className="text-sm text-white flex gap-2  "> 
+                <div className="text-sm text-white flex items-center flex-wrap gap-2  "> 
                     <p className="text-xs  ">Age: {age}</p>   
                     <TfiLayoutLineSolid className="rotate-90 text-white" />
                     <p className="text-xs  ">{position ? position : "Not Specified"}</p>
@@ -122,6 +122,7 @@ export default function PlayerCard({
         variant="default" 
         size="lg" 
         text="View Profile"
+        onClick={onClick}
         className="mt-5 bg-brand hover:bg-brand text-primary hover:text-primary w-full     "
         />
  

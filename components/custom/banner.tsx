@@ -1,10 +1,11 @@
 "use client"
+import { THeroData } from "@/types";
 import { ChevronRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export default function Banner() {
+export default function Banner({ data }: { data?: THeroData | null }) {
 
   const router = useRouter();
 
@@ -17,15 +18,17 @@ export default function Banner() {
       //   }}
       className="bg-[#060807] pt-20 md:pt-30 lg:pt-37.5 pb-17.5 text-center"
     >
-      <Image
-        src="/images/background.svg"
-        alt="Illustration of athletes and coaches connecting on the platform"
-        width={1000}
-        height={1000}
-        className="absolute top-0 left-1/2 z-1 mx-auto mb-10 w-full max-w-340 -translate-x-1/2 transform rounded-b-2xl object-contain   "
-      />
+      {data?.baner_image && 
+        <Image
+          src={data?.baner_image || "/images/background.svg"}
+          alt="Illustration of athletes and coaches connecting on the platform"
+          width={1000}
+          height={1000}
+          className="absolute top-0 left-1/2 z-1 mx-auto mb-10 w-full max-w-340 -translate-x-1/2 transform rounded-b-2xl object-contain   "
+        />
+      }
 
-      {/* Pill button */}
+      {/* Pill button */} 
       <button 
         className="relative z-2 mb-6 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-medium tracking-wide text-nowrap text-blue-100 transition-colors hover:bg-white/20"
         
@@ -34,18 +37,18 @@ export default function Banner() {
       </button>
 
       {/* Title */}
-      <h1 className="relative z-2 text-xl leading-tight font-bold text-white italic md:text-2xl lg:text-4xl xl:text-[70px]">
-        The Ultimate Platform for
-        <br />
-        Athletes, Coaches &amp; Teams
-      </h1>
+      {data?.baner_title &&
+        <h1 className="relative z-2  max-w-5xl mx-auto text-xl leading-tight font-bold text-white italic md:text-2xl lg:text-4xl xl:text-[70px]">
+          {data?.baner_title}
+        </h1>
+      }
 
       {/* Description */}
-      <p className="relative z-2 mx-auto mt-4 max-w-122.5 text-sm leading-relaxed text-white/70 md:text-xl px-2    ">
-        Connect with elite coaches, showcase your talent, book professional
-        training sessions, and grow your sports career — all in one powerful
-        platform.
-      </p>
+      {data?.baner_description && 
+        <p className="relative z-2 mx-auto mt-4 max-w-122.5 text-sm leading-relaxed text-white/70 md:text-xl px-2    ">
+          {data?.baner_description}
+        </p>
+      }
 
       {/* CTA buttons */}
       <div className="relative z-2 mx-auto mt-10 w-full max-w-3xl">

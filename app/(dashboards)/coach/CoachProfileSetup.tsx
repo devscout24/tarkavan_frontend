@@ -1,10 +1,5 @@
-// inlined child sections (BasicInformation, UploadPhoto, ExperienceAndEducation,
-// CertificationsAndCredentials, SocialMediaLinks, CoachingPhilosophy) —
-// removed imports to keep everything in this file per user request
-import CoachProfileSetupHeader from "@/components/custom/coach-profile-setup/coach-profile-setup-header"
 import { useForm } from "react-hook-form"
 import { format } from "date-fns"
-import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -17,9 +12,9 @@ import CommonBtn from "@/components/common/common-btn"
 import { BsArrowRight } from "react-icons/bs"
 import { FiCheckSquare, FiSquare } from "react-icons/fi"
 import { Input as ShadInput } from "@/components/ui/input"
-import CommonUploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
 import { Icon } from "@/components/custom/Icon"
+import { CiImageOn } from "react-icons/ci"
 import {
   Select,
   SelectContent,
@@ -44,6 +39,8 @@ import type {
   CoachProfileApiResult,
 } from "@/components/parentAndCoachApi/type/coachProfileTypes"
 import { getCoachEditData } from "./action"
+import { handleLogout } from "@/lib/helpers"
+import { useRouter } from "next/navigation"
 
 interface CoachProfileSetupProps {
   currentStep?: number
@@ -88,84 +85,35 @@ export default function CoachProfileSetup({
   updateBasicInfo,
   isEditMode = false,
 }: CoachProfileSetupProps) {
-  const [formData, setFormData] =
-    useState<CoachProfileFormData>(getInitialFormData)
-  const [formVersion, setFormVersion] = useState(0)
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [initialPreview, setInitialPreview] = useState<string | null>(null)
-  const formDataRef = useRef(formData)
 
-  // --- Basic Information local state (inlined) ---
-  const { setValue } = useForm()
-  const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>()
-  const [genderLocal, setGenderLocal] = useState<
-    "male" | "female" | "other" | ""
-  >("")
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [nationalityLocal, setNationalityLocal] = useState("")
-  const [emailLocal, setEmailLocal] = useState("")
-  const [cityLocal, setCityLocal] = useState("")
-  const [countryLocal, setCountryLocal] = useState("")
-  const localBasicInitRef = useRef(false)
-
-  // --- Upload Photo local state (inlined) ---
+  // --- Upload Photo state ---
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>("")
   const [fileName, setFileName] = useState<string>("")
-  const fileReaderRef = useRef<FileReader | null>(null)
 
-  // --- Experience & Education local state (inlined) ---
-  const [years, setYears] = useState("")
-  const [educationLocal, setEducationLocal] = useState("")
-  const [history, setHistory] = useState("")
-  const localExpInitRef = useRef(false)
+  // --- Date picker ---
+  const { setValue } = useForm()
+  const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>()
 
-  // --- Certifications local state (inlined) ---
-  type CredentialFile = { id: string; name: string; sizeMb: string }
-  const [credFiles, setCredFiles] = useState<CredentialFile[]>([])
-  const credInputRef = useRef<HTMLInputElement | null>(null)
+  const [formData, setFormData] =
+    useState<CoachProfileFormData>(getInitialFormData)
 
-  // --- Social Media local state (inlined) ---
-  interface SocialMediaDataLocal {
-    facebook_link?: string
-    twitter_link?: string
-    instagram_link?: string
-    tiktok_link?: string
-    whatsapp_link?: string
-  }
-  const [socialData, setSocialData] = useState<SocialMediaDataLocal>({})
-  const socialInitRef = useRef(false)
+  // For edit mode
+  const [editData, setEditData] = useState<any>(null)
+  const [isEditDataLoaded, setIsEditDataLoaded] = useState(false)
 
-  // --- Coaching Philosophy local state (inlined) ---
-  const [philosophy, setPhilosophy] = useState("")
-  const [playerCentric, setPlayerCentric] = useState(true)
-  const [dataDriven, setDataDriven] = useState(false)
-  const philosophyInitRef = useRef(false)
-
-  // initialize basic info from formData when it arrives
+  // Initialize dateOfBirth from formData.dob
   useEffect(() => {
-    if (!formData || localBasicInitRef.current) return
-    const has = Boolean(
-      formData.name || formData.last_name || formData.email || formData.dob
-    )
-    if (!has) return
-
-    setFirstName(formData.name || "")
-    setLastName(formData.last_name || "")
-    setGenderLocal(formData.gender || "")
-    setNationalityLocal(formData.nationality || "")
-    setEmailLocal(formData.email || "")
-    setCountryLocal(formData.country || "")
-    setCityLocal(formData.city || "")
     if (formData.dob) {
       const d =
         typeof formData.dob === "string" ? new Date(formData.dob) : undefined
       setDateOfBirth(d)
       if (d) setValue("dateOfBirth", d, { shouldValidate: true })
     }
-    localBasicInitRef.current = true
-  }, [formData, setValue])
+  }, [formData.dob, setValue])
 
   // initialize upload preview when initialPreview changes
   useEffect(() => {
@@ -175,68 +123,14 @@ export default function CoachProfileSetup({
     }
   }, [initialPreview])
 
-  // initialize experience & education
-  useEffect(() => {
-    if (!formData || localExpInitRef.current) return
-    const has = Boolean(
-      formData.years_of_experience ||
-      formData.highest_education ||
-      formData.coaching_education
-    )
-    if (!has) return
-    setYears(formData.years_of_experience || "")
-    setEducationLocal(formData.highest_education || "")
-    setHistory(formData.coaching_education || "")
-    localExpInitRef.current = true
-  }, [formData])
-
-  // initialize social links
-  useEffect(() => {
-    if (!formData || socialInitRef.current) return
-    const has = Boolean(
-      formData.facebook_link ||
-      formData.twitter_link ||
-      formData.instagram_link ||
-      formData.tiktok_link ||
-      formData.whatsapp_link
-    )
-    if (!has) return
-    setSocialData({
-      facebook_link: formData.facebook_link,
-      twitter_link: formData.twitter_link,
-      instagram_link: formData.instagram_link,
-      tiktok_link: formData.tiktok_link,
-      whatsapp_link: formData.whatsapp_link,
-    })
-    socialInitRef.current = true
-  }, [formData])
-
-  // initialize coaching philosophy
-  useEffect(() => {
-    if (!formData || philosophyInitRef.current) return
-    const has = Boolean(
-      formData.coaching_philosophy ||
-      formData.player_centric_approach ||
-      formData.data_driving_training
-    )
-    if (!has) return
-    setPhilosophy(formData.coaching_philosophy || "")
-    setPlayerCentric(!!formData.player_centric_approach)
-    setDataDriven(!!formData.data_driving_training)
-    philosophyInitRef.current = true
-  }, [formData])
-
-  // --- Sports & Specialties local state (inlined from former component) ---
+  // --- Sports & Specialties ---
   const triggerClassName =
     "h-11 w-full rounded-xl border-white/10 bg-secondary/10 px-3 text-sm text-white data-placeholder:text-white/50"
 
   const titleInputClassName =
     "h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
 
-  const [sport, setSport] = useState("")
-  const [role, setRole] = useState("")
   const [titleInput, setTitleInput] = useState("")
-  const [coachingTitles, setCoachingTitles] = useState<string[]>([])
   const [sportOptions, setSportOptions] = useState<SportOption[]>([])
   const [roleOptions, setRoleOptions] = useState<CoachPosition[]>([])
   const [formattedSportOptions, setFormattedSportOptions] = useState<
@@ -247,21 +141,10 @@ export default function CoachProfileSetup({
   >([])
   const [isLoadingOptions, setIsLoadingOptions] = useState(true)
 
-  const resolveOptionValue = (
-    options: { value: string; label: string }[],
-    rawValue?: string
-  ) => {
-    if (!rawValue) return ""
-
-    const exactMatch = options.find((option) => option.value === rawValue)
-    if (exactMatch) return exactMatch.value
-
-    const labelMatch = options.find(
-      (option) =>
-        option.label.trim().toLowerCase() === rawValue.trim().toLowerCase()
-    )
-    return labelMatch?.value || rawValue
-  }
+  // --- Credentials ---
+  type CredentialFile = { id: string; name: string; sizeMb: string }
+  const [credFiles, setCredFiles] = useState<CredentialFile[]>([])
+  const credInputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -303,185 +186,27 @@ export default function CoachProfileSetup({
     fetchData()
   }, [])
 
-  // sync local selections from loaded formData when it changes
-  useEffect(() => {
-    if (formData.coaching_title)
-      setCoachingTitles(formData.coaching_title.filter(Boolean))
-
-    setSport(resolveOptionValue(formattedSportOptions, formData.sports))
-    setRole(resolveOptionValue(formattedRoleOptions, formData.current_role))
-  }, [formData, formattedSportOptions, formattedRoleOptions])
-
-  const pushSportsUpdate = (next: {
-    sport?: string
-    role?: string
-    coachingTitles?: string[]
-  }) => {
-    const nextSport = next.sport ?? sport
-    const nextRole = next.role ?? role
-    const nextTitles = next.coachingTitles ?? coachingTitles
-
-    setSport(nextSport)
-    setRole(nextRole)
-    setCoachingTitles(nextTitles)
-
-    updateFormData({
-      sports: nextSport,
-      current_role: nextRole,
-      coaching_title: nextTitles,
-    })
-  }
-
-  const pushBasicUpdate = (next: {
-    firstName?: string
-    lastName?: string
-    dateOfBirth?: Date | undefined
-    gender?: string
-    nationality?: string
-    email?: string
-    city?: string
-    country?: string
-  }) => {
-    const fn = next.firstName ?? firstName
-    const ln = next.lastName ?? lastName
-    const dob = next.dateOfBirth ?? dateOfBirth
-    const g = next.gender ?? genderLocal
-    const gNorm =
-      g === "male" || g === "female" || g === "other"
-        ? (g as "male" | "female" | "other")
-        : "male"
-    const nat = next.nationality ?? nationalityLocal
-    const em = next.email ?? emailLocal
-    const ci = next.city ?? cityLocal
-    const co = next.country ?? countryLocal
-
-    setFirstName(fn)
-    setLastName(ln)
-    setDateOfBirth(dob)
-    setGenderLocal(gNorm)
-    setNationalityLocal(nat)
-    setEmailLocal(em)
-    setCityLocal(ci)
-    setCountryLocal(co)
-
-    updateFormData({
-      name: fn,
-      last_name: ln,
-      dob: dob ? dob.toISOString().split("T")[0] : "",
-      gender: gNorm,
-      nationality: nat,
-      email: em,
-      city: ci,
-      country: co,
-    })
-    if (updateBasicInfo) {
-      updateBasicInfo({
-        firstName: fn,
-        lastName: ln,
-        dateOfBirth: dob,
-        gender: g,
-        nationality: nat,
-        email: em,
-        city: ci,
-        country: co,
-      })
-    }
-  }
-
-  const pushUploadUpdate = (file: File | null) => {
-    setSelectedFile(file)
-    if (file) {
-      const reader = new FileReader()
-      fileReaderRef.current = reader
-      reader.onloadend = () => setPreviewUrl(reader.result as string)
-      reader.readAsDataURL(file)
-      setFileName(file.name)
-      updateFormData({ coach_profile_pic: file })
-      if (updatePhotoUploaded) updatePhotoUploaded(true)
-    } else {
-      setPreviewUrl("")
-      setFileName("")
-      updateFormData({ coach_profile_pic: undefined })
-      if (updatePhotoUploaded) updatePhotoUploaded(false)
-    }
-  }
-
-  const pushExperienceUpdate = (next: {
-    years?: string
-    education?: string
-    history?: string
-  }) => {
-    const y = next.years ?? years
-    const ed = next.education ?? educationLocal
-    const hi = next.history ?? history
-    setYears(y)
-    setEducationLocal(ed)
-    setHistory(hi)
-    updateFormData({
-      years_of_experience: y,
-      highest_education: ed,
-      coaching_education: hi,
-    })
-  }
-
-  const pushCredsUpdate = (files: CredentialFile[]) => {
-    setCredFiles(files)
-    // pass raw file metadata array; upload handled elsewhere
-    updateFormData({ images: files as any[] })
-  }
-
-  const pushSocialUpdate = (next: SocialMediaDataLocal) => {
-    const updated = { ...socialData, ...next }
-    setSocialData(updated)
-    updateFormData({
-      facebook_link: updated.facebook_link || "",
-      twitter_link: updated.twitter_link || "",
-      instagram_link: updated.instagram_link || "",
-      tiktok_link: updated.tiktok_link || "",
-      whatsapp_link: updated.whatsapp_link || "",
-    })
-  }
-
-  const pushPhilosophyUpdate = (next: {
-    philosophy?: string
-    playerCentric?: boolean
-    dataDriven?: boolean
-  }) => {
-    const p = next.philosophy ?? philosophy
-    const pc = next.playerCentric ?? playerCentric
-    const dd = next.dataDriven ?? dataDriven
-    setPhilosophy(p)
-    setPlayerCentric(pc)
-    setDataDriven(dd)
-    updateFormData({
-      coaching_philosophy: p,
-      player_centric_approach: pc,
-      data_driving_training: dd,
-    })
-  }
-
   const addTitle = () => {
     const normalized = titleInput.trim().replace(/\s+/g, " ")
     if (!normalized) return
 
-    const exists = coachingTitles.some(
+    const exists = formData.coaching_title?.some(
       (t) => t?.toLowerCase() === normalized.toLowerCase()
     )
 
     if (!exists) {
-      const next = [...coachingTitles, normalized]
-      pushSportsUpdate({ coachingTitles: next })
+      const next = [...(formData.coaching_title || []), normalized]
+      setFormData((prev) => ({ ...prev, coaching_title: next }))
     }
 
     setTitleInput("")
   }
 
   const removeTitle = (titleToRemove: string) => {
-    const next = coachingTitles.filter((t) => t !== titleToRemove)
-    pushSportsUpdate({ coachingTitles: next })
+    const next =
+      formData.coaching_title?.filter((t) => t !== titleToRemove) || []
+    setFormData((prev) => ({ ...prev, coaching_title: next }))
   }
-
-  console.log(formData)
 
   useEffect(() => {
     const getCaochProfileData = async () => {
@@ -523,41 +248,7 @@ export default function CoachProfileSetup({
           res.data.data
         ) {
           const d = res.data.data as CoachEditPayload
-          setFormData((prev) => ({
-            ...prev,
-            name: d.name || "",
-            last_name: d.last_name || "",
-            dob: d.dob || "",
-            gender:
-              d.gender === "male" ||
-              d.gender === "female" ||
-              d.gender === "other"
-                ? d.gender
-                : "male",
-            nationality: d.nationality || "",
-            email: d.email || "",
-            sports: d.sports || "",
-            current_role: d.current_role?.name || "",
-            years_of_experience: d.years_of_experience || "",
-            highest_education: d.highest_education || "",
-            coaching_education: d.coaching_education || "",
-            coaching_philosophy: d.coaching_philosophy || "",
-            player_centric_approach: !!d.player_centric_approach,
-            data_driving_training: !!d.data_driving_training,
-            coaching_title: d.coaching_titles
-              ? d.coaching_titles.map((t) => t.title || "")
-              : ["", ""],
-            city: d.city || "",
-            country: d.country || "",
-            facebook_link: d.facebook_link || "",
-            twitter_link: d.twitter_link || "",
-            instagram_link: d.instagram_link || "",
-            tiktok_link: d.tiktok_link || "",
-            whatsapp_link: d.whatsapp_link || "",
-          }))
-
-          // bump version so children that use `initialData` re-mount/update
-          setFormVersion((v) => v + 1)
+          setEditData(d)
 
           if (d.coach_profile_pic) {
             try {
@@ -575,6 +266,49 @@ export default function CoachProfileSetup({
     }
     getCaochProfileData()
   }, [])
+
+  // Set formData from editData when options are loaded
+  useEffect(() => {
+    if (editData && sportOptions.length > 0 && roleOptions.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        name: editData.name || "",
+        last_name: editData.last_name || "",
+        dob: editData.dob || "",
+        gender: editData.gender || "male",
+        nationality: editData.nationality || "",
+        email: editData.email || "",
+        sports: editData.sports || "",
+        current_role: editData.current_role || "",
+        years_of_experience: editData.years_of_experience || "",
+        highest_education: editData.highest_education || "",
+        coaching_education: editData.coaching_education || "",
+        coaching_philosophy: editData.coaching_philosophy || "",
+        player_centric_approach: editData.player_centric_approach || false,
+        data_driving_training: editData.data_driving_training || false,
+        coaching_title: editData.coaching_titles
+          ? editData.coaching_titles.map(
+              (t: { title?: string }) => t.title || ""
+            )
+          : ["", ""],
+        city: editData.city || "",
+        country: editData.country || "",
+        facebook_link: editData.facebook_link || "",
+        twitter_link: editData.twitter_link || "",
+        instagram_link: editData.instagram_link || "",
+        tiktok_link: editData.tiktok_link || "",
+        whatsapp_link: editData.whatsapp_link || "",
+        privacy_settings: editData.privacy_settings || prev.privacy_settings,
+      }))
+    }
+  }, [editData, sportOptions, roleOptions])
+
+  // Mark edit data as loaded
+  useEffect(() => {
+    if (editData && sportOptions.length > 0 && roleOptions.length > 0) {
+      setIsEditDataLoaded(true)
+    }
+  }, [editData, sportOptions, roleOptions])
 
   // Check and update user status from coach profile API
   useEffect(() => {
@@ -616,53 +350,7 @@ export default function CoachProfileSetup({
     checkCoachProfile()
   }, [])
 
-  // Update ref whenever formData changes
-  useEffect(() => {
-    formDataRef.current = formData
-  }, [formData])
-
-  // Update form data in state
-  const updateFormData = useCallback(
-    (updates: Partial<CoachProfileFormData>) => {
-      setFormData((prev) => ({ ...prev, ...updates }))
-    },
-    []
-  )
-
   // Validation function
-  const validateForm = (
-    data: CoachProfileFormData
-  ): { isValid: boolean; errors: string[] } => {
-    const errors: string[] = []
-
-    // Required field validations
-    if (!data.name?.trim()) errors.push("First name is required")
-    if (!data.last_name?.trim()) errors.push("Last name is required")
-    if (!data.email?.trim()) errors.push("Email is required")
-    if (!data.dob) errors.push("Date of birth is required")
-    if (!data.gender) errors.push("Gender is required")
-    if (!data.nationality?.trim()) errors.push("Nationality is required")
-    if (!data.country?.trim()) errors.push("Country is required")
-    if (!data.city?.trim()) errors.push("City is required")
-    if (!data.sports?.trim()) errors.push("Sport selection is required")
-    if (!data.years_of_experience?.trim())
-      errors.push("Years of experience is required")
-    if (!data.highest_education?.trim())
-      errors.push("Highest education is required")
-    if (!data.coaching_philosophy?.trim())
-      errors.push("Coaching philosophy is required")
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (data.email && !emailRegex.test(data.email)) {
-      errors.push("Please enter a valid email address")
-    }
-
-    return {
-      isValid: errors.length === 0,
-      errors,
-    }
-  }
 
   // Handle form submission — reads latest data directly from the ref
   const handleSubmit = useCallback(async (e?: React.FormEvent) => {
@@ -670,30 +358,20 @@ export default function CoachProfileSetup({
     setIsLoading(true)
 
     try {
-      // Always read the latest snapshot from the ref (updated every render)
-      const currentFormData = formDataRef.current
-
-      // Validate form
-      const validation = validateForm(currentFormData)
-      if (!validation.isValid) {
-        validation.errors.forEach((error) => {
-          toast.error(error)
-        })
-        setIsLoading(false)
-        return
-      }
-
-      const apiFormData = convertToFormData(currentFormData)
+      const apiFormData = convertToFormData(formData)
+      console.log(apiFormData)
 
       const result: CoachProfileApiResult =
         await createOrUpdateCoachProfile(apiFormData)
 
       if (result.success) {
-        toast.success(result.message || "Coach profile created successfully!")
+        toast.success(
+          result.message ||
+            "Coach profile created successfully! Please wait for approval."
+        )
         setFormData(getInitialFormData())
-        setFormVersion((v) => v + 1)
         // Redirect to clean dashboard URL (no query params → modal won't reopen)
-        window.location.replace("/coach")
+        handleLogout(router)
       } else {
         toast.error(result.message || "Failed to create coach profile")
       }
@@ -708,10 +386,21 @@ export default function CoachProfileSetup({
   return (
     <section className="bg-primary">
       <div className="space-y-4 rounded-[16px] bg-primary p-4 sm:p-6">
-        <CoachProfileSetupHeader currentStep={currentStep} />
+        <div className="text-white">
+          <div className="space-y-4 pb-3">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-[28px] leading-[120%] font-semibold text-white">
+                Coach Profile Setup
+              </h2>
+            </div>
+            <p className="text-[22px] leading-[140%] text-[#D9D9D9]">
+              Complete your profile to join the elite coaching network.
+            </p>
+          </div>
+        </div>
 
         <div className="rounded-[16px] bg-secondary/20 p-4">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="space-y-5">
             <div>
               <h3 className="text-lg font-semibold text-white">Upload Photo</h3>
               <p className="mt-1 text-sm text-white/70">
@@ -720,11 +409,50 @@ export default function CoachProfileSetup({
               </p>
 
               <div className="mt-4 pb-5">
-                <CommonUploadPhoto
-                  title="Choose Profile Image"
-                  subtitle="Upload JPG, PNG or WEBP up to 5MB"
-                  onFileSelect={(file) => pushUploadUpdate(file)}
-                />
+                <div className="flex flex-col items-center gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex w-full flex-col items-center justify-center gap-2 border-white/20 bg-transparent py-10 text-white hover:border-white/40 hover:bg-white/10"
+                    onClick={() =>
+                      document.getElementById("profile-pic-input")?.click()
+                    }
+                  >
+                    <CiImageOn className="text-5xl!" />
+                    <p className="text-xs text-white/70">
+                      Upload JPG, PNG or WEBP up to 5MB
+                    </p>
+                  </Button>
+                  <input
+                    id="profile-pic-input"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null
+                      setSelectedFile(file)
+                      if (file) {
+                        const reader = new FileReader()
+                        reader.onloadend = () =>
+                          setPreviewUrl(reader.result as string)
+                        reader.readAsDataURL(file)
+                        setFileName(file.name)
+                        setFormData((prev) => ({
+                          ...prev,
+                          coach_profile_pic: file,
+                        }))
+                        if (updatePhotoUploaded) updatePhotoUploaded(true)
+                      } else {
+                        setPreviewUrl("")
+                        setFileName("")
+                        setFormData((prev) => ({
+                          ...prev,
+                          coach_profile_pic: undefined,
+                        }))
+                        if (updatePhotoUploaded) updatePhotoUploaded(false)
+                      }
+                    }}
+                  />
+                </div>
               </div>
 
               {previewUrl ? (
@@ -748,7 +476,16 @@ export default function CoachProfileSetup({
                     <button
                       type="button"
                       aria-label="Remove image"
-                      onClick={() => pushUploadUpdate(null)}
+                      onClick={() => {
+                        setSelectedFile(null)
+                        setPreviewUrl("")
+                        setFileName("")
+                        setFormData((prev) => ({
+                          ...prev,
+                          coach_profile_pic: undefined,
+                        }))
+                        if (updatePhotoUploaded) updatePhotoUploaded(false)
+                      }}
                       className="absolute -top-2 -right-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-red-600 text-white opacity-0 shadow-lg transition-all duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-red-700"
                     >
                       <Icon
@@ -799,11 +536,12 @@ export default function CoachProfileSetup({
                     First Name
                   </label>
                   <ShadInput
-                    value={firstName}
+                    value={formData.name}
                     onChange={(e) => {
-                      const v = e.target.value || ""
-                      setFirstName(v)
-                      pushBasicUpdate({ firstName: v })
+                      const v = e.target.value
+                      setFormData((prev) => ({ ...prev, name: v }))
+                      if (updateBasicInfo)
+                        updateBasicInfo({ ...formData, firstName: v })
                     }}
                     placeholder="Enter first name"
                     className="h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
@@ -815,11 +553,12 @@ export default function CoachProfileSetup({
                     Last Name
                   </label>
                   <ShadInput
-                    value={lastName}
+                    value={formData.last_name}
                     onChange={(e) => {
-                      const v = e.target.value || ""
-                      setLastName(v)
-                      pushBasicUpdate({ lastName: v })
+                      const v = e.target.value
+                      setFormData((prev) => ({ ...prev, last_name: v }))
+                      if (updateBasicInfo)
+                        updateBasicInfo({ ...formData, lastName: v })
                     }}
                     placeholder="Enter last name"
                     className="h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
@@ -827,7 +566,7 @@ export default function CoachProfileSetup({
                 </div>
 
                 <div className="flex items-start">
-                  <div className="w-full flex flex-col ">
+                  <div className="flex w-full flex-col">
                     <label className="text-sm font-medium text-white">
                       Date of Birth
                     </label>
@@ -855,7 +594,12 @@ export default function CoachProfileSetup({
                           onSelect={(d) => {
                             setDateOfBirth(d as Date)
                             setValue("dateOfBirth", d, { shouldValidate: true })
-                            pushBasicUpdate({ dateOfBirth: d as Date })
+                            setFormData((prev) => ({
+                              ...prev,
+                              dob: d ? d.toISOString().split("T")[0] : "",
+                            }))
+                            if (updateBasicInfo)
+                              updateBasicInfo({ ...formData, dateOfBirth: d })
                           }}
                         />
                       </PopoverContent>
@@ -868,15 +612,16 @@ export default function CoachProfileSetup({
                     Select Gender
                   </label>
                   <Select
-                    value={genderLocal || ""}
+                    value={formData.gender || ""}
                     onValueChange={(v) => {
                       const vv = v || ""
                       const vvNorm =
                         vv === "male" || vv === "female" || vv === "other"
                           ? (vv as "male" | "female" | "other")
                           : "male"
-                      setGenderLocal(vvNorm)
-                      pushBasicUpdate({ gender: vvNorm })
+                      setFormData((prev) => ({ ...prev, gender: vvNorm }))
+                      if (updateBasicInfo)
+                        updateBasicInfo({ ...formData, gender: vvNorm })
                     }}
                   >
                     <SelectTrigger className={`${triggerClassName} py-5!`}>
@@ -901,11 +646,12 @@ export default function CoachProfileSetup({
                     Nationality
                   </label>
                   <ShadInput
-                    value={nationalityLocal}
+                    value={formData.nationality}
                     onChange={(e) => {
-                      const v = e.target.value || ""
-                      setNationalityLocal(v)
-                      pushBasicUpdate({ nationality: v })
+                      const v = e.target.value
+                      setFormData((prev) => ({ ...prev, nationality: v }))
+                      if (updateBasicInfo)
+                        updateBasicInfo({ ...formData, nationality: v })
                     }}
                     placeholder="Enter nationality"
                     className="h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
@@ -918,11 +664,12 @@ export default function CoachProfileSetup({
                   </label>
                   <ShadInput
                     type="email"
-                    value={emailLocal}
+                    value={formData.email}
                     onChange={(e) => {
-                      const v = e.target.value || ""
-                      setEmailLocal(v)
-                      pushBasicUpdate({ email: v })
+                      const v = e.target.value
+                      setFormData((prev) => ({ ...prev, email: v }))
+                      if (updateBasicInfo)
+                        updateBasicInfo({ ...formData, email: v })
                     }}
                     placeholder="Enter email address"
                     className="h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
@@ -935,9 +682,9 @@ export default function CoachProfileSetup({
                   onSelect={(data) => {
                     const c = data.country_name
                     const ci = data.city_name
-                    setCountryLocal(c)
-                    setCityLocal(ci)
-                    pushBasicUpdate({ country: c, city: ci })
+                    setFormData((prev) => ({ ...prev, country: c, city: ci }))
+                    if (updateBasicInfo)
+                      updateBasicInfo({ ...formData, country: c, city: ci })
                   }}
                 />
               </div>
@@ -956,15 +703,18 @@ export default function CoachProfileSetup({
                 Sport Selection
               </label>
               <Select
-                value={sport}
+                value={formData.sports}
                 onValueChange={(v) => {
-                  pushSportsUpdate({ sport: v })
+                  setFormData((prev) => ({ ...prev, sports: v }))
                 }}
               >
                 <SelectTrigger className={`${triggerClassName} py-5!`}>
                   <SelectValue placeholder="Select Sport" />
                 </SelectTrigger>
-                <SelectContent position="popper" className="bg-secondary/90 text-white">
+                <SelectContent
+                  position="popper"
+                  className="bg-secondary/90 text-white"
+                >
                   {formattedSportOptions.map((option) => (
                     <SelectItem
                       key={option.value}
@@ -983,9 +733,9 @@ export default function CoachProfileSetup({
                 Coaching Titles
               </label>
 
-              {coachingTitles.length > 0 ? (
+              {formData.coaching_title?.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
-                  {coachingTitles.map((title) => (
+                  {formData.coaching_title.map((title) => (
                     <button
                       key={title}
                       type="button"
@@ -1021,15 +771,18 @@ export default function CoachProfileSetup({
                 Role Selection
               </label>
               <Select
-                value={role}
+                value={formData.current_role}
                 onValueChange={(v) => {
-                  pushSportsUpdate({ role: v })
+                  setFormData((prev) => ({ ...prev, current_role: v }))
                 }}
               >
                 <SelectTrigger className={`${triggerClassName} py-5!`}>
                   <SelectValue placeholder="Select Current Role" />
                 </SelectTrigger>
-                <SelectContent position="popper" className="bg-secondary/90 text-white">
+                <SelectContent
+                  position="popper"
+                  className="bg-secondary/90 text-white"
+                >
                   {formattedRoleOptions.map((option) => (
                     <SelectItem
                       key={option.value}
@@ -1059,26 +812,40 @@ export default function CoachProfileSetup({
                 Years of Experience
               </label>
               <Select
-                value={years}
+                value={formData.years_of_experience}
                 onValueChange={(v) => {
-                  setYears(v)
-                  pushExperienceUpdate({ years: v })
+                  setFormData((prev) => ({ ...prev, years_of_experience: v }))
                 }}
               >
                 <SelectTrigger className={`${triggerClassName} py-5!`}>
                   <SelectValue placeholder="Select experience range" />
                 </SelectTrigger>
-                <SelectContent position="popper" className="bg-secondary/90 text-white">
-                  <SelectItem value="1-3" className="text-white hover:bg-brand hover:text-primary focus:bg-brand focus:text-primary">
+                <SelectContent
+                  position="popper"
+                  className="bg-secondary/90 text-white"
+                >
+                  <SelectItem
+                    value="1-3"
+                    className="text-white hover:bg-brand hover:text-primary focus:bg-brand focus:text-primary"
+                  >
                     1-3 years
                   </SelectItem>
-                  <SelectItem value="4-6" className="text-white hover:bg-brand hover:text-primary focus:bg-brand focus:text-primary">
+                  <SelectItem
+                    value="4-6"
+                    className="text-white hover:bg-brand hover:text-primary focus:bg-brand focus:text-primary"
+                  >
                     4-6 years
                   </SelectItem>
-                  <SelectItem value="7-10" className="text-white hover:bg-brand hover:text-primary focus:bg-brand focus:text-primary">
+                  <SelectItem
+                    value="7-10"
+                    className="text-white hover:bg-brand hover:text-primary focus:bg-brand focus:text-primary"
+                  >
                     7-10 years
                   </SelectItem>
-                  <SelectItem value="10+" className="text-white hover:bg-brand hover:text-primary focus:bg-brand focus:text-primary">
+                  <SelectItem
+                    value="10+"
+                    className="text-white hover:bg-brand hover:text-primary focus:bg-brand focus:text-primary"
+                  >
                     10+ years
                   </SelectItem>
                 </SelectContent>
@@ -1090,11 +857,10 @@ export default function CoachProfileSetup({
                 Highest Education Degree
               </label>
               <ShadInput
-                value={educationLocal}
+                value={formData.highest_education}
                 onChange={(e) => {
                   const v = e.target.value
-                  setEducationLocal(v)
-                  pushExperienceUpdate({ education: v })
+                  setFormData((prev) => ({ ...prev, highest_education: v }))
                 }}
                 placeholder="e.g. M.S. in Sports Science"
                 className="h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
@@ -1106,11 +872,10 @@ export default function CoachProfileSetup({
                 Coaching History Summary
               </label>
               <textarea
-                value={history}
+                value={formData.coaching_education}
                 onChange={(e) => {
                   const v = e.target.value
-                  setHistory(v)
-                  pushExperienceUpdate({ history: v })
+                  setFormData((prev) => ({ ...prev, coaching_education: v }))
                 }}
                 placeholder="Briefly describe your coaching career journey..."
                 rows={5}
@@ -1171,7 +936,9 @@ export default function CoachProfileSetup({
                 name: file.name,
                 sizeMb: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
               }))
-              pushCredsUpdate([...credFiles, ...next])
+              const updated = [...credFiles, ...next]
+              setCredFiles(updated)
+              setFormData((prev) => ({ ...prev, images: updated as any[] }))
             }}
           />
 
@@ -1204,9 +971,14 @@ export default function CoachProfileSetup({
                 </div>
                 <button
                   type="button"
-                  onClick={() =>
-                    pushCredsUpdate(credFiles.filter((f) => f.id !== file.id))
-                  }
+                  onClick={() => {
+                    const updated = credFiles.filter((f) => f.id !== file.id)
+                    setCredFiles(updated)
+                    setFormData((prev) => ({
+                      ...prev,
+                      images: updated as any[],
+                    }))
+                  }}
                   className="shrink-0 rounded p-1 text-white/75 transition-colors hover:text-white"
                   aria-label="Remove file"
                 >
@@ -1275,8 +1047,10 @@ export default function CoachProfileSetup({
                   {label}
                 </label>
                 <ShadInput
-                  value={(socialData as any)[key] || ""}
-                  onChange={(e) => pushSocialUpdate({ [key]: e.target.value })}
+                  value={(formData as any)[key] || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, [key]: e.target.value }))
+                  }
                   placeholder={placeholder}
                   className="h-11 rounded-xl border border-white/10 bg-secondary/10 px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
                 />
@@ -1298,11 +1072,10 @@ export default function CoachProfileSetup({
           </p>
 
           <textarea
-            value={philosophy}
+            value={formData.coaching_philosophy}
             onChange={(e) => {
               const v = e.target.value
-              setPhilosophy(v)
-              pushPhilosophyUpdate({ philosophy: v })
+              setFormData((prev) => ({ ...prev, coaching_philosophy: v }))
             }}
             rows={4}
             placeholder="My philosophy centers on mental resilience and technical precision..."
@@ -1312,23 +1085,28 @@ export default function CoachProfileSetup({
           <div className="mt-4 flex flex-wrap items-center gap-5">
             <div
               role="checkbox"
-              aria-checked={playerCentric}
+              aria-checked={formData.player_centric_approach}
               tabIndex={0}
               className="inline-flex cursor-pointer items-center gap-2 text-sm text-white/90 select-none"
               onClick={(e) => {
                 e.stopPropagation()
-                const next = !playerCentric
-                setPlayerCentric(next)
-                pushPhilosophyUpdate({ playerCentric: next })
+                const next = !formData.player_centric_approach
+                setFormData((prev) => ({
+                  ...prev,
+                  player_centric_approach: next,
+                }))
               }}
               onKeyDown={(e) => {
                 if (e.key === " " || e.key === "Enter") {
                   e.preventDefault()
-                  setPlayerCentric((p) => !p)
+                  setFormData((prev) => ({
+                    ...prev,
+                    player_centric_approach: !prev.player_centric_approach,
+                  }))
                 }
               }}
             >
-              {playerCentric ? (
+              {formData.player_centric_approach ? (
                 <FiCheckSquare className="size-4 text-white" />
               ) : (
                 <FiSquare className="size-4 text-white/90" />
@@ -1338,23 +1116,28 @@ export default function CoachProfileSetup({
 
             <div
               role="checkbox"
-              aria-checked={dataDriven}
+              aria-checked={formData.data_driving_training}
               tabIndex={0}
               className="inline-flex cursor-pointer items-center gap-2 text-sm text-white/90 select-none"
               onClick={(e) => {
                 e.stopPropagation()
-                const next = !dataDriven
-                setDataDriven(next)
-                pushPhilosophyUpdate({ dataDriven: next })
+                const next = !formData.data_driving_training
+                setFormData((prev) => ({
+                  ...prev,
+                  data_driving_training: next,
+                }))
               }}
               onKeyDown={(e) => {
                 if (e.key === " " || e.key === "Enter") {
                   e.preventDefault()
-                  setDataDriven((p) => !p)
+                  setFormData((prev) => ({
+                    ...prev,
+                    data_driving_training: !prev.data_driving_training,
+                  }))
                 }
               }}
             >
-              {dataDriven ? (
+              {formData.data_driving_training ? (
                 <FiCheckSquare className="size-4 text-white" />
               ) : (
                 <FiSquare className="size-4 text-white/90" />
@@ -1389,7 +1172,7 @@ export default function CoachProfileSetup({
               iconRight={<BsArrowRight className="size-4" />}
               onClick={handleSubmit}
               isLoading={isLoading}
-              disabled={isLoading}
+              disabled={isLoading || (isEditMode && !isEditDataLoaded)}
             />
           </div>
         </section>

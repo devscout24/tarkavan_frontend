@@ -19,8 +19,8 @@ export default function LoginForm() {
   const handleLogin = async () => {
     setLoading(true)
     try {
-      const res = await loginUser({ email, password }) 
-
+      const res = await loginUser({ email, password })  
+      console.log("Login response:", res)
       if (res?.data?.status) {
         toast.success("Login successful! Welcome back.")
         await setAuthCookie(res.data.data.token)

@@ -14,6 +14,8 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/animate-ui/components/radix/sidebar"
+import { SlCalender } from "react-icons/sl";
+import { DiScala } from "react-icons/di";
 import { Settings } from "lucide-react"
 import {
   Collapsible,
@@ -71,7 +73,12 @@ export default function PlayerDashboardLayout({
       {
         title: "My Programs",
         url: "/club/my-programs",
-        icon: GrGroup,
+        icon: DiScala ,
+      },
+      {
+        title: "Bookings",
+        url: "/club/bookings",
+        icon: SlCalender ,
       },
       {
         title: "Recruitment",

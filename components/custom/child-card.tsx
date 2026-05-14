@@ -265,7 +265,7 @@ export default function ChildCard({
             size="lg"
             text="View Profile"
             className="h-10 flex-1 cursor-pointer border-brand bg-transparent! text-sm font-medium text-white transition-all hover:bg-brand! hover:text-primary lg:h-9 lg:text-xs xl:h-10 xl:text-sm"
-            onClick={() =>  router.push(`/child-dashboard/${id}`) }
+            onClick={() =>  router.push(`/child-dashboard/${id}/profile`) }
           />
           {isDropdown && (
             <DropdownMenu>

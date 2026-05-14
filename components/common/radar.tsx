@@ -23,22 +23,20 @@ ChartJS.register(
   Legend
 )
 
-export default function RadarChart(
-  {
-    strengths
-  }
-  :
-  {
-    strengths?: TPlayerStrength[]
-  }
-) {
+export default function RadarChart({
+  strengths,
+}: {
+  strengths?: TPlayerStrength[]
+}) {
   const data = {
     labels: strengths?.map((strength) => strength.strength_name) || [],
     datasets: [
       {
-        data: strengths?.map((strength) => strength.endorse_count) || [80, 90, 75, 60, 96],
+        data: strengths?.map((strength) => strength.endorse_count) || [
+          0, 0, 0, 0, 0, 0, 0,
+        ],
         fill: true,
-        backgroundColor: "rgba(198, 245, 122, 0.2)", 
+        backgroundColor: "rgba(198, 245, 122, 0.2)",
         pointBackgroundColor: "#C6F57A",
         pointBorderColor: "#fff",
         pointHoverBackgroundColor: "rgba(198, 245, 122, 0.2)",
@@ -47,11 +45,18 @@ export default function RadarChart(
       },
     ],
   }
+ 
+const counts = strengths?.map((s) => s.endorse_count) || [0]
+const maxVal = Math.max(...counts)
+
+// nearest "nice" number এ round up 
+const dynamicMax = Math.ceil(maxVal / 20) * 20 || 20
+const dynamicStep = dynamicMax / 5  
 
   const options = {
     plugins: {
       legend: {
-        display: false,  
+        display: false,
       },
     },
     elements: {
@@ -60,25 +65,25 @@ export default function RadarChart(
       },
     },
     scales: {
-    r: {
-      min: 20,    
-      max: 100,
-      ticks: {
-        color: "#fff", // gray text
-        backdropColor: "transparent", // no bg
-        stepSize: 20, // 20,40,60...
-      },
-      grid: {
-        color: "rgba(255, 255, 255, 0.5)", // circle line color
-      },
-      angleLines: {
-        color: "rgba(255, 255, 255, 0.5)", // spoke lines
-      },
-      pointLabels: {
-        color: "rgba(255, 255, 255, 0.7)", // label color (green)
+      r: {
+        min: 0,
+        max: dynamicMax,
+        ticks: {
+          color: "#fff", // gray text
+          backdropColor: "transparent", // no bg
+          stepSize: dynamicStep,  
+        },
+        grid: {
+          color: "rgba(255, 255, 255, 0.5)", // circle line color
+        },
+        angleLines: {
+          color: "rgba(255, 255, 255, 0.5)", // spoke lines
+        },
+        pointLabels: {
+          color: "rgba(255, 255, 255, 0.7)", // label color (green)
+        },
       },
     },
-  },
   }
 
   const config = {
@@ -91,7 +96,7 @@ export default function RadarChart(
 
   return (
     <div>
-      <Radar {...config}   />
+      <Radar {...config} />
     </div>
   )
 }

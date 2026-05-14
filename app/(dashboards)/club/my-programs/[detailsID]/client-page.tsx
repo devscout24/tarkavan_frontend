@@ -1,45 +1,38 @@
 "use client"
 
 import AboutProgram from "@/components/common/about-program"
-import CommonBtn from "@/components/common/common-btn" 
+import CommonBtn from "@/components/common/common-btn"
 import ProgramCoachCard from "@/components/common/program-coach-card"
 import ProgramDetailsBanner from "@/components/common/program-details-banner"
 import ProgramFeedbackCard from "@/components/common/program-feedback-card"
-import ProgramHead from "@/components/common/program-head" 
+import ProgramHead from "@/components/common/program-head"
 import { Button } from "@/components/ui/button"
 import { eachDayOfInterval, format } from "date-fns"
 import { ArrowLeftIcon } from "lucide-react"
-import {
-  useRouter, 
-  useParams,
-} from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { getProgramDetails } from "../../action"
 import { TProgramDetails, TTimeSlot } from "@/types"
 import moment from "moment"
 import ProgramDateTimeSelector from "@/components/common/program-date-time-selector"
 import { getAvailableTimes } from "@/app/(dashboards)/action"
- 
 
-
- 
 export default function ClubProgramDetailsClientPage() {
-  const router = useRouter() 
-  const params = useParams() 
+  const router = useRouter()
+  const params = useParams()
 
   const detailsID = params.detailsID
   const [programDetail, setProgramDetail] = useState<TProgramDetails | null>(
     null
-  )  
-  const [selectedFilter, setSelectedFilter] = useState<string>("most_recent") 
-  
- 
+  )
+  const [selectedFilter, setSelectedFilter] = useState<string>("most_recent")
+
   useEffect(() => {
     if (!detailsID) return
 
     const getProgramDetail = async () => {
       try {
-        const res = await getProgramDetails(String(detailsID)) 
+        const res = await getProgramDetails(String(detailsID))
 
         if (
           res &&
@@ -68,15 +61,7 @@ export default function ClubProgramDetailsClientPage() {
     return () => {
       window.removeEventListener("programevent", handleProgramEvent)
     }
-
-
   }, [detailsID])
-
-
-
-
-
-
 
   return (
     <section className="text-white">
@@ -94,22 +79,31 @@ export default function ClubProgramDetailsClientPage() {
           className="h-10 w-fit rounded-[8px] bg-brand px-4 font-medium text-primary hover:bg-brand xl:h-11 xl:px-5 xl:text-base 2xl:h-12 2xl:px-6 2xl:text-lg"
           size="sm"
           variant="default"
-          onClick={() => { 
-             localStorage.setItem("edit_program_id", String(detailsID))
-             router.push(`?add-new=program`)
+          onClick={() => {
+            localStorage.setItem("edit_program_id", String(detailsID))
+            router.push(`?add-new=program`)
           }}
         />
-      </div> 
+      </div>
 
       {/* program details banner */}
       <ProgramDetailsBanner
         title={programDetail?.program_name || ""}
         category={programDetail?.sport_option?.name || ""}
-        duration={moment.duration(moment(programDetail?.end_date).diff(moment(programDetail?.start_date))).humanize()}
+        duration={moment
+          .duration(
+            moment(programDetail?.end_date).diff(
+              moment(programDetail?.start_date)
+            )
+          )
+          .humanize()}
         dateRange={`${moment(programDetail?.start_date).format("MMM Do YY")} - ${moment(programDetail?.end_date).format("MMM Do YY")}`}
         location={programDetail?.program_location || ""}
         ageRange={`Ages: ${programDetail?.age_limit || ""}`}
-        program_photo={programDetail?.photo || "https://avatars.githubusercontent.com/u/6880091?v=4"}
+        program_photo={
+          programDetail?.photo ||
+          "https://avatars.githubusercontent.com/u/6880091?v=4"
+        }
       />
 
       {/* layout */}
@@ -122,8 +116,6 @@ export default function ClubProgramDetailsClientPage() {
             description={programDetail?.about_program || ""}
             goals={programDetail?.goals || []}
           />
-
- 
 
           {/* recent feedback */}
           <div className="mt-6">
@@ -147,16 +139,20 @@ export default function ClubProgramDetailsClientPage() {
 
         {/* right side */}
         <div className="flex-1">
-          <ProgramCoachCard showMessageButton={false} imageUrl={programDetail?.provider?.logo || ""} name={programDetail?.provider?.name || ""} 
-          location={`${programDetail?.provider?.city || ""}, ${programDetail?.provider?.country || ""}`}
-          verified={programDetail?.provider?.is_verified}
-          /> 
-          <ProgramDateTimeSelector 
-            isOwner={true} 
+          <ProgramCoachCard
+            showMessageButton={false}
+            imageUrl={programDetail?.provider?.logo || ""}
+            name={programDetail?.provider?.name || ""}
+            location={`${programDetail?.provider?.city || ""}, ${programDetail?.provider?.country || ""}`}
+            verified={programDetail?.provider?.is_verified}
+          />
+          <ProgramDateTimeSelector
+            isOwner={true}
             programStartDate={programDetail?.start_date}
-            programEndDate={programDetail?.end_date} 
+            programEndDate={programDetail?.end_date}
             price={programDetail?.price}
             detailsID={String(detailsID)}
+            programid={String(detailsID)}
           />
         </div>
       </div>

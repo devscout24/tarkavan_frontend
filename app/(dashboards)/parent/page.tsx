@@ -2,11 +2,9 @@
 
 import StatCard from "@/components/common/stat-card"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import ProgramReminder from "@/components/custom/program-reminder"
-import Advertisement from "@/components/custom/advertisement"
+import ProgramReminder from "@/components/custom/program-reminder" 
 import advertisementImage from "@/public/images/advertisementImage.png"
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
+import { useEffect, useState } from "react" 
 import { Icon } from "@/components/custom/Icon"
 import { getDashboard } from "@/components/parentAndCoachApi"
 import type { DashboardData, DashboardApiResult } from "@/components/parentAndCoachApi"

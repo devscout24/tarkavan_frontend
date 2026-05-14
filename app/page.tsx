@@ -51,11 +51,11 @@ export default function Page() {
 
       <HowGoEliteWorks data={allData?.how_it_works} />
 
-      <ToComplite />
+      <ToComplite data={allData?.features} />
 
       <BrowseCoaches />
 
-      <AthletesAndCoaches />
+      <AthletesAndCoaches data={allData?.reviews?.items} />
 
       <StartJourney />
 

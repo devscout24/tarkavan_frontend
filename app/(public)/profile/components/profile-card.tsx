@@ -62,9 +62,8 @@ export default function ProfileCard({
           alt="Shahin Tarkavan"
           width={1000}
           height={500}
-          loading="eager"
-          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover object-top"
+          loading="eager" 
+          className="object-cover  h-full  "
         />
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(8,10,18,0.15)_22%,rgba(8,10,18,0.82)_72%,rgba(8,10,18,0.97)_100%)]" />
 

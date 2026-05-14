@@ -2,12 +2,12 @@
 
 import { Calendar } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { isSameDay, eachDayOfInterval, parseISO } from "date-fns"
 import { IoIosCheckmark } from "react-icons/io"
 import { TChield, TTimeSlot } from "@/types"
 import moment from "moment"
-import { getAvailableTimes } from "@/app/(dashboards)/action"
+import { getAvailableTimes, getDateForMonth } from "@/app/(dashboards)/action"
 import {
   Dialog,
   DialogContent,
@@ -43,12 +43,6 @@ const timeSlots = [
   "2:00 PM",
 ]
 
-const availableDates = [
-  new Date(2026, 3, 20),
-  new Date(2026, 3, 22),
-  new Date(2026, 3, 25),
-]
-
 type ProgramDateTimeSelectorProps = {
   programStartDate?: string | Date
   programEndDate?: string | Date
@@ -58,6 +52,7 @@ type ProgramDateTimeSelectorProps = {
   price?: number
   detailsID: string
   priceToShow?: number
+  programid: string
 }
 
 export default function ProgramDateTimeSelector({
@@ -67,6 +62,7 @@ export default function ProgramDateTimeSelector({
   isOwner = false,
   price,
   detailsID,
+  programid,
   priceToShow,
 }: ProgramDateTimeSelectorProps) {
   const params = useParams()
@@ -90,6 +86,18 @@ export default function ProgramDateTimeSelector({
   const currentUser = localStorage.getItem("go_elite_user")
     ? JSON.parse(localStorage.getItem("go_elite_user") as string)
     : null
+
+  const [monthData, setMonthData] = useState<any[]>([])
+  const [currentMonth, setCurrentMonth] = useState(moment().format("YYYY-MM"))
+    
+
+  const [selectedDate, setSelectedDate] = useState<Date | string>("")
+  const [selectedTime, setSelectedTime] = useState<TTimeSlot>()
+  const [availableTimes, setAvailableTimes] = useState<TTimeSlot[]>([])
+  const [allChields, setAllChields] = useState<TChield[]>([])
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [selectedChildId, setSelectedChildId] = useState<string>("")
+  console.log(availableTimes)
 
   useEffect(() => {
     const storedUser = localStorage.getItem("go_elite_user")
@@ -117,30 +125,41 @@ export default function ProgramDateTimeSelector({
     displayTimes = timeSlots
   }
 
-  const programDates =
-    startDate && endDate
-      ? eachDayOfInterval({
-          start: startDate,
-          end: endDate,
-        })
-      : []
-
-  const isProgramDate = (day: Date) =>
-    programDates.some((d) => isSameDay(d, day))
-
-  const isAvailableDate = (day: Date) =>
-    availableDates.some((d) => isSameDay(d, day))
+  const availableDatesFromAPI = useMemo(
+    () =>
+      monthData
+        .filter((d: any) => d.has_available_slots)
+        .map((d: any) => parseISO(d.date)),
+    [monthData]
+  )
 
   const canSelectDate = (day: Date) =>
-    programDates.length > 0 ? isProgramDate(day) : isAvailableDate(day)
+    availableDatesFromAPI.some((d) => isSameDay(d, day))
+  useEffect(() => {
+    const getMonth = async () => {
+      try {
+        const res = await getDateForMonth({
+          program_id: programid,
+          month: currentMonth,
+        })
+        console.log(res)
+        if (
+          res &&
+          "success" in res &&
+          res.success &&
+          res.data &&
+          "data" in res.data &&
+          res.data.data
+        ) {
+          setMonthData(res.data.data.days)
+        }
+      } catch (err) {
+        console.error("Error fetching available dates for the month:", err)
+      }
+    }
+    getMonth()
+  }, [currentMonth, programid])
 
-  const [selectedDate, setSelectedDate] = useState<Date | string>("")
-  const [selectedTime, setSelectedTime] = useState<TTimeSlot>()
-  const [availableTimes, setAvailableTimes] = useState<TTimeSlot[]>([])
-  const [allChields, setAllChields] = useState<TChield[]>([])
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [selectedChildId, setSelectedChildId] = useState<string>("")
- 
   useEffect(() => {
     if (!selectedDate) {
       return
@@ -151,7 +170,7 @@ export default function ProgramDateTimeSelector({
         const res = await getAvailableTimes({
           program_id: detailsID,
           date: String(moment(selectedDate).format("YYYY-MM-DD")),
-        }) 
+        })
         if (
           res &&
           "success" in res &&
@@ -174,7 +193,7 @@ export default function ProgramDateTimeSelector({
     const getChild = async () => {
       try {
         const res = await getChildList()
-         
+
         if (
           res &&
           "success" in res &&
@@ -313,10 +332,10 @@ export default function ProgramDateTimeSelector({
         }}
         disabled={(day) => !canSelectDate(day)}
         modifiers={{
-          program_date: programDates,
+          available_date: availableDatesFromAPI,
         }}
         modifiersClassNames={{
-          program_date:
+          available_date:
             "bg-brand rounded-md mx-0.5  text-primary! hover:bg-brand opacity-100!",
         }}
         classNames={{
@@ -345,6 +364,10 @@ export default function ProgramDateTimeSelector({
           //     ? "text-[#C0C0C0] opacity-50"
           //     : "text-[#C0C0C0] line-through opacity-100",
         }}
+        onMonthChange={(month) => {
+          const formatted = moment(month).format("YYYY-MM")
+          setCurrentMonth(formatted)
+        }}
       />
 
       {/* times */}
@@ -359,9 +382,9 @@ export default function ProgramDateTimeSelector({
               <Button
                 key={index}
                 variant="outline"
-                className={`${!slot.is_available ? "line-through" : ""} ${selectedTime?.id === slot.id ? "border-brand" : "border-[#DEDEDE]"} relative h-10 rounded-xl bg-white text-sm font-medium text-[#202020] hover:bg-[#F8F8F8]`}
+                className={`${!slot.is_available || slot.is_past || slot.is_booked ? "line-through" : ""} ${selectedTime?.id === slot.id ? "border-brand" : "border-[#DEDEDE]"} relative h-10 rounded-xl bg-white text-sm font-medium text-[#202020] hover:bg-[#F8F8F8]`}
                 onClick={() => setSelectedTime(slot)}
-                disabled={!slot.is_available}
+                disabled={!slot.is_available || slot.is_past || slot.is_booked}
               >
                 {moment(slot.start_time, "HH:mm").format("LT")} -{" "}
                 {moment(slot.end_time, "HH:mm").format("LT")}
@@ -377,111 +400,109 @@ export default function ProgramDateTimeSelector({
       )}
 
       {/* payment */}
-        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#DEDEDE] pt-4">
-          <p className="text-lg font-medium text-primary!">
-            Total: $ {priceToShow}
-          </p>
+      <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#DEDEDE] pt-4">
+        <p className="text-lg font-medium text-primary!">
+          Total: $ {priceToShow}
+        </p>
 
-          {user?.role === "parent" && !child_id ? (
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger>
-                <Button className="h-10 cursor-pointer rounded-xl bg-brand text-lg font-medium text-primary hover:bg-brand/80 hover:text-primary">
-                  {isOwner ? "Can not book own program" : "Proceed to Payment"}
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle className="text-xl font-semibold">
-                    Select child
-                  </DialogTitle>
-                  <DialogDescription>
-                    <p className="text-sm text-muted-foreground">
-                      Please select a child to proceed with the booking.
-                    </p>
+        {user?.role === "parent" && !child_id ? (
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger>
+              <Button className="h-10 cursor-pointer rounded-xl bg-brand text-lg font-medium text-primary hover:bg-brand/80 hover:text-primary">
+                {isOwner ? "Can not book own program" : "Proceed to Payment"}
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="text-xl font-semibold">
+                  Select child
+                </DialogTitle>
+                <DialogDescription>
+                  <p className="text-sm text-muted-foreground">
+                    Please select a child to proceed with the booking.
+                  </p>
 
-                    {allChields.length > 0 ? (
-                      <div className="mt-2 grid grid-cols-1 gap-2">
-                        <Select
-                          onValueChange={(value) => setSelectedChildId(value)}
-                          defaultValue={selectedChildId}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a child" />
-                          </SelectTrigger>
-                          <SelectContent position="popper">
-                            <SelectGroup>
-                              {allChields.map((child) => (
-                                <SelectItem
-                                  value={String(child.id)}
-                                  key={child.id}
-                                  className="cursor-pointer hover:bg-brand!"
-                                >
-                                  {child.name} {child.last_name}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    ) : (
-                      <div className="">
-                        <Lottie animationData={animationData} loop />
-                        <div className="">
-                          <p className="pb-4 text-center text-sm text-muted-foreground">
-                            No children found.
-                          </p>
-                          <CommonBtn
-                            variant="outline"
-                            size="default"
-                            text="add child"
-                            className="w-full cursor-pointer border-0 bg-brand text-primary hover:bg-brand"
-                            onClick={() => router.push("?add-new=player")}
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="mt-4 flex justify-between">
-                      <CommonBtn
-                        variant="outline"
-                        size="default"
-                        text="Close"
-                        className="w-fit cursor-pointer border-brand bg-transparent px-4 text-primary hover:bg-transparent"
-                        onClick={() => setIsDialogOpen(false)}
-                      />
-
-                      <CommonBtn
-                        variant="outline"
-                        size="default"
-                        text="Continue to Payment"
-                        className="w-fit cursor-pointer border-0 bg-brand px-4 text-primary hover:bg-brand"
-                        onClick={() => handleBooking("parent")}
-                        disabled={!selectedChildId || isOwner}
-                        isLoading={loading}
-                      />
+                  {allChields.length > 0 ? (
+                    <div className="mt-2 grid grid-cols-1 gap-2">
+                      <Select
+                        onValueChange={(value) => setSelectedChildId(value)}
+                        defaultValue={selectedChildId}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select a child" />
+                        </SelectTrigger>
+                        <SelectContent position="popper">
+                          <SelectGroup>
+                            {allChields.map((child) => (
+                              <SelectItem
+                                value={String(child.id)}
+                                key={child.id}
+                                className="cursor-pointer hover:bg-brand!"
+                              >
+                                {child.name} {child.last_name}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
                     </div>
-                  </DialogDescription>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog>
-          ) : (
-            (user?.role === "player" || Boolean(child_id)) && (
-              <CommonBtn
-                disabled={isOwner}
-                size={"lg"}
-                variant={"outline"}
-                className="hover:text-primacursor-pointer h-10 w-fit rounded-xl border-0 bg-brand px-3 text-lg font-medium text-primary hover:bg-brand/80"
-                onClick={() =>
-                  child_id ? handleBooking("parent") : handleBooking("player")
-                }
-                isLoading={loading}
-                text={
-                  isOwner ? "Can not book own program" : "Proceed to Payment"
-                }
-              />
-            )
-          )}
-        </div> 
+                  ) : (
+                    <div className="">
+                      <Lottie animationData={animationData} loop />
+                      <div className="">
+                        <p className="pb-4 text-center text-sm text-muted-foreground">
+                          No children found.
+                        </p>
+                        <CommonBtn
+                          variant="outline"
+                          size="default"
+                          text="add child"
+                          className="w-full cursor-pointer border-0 bg-brand text-primary hover:bg-brand"
+                          onClick={() => router.push("?add-new=player")}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mt-4 flex justify-between">
+                    <CommonBtn
+                      variant="outline"
+                      size="default"
+                      text="Close"
+                      className="w-fit cursor-pointer border-brand bg-transparent px-4 text-primary hover:bg-transparent"
+                      onClick={() => setIsDialogOpen(false)}
+                    />
+
+                    <CommonBtn
+                      variant="outline"
+                      size="default"
+                      text="Continue to Payment"
+                      className="w-fit cursor-pointer border-0 bg-brand px-4 text-primary hover:bg-brand"
+                      onClick={() => handleBooking("parent")}
+                      disabled={!selectedChildId || isOwner}
+                      isLoading={loading}
+                    />
+                  </div>
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        ) : (
+          (user?.role === "player" || Boolean(child_id)) && (
+            <CommonBtn
+              disabled={isOwner}
+              size={"lg"}
+              variant={"outline"}
+              className="hover:text-primacursor-pointer h-10 w-fit rounded-xl border-0 bg-brand px-3 text-lg font-medium text-primary hover:bg-brand/80"
+              onClick={() =>
+                child_id ? handleBooking("parent") : handleBooking("player")
+              }
+              isLoading={loading}
+              text={isOwner ? "Can not book own program" : "Proceed to Payment"}
+            />
+          )
+        )}
+      </div>
     </div>
   )
 }

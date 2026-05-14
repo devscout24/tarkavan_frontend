@@ -32,8 +32,7 @@ export default function RadarStrength({
       formData.append("athlete_profile_id", String(userID))
       formData.append("strength_count", strength_count)
       const res = await endorseProfile(formData)
-
-      console.log(res)
+ 
       if(res && "success" in res && "data" in res) {
         if(res.success && res.data?.status) { 
           toast.success(res.data?.data || "Strength endorsed successfully!")

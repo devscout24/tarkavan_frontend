@@ -13,7 +13,7 @@ import { IoLogoWhatsapp } from "react-icons/io5"
 import Nav from "@/components/common/nav"
 import Footer from "@/components/common/footer"
 import CommonBtn from "@/components/common/common-btn"
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
 import {
   HoverCard,
   HoverCardContent,
@@ -22,6 +22,7 @@ import {
 import ProfileCard from "../../../components/profile-card"
 import BIO from "../../../components/bio"
 import {
+  TChield,
   TPlayerBasicInfo,
   TPlayerPosition,
   TPlayerPositionInfo,
@@ -38,6 +39,26 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { storeVote } from "../../../action"
+import { useParams } from "next/navigation"
+import { toast } from "sonner"
+import { getChildList } from "@/app/(dashboards)/player/programs/action"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
 // Inline type definitions for profile data
 
 interface ProfilePageProps {
@@ -45,27 +66,90 @@ interface ProfilePageProps {
 }
 
 export default function ProfilePage({ data }: ProfilePageProps) {
-  const [loadPage, setLoadPage] = useState(false)
-
-  const [teamVoted, setTeamVoted] = useState(false)
-  const [academyVoted, setAcademyVoted] = useState(false)
-  const [loading, setLoading] = useState({
-    team: false,
-    academy: false,
-  })
-
+  const [loadVoteType, setLoadVoteType] = useState("")
+  const user = localStorage.getItem("go_elite_user")
+    ? JSON.parse(localStorage.getItem("go_elite_user") as string)
+    : null
+  const [childList, setChildList] = useState<TChield[]>([])
+  const params = useParams()
+  const playerId = params.playerid
+  const [childId, setChildId] = useState("")
   const mapPosition = []
   mapPosition.push(data?.position_info?.primary_position)
   mapPosition.push(data?.position_info?.secondary_position)
   const columnBorderClass = "border-r border-white/15 last:border-r-0"
+  const [provincialModalOpen, setProvincialModalOpen] = useState(false)
+  const [professionalModalOpen, setProfessionalModalOpen] = useState(false)
 
-  const handleVote = async (type: "team" | "academy") => {
+  useEffect(() => {
+    if (user && user?.role === "parent") {
+      const fetchChildId = async () => {
+        try {
+          const res = await getChildList()
+          if (
+            res &&
+            typeof res === "object" &&
+            "success" in res &&
+            res.success &&
+            "data" in res
+          ) {
+            setChildList(res.data.data)
+          }
+        } catch (err) {
+          console.error("Error fetching child list:", err)
+        }
+      }
+      fetchChildId()
+    }
+  }, [])
+
+  const handleVoteCick = (type: string, setOpen: (open: boolean) => void) => {
+    if (user?.role === "parent" && !childId) {
+      setOpen(true)
+      return
+    } else if (user?.role === "club") {
+      toast.error("Clubs are not allowed to vote.")
+    } else {
+      handleVote(type)
+    }
+  }
+
+  const handleVote = async (type: string) => {
+    if (user?.role === "parent" && !childId) {
+      toast.error("Please select a child to vote.")
+      return
+    }
+
+    setLoadVoteType(type)
     try {
       const formData = new FormData()
 
+      formData.append("vote_for_player_id", String(playerId))
+      formData.append("child_id", String(playerId))
+      formData.append("vote_type", type)
+
       const res = await storeVote(formData)
+
+      if (
+        res &&
+        typeof res === "object" &&
+        "success" in res &&
+        res.success &&
+        "data" in res
+      ) {
+        toast.success(res.data.message)
+        setLoadVoteType("")
+        return
+      }
+
+      if (res?.message) {
+        toast.error(res.message)
+        setLoadVoteType("")
+        return
+      }
     } catch (err) {
       console.error("Error voting:", err)
+      setLoadVoteType("")
     }
   }
 
@@ -291,28 +375,123 @@ export default function ProfilePage({ data }: ProfilePageProps) {
           </div>
 
           <div className="sticky bottom-0 mt-10 flex w-full flex-wrap justify-center gap-10 py-5 backdrop-blur-md">
-            <CommonBtn
-              size={"lg"}
-              variant={"default"}
-              text={teamVoted ? "Voted" : " Provincial Team Votes"}
-              className="w-fit cursor-pointer bg-yellow-500 px-10 text-primary hover:bg-yellow-500/80 hover:text-primary"
-              onClick={() => {
-                setLoading((prev) => ({ ...prev, team: true }))
-                setTimeout(() => {
-                  setTeamVoted((prev) => !prev)
-                  setLoading((prev) => ({ ...prev, team: false }))
-                }, 2000)
-              }}
-              isLoading={loading.team}
-            />
-            <CommonBtn
-              size={"lg"}
-              variant={"default"}
-              text={academyVoted ? "Voted" : "Professional Academy Votes"}
-              className="w-fit cursor-pointer bg-red-500 px-10 text-primary hover:bg-red-500/80 hover:text-primary"
-              onClick={() => handleVote("academy")}
-              isLoading={loading.academy}
-            />
+            <Dialog
+              open={provincialModalOpen}
+              onOpenChange={setProvincialModalOpen}
+            >
+              <DialogTrigger>
+                <CommonBtn
+                  size={"lg"}
+                  variant={"default"}
+                  text={"Provincial Team Votes"}
+                  className="w-fit cursor-pointer bg-yellow-500 px-10 text-primary hover:bg-yellow-500/80 hover:text-primary"
+                  onClick={() =>
+                    handleVoteCick("provencial", setProvincialModalOpen)
+                  }
+                  isLoading={loadVoteType === "provencial"}
+                />
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Select a child to vote.</DialogTitle>
+                  <DialogDescription>
+                    {childList.length > 0 ? (
+                      <div className="">
+                        <Select onValueChange={(value) => setChildId(value)}>
+                          <SelectTrigger className="w-full text-primary">
+                            <SelectValue placeholder="Select a child" />
+                          </SelectTrigger>
+                          <SelectContent position="popper">
+                            {childList.map((child) => (
+                              <SelectItem
+                                key={child.id}
+                                value={String(child.id)}
+                                className="hover:bg-brand!"
+                              >
+                                {child.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <div className="">
+                          <CommonBtn
+                            size={"lg"}
+                            variant={"default"}
+                            text={"Confirm Vote"}
+                            className="mt-4 w-full cursor-pointer bg-yellow-500 px-10 text-primary hover:bg-yellow-500/80 hover:text-primary"
+                            onClick={() => {
+                              handleVote("provencial")
+                            }}
+                            isLoading={loadVoteType === "provencial"}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <p>No children available for voting.</p>
+                    )}
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog
+              open={professionalModalOpen}
+              onOpenChange={setProfessionalModalOpen}
+            >
+              <DialogTrigger>
+                <CommonBtn
+                  size={"lg"}
+                  variant={"default"}
+                  text={"Professional Academy Votes"}
+                  className="w-fit cursor-pointer bg-red-500 px-10 text-primary hover:bg-red-500/80 hover:text-primary"
+                  onClick={() =>
+                    handleVoteCick("professional", setProfessionalModalOpen)
+                  }
+                  isLoading={loadVoteType === "professional"}
+                />
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Select a child to vote.</DialogTitle>
+                  <DialogDescription>
+                    {childList.length > 0 ? (
+                      <div className="">
+                        <Select onValueChange={(value) => setChildId(value)}>
+                          <SelectTrigger className="w-full text-primary">
+                            <SelectValue placeholder="Select a child" />
+                          </SelectTrigger>
+                          <SelectContent position="popper">
+                            {childList.map((child) => (
+                              <SelectItem
+                                key={child.id}
+                                value={String(child.id)}
+                                className="hover:bg-brand!"
+                              >
+                                {child.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <div className="">
+                          <CommonBtn
+                            size={"lg"}
+                            variant={"default"}
+                            text={"Confirm Vote"}
+                            className="mt-4 w-full cursor-pointer bg-red-500 px-10 text-primary hover:bg-red-500/80 hover:text-primary"
+                            onClick={() => {
+                              handleVote("professional")
+                            }}
+                            isLoading={loadVoteType === "professional"}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <p>No children available for voting.</p>
+                    )}
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>

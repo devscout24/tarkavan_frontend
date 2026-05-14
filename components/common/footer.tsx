@@ -46,13 +46,13 @@ const socials = [
 export default function Footer() {
   return (
     <footer className="relative overflow-hidden border-t border-white/10 bg-[#050706] px-6 pt-30 pb-20 md:pb-16">
-      <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-120 h-10 opacity-50 ">
+      <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-120   opacity-50 ">
         <Image
           src="/images/light.png"
           alt="Footer Background" 
           width={500}
           height={2}
-          className="pointer-events-none    "
+          className="pointer-events-none max-h-8    "
         />
       </div>
 

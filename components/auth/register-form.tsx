@@ -86,7 +86,7 @@ export default function RegisterForm() {
       )
 
       const res = await registerUser(formData)
-     
+      console.log("Registration response:", res)
 
       if (!res) {
         toast.error("Registration failed. Please try again.")

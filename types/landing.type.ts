@@ -56,9 +56,46 @@ export type TStepsResponse = {
 };
 
 
+export type TFeatureHeader = {
+  id: number;
+  title: string;
+  description: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TFeatureItem = {
+  id: number;
+  feature_id: number;
+  title: string;
+  description: string;
+  icon: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TFeaturesLanding = {
+  header: TFeatureHeader;
+  items: TFeatureItem[];
+};
+
+
+export type TReviewLanding = {
+  id: number;
+  rating: string;
+  review_text: string;
+  user_name: string;
+  user_designation: string;
+  user_image: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type TLandingPageData = {
     hero: THeroData
     stats: TLandingStats
     ecosystem: EcosystemSection
     how_it_works: TStepsResponse;
+    features: TFeaturesLanding;
+    reviews: { items: TReviewLanding[] };
 }

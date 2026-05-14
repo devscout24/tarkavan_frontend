@@ -1,15 +1,4 @@
-import type { LucideIcon } from "lucide-react"
-import {
-  BadgeCheck,
-  CalendarDays,
-  Goal,
-  MessageCircle,
-  PlaySquare,
-  ShieldCheck,
-  User,
-  Users,
-  Video,
-} from "lucide-react"
+ 
 
 import {
   Card,
@@ -19,61 +8,24 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import Container from "../common/container"
+import { TFeatureItem, TFeaturesLanding } from "@/types/landing.type"
+import Image from "next/image"
 
 
-type FeatureItem = {
-  title: string
-  description: string
-  icon: LucideIcon
-} 
-const features: FeatureItem[] = [
-  {
-    title: "Athlete Profiles",
-    description:
-      "Comprehensive profiles with stats, achievements, playing history, and position details.",
-    icon: User,
-  },
-  {
-    title: "Video Highlights",
-    description:
-      "Upload training clips and game highlights for coaches and scouts to evaluate your talent.",
-    icon: Video,
-  },
-  {
-    title: "Coach Marketplace",
-    description:
-      "Browse certified coaches by sport, location, rating, and price. Book sessions instantly.",
-    icon: Goal,
-  },
-  {
-    title: "Booking System",
-    description:
-      "Full calendar integration for scheduling, rescheduling, and managing all training sessions.",
-    icon: CalendarDays,
-  },
-  {
-    title: "Real-Time Messaging",
-    description:
-      "Direct communication between players, coaches, and teams with instant notifications.",
-    icon: MessageCircle,
-  },
-  {
-    title: "Team Networking",
-    description:
-      "Teams can recruit players, challenge other teams to matches, and manage rosters.",
-    icon: Users,
-  },
-]
-
-function FeatureCard({ item }: { item: FeatureItem }) {
-  const Icon = item.icon
+ 
+function FeatureCard({ item }: { item: TFeatureItem }) {
+   
 
   return (
     <Card className="h-full rounded-xl border border-white/10 bg-white/5 text-white  ">
       <CardHeader className="pb-2">
-        <div className="mb-3 inline-flex h-7 w-7 items-center justify-center rounded-md border border-brand/35 bg-brand/10 text-brand">
-          <Icon className="size-4" />
-        </div>
+           <Image
+            src={item.icon}
+            alt={`${item.title} icon`}
+            width={200}
+            height={200}
+            className="w-10 h-10"
+           /> 
         <CardTitle className=" text-base md:text-lg lg:text-[24px] font-bold text-white">
           {item.title}
         </CardTitle>
@@ -88,7 +40,7 @@ function FeatureCard({ item }: { item: FeatureItem }) {
   )
 }
 
-export default function ToComplite() {
+export default function ToComplite({ data }: { data: TFeaturesLanding | undefined }) {
   return (
     <section 
       className="py-10 md:py-20 lg:py-35  bg-[#060807]!  "
@@ -109,7 +61,7 @@ export default function ToComplite() {
           </header>
 
           <div className="mt-10 md:mt-20 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {features.map((item) => (
+            {data?.items.map((item) => (
               <article key={item.title}>
                 <FeatureCard item={item} />
               </article>

@@ -186,9 +186,12 @@ export async function getPlayerDashboard() {
 } 
  
  
-export async function getAvailableMonth({program_id}: {program_id: string }) {
+ 
+
+export async function getDateForMonth({program_id , month}: {program_id: string , month: string}) {
+
   try {
-    const res = await api.get(`/program/{{program_id}}/available-slots?month`)
+    const res = await api.get(`/program/${program_id}/available-slots?month=${month}`)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {
@@ -200,8 +203,9 @@ export async function getAvailableMonth({program_id}: {program_id: string }) {
       status: 500,
     }
   }
-} 
- 
+}
+
+
 export async function getAvailableTimes({program_id , date}: {program_id: string , date: string}) {
   try {
     const res = await api.get(`/program/${program_id}/available-times?date=${date}`)

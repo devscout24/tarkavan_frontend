@@ -79,7 +79,7 @@ export async function endorseProfile(formData: FormData) {
 export async function storeVote(formData: FormData) {
   try {
     const res = await api.post(`/player/vote`, formData)
-    revalidatePath(`/profile/player/${formData.get("athlete_profile_id")}`)
+    revalidatePath(`/profile/player/${formData.get("vote_for_player_id") || formData.get("child_id")}`)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {

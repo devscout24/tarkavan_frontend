@@ -184,6 +184,7 @@ export default function ProgramDetailsPage() {
               Number(details?.price) - Number(details?.discount_price)
             }
             isOwner={details?.provider?.is_program_maker}
+            programid={String(id)}
           />
         </div>
       </div>

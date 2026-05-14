@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react"
 import Image from "next/image"
 import Container from "../common/container"
+import { TReviewLanding } from "@/types/landing.type"
 
 const TESTIMONIALS = [
   {
@@ -167,12 +168,12 @@ function useCarousel(
   }, [direction])
 }
 
-function TestimonialCard({
-  quote,
-  name,
-  role,
-  initials,
-}: (typeof TESTIMONIALS)[number]) {
+function TestimonialCard({ 
+  review_text: quote,
+  user_name: name,
+  user_designation: role,
+  user_image: initials,
+}:  TReviewLanding) {
   return (
     <article
       className="scroll-snap-align-start box-border flex w-[min(430px,calc(100vw-72px))] shrink-0 cursor-grab snap-start flex-col gap-4 rounded-3xl border border-white/5 p-[47px_24px] transition-all duration-280 ease-in-out hover:border-[rgba(198,245,122,0.2)] hover:shadow-[0_18px_42px_rgba(0,0,0,0.22)] lg:w-107.5"
@@ -221,27 +222,32 @@ function TestimonialCard({
 function CarouselRow({
   direction,
   rowRef,
+  data
 }: {
   direction: Direction
   rowRef: React.RefObject<HTMLDivElement | null>
+  data: TReviewLanding[] | undefined
 }) {
+  
   useCarousel(rowRef, direction)
+  
 
   return (
     <div
       ref={rowRef}
       className="flex cursor-grab [scroll-snap-type:x_mandatory] gap-6 overflow-x-auto select-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
-      {DUPLICATED.map((item, i) => (
+      {data && data?.map((item, i) => (
         <TestimonialCard key={i} {...item} />
       ))}
     </div>
   )
 }
 
-export default function AthletesAndCoaches() {
+export default function AthletesAndCoaches({ data }: { data: TReviewLanding[] | undefined }) {
   const topRowRef = useRef<HTMLDivElement>(null)
   const bottomRowRef = useRef<HTMLDivElement>(null)
+  console.log(data)
 
   return (
     <section
@@ -260,8 +266,8 @@ export default function AthletesAndCoaches() {
 
           {/* Two carousel rows */}
           <div className="flex flex-col gap-7.5 ">
-            <CarouselRow direction="backward" rowRef={topRowRef} />
-            <CarouselRow direction="forward" rowRef={bottomRowRef} />
+            <CarouselRow direction="backward" rowRef={topRowRef} data={data} />
+            <CarouselRow direction="forward" rowRef={bottomRowRef} data={data} />
           </div>
         </div>
       </Container>

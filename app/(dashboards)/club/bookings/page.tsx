@@ -105,7 +105,7 @@ export default function BookingsPage() {
     const fetchBookings = async () => {
       try {
         setLoading(true)
-        const response = await api.get("/coach/program/bookings")
+        const response = await api.get("/club/program/bookings")
         const data = Array.isArray(response?.data?.data)
           ? response.data.data
           : []

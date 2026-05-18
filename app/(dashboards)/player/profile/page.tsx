@@ -37,6 +37,8 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
+import { toPng } from "html-to-image"
+import { setPlayerOG } from "../../action"
 
 export default function PlayerProfile() {
   const columnBorderClass = "border-r border-white/15 last:border-r-0"
@@ -44,13 +46,12 @@ export default function PlayerProfile() {
     ? JSON.parse(localStorage.getItem("go_elite_user")!)
     : null
   const [playerData, setPlayerData] = useState<TPlayerProfile>()
- 
+
   const router = useRouter()
   useEffect(() => {
     const profileData = async () => {
       try {
         const res = await getPlayerProfile(user?.profile_id)
-        console.log("Player Profile Data:", res)
         if (res && "success" in res && res.data && res.data.data) {
           setPlayerData(res.data.data)
         }
@@ -87,6 +88,64 @@ export default function PlayerProfile() {
 
   const Icon = iconMap[privacy] ?? FiGlobe
 
+  const [shouldCapture, setShouldCapture] = useState(false)
+
+  useEffect(() => {
+    if (!playerData) return
+
+    const timer = setTimeout(() => setShouldCapture(true), 500)
+    return () => clearTimeout(timer)
+  }, [playerData])
+
+  useEffect(() => {
+    if (!shouldCapture) return
+
+    async function takeScreenshot() {
+      const node = document.getElementById("og_image")
+      if (!node) return
+
+      const images = node.querySelectorAll("img")
+      await Promise.all(
+        Array.from(images).map(
+          (img) =>
+            new Promise<void>((resolve) => {
+              if (img.complete) resolve()
+              else {
+                img.onload = () => resolve()
+                img.onerror = () => resolve()
+              }
+            })
+        )
+      )
+
+      await document.fonts.ready
+      await new Promise((resolve) => requestAnimationFrame(resolve))
+
+      toPng(node).then(async(dataUrl) => {
+ 
+        const res = await fetch(dataUrl)
+        const blob = await res.blob()
+        const file = new File([blob], "og-image.png", { type: "image/png" })
+ 
+        const formData = new FormData()
+        formData.append("preview", file)
+        formData.append("athlete_id", user?.profile_id)  
+ 
+        try {
+          const uploadRes = await setPlayerOG({id: user?.profile_id , data: formData})
+           
+          console.log("Upload success:", uploadRes)
+        } catch (error) {
+          console.error("Upload failed:", error)
+        }
+      })
+
+      setShouldCapture(false)
+    }
+
+    takeScreenshot()
+  }, [shouldCapture])
+
   return (
     <>
       <section className="text-white">
@@ -110,7 +169,7 @@ export default function PlayerProfile() {
         </Card>
 
         {/* profile info */}
-        <div className="mt-6 gap-6 lg:flex">
+        <div className="mt-6 gap-6 lg:flex" id="og_image">
           <div className="flex-3">
             <ProspectCard
               academyVotes={playerData?.professional_votes}
@@ -213,7 +272,7 @@ export default function PlayerProfile() {
                             </span>
                           </HoverCardTrigger>
                           <HoverCardContent>
-                             Provincial Team Votes:{" "}
+                            Provincial Team Votes:{" "}
                             {playerData?.provencial_votes} votes
                           </HoverCardContent>
                         </HoverCard>
@@ -239,7 +298,9 @@ export default function PlayerProfile() {
                         </HoverCard>
                         <div className="flex items-center gap-2">
                           <span className="block h-2 w-2 rounded-full bg-red-500" />
-                          <p className="text-white">Professional Academy Votes</p>
+                          <p className="text-white">
+                            Professional Academy Votes
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -258,23 +319,23 @@ export default function PlayerProfile() {
                 <PositionMap data={mapPosition as TPlayerPosition[]} />
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* player medias */}
-            <div className="">
-              {/* player image */}
-              <div className="">
-                <PlayerMedia uploadLabel="Upload Image" acceptType="image" />
-              </div>
+        {/* player medias */}
+        <div className="">
+          {/* player image */}
+          <div className="">
+            <PlayerMedia uploadLabel="Upload Image" acceptType="image" />
+          </div>
 
-              {/* player video */}
-              <div className="">
-                <PlayerMedia
-                  uploadLabel="Upload Video"
-                  title="My Videos"
-                  acceptType="video"
-                />
-              </div>
-            </div>
+          {/* player video */}
+          <div className="">
+            <PlayerMedia
+              uploadLabel="Upload Video"
+              title="My Videos"
+              acceptType="video"
+            />
           </div>
         </div>
       </section>

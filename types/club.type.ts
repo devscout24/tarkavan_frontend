@@ -242,3 +242,99 @@ export type TClub = {
   club_name: string
   club_logo: string
 }
+
+
+export type TClubBookingData = {
+  id: number;
+  program_id: number;
+  athlete_profile_id: number;
+  parent_id: number;
+  coach_id: number;
+  booking_time_id: number;
+  booking_date: string;
+
+  status: string;
+
+  stripe_payment_intent_id: string | null;
+  stripe_transfer_id: string | null;
+  payout_account_id: string | null;
+
+  stripe_session_id: string | null;
+  stripe_intend_id: string | null;
+
+  amount: string;
+  payout_amount: string | null;
+  payout_at: string | null;
+
+  tax: string;
+  after_commission_amount: string;
+  commission_amount: string;
+  discount: string;
+
+  currency: string;
+
+  payment_status: string;
+  payout_status: string;
+
+  created_at: string;
+  updated_at: string;
+
+  program: {
+    id: number;
+    coach_id: number | null;
+    user_id: number;
+
+    sport: string;
+    sport_option_id: number;
+
+    program_name: string;
+    program_type: string;
+    program_price: string;
+
+    program_location: string;
+
+    program_start: string;
+    program_end: string;
+
+    about_program: string;
+
+    discount_price: string;
+
+    upto_age: number;
+
+    program_photo: string;
+
+    status: string;
+
+    created_at: string;
+    updated_at: string;
+  };
+
+  athlete: {
+    id: number;
+    name: string;
+    last_name: string;
+    profile_image: string;
+    primary_position: string | null;
+    secondary_position: string | null;
+  };
+
+  booking_time: {
+    id: number;
+    er_program_id: number;
+
+    time: string | null;
+
+    slot_date: string;
+
+    start_time: string;
+    end_time: string;
+
+    is_available: boolean;
+
+    created_at: string;
+    updated_at: string;
+  };
+};
+
+ 

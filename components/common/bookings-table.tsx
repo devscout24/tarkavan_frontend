@@ -10,129 +10,54 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
+import { TClubBookingData } from "@/types"
+import moment from "moment"
 import Image, { StaticImageData } from "next/image"
-import { LuEye } from "react-icons/lu"
-import { IoMdCheckmarkCircleOutline } from "react-icons/io"
-import { MdCancel } from "react-icons/md"
-
-export type BookingStatus = "approved" | "pending" | "rejected"
-
-export type BookingItem = {
-  id: string
-  clientName: string
-  programName: string
-  amount: string
-  date: string
-  status: BookingStatus
-  avatar: string | StaticImageData
-}
+import { FiEye } from "react-icons/fi"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { PiDotsThreeOutline } from "react-icons/pi"
+import { useRouter } from "next/navigation"
+import { ChangeBookingStatus } from "@/app/(dashboards)/club/bookings/action"
+import { toast } from "sonner"
 
 type BookingsTableProps = {
-  bookings: BookingItem[]
-  onView?: (booking: BookingItem) => void
-  onApprove?: (booking: BookingItem) => void
-  onCancel?: (booking: BookingItem) => void
+  bookings: TClubBookingData[]
 }
 
-function StatusPill({
-  status,
-  className,
-}: {
-  status: BookingStatus
-  className?: string
-}) {
-  if (status === "approved") {
-    return (
-      <Badge
-        className={cn(
-          "h-8 rounded-full bg-[#D6F7E2] px-3 text-base font-medium text-[#0D8E45] hover:bg-[#D6F7E2]",
-          className
-        )}
-      >
-        Approved
-      </Badge>
-    )
+export default function BookingsTable({ bookings }: BookingsTableProps) {
+  const router = useRouter()
+
+  const handleViewDetails = (profile_id: number) => {
+    router.push(`/profile/player/${profile_id}`)
   }
 
-  if (status === "pending") {
-    return (
-      <Badge
-        className={cn(
-          "h-8 rounded-full bg-[#FFF0DF] px-3 text-base font-medium text-[#E4851C] hover:bg-[#FFF0DF]",
-          className
-        )}
-      >
-        Pending
-      </Badge>
-    )
+  const handleStatusChange = async (booking_id: number, new_status: string) => {
+    try {
+      const res = await ChangeBookingStatus({ booking_id, status: new_status }) 
+      if (res && "data" in res && res.data?.status === true) {
+        toast.success(res.data.message || "Booking status updated successfully")
+        window.dispatchEvent(new Event("bookingChanged"))
+      } else {
+        toast.error(res?.message || "Failed to update booking status")
+      }
+    } catch (error) {
+      console.error("Error updating booking status:", error)
+      toast.error("Failed to update booking status")
+    }
   }
 
-  return (
-    <Badge
-      className={cn(
-        "h-8 rounded-full bg-[#FDE6E6] px-3 text-base font-medium text-[#D92D20] hover:bg-[#FDE6E6]",
-        className
-      )}
-    >
-      Rejected
-    </Badge>
-  )
-}
-
-function ActionButtons({
-  booking,
-  className,
-  iconClassName,
-  onView,
-  onApprove,
-  onCancel,
-}: {
-  booking: BookingItem
-  className?: string
-  iconClassName?: string
-  onView?: (booking: BookingItem) => void
-  onApprove?: (booking: BookingItem) => void
-  onCancel?: (booking: BookingItem) => void
-}) {
-  return (
-    <div className={cn("flex items-center gap-3", className)}>
-      <button
-        type="button"
-        className="cursor-pointer text-white"
-        aria-label={`View ${booking.clientName} booking`}
-        onClick={() => onView?.(booking)}
-      >
-        <LuEye className={cn("h-5 w-5", iconClassName)} />
-      </button>
-      <button
-        type="button"
-        className="cursor-pointer text-[#00D66B]"
-        aria-label={`Approve ${booking.clientName} booking`}
-        onClick={() => onApprove?.(booking)}
-      >
-        <IoMdCheckmarkCircleOutline className={cn("h-5 w-5", iconClassName)} />
-      </button>
-      <button
-        type="button"
-        className="cursor-pointer text-[#E50000]"
-        aria-label={`Cancel ${booking.clientName} booking`}
-        onClick={() => onCancel?.(booking)}
-      >
-        <MdCancel className={cn("h-5 w-5", iconClassName)} />
-      </button>
-    </div>
-  )
-}
-
-export default function BookingsTable({
-  bookings,
-  onView,
-  onApprove,
-  onCancel,
-}: BookingsTableProps) {
   return (
     <>
-      <div className="space-y-3 lg:hidden">
+      {/* <div className="space-y-3 lg:hidden">
         {bookings.map((booking) => (
           <article
             key={booking.id}
@@ -142,21 +67,20 @@ export default function BookingsTable({
               <div className="flex min-w-0 items-center gap-3">
                 <Image
                   src={booking.avatar}
-                  alt={booking.clientName}
+                  alt={booking.athlete.name}
                   width={40}
                   height={40}
                   className="h-10 w-10 rounded-full object-cover"
                 />
                 <div className="min-w-0">
                   <p className="truncate text-base font-medium text-white">
-                    {booking.clientName}
+                    {booking.athlete.name}
                   </p>
                   <p className="truncate text-sm text-white/70">
-                    {booking.programName}
+                    {booking.program.program_name}
                   </p>
                 </div>
-              </div>
-              <StatusPill status={booking.status} />
+              </div> 
             </div>
 
             <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
@@ -166,21 +90,17 @@ export default function BookingsTable({
               </div>
               <div>
                 <p className="text-white/50">Date</p>
-                <p className="text-white">{booking.date}</p>
+                <p className="text-white!">{booking.booking_date}</p>
               </div>
             </div>
 
             <div className="mt-3">
-              <ActionButtons
-                booking={booking}
-                onView={onView}
-                onApprove={onApprove}
-                onCancel={onCancel}
-              />
+              actions
+ 
             </div>
           </article>
         ))}
-      </div>
+      </div> */}
 
       <div className="hidden w-full max-w-full min-w-0 overflow-x-auto overflow-y-hidden rounded-2xl border border-secondary/40 [scrollbar-color:rgba(198,245,122,0.75)_transparent] [scrollbar-width:thin] lg:block [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-brand/75 [&::-webkit-scrollbar-track]:bg-transparent">
         <Table className="w-full min-w-full table-fixed">
@@ -216,41 +136,83 @@ export default function BookingsTable({
                 <TableCell className="h-16 border-r border-white/15 px-3 whitespace-normal xl:px-4 2xl:h-19 2xl:px-5">
                   <div className="flex min-w-0 items-center gap-2 xl:gap-3">
                     <Image
-                      src={booking.avatar}
-                      alt={booking.clientName}
+                      src={
+                        booking.athlete.profile_image || "/images/bannerbg.png"
+                      }
+                      alt={booking.athlete.name}
                       width={40}
                       height={40}
                       className="h-8 w-8 rounded-full object-cover xl:h-9 xl:w-9 2xl:h-10 2xl:w-10"
                     />
                     <p className="truncate text-sm leading-[150%] font-normal text-white xl:text-base">
-                      {booking.clientName}
+                      {booking.athlete.name}
                     </p>
                   </div>
                 </TableCell>
                 <TableCell className="h-16 border-r border-white/15 px-3 text-sm leading-[150%] font-normal whitespace-normal text-white xl:px-4 xl:text-base 2xl:h-19 2xl:px-5">
-                  {booking.programName}
+                  {booking.program.program_name}
                 </TableCell>
                 <TableCell className="h-16 border-r border-white/15 px-3 text-sm leading-[150%] font-normal whitespace-normal text-white xl:px-4 xl:text-base 2xl:h-19 2xl:px-5">
                   {booking.amount}
                 </TableCell>
                 <TableCell className="h-16 border-r border-white/15 px-3 text-sm leading-[150%] font-normal whitespace-normal text-white xl:px-4 xl:text-base 2xl:h-19 2xl:px-5">
-                  {booking.date}
+                  {moment(booking.booking_date).format("MMM Do YY")}
                 </TableCell>
-                <TableCell className="h-16 border-r border-white/15 px-3 whitespace-normal xl:px-4 2xl:h-19 2xl:px-5">
-                  <StatusPill
-                    status={booking.status}
-                    className="h-7 px-2.5 text-sm 2xl:h-8 2xl:px-3 2xl:text-base"
-                  />
+                <TableCell className="h-16 border-r border-white/15 px-3 whitespace-normal xl:px-4 2xl:h-19 2xl:px-5 capitalize   ">
+                  {booking.status}
                 </TableCell>
                 <TableCell className="h-16 px-3 whitespace-normal xl:px-4 2xl:h-19 2xl:px-5">
-                  <ActionButtons
-                    booking={booking}
-                    className="gap-2 2xl:gap-3"
-                    iconClassName="h-4 w-4 2xl:h-5 2xl:w-5"
-                    onView={onView}
-                    onApprove={onApprove}
-                    onCancel={onCancel}
-                  />
+                  <div className="flex items-center justify-center gap-4">
+                    <FiEye
+                      onClick={() =>
+                        handleViewDetails(booking.athlete_profile_id)
+                      }
+                      className="transition-color cursor-pointer text-2xl duration-300 hover:text-brand!"
+                    />
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline">
+                          <PiDotsThreeOutline />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuGroup>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleStatusChange(booking.id, "pending")
+                            }
+                            className="cursor-pointer hover:bg-brand!"
+                          >
+                            Pending
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleStatusChange(booking.id, "confirmed")
+                            }
+                            className="cursor-pointer hover:bg-brand!"
+                          >
+                            Confirmed
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleStatusChange(booking.id, "cancelled")
+                            }
+                            className="cursor-pointer hover:bg-brand!"
+                          >
+                            Cancelled
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleStatusChange(booking.id, "completed")
+                            }
+                            className="cursor-pointer hover:bg-brand!"
+                          >
+                            Completed
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

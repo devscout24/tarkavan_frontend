@@ -40,7 +40,7 @@ export default function StatusFilterSelect({
       <Select value={value} onValueChange={onValueChange}>
         <SelectTrigger
           className={cn(
-            "h-10 w-full rounded-xl border-white/20 bg-transparent px-3 text-white",
+            "h-10 w-full rounded-xl border-white/20 bg-transparent px-3 text-white mr-2 ",
             triggerClassName
           )}
         >

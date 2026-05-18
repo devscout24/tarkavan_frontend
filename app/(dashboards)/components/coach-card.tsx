@@ -70,7 +70,7 @@ export default function CoachCard({
         <div className="mb-4 flex items-center   ">
             <div className="flex-1">
                 <h3 className="text-xl font-bold text-white mb-2">{name}</h3>
-                <div className="text-sm text-white flex gap-2  "> 
+                <div className="text-sm text-white flex gap-2 items-center flex-wrap    "> 
                     <p className="text-xs  ">Age : {age}</p>
                     <TfiLayoutLineSolid className="rotate-90 text-white" /> 
                     <p className="text-xs  ">{type}</p> 

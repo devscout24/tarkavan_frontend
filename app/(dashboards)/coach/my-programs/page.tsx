@@ -113,6 +113,7 @@ export default function UpcomingEventPage() {
         setIsLoading(true)
         const filterStr = searchParams.get("filter") || "active"
         const response = await getCoachProgramList(filterStr)
+        console.log("API Response:", response)
         const res = response as any
         if (res && res.success && res.data?.data) {
           setPrograms(res.data.data.programs || [])

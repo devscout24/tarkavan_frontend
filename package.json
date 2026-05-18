@@ -25,6 +25,7 @@
     "date-fn": "^0.0.2",
     "date-fns": "^4.1.0",
     "file-saver": "^2.0.5",
+    "html-to-image": "^1.11.13",
     "jwt-decode": "^4.0.0",
     "ky": "^2.0.1",
     "lottie-react": "^2.4.1",

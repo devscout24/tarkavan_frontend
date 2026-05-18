@@ -11,9 +11,7 @@ export const size = {
 
 async function fetchPlayerProfile(playerid: string) {
   const apiBaseUrl =
-    process.env.NEXT_PUBLIC_API_BASE_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    "https://tarkavan.thenightowl.team/api"
+    process.env.NEXT_PUBLIC_API_URL || "https://tarkavan.thenightowl.team/api"
   const response = await fetch(`${apiBaseUrl}/data/athlete/${playerid}`, {
     cache: "no-store",
   })

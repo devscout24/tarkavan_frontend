@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { SubscriptionPlanCardProps } from "@/types"
 import { useState } from "react"
 import { BsFillPatchCheckFill } from "react-icons/bs"
+import { toast } from "sonner"
 
 export default function SubscriptionPlanCard({
   title,
@@ -30,6 +31,7 @@ export default function SubscriptionPlanCard({
     try {
       setIsSubmitting(true)
       const res = await purchaseSubscription(String(id))
+      console.log(res)
 
       const checkoutUrl =
         typeof res === "object" &&
@@ -51,6 +53,10 @@ export default function SubscriptionPlanCard({
 
       if (checkoutUrl) {
         window.location.href = checkoutUrl
+        return
+      }
+      if (!res?.status) {
+        toast.error(res?.message || "Failed to initiate subscription purchase")
         return
       }
 

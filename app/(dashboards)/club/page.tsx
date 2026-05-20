@@ -80,6 +80,7 @@ export default function ClubDashboardPage() {
     null
   )
   const [isError, setIsError] = useState(false)
+  const user = localStorage.getItem("go_elite_user") ? JSON.parse(localStorage.getItem("go_elite_user") as string) : null 
   const [errorMessage, setErrorMessage] = useState("")
   const recentOpportunities: RecentOpportunity[] = dashboardData?.recent_opportunities as RecentOpportunity[] ?? []
   
@@ -166,7 +167,7 @@ export default function ClubDashboardPage() {
     }
   }, [fetchDashboardData])
 
-  if (isError) {
+  if (user && user?.is_subscription_active === false) {
     return (
       <ClubDashboardSubscription
         text={errorMessage}

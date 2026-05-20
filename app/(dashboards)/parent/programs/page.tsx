@@ -11,8 +11,7 @@ import { TProgramUpcomming } from "@/types/upcomming.type"
 import { getAvailablePlayerParentProgram } from "../../player/programs/action"
 
 export default function ProgramPage() { 
-  
-  const router = useRouter()
+ 
 
     const  [programs, setPrograms] = useState<TProgramUpcomming[]>([])
     const [sports, setSports] = useState<TSportOption[]>([])
@@ -22,7 +21,8 @@ export default function ProgramPage() {
   
       const getPrograms = async () => {
         try{ 
-          const res = await getAvailablePlayerParentProgram(selectedFilter)   
+          const res = await getAvailablePlayerParentProgram(selectedFilter) 
+          console.log("programs response:", res)  
           if(res && "success" in res && res.success && res.data && "data" in res.data && res.data.data ) {
               setPrograms(res.data.data.programs)
             } 

@@ -44,6 +44,18 @@ export default function CoachBioCard() {
     }
 
     fetchBioData()
+
+    const handleProfileUpdated = () => { 
+      fetchBioData()
+    }
+
+    window.addEventListener("coachProfileUpdated", handleProfileUpdated)
+
+    return () => {
+      window.removeEventListener("coachProfileUpdated", handleProfileUpdated)
+    }
+
+
   }, [])
 
   if (loading) {

@@ -29,7 +29,7 @@ export default function RadarChart({
   strengths?: TPlayerStrength[]
 }) {
   const data = {
-    labels: strengths?.map((strength) => strength.strength_name) || [],
+    labels: strengths?.map((strength) => strength.strength_type) || [],
     datasets: [
       {
         data: strengths?.map((strength) => strength.endorse_count) || [
@@ -45,13 +45,13 @@ export default function RadarChart({
       },
     ],
   }
- 
-const counts = strengths?.map((s) => s.endorse_count) || [0]
-const maxVal = Math.max(...counts)
 
-// nearest "nice" number এ round up 
-const dynamicMax = Math.ceil(maxVal / 20) * 20 || 20
-const dynamicStep = dynamicMax / 5  
+  const counts = strengths?.map((s) => s.endorse_count) || [0]
+  const maxVal = Math.max(...counts)
+
+  // nearest "nice" number এ round up
+  const dynamicMax = Math.ceil(maxVal / 20) * 20 || 20
+  const dynamicStep = dynamicMax / 5
 
   const options = {
     plugins: {
@@ -71,7 +71,7 @@ const dynamicStep = dynamicMax / 5
         ticks: {
           color: "#fff", // gray text
           backdropColor: "transparent", // no bg
-          stepSize: dynamicStep,  
+          stepSize: dynamicStep,
         },
         grid: {
           color: "rgba(255, 255, 255, 0.5)", // circle line color
@@ -81,6 +81,10 @@ const dynamicStep = dynamicMax / 5
         },
         pointLabels: {
           color: "rgba(255, 255, 255, 0.7)", // label color (green)
+          font: {
+            size: 16,
+          },
+          
         },
       },
     },

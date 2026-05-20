@@ -23,7 +23,7 @@ export default function Nav() {
           <ul className="border-default rounded-base bg-neutral-secondary-soft md:bg-neutral-primary mt-4 flex flex-col border p-4 font-medium md:mt-0 md:flex-row md:space-x-8 md:border-0 md:p-0 rtl:space-x-reverse">
             <li>
               <a
-                href="#"
+                href="/"
                 className="md:text-fg-brand block rounded-sm bg-brand px-3 py-2 transition-all duration-300 hover:text-brand md:bg-transparent md:p-0"
                 aria-current="page"
               >

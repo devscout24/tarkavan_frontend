@@ -46,7 +46,7 @@ export default function PlayerProfile() {
     ? JSON.parse(localStorage.getItem("go_elite_user")!)
     : null
   const [playerData, setPlayerData] = useState<TPlayerProfile>()
-
+ 
   const router = useRouter()
   useEffect(() => {
     const profileData = async () => {
@@ -121,19 +121,21 @@ export default function PlayerProfile() {
       await document.fonts.ready
       await new Promise((resolve) => requestAnimationFrame(resolve))
 
-      toPng(node).then(async(dataUrl) => {
- 
+      toPng(node).then(async (dataUrl) => {
         const res = await fetch(dataUrl)
         const blob = await res.blob()
         const file = new File([blob], "og-image.png", { type: "image/png" })
- 
+
         const formData = new FormData()
         formData.append("preview", file)
-        formData.append("athlete_id", user?.profile_id)  
- 
+        formData.append("athlete_id", user?.profile_id)
+
         try {
-          const uploadRes = await setPlayerOG({id: user?.profile_id , data: formData})
-           
+          const uploadRes = await setPlayerOG({
+            id: user?.profile_id,
+            data: formData,
+          })
+
           console.log("Upload success:", uploadRes)
         } catch (error) {
           console.error("Upload failed:", error)
@@ -182,62 +184,14 @@ export default function PlayerProfile() {
             <SocialLinks profileUrl="profile/player" />
           </div>
           <div className="flex-7">
-            {/* player stats */}
+            {/* position mapping */}
             <div className="">
               <h2 className="mb-4 text-base font-semibold text-white">
-                Player Stats
+                Player Position On Mapping
               </h2>
 
-              <div className="mx-auto mt-4 max-w-[95vw] [&>div]:rounded-lg [&>div]:border">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-brand hover:bg-brand">
-                      <TableHead
-                        className={`sticky left-0 z-10 bg-brand ${columnBorderClass} text-primary!`}
-                      >
-                        Year
-                      </TableHead>
-                      <TableHead className={"text-primary!"}>Games</TableHead>
-                      <TableHead className={"text-primary!"}>Goals</TableHead>
-                      <TableHead className={"text-primary!"}>Assists</TableHead>
-                      <TableHead className={"text-primary!"}>
-                        Yellow Cards
-                      </TableHead>
-                      <TableHead className={"text-primary!"}>
-                        Red Cards
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {playerData?.season_stats_last_five_years?.map((stat) => (
-                      <TableRow
-                        key={stat.season_year}
-                        className="border-t border-white/20 hover:bg-transparent"
-                      >
-                        <TableCell
-                          className={`sticky left-0 bg-background font-medium ${columnBorderClass}`}
-                        >
-                          {stat.season_year}
-                        </TableCell>
-                        <TableCell className={columnBorderClass}>
-                          {stat.total_played_games}
-                        </TableCell>
-                        <TableCell className={columnBorderClass}>
-                          {stat.goals}
-                        </TableCell>
-                        <TableCell className={columnBorderClass}>
-                          {stat.assist}
-                        </TableCell>
-                        <TableCell className={columnBorderClass}>
-                          {stat.yellow_cards}
-                        </TableCell>
-                        <TableCell className={columnBorderClass}>
-                          {stat.red_cards}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+              <div className="overflow-hidden rounded-xl bg-secondary/30">
+                <PositionMap data={mapPosition as TPlayerPosition[]} />
               </div>
             </div>
 
@@ -309,14 +263,62 @@ export default function PlayerProfile() {
               </div>
             </div>
 
-            {/* position mapping */}
+            {/* player stats */}
             <div className="mt-6">
               <h2 className="mb-4 text-base font-semibold text-white">
-                Position Mapping
+                Player Stats
               </h2>
 
-              <div className="overflow-hidden rounded-xl bg-secondary/30">
-                <PositionMap data={mapPosition as TPlayerPosition[]} />
+              <div className="mx-auto mt-4 max-w-[95vw] [&>div]:rounded-lg [&>div]:border">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-brand hover:bg-brand">
+                      <TableHead
+                        className={`sticky left-0 z-10 bg-brand ${columnBorderClass} text-primary!`}
+                      >
+                        Year
+                      </TableHead>
+                      <TableHead className={"text-primary!"}>Games</TableHead>
+                      <TableHead className={"text-primary!"}>Goals</TableHead>
+                      <TableHead className={"text-primary!"}>Assists</TableHead>
+                      <TableHead className={"text-primary!"}>
+                        Yellow Cards
+                      </TableHead>
+                      <TableHead className={"text-primary!"}>
+                        Red Cards
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {playerData?.season_stats_last_five_years?.map((stat) => (
+                      <TableRow
+                        key={stat.season_year}
+                        className="border-t border-white/20 hover:bg-transparent"
+                      >
+                        <TableCell
+                          className={`sticky left-0 bg-background font-medium ${columnBorderClass}`}
+                        >
+                          {stat.season_year}
+                        </TableCell>
+                        <TableCell className={columnBorderClass}>
+                          {stat.total_played_games}
+                        </TableCell>
+                        <TableCell className={columnBorderClass}>
+                          {stat.goals}
+                        </TableCell>
+                        <TableCell className={columnBorderClass}>
+                          {stat.assist}
+                        </TableCell>
+                        <TableCell className={columnBorderClass}>
+                          {stat.yellow_cards}
+                        </TableCell>
+                        <TableCell className={columnBorderClass}>
+                          {stat.red_cards}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
             </div>
           </div>

@@ -5,7 +5,7 @@ import type { AxiosError } from "axios"
 import type {
   CoachProfileFormData,
   CoachProfileResponse,
-  CoachProfileApiResult
+  CoachProfileApiResult,
 } from "../type/coachProfileTypes"
 
 /**
@@ -17,7 +17,7 @@ export async function createOrUpdateCoachProfile(
   try {
     const res = await api.post("/coach/profile/add/update", formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     })
 
@@ -27,7 +27,7 @@ export async function createOrUpdateCoachProfile(
       return {
         success: false,
         message: res.data.message || "Failed to create/update coach profile",
-        status: res.status
+        status: res.status,
       }
     }
   } catch (err: unknown) {
@@ -38,9 +38,10 @@ export async function createOrUpdateCoachProfile(
       message = error.response.data.message
     } else if (error.response?.data?.errors) {
       const errors = error.response.data.errors
-      message = typeof errors === 'string'
-        ? errors
-        : Object.values(errors).flat().join(", ")
+      message =
+        typeof errors === "string"
+          ? errors
+          : Object.values(errors).flat().join(", ")
     } else if (error.message) {
       message = error.message
     }
@@ -57,68 +58,112 @@ export async function createOrUpdateCoachProfile(
 export function convertToFormData(data: CoachProfileFormData): FormData {
   const formData = new FormData()
 
+  const currentRoleValue =
+    typeof data.current_role === "string"
+      ? data.current_role
+      : typeof data.current_role === "number"
+        ? String(data.current_role)
+        : data.current_role && typeof data.current_role === "object"
+          ? String(
+              (
+                data.current_role as {
+                  id?: number | string
+                  value?: number | string
+                  name?: string
+                }
+              ).id ??
+                (
+                  data.current_role as {
+                    id?: number | string
+                    value?: number | string
+                    name?: string
+                  }
+                ).value ??
+                ""
+            ) ||
+            (data.current_role as { name?: string }).name ||
+            ""
+          : ""
+
+  const playerCentricApproach = Boolean(data.player_centric_approach)
+  const dataDrivingTraining = Boolean(data.data_driving_training)
+  const privacySettings = data.privacy_settings || {
+    visible_reviews: true,
+    allow_parent_player_reviews: true,
+  }
+  const coachingTitles = Array.isArray(data.coaching_title)
+    ? data.coaching_title
+    : []
+  const images = Array.isArray(data.images) ? data.images : []
+
   // Basic information
-  formData.append('name', data.name)
-  formData.append('last_name', data.last_name)
-  formData.append('dob', data.dob)
-  formData.append('gender', data.gender)
-  formData.append('nationality', data.nationality)
-  formData.append('email', data.email)
-  formData.append('sports', data.sports)
+  formData.append("name", data.name || "")
+  formData.append("last_name", data.last_name || "")
+  formData.append("dob", data.dob || "")
+  formData.append("gender", data.gender || "male")
+  formData.append("nationality", data.nationality || "")
+  formData.append("email", data.email || "")
+  formData.append("sports", data.sports || "")
 
   // Profile picture
   if (data.coach_profile_pic) {
-    formData.append('coach_profile_pic', data.coach_profile_pic)
+    formData.append("coach_profile_pic", data.coach_profile_pic)
   }
 
   // Experience and education
-  if (data.current_role) {
-    formData.append('current_role', data.current_role)
+  if (currentRoleValue) {
+    formData.append("current_role", currentRoleValue)
   }
-  formData.append('years_of_experience', data.years_of_experience)
-  formData.append('highest_education', data.highest_education)
-  formData.append('coaching_education', data.coaching_education)
-  formData.append('coaching_philosophy', data.coaching_philosophy)
+  formData.append("years_of_experience", data.years_of_experience || "")
+  formData.append("highest_education", data.highest_education || "")
+  formData.append("coaching_education", data.coaching_education || "")
+  formData.append("coaching_philosophy", data.coaching_philosophy || "")
 
   // Boolean values
-  formData.append('player_centric_approach', data.player_centric_approach.toString())
-  formData.append('data_driving_training', data.data_driving_training.toString())
+  formData.append("player_centric_approach", playerCentricApproach.toString())
+  formData.append("data_driving_training", dataDrivingTraining.toString())
 
   // Coaching titles
-  data.coaching_title.forEach((title, index) => {
+  coachingTitles.forEach((title, index) => {
     if (title.trim()) {
       formData.append(`coaching_title[${index}]`, title)
     }
   })
 
   // Images
-  data.images.forEach((image, index) => {
+  images.forEach((image, index) => {
     formData.append(`image[${index}]`, image)
   })
 
   // Privacy settings
-  formData.append('privacy_settings[visible_reviews]', data.privacy_settings.visible_reviews.toString())
-  formData.append('privacy_settings[allow_parent_player_reviews]', data.privacy_settings.allow_parent_player_reviews.toString())
+  formData.append(
+    "privacy_settings[visible_reviews]",
+    Boolean(privacySettings.visible_reviews).toString()
+  )
+  formData.append(
+    "privacy_settings[allow_parent_player_reviews]",
+    Boolean(privacySettings.allow_parent_player_reviews).toString()
+  )
 
   // Location
-  formData.append('city', data.city)
-  formData.append('country', data.country)
+  formData.append("city", data.city || "")
+  formData.append("country", data.country || "")
 
   // Social media links
   if (data.facebook_link) {
-    formData.append('facebook_link', data.facebook_link)
+    formData.append("facebook_link", data.facebook_link)
   }
   if (data.twitter_link) {
-    formData.append('twitter_link', data.twitter_link)
+    formData.append("twitter_link", data.twitter_link)
   }
   if (data.instagram_link) {
-    formData.append('instagram_link', data.instagram_link)
+    formData.append("instagram_link", data.instagram_link)
   }
   if (data.tiktok_link) {
-    formData.append('tiktok_link', data.tiktok_link)
+    formData.append("tiktok_link", data.tiktok_link)
   }
   if (data.whatsapp_link) {
-    formData.append('whatsapp_link', data.whatsapp_link)
+    formData.append("whatsapp_link", data.whatsapp_link)
   }
 
   return formData

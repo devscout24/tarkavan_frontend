@@ -36,8 +36,15 @@ export default function LoginForm() {
           profile_image: dbUser.profile_image,
           role: dbUser.role,
           status: dbUser.status,
-          profile_id: res.data.data.profile_id, 
+          profile_id: res.data.data.profile_id,
+          is_subscription_active: res.data.data.is_subscription_active 
         }
+        if(res?.data?.data?.is_subscription_active){
+          newUserData.is_subscription_active = res.data.data.is_subscription_active
+        }else{
+          newUserData.is_subscription_active = false
+        }
+
         localStorage.setItem("go_elite_user", JSON.stringify(newUserData))
         setLoading(false)
 

@@ -40,7 +40,8 @@ import type {
 } from "@/components/parentAndCoachApi/type/coachProfileTypes"
 import { getCoachEditData } from "./action"
 import { handleLogout } from "@/lib/helpers"
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation" 
+import useModal from "@/components/common/modal/useModal"
 
 interface CoachProfileSetupProps {
   currentStep?: number
@@ -88,6 +89,7 @@ export default function CoachProfileSetup({
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [initialPreview, setInitialPreview] = useState<string | null>(null)
+  const { close  } = useModal()
 
   // --- Upload Photo state ---
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -220,7 +222,10 @@ export default function CoachProfileSetup({
           nationality?: string
           email?: string
           sports?: string
-          current_role?: { name?: string }
+          current_role?:
+            | string
+            | number
+            | { id?: number | string; name?: string; value?: number | string }
           years_of_experience?: string
           highest_education?: string
           coaching_education?: string
@@ -270,6 +275,43 @@ export default function CoachProfileSetup({
   // Set formData from editData when options are loaded
   useEffect(() => {
     if (editData && sportOptions.length > 0 && roleOptions.length > 0) {
+      const currentRoleValue = (() => {
+        if (typeof editData.current_role === "string") {
+          const directMatch = roleOptions.find(
+            (role) => role.id.toString() === editData.current_role
+          )
+          if (directMatch) return directMatch.id.toString()
+
+          const nameMatch = roleOptions.find(
+            (role) => role.name === editData.current_role
+          )
+          return nameMatch ? nameMatch.id.toString() : editData.current_role
+        }
+
+        if (typeof editData.current_role === "number") {
+          return String(editData.current_role)
+        }
+
+        if (
+          editData.current_role &&
+          typeof editData.current_role === "object"
+        ) {
+          const currentRoleId =
+            editData.current_role.id ?? editData.current_role.value
+          if (currentRoleId !== undefined && currentRoleId !== null) {
+            return String(currentRoleId)
+          }
+
+          const roleName = editData.current_role.name
+          const nameMatch = roleName
+            ? roleOptions.find((role) => role.name === roleName)
+            : undefined
+          return nameMatch ? nameMatch.id.toString() : ""
+        }
+
+        return ""
+      })()
+
       setFormData((prev) => ({
         ...prev,
         name: editData.name || "",
@@ -279,7 +321,7 @@ export default function CoachProfileSetup({
         nationality: editData.nationality || "",
         email: editData.email || "",
         sports: editData.sports || "",
-        current_role: editData.current_role || "",
+        current_role: currentRoleValue,
         years_of_experience: editData.years_of_experience || "",
         highest_education: editData.highest_education || "",
         coaching_education: editData.coaching_education || "",
@@ -352,36 +394,49 @@ export default function CoachProfileSetup({
 
   // Validation function
 
-  // Handle form submission — reads latest data directly from the ref
-  const handleSubmit = useCallback(async (e?: React.FormEvent) => {
-    e?.preventDefault()
-    setIsLoading(true)
+  // Handle form submission with the latest form state
+  const handleSubmit = useCallback(
+    async (e?: React.FormEvent) => {
+      e?.preventDefault()
+      setIsLoading(true)
 
-    try {
-      const apiFormData = convertToFormData(formData)
-      console.log(apiFormData)
+      try {
+        const apiFormData = convertToFormData(formData)
 
-      const result: CoachProfileApiResult =
-        await createOrUpdateCoachProfile(apiFormData)
+        const result: CoachProfileApiResult =
+          await createOrUpdateCoachProfile(apiFormData)
+        console.log("API result:", result)
 
-      if (result.success) {
-        toast.success(
-          result.message ||
-            "Coach profile created successfully! Please wait for approval."
-        )
-        setFormData(getInitialFormData())
-        // Redirect to clean dashboard URL (no query params → modal won't reopen)
-        handleLogout(router)
-      } else {
-        toast.error(result.message || "Failed to create coach profile")
+        if (result.success) {
+          toast.success(
+            result.message || isEditMode ? "Coach profile updated successfully!" :
+              "Coach profile created successfully! Please wait for approval."
+          )
+          setFormData(getInitialFormData())
+
+          if(!isEditMode) { 
+            handleLogout(router)
+          }
+
+          window.dispatchEvent(new Event("coachProfileUpdated"))
+          
+          // close modal if in edit mode
+          if (isEditMode) { 
+            close("edit-coach-profile")
+          }
+
+        } else {
+          toast.error(result.message || "Failed to create coach profile")
+        }
+      } catch (err) {
+        console.log("Error submitting coach profile:", err)
+        toast.error("An unexpected error occurred")
+      } finally {
+        setIsLoading(false)
       }
-    } catch (err) {
-      toast.error("An unexpected error occurred")
-    } finally {
-      setIsLoading(false)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    },
+    [formData, router]
+  )
 
   return (
     <section className="bg-primary">

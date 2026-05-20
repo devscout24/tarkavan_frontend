@@ -55,7 +55,7 @@ export default function PositionMap({ data }: PositionMapProps) {
   const safeData: TPlayerPosition[] = Array.isArray(data)
     ? data.filter((item): item is TPlayerPosition => !!item?.name)
     : []
-
+  console.log(data)
   const byCode = safeData.reduce<Record<string, TPlayerPosition>>(
     (acc, item) => {
       const code = extractShortCode(item.name)

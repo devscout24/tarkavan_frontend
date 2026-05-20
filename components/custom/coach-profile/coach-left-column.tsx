@@ -160,6 +160,17 @@ export default function CoachLeftColumn() {
     }
 
     fetchData()
+
+    const handleProfileUpdated = () => { 
+      fetchData()
+    }
+
+    window.addEventListener("coachProfileUpdated", handleProfileUpdated)
+
+    return () => {
+      window.removeEventListener("coachProfileUpdated", handleProfileUpdated)
+    }
+
   }, [])
 
   const getCityName = () => {

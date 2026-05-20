@@ -46,6 +46,16 @@ export default function CredentialsCard() {
     }
 
     fetchCredentialsData()
+
+    const handleProfileUpdated = () => {
+      fetchCredentialsData()
+    }
+
+    window.addEventListener("coachProfileUpdated", handleProfileUpdated)
+
+    return () => {
+      window.removeEventListener("coachProfileUpdated", handleProfileUpdated)
+    }
   }, [])
 
   if (loading) {

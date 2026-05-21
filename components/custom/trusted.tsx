@@ -174,6 +174,10 @@ function TestimonialCard({
   user_designation: role,
   user_image: initials,
 }:  TReviewLanding) {
+
+ 
+
+
   return (
     <article
       className="scroll-snap-align-start box-border flex w-[min(430px,calc(100vw-72px))] shrink-0 cursor-grab snap-start flex-col gap-4 rounded-3xl border border-white/5 p-[47px_24px] transition-all duration-280 ease-in-out hover:border-[rgba(198,245,122,0.2)] hover:shadow-[0_18px_42px_rgba(0,0,0,0.22)] lg:w-107.5"
@@ -182,7 +186,7 @@ function TestimonialCard({
       {/* Rating */}
       <div className="flex items-center gap-2 text-sm font-semibold text-[#f3f3f3]">
         <Image
-          src="/assets/starIcon.svg"
+          src={"/assets/starIcon.svg"}
           alt=""
           width={16}
           height={16}
@@ -203,8 +207,16 @@ function TestimonialCard({
         <div
           className="flex h-10.5 w-10.5  shrink-0 items-center justify-center rounded-full border border-[rgba(32,197,101,0.32)] text-sm font-bold text-[#20c565]"
           style={{ background: "rgba(0,0,0,0.12)" }}
-        >
-          {initials}
+        > 
+          <Image
+            src={initials || "/images/bannerbg.png"}
+            alt=""
+            width={100}
+            height={100}
+            aria-hidden
+            draggable={false}
+            className="pointer-events-none"
+          />
         </div>
         <div className="flex flex-col gap-1">
           <span className="text-sm leading-[1.2] font-bold text-[#f3f3f3]">
@@ -230,8 +242,9 @@ function CarouselRow({
 }) {
   
   useCarousel(rowRef, direction)
-  
+  console.log(data)
 
+   
   return (
     <div
       ref={rowRef}
@@ -247,11 +260,11 @@ function CarouselRow({
 export default function AthletesAndCoaches({ data }: { data: TReviewLanding[] | undefined }) {
   const topRowRef = useRef<HTMLDivElement>(null)
   const bottomRowRef = useRef<HTMLDivElement>(null)
-  console.log(data)
+ 
 
   return (
     <section
-      className=" px-4 py-5 font-sans md:px-6"
+      className="mt-10 px-4 py-5 font-sans md:px-6"
       style={{
         background:
           "url('/images/trustedbg.png') center/cover no-repeat",

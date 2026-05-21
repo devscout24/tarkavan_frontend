@@ -85,8 +85,7 @@ export default function RegisterForm() {
         formData.append(key, value)
       )
 
-      const res = await registerUser(formData)
-      console.log("Registration response:", res)
+      const res = await registerUser(formData) 
 
       if (!res) {
         toast.error("Registration failed. Please try again.")
@@ -124,6 +123,11 @@ export default function RegisterForm() {
       if (token) {
         
         user.profile_id = res.data.data.profile_id 
+
+        if(role === "club"){
+          user.is_subscription_active = false
+        }
+
         // Ensure user status is properly set
         if (!user.status) {
           user.status = "pending" // Set default status if not provided

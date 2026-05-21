@@ -19,7 +19,7 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
     const isValidUser = isValidToken(token || "")
 
     if (isValidUser) {
-      router.push(`${user?.role}`)
+      router.push(`/${user?.role}`)
       return
     }
 

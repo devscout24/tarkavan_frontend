@@ -51,7 +51,7 @@ export default function PlayerProfile() {
   useEffect(() => {
     const profileData = async () => {
       try {
-        const res = await getPlayerProfile(user?.profile_id)
+        const res = await getPlayerProfile(user?.profile_id) 
         if (res && "success" in res && res.data && res.data.data) {
           setPlayerData(res.data.data)
         }
@@ -74,8 +74,10 @@ export default function PlayerProfile() {
   }, [])
 
   const mapPosition = []
-  mapPosition.push(playerData?.position_info?.primary_position)
-  mapPosition.push(playerData?.position_info?.secondary_position)
+  const primaryPosition = {...playerData?.position_info?.primary_position, type: "Primary" }
+  const secondaryPosition = {...playerData?.position_info?.secondary_position, type: "Secondary" } 
+  mapPosition.push(primaryPosition)
+  mapPosition.push(secondaryPosition)
 
   const privacy = playerData?.basic_info?.privacy_settings ?? "public"
 

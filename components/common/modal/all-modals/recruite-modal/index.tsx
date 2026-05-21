@@ -26,11 +26,11 @@ import { getTeams } from "@/app/(dashboards)/club/teams/action"
 import { getRecruitmentDetails } from "@/app/(dashboards)/club/recruitment/action"
 import CommonBtn from "@/components/common/common-btn"
 import { sortPositions } from "@/lib/sort-position"
-import { TPlayerSportOption, TTeamData } from "@/types" 
+import { TPlayerSportOption, TTeamData } from "@/types"
 import { Input } from "@/components/ui/input"
 import { getHighestNumber } from "@/lib/get-highest-number"
+import { set } from "date-fns"
 
- 
 type RecruitType = "coach" | "player"
 
 type RecruitmentFormPayload = {
@@ -64,8 +64,7 @@ export default function RecruitmentForm({
   submitLabel = "Post Request",
   positionPlaceholder = "Select Position",
   teamPlaceholder = "Select Team",
-  experiencePlaceholder = "e.g., 3+ years",
-  tryoutPlaceholder = "e.g., March 15-18, 2026",
+  experiencePlaceholder = "e.g., 3+ years", 
   descriptionPlaceholder = "Write role requirements and expectations...",
   defaultValues,
   onCancel,
@@ -84,17 +83,16 @@ export default function RecruitmentForm({
   const [coachPositions, setCoachPositions] = useState<TPlayerSportOption[]>([])
   const [coachPosition, setCoachPosition] = useState<string>("")
   const [experience, setExperience] = useState(defaultValues?.experience ?? "")
-  const [tryoutDates, setTryoutDates] = useState(
-    defaultValues?.tryoutDates ?? ""
-  )
+  const [tryoutDates, setTryoutDates] = useState(defaultValues?.tryoutDates ?? "")
+  const [startDate, setStartDate] = useState("")
+
+  console.log(startDate)
   const [ageGroup, setAgeGroup] = useState("")
   const [description, setDescription] = useState(
     defaultValues?.description ?? ""
   )
- 
- 
 
-// get positions
+  // get positions
   useEffect(() => {
     const getPositions = async () => {
       try {
@@ -106,7 +104,7 @@ export default function RecruitmentForm({
           res.data &&
           "data" in res.data &&
           res.data.data
-        ) { 
+        ) {
           setPositions(sortPositions(res.data.data))
         }
       } catch (error) {
@@ -115,9 +113,6 @@ export default function RecruitmentForm({
     }
     getPositions()
   }, [])
-
-
-
 
   // get teams
   useEffect(() => {
@@ -131,7 +126,7 @@ export default function RecruitmentForm({
           res.data &&
           "data" in res.data &&
           res.data.data
-        ) { 
+        ) {
           setTeams(res.data.data)
         }
       } catch (error) {
@@ -152,7 +147,7 @@ export default function RecruitmentForm({
           res.data &&
           "data" in res.data &&
           res.data.data
-        ) { 
+        ) {
           setCoachPositions(res.data.data)
         }
       } catch (error) {
@@ -177,10 +172,8 @@ export default function RecruitmentForm({
           res.data &&
           "data" in res.data &&
           res.data.data
-        ) {
-          console.log(res.data.data)
+        ) { 
           const recruitment = res.data.data.recruitment
-
 
           // Populate form with recruitment data
           setRecruitType(recruitment.recruitment_type)
@@ -191,6 +184,7 @@ export default function RecruitmentForm({
           )
           setTeam(recruitment.club_team_id?.toString() || "")
           setExperience(recruitment.experience || "")
+          setStartDate(recruitment.start_date || "")
           setTryoutDates(recruitment.end_date?.split(" ")[0] || "")
           setDescription(recruitment.description || "")
           setAgeGroup(recruitment.upto_age?.toString() || "13")
@@ -211,12 +205,14 @@ export default function RecruitmentForm({
       formData.append("coach_position_id", coachPosition)
       formData.append("team_id", team)
       formData.append("experience", experience.trim())
+      formData.append("start_date", startDate.trim())
       formData.append("end_date", tryoutDates.trim())
       formData.append("description", description.trim())
       formData.append("upto_age", String(getHighestNumber(ageGroup)))
 
-      const res = await addRecruitment(formData) 
-      
+      const res = await addRecruitment(formData)
+      console.log(res)
+
       if (
         typeof res === "object" &&
         res !== null &&
@@ -253,6 +249,7 @@ export default function RecruitmentForm({
       formData.append("coach_position_id", coachPosition)
       formData.append("team_id", team)
       formData.append("experience", experience.trim())
+      formData.append("start_date", startDate.trim())
       formData.append("end_date", tryoutDates.trim())
       formData.append("description", description.trim())
       formData.append("upto_age", ageGroup)
@@ -386,11 +383,9 @@ export default function RecruitmentForm({
               placeholder="e.g U14 or U16-U20"
               value={ageGroup}
               onChange={(e) => setAgeGroup(e.target.value)}
-              className={`mt-1  border-neutral-700 bg-neutral-800 py-5 placeholder:text-neutral-300 placeholder:opacity-100`}
+              className={`mt-1 border-neutral-700 bg-neutral-800 py-5 placeholder:text-neutral-300 placeholder:opacity-100`}
             />
           </div>
-
- 
         )}
 
         <div className="space-y-2">
@@ -423,10 +418,15 @@ export default function RecruitmentForm({
           onChange={(event) => setExperience(event.target.value)}
         />
 
-        <div className="space-y-2">
-          <label className="pb-2 text-base text-white">Tryout Dates</label>
-          <DatePickerDemo onDateChange={setTryoutDates} />
-          <p className="text-xs text-white/45">{tryoutPlaceholder}</p>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="space-y-2">
+            <label className="pb-2 text-base text-white">Start Date</label>
+            <DatePickerDemo onDateChange={setStartDate} /> 
+          </div>
+          <div className="space-y-2">
+            <label className="pb-2 text-base text-white">End Date</label>
+            <DatePickerDemo onDateChange={setTryoutDates} /> 
+          </div>
         </div>
 
         <div className="space-y-2">

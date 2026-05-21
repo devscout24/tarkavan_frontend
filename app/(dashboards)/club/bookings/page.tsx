@@ -39,6 +39,7 @@ export default function BookingsPage() {
       try {
         setLoading(true)
         const response = await api.get("/club/program/bookings") 
+        console.log("Fetched bookings:", response)
         if(response?.data?.data) { 
           setBookings(response?.data?.data)
         }

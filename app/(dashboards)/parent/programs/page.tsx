@@ -1,8 +1,7 @@
 "use client"
 
 import ProgramCard from "@/components/common/program-card"
-import ProgramHead from "../../../../components/common/program-head"
-import { useRouter } from "next/navigation"
+import ProgramHead from "../../../../components/common/program-head" 
 import { useEffect, useState } from "react" 
 import { getSportOptions } from "../../action"
 import { TSportOption } from "@/types"

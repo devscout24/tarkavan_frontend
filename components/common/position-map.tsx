@@ -46,16 +46,19 @@ const makeSlot = (
 
   return {
     number: code,
-    name: label,
+    name: item.type,
     ...(offset ? { offset } : {}),
   }
 }
 
 export default function PositionMap({ data }: PositionMapProps) {
+
+
+ 
+
   const safeData: TPlayerPosition[] = Array.isArray(data)
     ? data.filter((item): item is TPlayerPosition => !!item?.name)
-    : []
-  console.log(data)
+    : [] 
   const byCode = safeData.reduce<Record<string, TPlayerPosition>>(
     (acc, item) => {
       const code = extractShortCode(item.name)
@@ -105,8 +108,8 @@ export default function PositionMap({ data }: PositionMapProps) {
     },
 
     style: {
-      borderColor: "#ffffff",
-      nameColor: "#ffffff",
+      borderColor: "#ffffff54",
+      nameColor: "#000000",
       numberColor: "#ffffff",
       numberBackgroundColor: "rgba(0,0,0,0.35)",
     },
@@ -118,6 +121,7 @@ export default function PositionMap({ data }: PositionMapProps) {
       color="#479A3B"
       pattern="squares"
       awayTeam={awayTeam}
+      
     />
   )
 }

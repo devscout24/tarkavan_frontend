@@ -4,12 +4,17 @@ import { useState } from "react"
 import CommonBtn from "../common/common-btn"
 import { toast } from "sonner"
 import { childInvite } from "@/app/(dashboards)/parent/action"
+import UiInput from "../common/ui-input"
+import PwdInput from "../common/password-input"
 
 interface InviteFormProps {
   onClose: () => void
 }
 
-export default function InviteForm({ onClose, id }: InviteFormProps & { id: string }) {
+export default function InviteForm({
+  onClose,
+  id,
+}: InviteFormProps & { id: string }) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
@@ -20,39 +25,32 @@ export default function InviteForm({ onClose, id }: InviteFormProps & { id: stri
       return
     }
 
-    try{
-
+    try {
       const formData = new FormData()
       formData.append("email", email)
       formData.append("password", password)
       formData.append("child_id", id)
 
-      const res = await childInvite(formData)
+      const res = await childInvite(formData) 
       
- 
-      if(!res?.status){
-        toast.error(res?.message)
-        return
+      if (res && !("error" in res) && "data" in res && res?.data) {
+        toast.success( res?.data?.data || "Invitation sent successfully!")
       }
 
-      if(res?.status){ 
-        toast.success("Invitation sent successfully!")
-      } 
-
-    }catch(err){
+      
+    } catch (err) {
       console.error(err)
       toast.error("Failed to send invitation. Please try again.")
       return
-
     }
-    
+
     // Show success message
     toast.success("Invitation sent successfully!")
-    
+
     // Reset form
     setEmail("")
     setPassword("")
-    
+
     // Close form
     onClose()
   }
@@ -64,35 +62,37 @@ export default function InviteForm({ onClose, id }: InviteFormProps & { id: stri
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="w-full max-w-md rounded-lg bg-gray-800 p-6">
-        <h2 className="mb-6 text-xl font-semibold text-white">Create Account</h2>
-        
+        <h2 className="mb-6 text-xl font-semibold text-white">
+          Create Account
+        </h2>
+
         <div className="space-y-4">
           <div>
             <label className="mb-2 block text-sm font-medium text-white">
               Email
             </label>
-            <input
+            <UiInput
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter Email"
-              className="w-full rounded-lg bg-gray-700 px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand"
+              className="w-full rounded-lg bg-gray-700 px-4 py-5.5 text-white placeholder-gray-400 focus:ring-2 focus:ring-brand focus:outline-none"
             />
           </div>
-          
+
           <div>
             <label className="mb-2 block text-sm font-medium text-white">
               Password
             </label>
-            <input
-              type="password"
+
+            <PwdInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter Password"
-              className="w-full rounded-lg bg-gray-700 px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand"
+              className="w-full rounded-lg bg-gray-700 py-5.5 pl-8 text-white placeholder-gray-400 focus:ring-2 focus:ring-brand focus:outline-none"
             />
           </div>
-          
+
           <div className="flex gap-4 pt-4">
             <CommonBtn
               text="Back"

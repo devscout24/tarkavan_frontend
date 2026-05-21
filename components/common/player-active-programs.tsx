@@ -15,35 +15,22 @@ type PlayerActiveProgramsProps = {
   btnText?: string
   onViewDetails?: () => void
   showViewAllActive?: boolean
+  programImage: string
 }
 
-export default function PlayerActivePrograms({
-  title = "My Active Programs",
-  programName = "Varsity Prep Mentorship",
-  coachName = "Marcus Thompson",
-  schedule = "Mon & Wed, 5:00 PM",
-  nextSession = "Oct 24, 2023",
-  focusLabel = "Current Focus",
-  focusValue = "Speed & Agility",
-  status = "In Progress",
-  btnText = "View Details",
-  onViewDetails,
-  showViewAllActive = true,
+export default function PlayerActivePrograms({ 
+  programName = "",
+  coachName = "",
+  schedule = "", 
+  focusLabel = "",
+  focusValue = "",
+  status = "",
+  btnText = "",
+  programImage = "/images/player1.png",
+  onViewDetails, 
 }: PlayerActiveProgramsProps) {
   return (
     <section className="w-full">
-      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-        <h2 className="text-xl font-bold text-white sm:text-2xl">{title}</h2>
-        {showViewAllActive && (
-          <button
-            type="button"
-            className="text-[14px] font-semibold text-white/85 transition hover:text-white"
-          >
-            View All Active
-          </button>
-        )}
-      </div>
-
       <article className="overflow-hidden rounded-2xl border border-white/10 bg-brand">
         <div className="lg:flex">
           <div className="relative min-h-44 md:min-h-full">
@@ -65,38 +52,30 @@ export default function PlayerActivePrograms({
               {programName}
             </h3>
 
-            <p className="mt-2 flex items-center gap-2 text-sm font-normal text-primary sm:text-base">
+            <p className="mt-2 flex items-center gap-2 text-sm font-normal text-primary! sm:text-base">
               <UserRound className="size-4" />
-              Coach: {coachName}
+              Provider: {coachName}
             </p>
 
             <div className="mt-4 flex gap-3 text-primary md:mt-5 md:gap-8">
               <div>
-                <p className="text-sm font-normal text-primary/50 sm:text-base">
+                <p className="text-sm font-normal text-primary/50! sm:text-base">
                   Schedule
                 </p>
-                <p className="text-sm font-normal text-primary sm:text-base lg:text-lg">
+                <p className="text-sm font-normal text-primary! sm:text-base lg:text-lg">
                   {schedule}
                 </p>
               </div>
-
-              <div>
-                <p className="text-sm font-normal text-primary/50 sm:text-base">
-                  Next Session
-                </p>
-                <p className="text-sm font-normal text-primary sm:text-base lg:text-lg">
-                  {nextSession}
-                </p>
-              </div>
+ 
             </div>
           </div>
 
           <div className="flex flex-col gap-4 px-4 pb-5 sm:flex-row sm:items-end sm:justify-between sm:px-6 md:flex-col md:items-end md:justify-center md:px-6 md:py-6">
             <div className="w-full rounded-xl border border-primary/35 px-4 py-2 text-right text-primary sm:w-auto">
-              <p className="text-xs font-medium opacity-75 sm:text-sm">
+              <p className="text-xs font-medium opacity-75 sm:text-sm text-primary!  " >
                 {focusLabel}
               </p>
-              <p className="text-[14px] font-medium text-primary sm:text-base lg:text-lg">
+              <p className="text-[14px] font-medium text-primary! sm:text-base lg:text-lg">
                 {focusValue}
               </p>
             </div>

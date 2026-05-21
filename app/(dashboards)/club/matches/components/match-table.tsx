@@ -1,3 +1,4 @@
+"use client"
 import { PiDotsThreeOutline } from "react-icons/pi"
 import {
   Table,
@@ -37,7 +38,7 @@ interface Booking {
  
 export default function MatchTable({ matchRequests }: { matchRequests: TMatchRequestByOthersClub[] }) {
   const columnBorderClass = "border-r border-white/15 last:border-r-0"
-  console.log(matchRequests)
+ 
 
   const handleUpdateMatchStatus = async (bid_id: string, status: string) => {
     try{
@@ -48,11 +49,15 @@ export default function MatchTable({ matchRequests }: { matchRequests: TMatchReq
       const res = await updateMatchStatusRechuestedByOtherClub({
         bid_id,
         status: formData,
-      })
+      }) 
 
       if(res?.status === false){
         toast.error(res.message)
         return
+      }
+
+      if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
+        toast.success(res.data.message || "Match status updated successfully") 
       }
  
 
@@ -89,7 +94,7 @@ export default function MatchTable({ matchRequests }: { matchRequests: TMatchReq
                 >
                   <div className="flex items-center gap-3">
                     <Image
-                      src={match?.requested_club?.club_logo || ""}
+                      src={match?.requested_club?.club_logo || "/images/bannerbg.png"}
                       alt={match?.requested_club?.club_name}
                       width={50}
                       height={50}

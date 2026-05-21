@@ -87,7 +87,7 @@ export default function Counter({ data }: { data?: TLandingStats | null }) {
 ]
 
   return (
-    <section className="w-full bg-[#060807] px-6 pb-10">
+    <section className="w-full bg-[#060807] mt-30 px-6 pb-10">
       <Container>
         <div
           ref={counterRef}

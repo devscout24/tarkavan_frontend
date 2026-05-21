@@ -118,6 +118,7 @@ export type TPlayerBasicInfo = {
 export type TPlayerPosition = {
   id: number
   name: string
+  type: string
 }
 
 export type TPlayerPositionInfo = {

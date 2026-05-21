@@ -3,6 +3,7 @@
 import api from "@/lib/api-fetcher"
 import { TApiError } from "@/types"
 import axios from "axios"
+import { revalidatePath } from "next/cache"
 
 export async function addUpdateMatch(data: FormData) {
   try {
@@ -89,6 +90,7 @@ export async function getMatchRechuestedByOtherClub() {
 export async function updateMatchStatusRechuestedByOtherClub({bid_id, status}: {bid_id: string, status: FormData}) {
   try {
     const res = await api.post(`/match/bid/update/${bid_id}`, status)
+    revalidatePath(`/(dashboards)/club/matches/[id]`)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {

@@ -1,9 +1,8 @@
-type Position = {
-  id: number;
-  name: string;
-};
+import { TPlayerPosition } from "@/types";
 
-export function sortPositions(data: Position[]): Position[] {
+
+
+export function sortPositions(data: TPlayerPosition[]): TPlayerPosition[] {
   const orderMap: Record<string, number> = {
     GK: 0,
     CB: 1,

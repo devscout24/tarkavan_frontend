@@ -1,66 +1,73 @@
-"use client"
+import PlayerActivePrograms from "@/components/common/player-active-programs"
+import { getUpcomingEvents } from "./action"
+import { TUpcomingEvent } from "@/types"
+import moment from "moment"
 import ProgramCard from "@/components/common/program-card"
-import PlayerActivePrograms from "../../../../components/common/player-active-programs" 
-// import { useNavigate } from "react-router"
 
-export default function UpcomingEventPage() {
-    const programs = [
-    {
-      id: "1",
-      title: "Elite Hoops Leadership Academy",
-      coachName: "Elena Rodriguez",
-      schedule: "Tuesdays, 6:00 PM",
-      duration: "8 Weeks Program",
-      currentPrice: "$249",
-      imageSrc: "/images/player1.png",
-      imageAlt: "Program image",
-      buttonLabel: "View Details",
-    },
-    {
-      id: "2",
-      title: "Premier Soccer Striker Clinic",
-      coachName: "David Chen",
-      schedule: "Weekends, 10:00 AM",
-      duration: "4 Weeks Program",
-      currentPrice: "$199",
-      imageSrc: "/images/player2.png",
-      imageAlt: "Program image",
-      buttonLabel: "View Details",
-    },
-    {
-      id: "3",
-      title: "Mindset & Performance Coaching",
-      coachName: "Sarah Jenkins",
-      schedule: "Thursdays, 5:00 PM",
-      duration: "12 Weeks Program",
-      currentPrice: "$269",
-      previousPrice: "$299", 
-      imageSrc: "/images/player3.png",
-      imageAlt: "Program image",
-      buttonLabel: "View Details",
-    },
-  ]
+export default async function UpcomingEventPage() {
+  let TopUpcommingEvent: TUpcomingEvent | null = null
+  let UpcomingEvents: TUpcomingEvent[] = []
 
-  return ( 
+  try {
+    const res = await getUpcomingEvents()
+     console.log("API Response for Upcoming Events:", res)
+    if (
+      res &&
+      "success" in res &&
+      res.success &&
+      res.data &&
+      "data" in res.data &&
+      res.data.data
+    ) {
+      TopUpcommingEvent = res.data.data.top_upcoming || null
+      UpcomingEvents = res.data.data.upcoming_events
+    }
+  } catch (err) {
+    console.error("Error fetching upcoming events:", err)
+  }
 
+  console.log("Top Upcoming Event:", UpcomingEvents)
+
+  return (
     <section>
+      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+        <h2 className="text-xl font-bold text-white sm:text-2xl">{"Active Programs"}</h2>
+      </div>
 
-      <PlayerActivePrograms />
+      <PlayerActivePrograms
+        title={TopUpcommingEvent?.title || ""}
+        programName={TopUpcommingEvent?.title || ""}
+        coachName={TopUpcommingEvent?.provider_name || ""}
+        schedule={
+          moment(TopUpcommingEvent?.start_date).format("MMM Do YY") || ""
+        }
+        nextSession={TopUpcommingEvent?.start_date || ""}
+        focusLabel={"Current Focus"}
+        focusValue={"Speed & Agility"}
+        status={TopUpcommingEvent?.status || ""}
+        btnText={"View Details"}
+        programImage={TopUpcommingEvent?.program_photo || "/images/player1.png"}
+      />
 
       {/* upcoming events content */}
-      <h2 className="text-xl font-bold text-white sm:text-2xl mt-6 ">
+      <h2 className="mt-6 text-xl font-bold text-white sm:text-2xl">
         Upcoming Events
       </h2>
       {/* programs cards */}
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* {programs.map((program, index) => (
+      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {UpcomingEvents.map((event, index) => (
           <ProgramCard
             key={index} 
-            {...program}
-            onClick={() =>  {} }
-            viewOnly={false}
+            {...event} 
+            viewOnly={true}
+            imageSrc={event.program_photo || "/images/player1.png"}
+            imageAlt={event.title || "Upcoming Event"}
+            buttonLabel={`Start On ${moment(event.start_date).format("MMM Do YY")}`}
+            schedule={event.start_date_display || ""}
+            duration={`${moment.duration(moment(event.end_date).diff(moment(event.start_date))).asDays()} days`}
+            editLink=""
           />
-        ))} */}
+        ))}
       </div>
     </section>
   )

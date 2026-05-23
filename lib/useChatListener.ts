@@ -16,12 +16,8 @@ export function useChatListener(
   }, [onMessage]);
 
   useEffect(() => {
-    async function loadToken() {
-      const res = await fetch("/api/session");
-      const data = await res.json();
-      setToken(data.accessToken);
-    }
-    loadToken();
+    const token = localStorage.getItem("go_elite_token");
+    if (token) setToken(token);
   }, []);
 
   useEffect(() => {

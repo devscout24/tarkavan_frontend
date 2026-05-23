@@ -93,6 +93,7 @@ export default function MessagePage() {
     const loadConversation = async () => {
       try {
         const res = await getConversation(conversationID) 
+        console.log("Conversation response:", res)
         if (res && "success" in res && res.success && res.data?.data) {
           const msgs = (res.data.data ?? []) as TChatMessage[]
           setMessages(msgs)

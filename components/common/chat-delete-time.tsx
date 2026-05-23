@@ -7,7 +7,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai"
 import { CiTrash } from "react-icons/ci"
 import { toast } from "sonner"
 
-export default function ChatDeleteTime({ message }: { message: TChatMessage }) {
+export default function ChatDeleteTime({ message , isMe }: { message: TChatMessage; isMe: boolean }) {
   const [loading, setLoading] = React.useState(false)
   const handleDeleteMessage = async (messageId: string) => {
     try {
@@ -30,9 +30,11 @@ export default function ChatDeleteTime({ message }: { message: TChatMessage }) {
         {moment.utc(message.created_at).local().fromNow()}
       </p>
 
-      <div className="cursor-pointer">
-        {loading ? <AiOutlineLoading3Quarters className="animate-spin" /> : <CiTrash onClick={() => handleDeleteMessage(message.id)} />}
-      </div>
+      {isMe && (
+        <div className="cursor-pointer">
+          {loading ? <AiOutlineLoading3Quarters className="animate-spin" /> : <CiTrash onClick={() => handleDeleteMessage(message.id)} />}
+        </div>
+      )}
     </div>
   )
 }

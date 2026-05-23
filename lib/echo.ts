@@ -1,24 +1,55 @@
-declare global {
-  interface Window {
-    Echo: any;
-    Pusher: any;
+type EchoChannel = {
+  listen<TPayload>(event: string, callback: (payload: TPayload) => void): void
+  stopListening(event: string): void
+}
+
+type EchoClient = {
+  private(channelName: string): EchoChannel
+  leave(channelName: string): void
+}
+
+type EchoConfig = {
+  broadcaster: string
+  key: string
+  wsHost?: string
+  wsPort: number
+  wssPort: number
+  forceTLS: boolean
+  enabledTransports: string[]
+  authEndpoint: string
+  auth: {
+    headers: {
+      Authorization: string
+    }
   }
 }
 
-let echo: any = null;
+declare global {
+  interface Window {
+    Echo: EchoClient | null
+    Pusher: unknown
+  }
+}
 
-export async function getEcho(token?: string) {
-  if (!token) return null; 
+let echo: EchoClient | null = null
+
+export async function getEcho(token?: string): Promise<EchoClient | null> {
+  if (!token) return null
 
   if (!echo && typeof window !== "undefined") {
-    const [{ default: Echo }, { default: Pusher }] = await Promise.all([
+    const [{ default: Echo }, { default: Pusher }] = (await Promise.all([
       import("laravel-echo"),
       import("pusher-js"),
-    ]);
+    ])) as [
+      { default: new (config: EchoConfig) => EchoClient },
+      { default: unknown },
+    ]
 
-    window.Pusher = Pusher;
+    window.Pusher = Pusher
 
-    echo = new Echo({
+    const EchoConstructor = Echo
+
+    echo = new EchoConstructor({
       broadcaster: "reverb",
       key: process.env.NEXT_PUBLIC_REVERB_APP_KEY as string,
       wsHost: process.env.NEXT_PUBLIC_REVERB_HOST,
@@ -28,10 +59,10 @@ export async function getEcho(token?: string) {
       enabledTransports: ["ws", "wss"],
       authEndpoint: `https://${process.env.NEXT_PUBLIC_SOCKET_ENDPOINT}`,
       auth: { headers: { Authorization: `Bearer ${token}` } },
-    });
+    })
 
-    window.Echo = echo;
+    window.Echo = echo
   }
 
-  return echo;
+  return echo
 }

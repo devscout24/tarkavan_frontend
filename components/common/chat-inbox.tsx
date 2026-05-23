@@ -140,7 +140,7 @@ export default function ChatInbox({
                       {message.message ? <p className={`${isMe ? "text-white! " : "text-primary!"}`}>{message.message}</p> : null}
 
  
-                      <ChatDeleteTime message={message} />
+                      <ChatDeleteTime message={message} isMe={isMe}  />
 
                     </div>
                   </div>

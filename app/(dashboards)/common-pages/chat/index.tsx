@@ -15,6 +15,37 @@ export type ChatMessage = {
   files?: { name: string; url: string }[]
 }
 
+const getChatIdentity = (chat: TChatItem) =>
+  String(chat.receiver_id || chat.chat_id)
+
+const dedupeChats = (items: TChatItem[]) => {
+  const chatsById = new Map<string, TChatItem>()
+
+  for (const chat of items) {
+    const identity = getChatIdentity(chat)
+    const existingChat = chatsById.get(identity)
+
+    if (!existingChat) {
+      chatsById.set(identity, chat)
+      continue
+    }
+
+    const existingHasConversation = Boolean(existingChat.conversation_id)
+    const currentHasConversation = Boolean(chat.conversation_id)
+
+    if (!existingHasConversation && currentHasConversation) {
+      chatsById.set(identity, chat)
+      continue
+    }
+
+    if (existingChat.latest_time < chat.latest_time) {
+      chatsById.set(identity, chat)
+    }
+  }
+
+  return Array.from(chatsById.values())
+}
+
 export default function MessagePage() {
   const searchParams = useSearchParams()
   const receiver_chatId = searchParams.get("receiver_chatId")
@@ -59,7 +90,6 @@ export default function MessagePage() {
 
     router.replace(`?${params.toString()}`)
   }, [activeChatId, router, searchParams])
- 
 
   // load conversation when conversation id changes
   React.useEffect(() => {
@@ -67,7 +97,8 @@ export default function MessagePage() {
 
     const loadConversation = async () => {
       try {
-        const res = await getConversation(conversationID) 
+        const res = await getConversation(conversationID)
+        console.log("Conversation data:", res)
         if (res && "success" in res && res.success && res.data?.data) {
           const msgs = (res.data.data ?? []) as ChatMessage[]
           setMessages(msgs)
@@ -88,8 +119,22 @@ export default function MessagePage() {
     const loadChatList = async () => {
       try {
         const res = await getChatList()
+
         if (res && "success" in res && res.success && res.data?.data) {
-          setChatList(res.data.data as TChatItem[])
+          const fetchedChats = res.data.data as TChatItem[]
+          setChatList((prev) =>
+            dedupeChats([
+              ...(initialReceiver ? [initialReceiver] : []),
+              ...fetchedChats,
+              ...prev.filter(
+                (chat) =>
+                  !fetchedChats.some(
+                    (fetchedChat) =>
+                      getChatIdentity(fetchedChat) === getChatIdentity(chat)
+                  )
+              ),
+            ])
+          )
         }
       } catch (err) {
         console.error("Error fetching chat list:", err)
@@ -97,25 +142,26 @@ export default function MessagePage() {
     }
 
     loadChatList()
-  }, [conversationID])
+  }, [])
 
   // update chat list
   React.useEffect(() => {
-    if (chatList.length === 0) return
+    if (!initialReceiver) return
 
+    const receiverIdentity = getChatIdentity(initialReceiver)
     const exists = chatList.some(
-      (c) => String(c.receiver_id) === String(activeChatId)
+      (chat) => getChatIdentity(chat) === receiverIdentity
     )
 
-    if (!exists && initialReceiver) {
-      setChatList((prev) => [
-        ...prev,
-        { ...initialReceiver, conversation_id: conversationID },
-      ])
+    if (!exists) {
+      setChatList((prev) =>
+        dedupeChats([
+          ...prev,
+          { ...initialReceiver, conversation_id: conversationID },
+        ])
+      )
     }
-  }, [chatList, activeChatId, conversationID, initialReceiver])
-
- console.log(messages)
+  }, [chatList, conversationID, initialReceiver])
 
   return (
     <section className="flex h-[90dvh] min-h-0 flex-col p-3">
@@ -132,7 +178,7 @@ export default function MessagePage() {
               (chat) => String(chat.receiver_id) === activeChatId
             ) ?? chatList[0]
           }
-          messages={messages} 
+          messages={messages}
           setConversationID={setConversationID}
           activeChatId={activeChatId}
         />

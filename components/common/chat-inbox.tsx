@@ -104,11 +104,11 @@ export default function ChatInbox({
       <div ref={messagesViewportRef} className="min-h-0 flex-1">
         <ScrollArea className="h-[40vh] px-3 py-4 md:px-5 md:py-5 xl:h-[70vh]">
           <div className="space-y-6 pb-3">
-            {messages.map((message) => {
+            {messages.map((message , i) => {
               const isMe = message.is_me
 
               return message.message || message.file ? (
-                <div key={message.id}>
+                <div key={i}>
                   <div
                     className={cn(
                       "flex gap-3",
@@ -213,11 +213,11 @@ export default function ChatInbox({
         </div>
         {files.length ? (
           <div className="mt-2 flex flex-wrap gap-2 px-1">
-            {files.map((file) => {
+            {files.map((file, index) => {
               const fileType = getFileType(file.name)
               return (
                 <div
-                  key={file.url}
+                  key={index}
                   className="relative overflow-hidden rounded-lg"
                 >
                   {fileType === "image" && (

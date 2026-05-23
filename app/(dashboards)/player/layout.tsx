@@ -21,7 +21,7 @@ import {
 } from "@/components/animate-ui/primitives/radix/collapsible"
 import Logo from "@/components/common/logo"
 import MenuBtn from "@/components/custom/menu-btn"
-import Image from "next/image" 
+import Image from "next/image"
 import { BiMessageSquareDetail } from "react-icons/bi"
 import { RiDashboardFill, RiMenuSearchLine } from "react-icons/ri"
 import { FaRegUser } from "react-icons/fa6"
@@ -30,7 +30,7 @@ import { usePathname } from "next/navigation"
 import BreadcrumbCustom from "@/components/custom/breadcrumb"
 import Notification from "@/components/custom/notifications"
 import ProfileDropdown from "@/components/custom/profile-dropdown"
-import { ScrollArea } from "@/components/ui/scroll-area" 
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { RiLogoutCircleRLine } from "react-icons/ri"
 import AuthCheckPoint from "@/components/auth/auth-checkopoint"
@@ -39,7 +39,6 @@ import Modals from "@/components/common/modal"
 export default function PlayerDashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  
   const DATA = {
     user: {
       name: "Skyleen",
@@ -96,8 +95,8 @@ export default function PlayerDashboardLayout({
   return (
     <TooltipProvider>
       <AuthCheckPoint role="player">
-      <Modals/>
-        <SidebarProvider className="h-screen overflow-hidden" >
+        <Modals />
+        <SidebarProvider className="h-screen overflow-hidden">
           <Sidebar collapsible="icon" className="relative border-secondary">
             <Image
               src={"/images/sidebarbg.png"}
@@ -110,26 +109,26 @@ export default function PlayerDashboardLayout({
             <SidebarHeader className="border-b border-secondary py-4.5">
               <SidebarMenu>
                 <SidebarMenuItem>
-                <div className="flex items-center justify-between">
-                  <div className="group-data-[collapsible=icon]:hidden">
-                    <Logo className="w-21.25" />
+                  <div className="flex items-center justify-between">
+                    <div className="group-data-[collapsible=icon]:hidden">
+                      <Logo className="w-21.25" />
+                    </div>
+                    <Link
+                      href="/"
+                      className="hidden size-10 items-center justify-center rounded-md group-data-[collapsible=icon]:inline-flex"
+                    >
+                      <Image
+                        width={32}
+                        height={32}
+                        src="/images/logo.png"
+                        alt="Tarkavan Logo"
+                        className="h-8 w-8 object-contain"
+                      />
+                    </Link>
+                    <MenuBtn>
+                      <SidebarTrigger className="-ml-1 cursor-pointer" />
+                    </MenuBtn>
                   </div>
-                  <Link
-                    href="/"
-                    className="hidden size-10 items-center justify-center rounded-md group-data-[collapsible=icon]:inline-flex"
-                  >
-                    <Image
-                      width={32}
-                      height={32}
-                      src="/images/logo.png"
-                      alt="Tarkavan Logo"
-                      className="h-8 w-8 object-contain"
-                    />
-                  </Link>
-                  <MenuBtn>
-                    <SidebarTrigger className="-ml-1 cursor-pointer" />
-                  </MenuBtn>
-                </div>
                 </SidebarMenuItem>
               </SidebarMenu>
             </SidebarHeader>
@@ -154,7 +153,7 @@ export default function PlayerDashboardLayout({
                               className={`border-2 py-4.5 ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
                             >
                               {item.icon && <item.icon />}
-                              
+
                               <span
                                 className={`${pathname == item.url ? "text-bold text-white" : ""}`}
                               >
@@ -192,13 +191,10 @@ export default function PlayerDashboardLayout({
             {pathname.includes("/player/messages") ? (
               children
             ) : (
-              <ScrollArea className="min-h-0 flex-1 border px-8 py-6">
-                {children}
+              <ScrollArea className="min-h-0 flex-1 border">
+                <div className="px-8 py-6">{children}</div>
               </ScrollArea>
             )}
-            {/* <ScrollArea className="h-[92vh] border px-8 py-6">
-            <Outlet />
-          </ScrollArea> */}
           </SidebarInset>
         </SidebarProvider>
       </AuthCheckPoint>

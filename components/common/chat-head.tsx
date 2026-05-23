@@ -1,8 +1,22 @@
+import * as React from "react"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
-import { cn } from "@/lib/utils" 
+import { cn } from "@/lib/utils"
 import { TChatItem } from "@/types"
 import moment from "moment"
+
+const getChatIdentity = (chat: TChatItem) =>
+  String(chat.receiver_id || chat.chat_id)
+
+const dedupeChats = (items: TChatItem[]) => {
+  const chatsById = new Map<string, TChatItem>()
+
+  for (const chat of items) {
+    chatsById.set(getChatIdentity(chat), chat)
+  }
+
+  return Array.from(chatsById.values())
+}
 
 type ChatHeadProps = {
   chats: TChatItem[]
@@ -17,10 +31,7 @@ export default function ChatHead({
   onSelectChat,
   setConversationID,
 }: ChatHeadProps) {
-
-
-
-  
+  const visibleChats = React.useMemo(() => dedupeChats(chats), [chats])
 
   return (
     <div className="h-fit overflow-hidden rounded-2xl border border-white/15 text-white lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
@@ -35,23 +46,23 @@ export default function ChatHead({
 
       <ScrollArea className="hidden lg:block lg:min-h-0 lg:flex-1">
         <div className="flex flex-col">
-          {chats.map((chat) => (
+          {visibleChats.map((chat) => (
             <article
-              key={chat.conversation_id}
+              key={getChatIdentity(chat)}
               className={cn(
                 "relative cursor-pointer border-b border-white/8 px-6 py-5 transition-colors",
-                activeChatId === chat.conversation_id
+                activeChatId === getChatIdentity(chat)
                   ? "bg-white/8"
                   : "bg-transparent hover:bg-white/5"
               )}
               onClick={() => {
-                onSelectChat(String(chat.receiver_id))
+                onSelectChat(getChatIdentity(chat))
                 setConversationID(chat.conversation_id)
               }}
             >
-              {String(activeChatId) === String(chat.receiver_id) ? (
+              {String(activeChatId) === getChatIdentity(chat) ? (
                 <span className="absolute inset-y-0 left-0 w-1 bg-[#B8F66A]" />
-              ) : null} 
+              ) : null}
 
               <div className="flex items-start gap-4">
                 <div className="relative shrink-0">
@@ -70,7 +81,7 @@ export default function ChatHead({
                     <h3
                       className={cn(
                         "truncate text-base font-medium",
-                        activeChatId === chat.conversation_id
+                        activeChatId === getChatIdentity(chat)
                           ? "text-[#C8FA6A]"
                           : "text-white/90"
                       )}
@@ -84,16 +95,11 @@ export default function ChatHead({
 
                   <p
                     className={cn(
-                      "mt-1 truncate text-[12px]",
-                      activeChatId === chat.conversation_id
-                        ? "text-[#C8FA6A]/85"
-                        : "text-white/65"
+                      "mt-1 truncate text-[12px] text-secondary! " 
                     )}
                   >
                     {chat.message}
                   </p>
-
- 
                 </div>
               </div>
             </article>
@@ -104,14 +110,14 @@ export default function ChatHead({
       <div className="h-fit lg:hidden">
         <ScrollArea className="w-full">
           <div className="flex w-max gap-3 px-4 py-4">
-            {chats.map((chat) => (
+            {visibleChats.map((chat) => (
               <button
-                key={chat.conversation_id}
+                key={getChatIdentity(chat)}
                 type="button"
-                onClick={() => onSelectChat(chat.conversation_id)}
+                onClick={() => onSelectChat(getChatIdentity(chat))}
                 className={cn(
                   "w-25 shrink-0 rounded-xl border p-2.5 text-left transition-colors",
-                  activeChatId === chat.conversation_id
+                  activeChatId === getChatIdentity(chat)
                     ? "border-[#C8FA6A]/70 bg-white/8"
                     : "border-white/10 bg-transparent"
                 )}

@@ -52,3 +52,35 @@ export async function getConversation(conversation_id: string) {
     }
   }
 }
+
+export async function deleteChat(chat_id: string) {
+  try {
+    const res = await api.get(`/chat/delete/${chat_id}`)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+
+export async function deleteChatImage(image_id: string) {
+  try {
+    const res = await api.get(`/chat/image/delete/${image_id}`)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}

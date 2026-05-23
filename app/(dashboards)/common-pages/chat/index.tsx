@@ -2,18 +2,12 @@
 
 import ChatHead from "@/components/common/chat-head"
 import ChatInbox from "@/components/common/chat-inbox"
-import { TChatItem } from "@/types"
+import { TChatItem, TChatMessage } from "@/types"
 import { useRouter, useSearchParams } from "next/navigation"
 import * as React from "react"
 import { getChatList, getConversation, sendMessage } from "./action"
 
-export type ChatMessage = {
-  id: string
-  text?: string
-  time: string
-  is_me: boolean
-  files?: { name: string; url: string }[]
-}
+ 
 
 const getChatIdentity = (chat: TChatItem) =>
   String(chat.receiver_id || chat.chat_id)
@@ -47,6 +41,7 @@ const dedupeChats = (items: TChatItem[]) => {
 }
 
 export default function MessagePage() {
+  const user = localStorage.getItem("go_elite_user") ? JSON.parse(localStorage.getItem("go_elite_user") as string) : null
   const searchParams = useSearchParams()
   const receiver_chatId = searchParams.get("receiver_chatId")
   const initialReceiverData = localStorage.getItem("go_elite_message_receiver")
@@ -77,7 +72,7 @@ export default function MessagePage() {
   const [chatList, setChatList] = React.useState<TChatItem[]>(() =>
     initialReceiver ? [initialReceiver] : []
   )
-  const [messages, setMessages] = React.useState<ChatMessage[]>([])
+  const [messages, setMessages] = React.useState<TChatMessage[]>([])
 
   React.useEffect(() => {
     if (!activeChatId) return
@@ -97,10 +92,9 @@ export default function MessagePage() {
 
     const loadConversation = async () => {
       try {
-        const res = await getConversation(conversationID)
-        console.log("Conversation data:", res)
+        const res = await getConversation(conversationID) 
         if (res && "success" in res && res.success && res.data?.data) {
-          const msgs = (res.data.data ?? []) as ChatMessage[]
+          const msgs = (res.data.data ?? []) as TChatMessage[]
           setMessages(msgs)
         } else {
           setMessages([])
@@ -181,6 +175,7 @@ export default function MessagePage() {
           messages={messages}
           setConversationID={setConversationID}
           activeChatId={activeChatId}
+          userId={String(user?.id)}
         />
       </div>
     </section>

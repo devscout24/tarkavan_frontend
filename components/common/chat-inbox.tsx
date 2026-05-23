@@ -8,13 +8,18 @@ import { cn } from "@/lib/utils"
 
 import Image from "next/image"
 import { TChatItem, TChatMessage } from "@/types"
-import { sendMessage } from "@/app/(dashboards)/common-pages/chat/action"
+import { deleteChat, sendMessage } from "@/app/(dashboards)/common-pages/chat/action"
+import moment from "moment"
+import { CiTrash } from "react-icons/ci"
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import ChatDeleteTime from "./chat-delete-time"
 
 type ChatInboxProps = {
   chat: TChatItem
   messages: TChatMessage[]
   setConversationID: (id: string) => void
   activeChatId: string
+  userId: string
 }
 
 export default function ChatInbox({
@@ -22,6 +27,7 @@ export default function ChatInbox({
   messages,
   setConversationID,
   activeChatId,
+  userId,
 }: ChatInboxProps) {
   const [text, setText] = React.useState("")
   const [files, setFiles] = React.useState<{ name: string; url: string }[]>([])
@@ -80,7 +86,7 @@ export default function ChatInbox({
     requestAnimationFrame(scrollToBottom)
   }, [messages, scrollToBottom])
 
-   
+ 
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#040510] text-white lg:flex-1">
@@ -104,26 +110,24 @@ export default function ChatInbox({
       <div ref={messagesViewportRef} className="min-h-0 flex-1">
         <ScrollArea className="h-[40vh] px-3 py-4 md:px-5 md:py-5 xl:h-[70vh]">
           <div className="space-y-6 pb-3">
-            {messages.map((message , i) => {
-              const isMe = message.is_me
+            {messages.map((message, i) => {
+              const isMe = true
 
               return message.message || message.file ? (
                 <div key={i}>
                   <div
                     className={cn(
-                      "flex gap-3",
-                      isMe ? "flex-row-reverse justify-end" : "justify-start"
+                      "flex items-end gap-3",
+                      isMe ? "flex-row-reverse" : "flex-row"
                     )}
                   >
-                    {isMe ? (
-                      <Image
-                        width={1000}
-                        height={1000}
-                        src={chat?.user_image || "/images/coach.png"}
-                        alt="Coach avatar"
-                        className="mt-1 size-8 rounded-md object-cover"
-                      />
-                    ) : null}
+                    <Image
+                      width={1000}
+                      height={1000}
+                      src={chat?.user_image || "/images/coach.png"}
+                      alt="Coach avatar"
+                      className="mt-1 size-4 rounded-md object-cover"
+                    />
 
                     <div
                       className={cn(
@@ -133,28 +137,13 @@ export default function ChatInbox({
                           : "max-w-[85%] bg-brand text-primary md:max-w-[70%]"
                       )}
                     >
-                      {message.message ? <p>{message.message}</p> : null}
+                      {message.message ? <p className={`${isMe ? "text-white! " : "text-primary!"}`}>{message.message}</p> : null}
+
+ 
+                      <ChatDeleteTime message={message} />
+
                     </div>
-
-                    {!isMe ? (
-                      <Image
-                        src={chat?.user_image || "/images/player.png"}
-                        alt="Player avatar"
-                        width={1000}
-                        height={1000}
-                        className="mt-1 size-8 rounded-md object-cover"
-                      />
-                    ) : null}
                   </div>
-
-                  <p
-                    className={cn(
-                      "mt-2 text-[14px] text-white",
-                      isMe ? "pl-11" : "pr-11 text-right"
-                    )}
-                  >
-                    {message?.time}
-                  </p>
                 </div>
               ) : null
             })}

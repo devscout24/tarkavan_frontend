@@ -19,9 +19,17 @@ export type TChatItem = {
 }
 
 export type TChatMessage = {
-  id: string
-  message?: string
-  time: string
-  is_me: boolean
+  id: string;
+  sender_id: number;
+  receiver_id: number;
+  conversation_id: string;
+  is_read: number;
+  message: string;
+  image: string | null;
+  created_at: string;
+  updated_at: string;
+  image_url: string | null;
+  image_id: number | null;
+  chatimage: string | null; 
   file?: string
 }

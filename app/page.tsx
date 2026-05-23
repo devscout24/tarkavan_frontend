@@ -17,7 +17,7 @@ import { THeroData, TLandingPageData } from "@/types/landing.type"
 export default function Page() {
 
   const [allData, setAllData] = useState<TLandingPageData | null>(null)
-  console.log(allData)
+  
   useEffect(() => {
     const getData = async () => {
       try {

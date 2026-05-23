@@ -21,7 +21,7 @@ export type TProgramDetailsParentAndPlayer = {
     id: number;
     user_id: number;
     name: string;
-    logo: string;
+    image: string;
     city: string;
     country: string;
     is_verified: boolean;

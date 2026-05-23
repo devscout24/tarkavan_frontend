@@ -1,3 +1,4 @@
+"use client"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -6,6 +7,8 @@ import { resolveAssetUrl } from "@/lib/url-utils"
 import { MapPin } from "lucide-react"
 import Image from "next/image"
 import { BiMessageSquareDetail } from "react-icons/bi"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 type ProgramCoachCardProps = {
   name?: string
@@ -18,10 +21,22 @@ type ProgramCoachCardProps = {
   verified?: boolean
   verifiedLabel?: string
   messageLabel?: string
-  onMessageCoach?: () => void
   location?: string
   showMessageButton?: boolean
   className?: string
+  chatId?: string
+  provider?: {
+    type: string
+    id: number
+    user_id: number
+    name: string
+    image: string
+    city: string
+    country: string
+    is_verified: boolean
+    email: string
+    is_program_maker: boolean
+  }
 }
 
 const defaultTags: string[] = []
@@ -36,11 +51,34 @@ export default function ProgramCoachCard({
   verified = true,
   verifiedLabel = "VERIFIED",
   messageLabel = "Message Coach",
-  onMessageCoach,
   location,
   showMessageButton = true,
   className,
+  chatId,
+  provider,
 }: ProgramCoachCardProps) {
+  const router = useRouter()
+  const user = localStorage.getItem("go_elite_user")
+    ? JSON.parse(localStorage.getItem("go_elite_user") as string)
+    : null
+
+  const handleMessageRedirect = async () => {
+    if (!user) {
+      router.push("/login")
+      toast.error("Session expired. Please login to send a message")
+      return
+    }
+
+    if (!chatId) {
+      toast.error("Chat ID is missing. Cannot redirect to messaging.")
+      return
+    }
+
+    localStorage.setItem("go_elite_message_receiver", JSON.stringify(provider))
+
+    router.push(`/${user.role}/messages?receiver_chatId=${chatId}`)
+  }
+
   return (
     <Card
       className={cn(
@@ -92,21 +130,19 @@ export default function ProgramCoachCard({
               </Badge>
             ))}
           </div>
+
+          {showMessageButton && (
+            <Button
+              type="button"
+              onClick={handleMessageRedirect}
+              className="mt-4 h-12 w-full cursor-pointer rounded-lg bg-brand text-base font-semibold text-black hover:bg-brand"
+            >
+              <BiMessageSquareDetail />
+              {messageLabel}
+            </Button>
+          )}
         </div>
       </div>
-
-      {showMessageButton && (
-        <div className="p-4 pt-3">
-          <Button
-            type="button"
-            onClick={onMessageCoach}
-            className="h-12 w-full rounded-lg bg-brand text-base font-semibold text-black hover:bg-brand"
-          >
-            <BiMessageSquareDetail />
-            {messageLabel}
-          </Button>
-        </div>
-      )}
     </Card>
   )
 }

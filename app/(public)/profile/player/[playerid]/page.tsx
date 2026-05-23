@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import ProfilePage from "./components/main-page"
 import { TPlayerProfile } from "@/types"
 import { getPlayerProfile } from "@/app/(public)/action"
@@ -36,7 +22,6 @@ export default async function ProfilePageFinal({ params }: ProfilePageProps) {
   ) {
     data = res.data.data
   }
-
   return <ProfilePage data={data as TPlayerProfile} />
 }
 

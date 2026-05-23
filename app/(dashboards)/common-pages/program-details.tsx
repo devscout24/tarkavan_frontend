@@ -71,7 +71,6 @@ export default function ProgramDetailsPage() {
 
   }, [id])
  
- 
 
   return (
     <section className="text-white">
@@ -167,13 +166,14 @@ export default function ProgramDetailsPage() {
             className=""
             highlightedName=""
             imageAlt=""
-            imageUrl={details?.provider?.logo || "/images/coach.png"}
+            imageUrl={details?.provider?.image || "/images/coach.png"}
             location=""
-            messageLabel={`Message ${details?.provider?.type}`}
-            tags={[]}
+            messageLabel={`Message ${details?.provider?.type}`} 
             name={details?.provider?.name || ""}
             verifiedLabel={details?.provider?.type}
             showMessageButton={details?.provider?.is_program_maker ? false : true}
+            chatId={String(details?.provider?.user_id)}
+            provider={details?.provider}
           />
           <ProgramDateTimeSelector
             programStartDate={details?.start_date}

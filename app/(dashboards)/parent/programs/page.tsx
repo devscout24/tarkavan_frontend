@@ -15,7 +15,7 @@ export default function ProgramPage() {
     const  [programs, setPrograms] = useState<TProgramUpcomming[]>([])
     const [sports, setSports] = useState<TSportOption[]>([])
     const [selectedFilter, setSelectedFilter] = useState<string>("") 
-    console.log("programs:", programs) 
+  
     useEffect(() => {
   
       const getPrograms = async () => {
@@ -41,8 +41,7 @@ export default function ProgramPage() {
           if( res && "success" in res && res.success && res.data && "data" in res.data && res.data.data){ 
             setSports(res.data.data)
           }
-          
-          
+           
         }catch(err){
             console.error("Error fetching sport data:", err)
         }
@@ -87,6 +86,15 @@ export default function ProgramPage() {
           /> 
         ))}
       </div>
+
+      {/* empty programs message */}
+      {programs.length === 0 && (
+        <div className="text-center py-10">
+          <h2 className="text-secondary text-xl font-semibold">No available programs found.</h2>
+          <p className="text-secondary!  ">May be you have no child or the selected sport has no available programs.</p>
+        </div>
+      )}
+
     </section>
   )
 }

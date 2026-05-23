@@ -1,29 +1,27 @@
 import * as React from "react"
-import { Link2, Send, FileText, Archive } from "lucide-react"
+import { Link2, Send, Archive } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
-import {
-  ChatItem,
-  ChatMessage,
-} from "../../app/(dashboards)/player/messages/page"
+
 import Image from "next/image"
+import { TChatItem, TChatMessage } from "@/types"
+import { sendMessage } from "@/app/(dashboards)/common-pages/chat/action"
 
 type ChatInboxProps = {
-  chat: ChatItem
-  messages: ChatMessage[]
-  onSendMessage: (payload: {
-    text: string
-    files: { name: string; url: string }[]
-  }) => void
+  chat: TChatItem
+  messages: TChatMessage[]
+  setConversationID: (id: string) => void
+  activeChatId: string
 }
 
 export default function ChatInbox({
   chat,
   messages,
-  onSendMessage,
+  setConversationID,
+  activeChatId,
 }: ChatInboxProps) {
   const [text, setText] = React.useState("")
   const [files, setFiles] = React.useState<{ name: string; url: string }[]>([])
@@ -33,18 +31,36 @@ export default function ChatInbox({
   const getFileType = (filename: string) => {
     const ext = filename.split(".").pop()?.toLowerCase() || ""
     if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext)) return "image"
-    if (["mp4", "webm", "mov", "avi"].includes(ext)) return "video"
-    if (ext === "pdf") return "pdf"
     return "file"
   }
 
-  const sendMessage = () => {
-    if (!text.trim() && files.length === 0) return
+  const handleSendMessage = async (payload: {
+    message: string
+    files: { name: string; url: string }[]
+  }) => {
+    try {
+      const formData = new FormData()
+      formData.append("receiver_id", activeChatId)
+      formData.append("message", payload.message)
+      formData.append("image", payload.files[0]?.url || "")
 
-    onSendMessage({ text: text.trim(), files })
-    setText("")
-    setFiles([])
-    if (fileInputRef.current) fileInputRef.current.value = ""
+      const res = await sendMessage(formData)
+      if (
+        res &&
+        "success" in res &&
+        res.success &&
+        res.data &&
+        "data" in res.data &&
+        res.data.data
+      ) {
+        setText("")
+        setFiles([])
+        if (fileInputRef.current) fileInputRef.current.value = ""
+        setConversationID(res.data.data.conversation_id)
+      }
+    } catch (err) {
+      console.error("Error sending message:", err)
+    }
   }
 
   const scrollToBottom = React.useCallback(() => {
@@ -64,24 +80,24 @@ export default function ChatInbox({
     requestAnimationFrame(scrollToBottom)
   }, [messages, scrollToBottom])
 
+   
+
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#040510] text-white lg:flex-1">
       <header className="flex items-center gap-3 border-b border-white/10 bg-white/8 px-4 py-3 md:px-5 md:py-4">
         <Image
           width={1000}
           height={1000}
-          src={chat.image}
-          alt={chat.name}
+          src={chat?.user_image || "/images/coach.png"}
+          alt={chat?.user_name}
           className="size-9 rounded-lg object-cover md:size-10"
         />
 
         <div>
           <h3 className="text-base leading-none font-bold text-white">
-            {chat.name}
+            {chat?.user_name}
           </h3>
-          <p className="mt-1 text-sm text-white/50 md:text-base">
-            {chat.tag ?? "Coach"}
-          </p>
+          {/* <p className="mt-1 text-sm text-white/50 md:text-base">Coach</p> */}
         </div>
       </header>
 
@@ -89,21 +105,21 @@ export default function ChatInbox({
         <ScrollArea className="h-[40vh] px-3 py-4 md:px-5 md:py-5 xl:h-[70vh]">
           <div className="space-y-6 pb-3">
             {messages.map((message) => {
-              const isCoach = message.sender === "coach"
+              const isMe = message.is_me
 
-              return (
+              return message.message || message.file ? (
                 <div key={message.id}>
                   <div
                     className={cn(
-                      "flex items-start gap-3",
-                      isCoach ? "justify-start" : "justify-end"
+                      "flex gap-3",
+                      isMe ? "flex-row-reverse justify-end" : "justify-start"
                     )}
                   >
-                    {isCoach ? (
+                    {isMe ? (
                       <Image
                         width={1000}
                         height={1000}
-                        src={chat.image}
+                        src={chat?.user_image || "/images/coach.png"}
                         alt="Coach avatar"
                         className="mt-1 size-8 rounded-md object-cover"
                       />
@@ -112,69 +128,17 @@ export default function ChatInbox({
                     <div
                       className={cn(
                         "rounded-2xl px-4 py-3 text-sm leading-6",
-                        isCoach
+                        isMe
                           ? "max-w-[85%] bg-white/10 text-white/90 md:max-w-[78%]"
                           : "max-w-[85%] bg-brand text-primary md:max-w-[70%]"
                       )}
                     >
-                      {message.text ? <p>{message.text}</p> : null}
-                      {message.files?.length ? (
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {message.files.map((file) => {
-                            const fileType = getFileType(file.name)
-                            return (
-                              <a
-                                key={file.url}
-                                href={file.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="group relative overflow-hidden rounded-lg border border-white/20 transition hover:opacity-80"
-                              >
-                                {fileType === "image" && (
-                                  <Image
-                                    width={1000}
-                                    height={1000}
-                                    src={file.url}
-                                    alt={file.name}
-                                    className="h-24 w-24 object-cover"
-                                  />
-                                )}
-                                {fileType === "video" && (
-                                  <div className="flex h-24 w-24 items-center justify-center bg-black/30">
-                                    <svg
-                                      className="size-6 text-white"
-                                      fill="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path d="M8 5v14l11-7z" />
-                                    </svg>
-                                  </div>
-                                )}
-                                {fileType === "pdf" && (
-                                  <div className="flex h-24 w-24 items-center justify-center bg-red-500/20">
-                                    <FileText className="size-6 text-white" />
-                                  </div>
-                                )}
-                                {fileType === "file" && (
-                                  <div className="flex h-24 w-24 items-center justify-center bg-gray-500/20">
-                                    <Archive className="size-6 text-white" />
-                                  </div>
-                                )}
-                                <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
-                                  <span className="truncate px-2 text-xs text-white">
-                                    {file.name}
-                                  </span>
-                                </div>
-                              </a>
-                            )
-                          })}
-                        </div>
-                      ) : null}
+                      {message.message ? <p>{message.message}</p> : null}
                     </div>
 
-                    {!isCoach ? (
+                    {!isMe ? (
                       <Image
-                        src={chat.image}
+                        src={chat?.user_image || "/images/player.png"}
                         alt="Player avatar"
                         width={1000}
                         height={1000}
@@ -186,13 +150,13 @@ export default function ChatInbox({
                   <p
                     className={cn(
                       "mt-2 text-[14px] text-white",
-                      isCoach ? "pl-11" : "pr-11 text-right"
+                      isMe ? "pl-11" : "pr-11 text-right"
                     )}
                   >
-                    {message.time}
+                    {message?.time}
                   </p>
                 </div>
-              )
+              ) : null
             })}
           </div>
         </ScrollArea>
@@ -209,7 +173,7 @@ export default function ChatInbox({
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
                   event.preventDefault()
-                  sendMessage()
+                  handleSendMessage({ message: text.trim(), files })
                 }
               }}
             />
@@ -224,6 +188,7 @@ export default function ChatInbox({
               ref={fileInputRef}
               type="file"
               multiple
+              accept="image/*"
               className="hidden"
               onChange={(event) => {
                 const nextFiles = Array.from(event.target.files ?? []).map(
@@ -240,8 +205,8 @@ export default function ChatInbox({
           <Button
             type="button"
             size="icon"
-            className="size-10 rounded-xl bg-brand text-primary hover:bg-brand"
-            onClick={sendMessage}
+            className="z-2 size-10 rounded-xl bg-brand text-primary hover:bg-brand"
+            onClick={() => handleSendMessage({ message: text.trim(), files })}
           >
             <Send className="size-4" />
           </Button>
@@ -263,22 +228,6 @@ export default function ChatInbox({
                       height={1000}
                       className="h-16 w-16 object-cover"
                     />
-                  )}
-                  {fileType === "video" && (
-                    <div className="flex h-16 w-16 items-center justify-center bg-black/30">
-                      <svg
-                        className="size-5 text-white"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </div>
-                  )}
-                  {fileType === "pdf" && (
-                    <div className="flex h-16 w-16 items-center justify-center bg-red-500/20">
-                      <FileText className="size-5 text-white" />
-                    </div>
                   )}
                   {fileType === "file" && (
                     <div className="flex h-16 w-16 items-center justify-center bg-gray-500/20">

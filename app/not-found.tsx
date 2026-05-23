@@ -18,7 +18,7 @@ export default function NotFoundPage() {
             Page Not Found
           </h2>
 
-          <h1 className="mt-2 flex justify-center md:justify-start text-6xl font-extrabold  md:text-7xl text-brand  ">
+          <h1 className="mt-2 flex justify-center text-6xl font-extrabold text-brand md:justify-start md:text-7xl">
             <span>4</span>
             <Image
               src="/images/footballImage.png"
@@ -30,20 +30,20 @@ export default function NotFoundPage() {
             <span>4</span>
           </h1>
 
-          <p className="mx-auto mt-4 max-w-md text-gray-600 md:ml-0">
+          <p className="mx-auto mt-4 max-w-md text-primary/40! md:ml-0">
             The page you are looking for might have been removed, renamed, or is
             temporarily unavailable.
           </p>
 
           <Link
             href="/"
-            className="mt-6 inline-block rounded-xl bg-brand px-6 py-3 text-primary transition hover:bg-gray-800"
+            className="mt-6 inline-block rounded-xl bg-brand px-6 py-3 text-primary transition hover:bg-brand/90"
           >
             Go Home
           </Link>
           <div
             onClick={() => router.back()}
-            className="mt-6 ml-2 inline-block rounded-xl border border-primary bg-transparent px-6 py-3 text-primary transition"
+            className="mt-6 ml-2 inline-block rounded-xl border border-primary bg-transparent px-6 py-3 text-primary transition cursor-pointer "
           >
             Go Back
           </div>

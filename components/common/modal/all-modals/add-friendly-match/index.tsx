@@ -202,6 +202,7 @@ export default function AddFriendlyMatch({
 
     try {
       const res = await addUpdateMatch(formData)
+      console.log(res)
 
       if (
         typeof res === "object" &&

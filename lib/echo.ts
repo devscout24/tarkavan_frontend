@@ -6,6 +6,7 @@ type EchoChannel = {
 type EchoClient = {
   private(channelName: string): EchoChannel
   leave(channelName: string): void
+  disconnect(): void
 }
 
 type EchoConfig = {
@@ -18,9 +19,7 @@ type EchoConfig = {
   enabledTransports: string[]
   authEndpoint: string
   auth: {
-    headers: {
-      Authorization: string
-    }
+    headers: Record<string, string>
   }
 }
 
@@ -32,9 +31,22 @@ declare global {
 }
 
 let echo: EchoClient | null = null
+let currentToken: string | null = null 
 
 export async function getEcho(token?: string): Promise<EchoClient | null> {
   if (!token) return null
+
+ 
+  if (echo && currentToken !== token) {
+    try {
+      echo.disconnect()
+    } catch {
+      // ignore
+    }
+    echo = null
+    currentToken = null
+    if (typeof window !== "undefined") window.Echo = null
+  }
 
   if (!echo && typeof window !== "undefined") {
     const [{ default: Echo }, { default: Pusher }] = (await Promise.all([
@@ -47,9 +59,9 @@ export async function getEcho(token?: string): Promise<EchoClient | null> {
 
     window.Pusher = Pusher
 
-    const EchoConstructor = Echo
+    console.log("Initializing Echo with token:", token.substring(0, 20) + "...")
 
-    echo = new EchoConstructor({
+    echo = new Echo({
       broadcaster: "reverb",
       key: process.env.NEXT_PUBLIC_REVERB_APP_KEY as string,
       wsHost: process.env.NEXT_PUBLIC_REVERB_HOST,
@@ -57,10 +69,17 @@ export async function getEcho(token?: string): Promise<EchoClient | null> {
       wssPort: 443,
       forceTLS: true,
       enabledTransports: ["ws", "wss"],
-      authEndpoint: `https://${process.env.NEXT_PUBLIC_SOCKET_ENDPOINT}`,
-      auth: { headers: { Authorization: `Bearer ${token}` } },
+      authEndpoint: `https://admin.goelitesport.com/broadcasting/auth`,
+      auth: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      },
     })
 
+    currentToken = token   
     window.Echo = echo
   }
 

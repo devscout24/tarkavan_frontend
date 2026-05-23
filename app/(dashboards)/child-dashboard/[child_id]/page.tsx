@@ -72,7 +72,7 @@ export default function ChildDashboard() {
           <div className="scrollbar-hide overflow-x-auto">
             <div className="flex flex-wrap gap-4 pb-2">
 
-              {dashData?.recent_opportunities.map((opportunity) => (
+              {dashData?.recent_opportunities?.map((opportunity) => (
                 <div key={opportunity.id} className="max-w-[320px] min-w-[320px] shrink-0">
                   <Advertisement
                     imageUrl={opportunity.club.club_logo}

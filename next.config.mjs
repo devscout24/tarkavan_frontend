@@ -34,7 +34,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "tarkavan.thenightowl.team",
+        hostname: "admin.goelitesport.com",
         port: "",
         pathname: "/**",
       },

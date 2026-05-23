@@ -94,9 +94,7 @@ export default function ChatHead({
                   </div>
 
                   <p
-                    className={cn(
-                      "mt-1 truncate text-[12px] text-secondary! " 
-                    )}
+                    className={cn("mt-1 truncate text-[12px] text-secondary!")}
                   >
                     {chat.message}
                   </p>
@@ -114,7 +112,10 @@ export default function ChatHead({
               <button
                 key={getChatIdentity(chat)}
                 type="button"
-                onClick={() => onSelectChat(getChatIdentity(chat))}
+                onClick={() => {
+                  onSelectChat(getChatIdentity(chat))
+                  setConversationID(chat.conversation_id)
+                }}
                 className={cn(
                   "w-25 shrink-0 rounded-xl border p-2.5 text-left transition-colors",
                   activeChatId === getChatIdentity(chat)

@@ -11,7 +11,8 @@ import {
 import { cn } from "@/lib/utils"
 import CommonBtn from "@/components/common/common-btn"
 import { Upload, X, Play } from "lucide-react"
-import { uploadMediaPLayer } from "@/lib/media-uploader"
+import { playerGalleryDelete, playerProfileUpdate } from "../profile/action"
+import { toast } from "sonner"
 
 export type PlayerMediaItem = {
   id: string
@@ -26,21 +27,19 @@ type LocalMediaItem = {
   url: string
   type: "image" | "video"
   name: string
+  file?: File
+}
+
+type PreviewMediaItem = LocalMediaItem & {
+  source: "server" | "local"
 }
 
 type PlayerMediaProps = {
   title?: string
   subtitle?: string
   items?: PlayerMediaItem[]
-  onUpload?: () => void
   uploadLabel?: string
   className?: string
-  /**
-   * Controls which file types are accepted in the dropzone/file picker.
-   * - "image" → accepts all image types (image/*)
-   * - "video" → accepts all video types (video/*)
-   * - "both"  → accepts images and videos (default)
-   */
   acceptType?: "image" | "video" | "both"
 }
 
@@ -67,14 +66,15 @@ function isAllowed(file: File, acceptType: "image" | "video" | "both") {
 export default function PlayerMedia({
   title = "My Images",
   subtitle = "Match highlights & training",
-  onUpload,
   uploadLabel = "Upload Media",
   className,
+  items = [],
   acceptType = "both",
 }: PlayerMediaProps) {
   const [mediaItems, setMediaItems] = useState<LocalMediaItem[]>([])
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [loading, setLoading] = useState(false)
 
   const addFiles = useCallback(
     (files: FileList | File[]) => {
@@ -90,6 +90,7 @@ export default function PlayerMedia({
         url: URL.createObjectURL(file),
         type: file.type.startsWith("video/") ? "video" : "image",
         name: file.name,
+        file,
       }))
 
       setMediaItems((prev) => [...prev, ...newItems])
@@ -98,12 +99,20 @@ export default function PlayerMedia({
     [mediaItems.length, acceptType]
   )
 
-  const removeItem = (id: string) => {
-    setMediaItems((prev) => {
-      const item = prev.find((m) => m.id === id)
-      if (item) URL.revokeObjectURL(item.url)
-      return prev.filter((m) => m.id !== id)
-    })
+  const handleRemoveMedia = async (id: string) => {
+    try {
+      const res = await playerGalleryDelete(id)
+      console.log(res)
+      if (res && "success" in res && res.success) {
+        toast.success(res?.data?.data || "Media removed successfully")
+        window.dispatchEvent(new Event("player_profile_updated"))
+        return
+      }
+    } catch (error) {
+      console.error("Remove error:", (error as Error).message)
+      toast.error("Failed to remove media")
+    } finally {
+    }
   }
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -120,20 +129,59 @@ export default function PlayerMedia({
   const isMaxed = mediaItems.length >= MAX_MEDIA
   const acceptAttr = ACCEPT_MAP[acceptType]
   const hintText = HINT_MAP[acceptType]
-
+  const previewItems: PreviewMediaItem[] = [
+    ...items.map((item) => ({
+      id: item.id,
+      url: item.src,
+      type: (item.type === "video" ? "video" : "image") as "image" | "video",
+      name: item.alt,
+      source: "server" as const,
+    })),
+    ...mediaItems.map((item) => ({ ...item, source: "local" as const })),
+  ]
 
   const handleUploadMedia = async () => {
+    setLoading(true)
+    try {
+      if (!mediaItems.length) {
+        toast.error("No media selected for upload")
+        setLoading(false)
+        return
+      }
+      if (mediaItems.length > 5) {
+        toast.error("Maximum 5 files allowed")
+        setLoading(false)
+        return
+      }
 
-    try{
+      const formData = new FormData()
 
-      // const res = await uploadMediaPLayer()
+      mediaItems.forEach((item) => {
+        if (!item.file) return
+        const key = item.type === "image" ? "profile_gallery[]" : "reels[]"
+        formData.append(key, item.file)
+      })
 
-    }catch(error) {
-        console.error("Upload error:", (error as Error).message);
+      const res = await playerProfileUpdate(formData)
+      console.log(res)
+      if (res && "success" in res && res.success) {
+        toast.success(res.data?.message || "Media uploaded successfully")
+        mediaItems.forEach((item) => {
+          if (item.url.startsWith("blob:")) {
+            URL.revokeObjectURL(item.url)
+          }
+        })
+        setMediaItems([])
+        if (fileInputRef.current) fileInputRef.current.value = ""
+        window.dispatchEvent(new Event("player_profile_updated"))
+      }
+
+      setLoading(false)
+    } catch (error) {
+      console.error("Upload error:", (error as Error).message)
+      setLoading(false)
     }
-
   }
-
 
   return (
     <Card
@@ -155,58 +203,62 @@ export default function PlayerMedia({
           size="lg"
           variant="default"
           text={uploadLabel}
-          onClick={() =>  {}}
-          className="bg-secondary/70 border-2 border-white/50 w-fit px-4 cursor-pointer text-base"
+          onClick={handleUploadMedia}
+          className="w-fit cursor-pointer border-2 border-white/50 bg-secondary/70 px-4 text-base"
           icon={<Upload />}
+          isLoading={loading}
         />
       </CardHeader>
 
       <CardContent className="space-y-4">
         {/* Counter */}
         {mediaItems.length > 0 && (
-          <p className="text-xs text-muted-foreground text-right">
-            <span className="text-blue-400 font-semibold">{mediaItems.length}</span>{" "}
+          <p className="text-right text-xs text-muted-foreground">
+            <span className="font-semibold text-blue-400">
+              {mediaItems.length}
+            </span>{" "}
             / {MAX_MEDIA} media selected
           </p>
         )}
 
         {/* Preview Grid */}
-        {mediaItems.length > 0 && (
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-            {mediaItems.map((item) => (
+        {previewItems.length > 0 && (
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+            {previewItems.map((item) => (
               <div
                 key={item.id}
-                className="group relative aspect-square rounded-xl overflow-hidden bg-black border border-white/10"
+                className="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-black"
               >
                 {item.type === "video" ? (
                   <>
                     <video
                       src={item.url}
-                      className="w-full h-full object-cover"
+                      className="h-full w-full object-cover"
+                      controls
                       muted
                       playsInline
                       preload="metadata"
                     />
-                    <div className="absolute bottom-1.5 left-1.5 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm flex items-center gap-1">
-                      <Play className="w-2.5 h-2.5" /> Video
+                    <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1 rounded-full bg-black/60 px-2 py-0.5 text-[10px] text-white backdrop-blur-sm">
+                      <Play className="h-2.5 w-2.5" /> Video
                     </div>
                   </>
                 ) : (
                   <img
                     src={item.url}
                     alt={item.name}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
                   />
                 )}
 
                 {/* Overlay on hover */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center">
+                <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-200 group-hover:bg-black/40">
                   <button
-                    onClick={() => removeItem(item.id)}
-                    className="opacity-0 group-hover:opacity-100 transition-all duration-200 scale-75 group-hover:scale-100 bg-brand hover:bg-brand/80 text-primary rounded-full w-8 h-8 flex items-center justify-center shadow-lg"
+                    onClick={() => handleRemoveMedia(item.id)}
+                    className="flex h-8 w-8 scale-75 items-center justify-center rounded-full bg-brand text-primary opacity-0 shadow-lg transition-all duration-200 group-hover:scale-100 group-hover:opacity-100 hover:bg-brand/80 disabled:cursor-not-allowed disabled:opacity-60"
                     title="Remove"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="h-4 w-4" />
                   </button>
                 </div>
               </div>
@@ -216,7 +268,7 @@ export default function PlayerMedia({
 
         {/* Max reached message */}
         {isMaxed && (
-          <div className="text-xs text-red-400 border border-red-400/30 bg-red-400/10 rounded-lg px-3 py-2 text-center">
+          <div className="rounded-lg border border-red-400/30 bg-red-400/10 px-3 py-2 text-center text-xs text-red-400">
             Maximum 5 media selected. Remove one to add more.
           </div>
         )}
@@ -228,10 +280,10 @@ export default function PlayerMedia({
           onDrop={!isMaxed ? handleDrop : undefined}
           onClick={() => !isMaxed && fileInputRef.current?.click()}
           className={cn(
-            "relative flex flex-col items-center gap-3 rounded-xl px-6 py-8 text-white ring-1 ring-secondary ring-inset transition duration-100 ease-linear",
-            isDragging ? "ring-blue-400 bg-blue-400/10" : "bg-primary",
+            "relative flex flex-col items-center gap-3 rounded-xl px-6 py-8 text-white ring-1 ring-secondary transition duration-100 ease-linear ring-inset",
+            isDragging ? "bg-blue-400/10 ring-blue-400" : "bg-primary",
             isMaxed
-              ? "opacity-40 cursor-not-allowed"
+              ? "cursor-not-allowed opacity-40"
               : "cursor-pointer hover:bg-white/5"
           )}
         >
@@ -245,7 +297,7 @@ export default function PlayerMedia({
             disabled={isMaxed}
           />
 
-          <div className="flex shrink-0 items-center justify-center bg-primary shadow-xs ring-1 ring-primary ring-inset size-10 rounded-lg text-white/60">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary text-white/60 shadow-xs ring-1 ring-primary ring-inset">
             <svg
               viewBox="0 0 24 24"
               width={22}
@@ -262,7 +314,7 @@ export default function PlayerMedia({
 
           <div className="flex flex-col gap-1 text-center">
             <div className="text-sm text-white/80">
-              <span className="text-brand font-semibold underline underline-offset-4">
+              <span className="font-semibold text-brand underline underline-offset-4">
                 Click to upload
               </span>{" "}
               or drag and drop

@@ -153,6 +153,7 @@ export default function SearchExplore() {
             }
 
             if(item.type === "coach"){
+              console.log("Coach item:", item)
               return ( 
                 <CoachCard 
                 key={index}
@@ -164,6 +165,7 @@ export default function SearchExplore() {
                 location={item?.location as string}
                 head={item?.coaching_title}
                 award={item?.coaching_philosophy}
+                onClick={() => router.push(`/profile/coach/${item?.coach_id}`)}
                 /> 
               )
             }

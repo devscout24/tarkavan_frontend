@@ -8,11 +8,9 @@ import { cn } from "@/lib/utils"
 
 import Image from "next/image"
 import { TChatItem, TChatMessage } from "@/types"
-import { deleteChat, sendMessage } from "@/app/(dashboards)/common-pages/chat/action"
-import moment from "moment"
-import { CiTrash } from "react-icons/ci"
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { sendMessage } from "@/app/(dashboards)/common-pages/chat/action"
 import ChatDeleteTime from "./chat-delete-time"
+import { toast } from "sonner"
 
 type ChatInboxProps = {
   chat: TChatItem
@@ -64,6 +62,11 @@ export default function ChatInbox({
         if (fileInputRef.current) fileInputRef.current.value = ""
         setConversationID(res.data.data.conversation_id)
       }
+
+      if(res?.message){
+        toast.error(res.message)
+      }
+
     } catch (err) {
       console.error("Error sending message:", err)
     }
@@ -95,8 +98,8 @@ export default function ChatInbox({
           width={1000}
           height={1000}
           src={chat?.user_image || "/images/coach.png"}
-          alt={chat?.user_name}
-          className="size-9 rounded-lg object-cover md:size-10"
+          alt={chat?.user_name || "Chat avatar"}
+          className=" rounded-lg object-cover w-10 h-10  "
         />
 
         <div>
@@ -108,7 +111,7 @@ export default function ChatInbox({
       </header>
 
       <div ref={messagesViewportRef} className="min-h-0 flex-1">
-        <ScrollArea className="h-[40vh] px-3 py-4 md:px-5 md:py-5 xl:h-[70vh]">
+        <ScrollArea className="h-[45vh] px-3 py-4 md:px-5 md:py-5 xl:h-[70vh]">
           <div className="space-y-6 pb-3">
             {messages.map((message, i) => {
               const isMe = String(message.sender_id) === userId
@@ -124,9 +127,9 @@ export default function ChatInbox({
                     <Image
                       width={1000}
                       height={1000}
-                      src={chat?.user_image || "/images/coach.png"}
-                      alt="Coach avatar"
-                      className="mt-1 size-4 rounded-md object-cover"
+                      src={isMe ? message?.sender_image : message?.receiver_image || "/images/coach.png"}
+                      alt={chat?.user_name || "Chat avatar"}
+                      className="mt-1 rounded-md object-cover w-4 h-4 "
                     />
 
                     <div

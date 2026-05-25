@@ -74,7 +74,7 @@ export default function MessagePage() {
     initialReceiver ? [initialReceiver] : []
   )
   const [messages, setMessages] = React.useState<TChatMessage[]>([])
-
+  console.log(messages)
   // --- FIX: refs so handleRealTimeMessage always reads latest values ---
   const conversationIDRef = React.useRef(conversationID)
   const activeChatIdRef = React.useRef(activeChatId)
@@ -100,8 +100,33 @@ export default function MessagePage() {
     }
   }, [activeChatId, chatList])
 
+  React.useEffect(() => {
+    const handleMessageDeleted = (event: Event) => {
+      const customEvent = event as CustomEvent<{ messageId?: string }>
+      const messageId = customEvent.detail?.messageId
+
+      if (!messageId) return
+
+      setMessages((currentMessages) =>
+        currentMessages.filter((message) => message.id !== messageId)
+      )
+    }
+
+    window.addEventListener("chat-message-deleted", handleMessageDeleted)
+
+    return () => {
+      window.removeEventListener("chat-message-deleted", handleMessageDeleted)
+    }
+  }, [])
+
   const handleRealTimeMessage = React.useCallback(
     (message: TChatMessage) => {
+      const msg = message.message
+
+      setMessages((currentMessages) => {
+        return [...currentMessages, msg as unknown as TChatMessage]
+      })
+
       // Read latest values from refs — never stale
       const currentConversationID = conversationIDRef.current
       const currentActiveChatId = activeChatIdRef.current
@@ -152,7 +177,7 @@ export default function MessagePage() {
   )
 
   // Static channel list — no re-subscribe on conversationID change
-  const listenerChannels = ["chat-conversation"]
+  const listenerChannels = [`chat-conversation.${conversationID}`]
   useChatListener(listenerChannels, handleRealTimeMessage)
 
   React.useEffect(() => {

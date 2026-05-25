@@ -37,6 +37,22 @@ export async function playerProfileUpdate(data: FormData) {
   }
 }
 
+export async function playerGalleryDelete(id: string) {
+  try {
+    const res = await api.get(`/profile/athelete/galeery/delete/${id}`)  
+    return { success: true, data: res.data }
+  }  catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+
  
 
 export async function playerSettingUpdate(data: FormData) {

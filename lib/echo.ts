@@ -7,6 +7,13 @@ type EchoClient = {
   private(channelName: string): EchoChannel
   leave(channelName: string): void
   disconnect(): void
+  connector?: {
+    options?: {
+      auth?: {
+        headers?: Record<string, string>
+      }
+    }
+  }
 }
 
 type EchoConfig = {
@@ -31,57 +38,80 @@ declare global {
 }
 
 let echo: EchoClient | null = null
-let currentToken: string | null = null 
+let currentToken: string | null = null
+
+const setEchoAuthToken = (client: EchoClient, token: string) => {
+  const authHeaders = client.connector?.options?.auth?.headers
+
+  if (!authHeaders) return
+
+  authHeaders.Authorization = `Bearer ${token}`
+  authHeaders.authorization = `Bearer ${token}`
+}
 
 export async function getEcho(token?: string): Promise<EchoClient | null> {
-  if (!token) return null
+  const normalizedToken = token?.trim()
 
- 
-  if (echo && currentToken !== token) {
+  if (!normalizedToken) return null
+
+  if (echo && currentToken !== normalizedToken) {
     try {
       echo.disconnect()
     } catch {
       // ignore
     }
+
     echo = null
     currentToken = null
-    if (typeof window !== "undefined") window.Echo = null
+
+    if (typeof window !== "undefined") {
+      window.Echo = null
+    }
   }
 
-  if (!echo && typeof window !== "undefined") {
-    const [{ default: Echo }, { default: Pusher }] = (await Promise.all([
-      import("laravel-echo"),
-      import("pusher-js"),
-    ])) as [
-      { default: new (config: EchoConfig) => EchoClient },
-      { default: unknown },
-    ]
+  if (echo) {
+    setEchoAuthToken(echo, normalizedToken)
+    currentToken = normalizedToken
 
-    window.Pusher = Pusher
+    if (typeof window !== "undefined") {
+      window.Echo = echo
+    }
 
-    console.log("Initializing Echo with token:", token.substring(0, 20) + "...")
+    return echo
+  }
 
-    echo = new Echo({
-      broadcaster: "reverb",
-      key: process.env.NEXT_PUBLIC_REVERB_APP_KEY as string,
-      wsHost: process.env.NEXT_PUBLIC_REVERB_HOST,
-      wsPort: 8083,
-      wssPort: 443,
-      forceTLS: true,
-      enabledTransports: ["ws", "wss"],
-      authEndpoint: `https://admin.goelitesport.com/broadcasting/auth`,
-      auth: {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-          "X-Requested-With": "XMLHttpRequest",
-        },
+  if (typeof window === "undefined") return null
+
+  const [{ default: Echo }, { default: Pusher }] = (await Promise.all([
+    import("laravel-echo"),
+    import("pusher-js"),
+  ])) as [
+    { default: new (config: EchoConfig) => EchoClient },
+    { default: unknown },
+  ]
+
+  window.Pusher = Pusher
+
+  echo = new Echo({
+    broadcaster: "reverb",
+    key: process.env.NEXT_PUBLIC_REVERB_APP_KEY as string,
+    wsHost: process.env.NEXT_PUBLIC_REVERB_HOST,
+    wsPort: 8082,
+    wssPort: 443,
+    forceTLS: false,
+    enabledTransports: ["ws", "wss"],
+    authEndpoint: `https://admin.goelitesport.com/api/broadcasting/auth`,
+    auth: {
+      headers: {
+        Authorization: `Bearer ${normalizedToken}`,
+        authorization: `Bearer ${normalizedToken}`,
       },
-    })
+    },
+  })
 
-    currentToken = token   
-    window.Echo = echo
-  }
+  setEchoAuthToken(echo, normalizedToken)
+  currentToken = normalizedToken
+  window.Echo = echo
 
   return echo
 }

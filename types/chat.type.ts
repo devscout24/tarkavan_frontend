@@ -32,4 +32,6 @@ export type TChatMessage = {
   image_id: number | null;
   chatimage: string | null; 
   file?: string
+  sender_image: string
+  receiver_image: string
 }

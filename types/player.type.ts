@@ -1,92 +1,88 @@
 export type TPlayerDashboard = {
-  player_info: PlayerInfo;
-  summary: TPlayerStatsSummary;
-  scouting_status: ScoutingStatus;
-  recent_opportunities: Opportunity[];
-  upcoming_training: any[]; // later refine if structure known
+  player_info: PlayerInfo
+  summary: TPlayerStatsSummary
+  scouting_status: ScoutingStatus
+  recent_opportunities: Opportunity[]
+  upcoming_training: any[] // later refine if structure known
 }
 
 // ------------------ PLAYER INFO ------------------
 export type PlayerInfo = {
-  id: number;
-  name: string;
-  image: string | null;
-  position: Position;
-  secondary_position: Position;
-  age: number;
-  jersey_number: number;
-  city: string;
-  country: string;
-  city_id: number;
-  country_id: number;
-  location: Location;
-  privacy_setting: string | null;
+  id: number
+  name: string
+  image: string | null
+  position: Position
+  secondary_position: Position
+  age: number
+  jersey_number: number
+  city: string
+  country: string
+  city_id: number
+  country_id: number
+  location: Location
+  privacy_setting: string | null
 }
 
 export type Position = {
-  id: number;
-  name: string;
+  id: number
+  name: string
 }
 
 export type Location = {
-  city_id: number;
-  city: string;
-  country_id: number;
-  country: string;
+  city_id: number
+  city: string
+  country_id: number
+  country: string
 }
 
 // ------------------ SUMMARY ------------------
 export type TPlayerStatsSummary = {
-  profile_visibility: string | null;
-  total_programs: number;
-  upcoming_sessions: number;
-  recent_payments: number;
-  videos_uploaded: number;
+  profile_visibility: string | null
+  total_programs: number
+  upcoming_sessions: number
+  recent_payments: number
+  videos_uploaded: number
 }
 
 // ------------------ SCOUTING ------------------
 export type ScoutingStatus = {
-  profile_completeness: number;
-  total_recruitments_applied: number;
-  scouts_viewing: number;
+  profile_completeness: number
+  total_recruitments_applied: number
+  scouts_viewing: number
 }
 
 // ------------------ OPPORTUNITY ------------------
 export type Opportunity = {
-  id: number;
-  club: Club;
-  position: Position;
-  team: Team;
-  experience: string;
-  description: string;
-  upto_age: number;
-  tryout_date: string;
-  application_status: string;
+  id: number
+  club: Club
+  position: Position
+  team: Team
+  experience: string
+  description: string
+  upto_age: number
+  tryout_date: string
+  application_status: string
 }
 
 export type Club = {
-  id: number;
-  club_name: string;
-  club_logo: string;
-  city: string;
-  state: string | null;
-  country: string;
-  city_id: number;
-  country_id: number;
+  id: number
+  club_name: string
+  club_logo: string
+  city: string
+  state: string | null
+  country: string
+  city_id: number
+  country_id: number
 }
 
 export type Team = {
-  id: number;
-  name: string;
-  age_group: string | null;
-  image: string;
-  competition_level: string;
-  formatted_age: string;
+  id: number
+  name: string
+  age_group: string | null
+  image: string
+  competition_level: string
+  formatted_age: string
 }
-
-
-
-
 
 // ================= BASIC INFO =================
 export type TPlayerSportOption = {
@@ -181,14 +177,22 @@ export type TPlayerProfile = {
   player_stats: TPlayerStats
   strengths: TPlayerStrength[]
   achievements: TPlayerAchievement[]
-  gallery: string[]
-  videos: string[]
+  gallery: {
+    id: number | string
+    image: string
+    uploaded_at?: string
+  }[]
+  videos: {
+    id: number
+    video_url: string
+    status?: string
+    uploaded_at?: string
+  }[]
   media_links: string[]
   season_stats_last_five_years: TSeasonStats[]
   professional_votes: number
   provencial_votes: number
 }
-
 
 export type TStrength = {
   strength_type: "technical" | "physical" | "tactical" | "mental" | "attacking"
@@ -233,96 +237,93 @@ export type TPlayerProfileForm = {
   reels?: File[]
 }
 
-
-
 export type TPlayerProfileSetting = {
-  name: string;
-  email: string;
-  profile_image: string;
-  country_id: number | null;
-  city_id: number | null;
-  country: string | null;
-  city: string | null;
-  privacy_settings: "public" | "private" | "friends" | string;
-};
+  name: string
+  email: string
+  profile_image: string
+  country_id: number | null
+  city_id: number | null
+  country: string | null
+  city: string | null
+  privacy_settings: "public" | "private" | "friends" | string
+}
 
+export type TCompletePlayerData = {
+  // Core Identity
+  firstName: string
+  lastName: string
+  city: string
+  country: string
+  email: string
+  dateOfBirth?: string
+  gender: string
+  nationality: string
+  sport: string
+  jerseyNumber: string
+  dominantFoot: string
+  clubTeam: string
+  profilePhotoNames: string[]
 
-  export type TCompletePlayerData ={
-    // Core Identity
-    firstName: string
-    lastName: string
-    city: string
-    country: string
-    email: string
-    dateOfBirth?: string
-    gender: string
-    nationality: string
-    sport: string
-    jerseyNumber: string
-    dominantFoot: string
-    clubTeam: string
-    profilePhotoNames: string[]
+  // Position Map
+  primaryPosition: string
+  secondaryPosition: string
 
-    // Position Map
-    primaryPosition: string
-    secondaryPosition: string
-
-    // Season Stats
-    seasonStats: {
-      activeTab: "outfield" | "goalkeeper"
-      values: {
-        outfieldGamesPlayed: string
-        outfieldGoals: string
-        outfieldAssists: string
-        outfieldYellowCards: string
-        outfieldRedCards: string
-        goalkeeperGamesPlayed: string
-        goalkeeperGoals: string
-        goalkeeperAssists: string
-        goalkeeperYellowCards: string
-        goalkeeperRedCards: string
-        goalkeeperCleanSheets: string
-        goalkeeperTotalSaves: string
-      }
-    }
-
-    // Strengths
-    strengths: {
-      activeCategoryId: string
-      selectedByCategory: Record<string, string>
-    }
-
-    // Biography
-    biography: string
-
-    // Highlights
-    highlights: {
-      showcaseValue: string
-      selectedShowcaseSource: "youtube" | "hudl" | "vimeo" | null
-      uploadedItems: Array<{
-        id: string
-        title: string
-        type: "video" | "link"
-        source?: "youtube" | "hudl" | "vimeo"
-        file?: File
-      }>
-    }
-
-    // Achievements
-    achievements: {
-      uploadedAssets: Array<{
-        id: string
-        name: string
-        type: string
-        file?: File
-      }>
-      title: string
-      dateEarned?: string
-      description: string
-    }
-
-    // Privacy Settings
-    privacySettings: {
-      visibility: string
+  // Season Stats
+  seasonStats: {
+    activeTab: "outfield" | "goalkeeper"
+    values: {
+      outfieldGamesPlayed: string
+      outfieldGoals: string
+      outfieldAssists: string
+      outfieldYellowCards: string
+      outfieldRedCards: string
+      goalkeeperGamesPlayed: string
+      goalkeeperGoals: string
+      goalkeeperAssists: string
+      goalkeeperYellowCards: string
+      goalkeeperRedCards: string
+      goalkeeperCleanSheets: string
+      goalkeeperTotalSaves: string
     }
   }
+
+  // Strengths
+  strengths: {
+    activeCategoryId: string
+    selectedByCategory: Record<string, string>
+  }
+
+  // Biography
+  biography: string
+
+  // Highlights
+  highlights: {
+    showcaseValue: string
+    selectedShowcaseSource: "youtube" | "hudl" | "vimeo" | null
+    uploadedItems: Array<{
+      id: string
+      title: string
+      type: "video" | "link"
+      source?: "youtube" | "hudl" | "vimeo"
+      file?: File
+    }>
+  }
+
+  // Achievements
+  achievements: {
+    uploadedAssets: Array<{
+      id: string
+      name: string
+      type: string
+      file?: File
+    }>
+    title: string
+    dateEarned?: string
+    description: string
+  }
+
+  // Privacy Settings
+  privacySettings: {
+    visibility: string
+  }
+}

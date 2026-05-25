@@ -1,8 +1,9 @@
 "use client"
 
-import { getEcho } from "@/lib/echo"
+import isValidToken from "@/lib/isValid-token"
 import { TChatMessage } from "@/types"
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
+import { getEcho } from "./echo"
 
 type ChatEventPayload = TChatMessage
 
@@ -21,24 +22,44 @@ export function useChatListener(
   channelNames: string | string[],
   onMessage: (message: ChatEventPayload) => void
 ) {
-  const [token, setToken] = useState<string | null>(null)
-  const onMessageRef = useRef(onMessage)
+  const normalizedChannels = (
+    Array.isArray(channelNames) ? channelNames : [channelNames]
+  ).filter(Boolean)
+  const channelKey = normalizedChannels.join("|")
+
+  const [token, setToken] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null
+
+    const storedToken = localStorage.getItem("go_elite_token")
+    return storedToken && isValidToken(storedToken) ? storedToken : null
+  })
+  const onMessageRef = useRef(onMessage) 
 
   useEffect(() => {
     onMessageRef.current = onMessage
   }, [onMessage])
 
   useEffect(() => {
-    const stored = localStorage.getItem("go_elite_token")
-    if (stored) setToken(stored)
+    const syncToken = () => {
+      const storedToken = localStorage.getItem("go_elite_token")
+      const good = storedToken && isValidToken(storedToken) ? storedToken : null
+      if (good !== token) console.log("useChatListener: token sync ->", good)
+      setToken(good)
+    }
+
+    syncToken()
+
+    const intervalId = window.setInterval(syncToken, 300)
+    window.addEventListener("storage", syncToken)
+
+    return () => {
+      window.clearInterval(intervalId)
+      window.removeEventListener("storage", syncToken)
+    }
   }, [])
 
   useEffect(() => {
-    const normalized = (
-      Array.isArray(channelNames) ? channelNames : [channelNames]
-    ).filter(Boolean)
-
-    if (normalized.length === 0 || !token) return
+    if (normalizedChannels.length === 0 || !token) return
 
     let mounted = true
     const channels: Array<{ name: string; channel: ChatChannel }> = []
@@ -46,19 +67,18 @@ export function useChatListener(
     const eventName = "ChatEvent"
 
     ;(async () => {
-      // ✅ token pass করলে getEcho সবসময় fresh instance দেবে
       const e = (await getEcho(token)) as ChatEcho | null
       if (!e || !mounted) return
       echoInstance = e
 
-      for (const name of normalized) {
+ 
+
+      for (const name of normalizedChannels) {
         try {
           const channel = echoInstance.private(name)
           channels.push({ name, channel })
-          console.log(`Listening to channel: ${name}`)
 
-          const handleEvent = (event: ChatEventPayload) => {
-            console.log("New event received:", event)
+          const handleEvent = (event: ChatEventPayload) => { 
             onMessageRef.current(event)
           }
 
@@ -82,5 +102,5 @@ export function useChatListener(
         // ignore cleanup errors
       }
     }
-  }, [token])
+  }, [token, channelKey])
 }

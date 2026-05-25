@@ -7,11 +7,15 @@ import CoachingExperienceEducation from "./component/coaching-experience-educati
 import CertificateCredential from "./component/cirtificate-credentioal"
 
 export default function page() {
+
+
+
+
   return (
     <section>
       <Nav />
 
-      <div className="my-30 grid grid-cols-1 sm:grid-cols-2 gap-5 ">
+      <div className="my-30 grid grid-cols-1 sm:grid-cols-2 gap-5 px-5 ">
         {/* left side */}
         <div className="">
           <CoachProfileCard

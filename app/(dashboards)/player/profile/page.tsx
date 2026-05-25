@@ -99,6 +99,16 @@ export default function PlayerProfile() {
   const Icon = iconMap[privacy] ?? FiGlobe
 
   const [shouldCapture, setShouldCapture] = useState(false)
+  const handleEditPlayer = () => {
+    if (playerData) {
+      sessionStorage.setItem(
+        "go_elite_player_edit_data",
+        JSON.stringify(playerData)
+      )
+    }
+
+    router.push(`?update=player`)
+  }
 
   const toYouTubeEmbedUrl = (url: string) => {
     try {
@@ -237,7 +247,7 @@ export default function PlayerProfile() {
           <CommonBtn
             size={"lg"}
             variant={"default"}
-            onClick={() => router.push(`?update=player`)}
+            onClick={handleEditPlayer}
             text="Edit"
             icon={<Edit className="h-5 w-5" />}
             className="w-fit bg-brand px-3 text-primary hover:bg-brand/80"

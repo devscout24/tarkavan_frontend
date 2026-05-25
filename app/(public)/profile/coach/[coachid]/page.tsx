@@ -13,24 +13,33 @@ import { toast } from "sonner"
 
 export default function Page() {
   const params = useParams()
-  const coachid = params.coachid 
+  const coachid = params.coachid
   const [data, setData] = useState(null)
   const router = useRouter()
+
+  console.log(data)
 
   useEffect(() => {
     if (!coachid) return
 
     const fetchData = async () => {
       try {
-        const res = await getCoachProfile(String(coachid)) 
-
-        if(!res?.status){
+        const res = await getCoachProfile(String(coachid))
+        if (res?.status === false) {
           toast.error(res?.message || "Failed to fetch coach profile")
           router.back()
           return
         }
-
-
+        if (
+          res &&
+          "success" in res &&
+          res.success &&
+          res.data &&
+          "data" in res.data &&
+          res.data.data
+        ) {
+          setData(res.data.data)
+        }
       } catch (err) {
         console.error("Error fetching coach profile:", err)
       }

@@ -55,7 +55,7 @@ interface CoreIdentityFormData {
 
 type PhotoPreview = {
   id: string
-  file: File
+  file?: File
   url: string
 }
 
@@ -64,16 +64,26 @@ export default function CoreIdentity({
   totalSteps,
   draft,
   onDraftChange,
+  existingProfilePhotoUrl,
 }: {
   currentStep: number
   totalSteps: number
   draft: WizardState["forms"]["coreIdentity"]
   onDraftChange: (value: WizardState["forms"]["coreIdentity"]) => void
+  existingProfilePhotoUrl?: string | null
 }) {
-  const [photoPreviews, setPhotoPreviews] = useState<PhotoPreview[]>([])
+  const [photoPreviews, setPhotoPreviews] = useState<PhotoPreview[]>(
+    existingProfilePhotoUrl
+      ? [
+          {
+            id: "existing-profile-photo",
+            url: existingProfilePhotoUrl,
+          },
+        ]
+      : []
+  )
   const previewUrlsRef = useRef<string[]>([])
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const [location , setLocation] = useState({country: "" , city: ""}) 
 
   const {
     register,
@@ -94,8 +104,8 @@ export default function CoreIdentity({
       jerseyNumber: draft.jerseyNumber,
       dominantFoot: draft.dominantFoot,
       clubTeam: draft.clubTeam,
-      country: location.country,
-      city: location.city,
+      country: draft.country,
+      city: draft.city,
     },
   })
 
@@ -135,8 +145,8 @@ export default function CoreIdentity({
         jerseyNumber: values.jerseyNumber ?? "",
         dominantFoot: values.dominantFoot ?? "",
         clubTeam: values.clubTeam ?? "",
-        country: values.country ?? "",  
-        city: values.city ?? ""   
+        country: values.country ?? "",
+        city: values.city ?? "",
       })
     },
     [onDraftChange]
@@ -183,13 +193,12 @@ export default function CoreIdentity({
 
       setPhotoPreviews((prev) => {
         const merged = [...prev, ...nextPreviews]
+        const selectedFiles = merged
+          .map((item) => item.file)
+          .filter((file): file is File => Boolean(file))
         // Only update form value, don't call onDraftChange here
         // It will be handled by the watch subscription
-        setValue(
-          "profilePhotos",
-          merged.map((item) => item.file),
-          { shouldValidate: true }
-        )
+        setValue("profilePhotos", selectedFiles, { shouldValidate: true })
 
         return merged
       })
@@ -206,11 +215,10 @@ export default function CoreIdentity({
         }
 
         const next = prev.filter((item) => item.id !== id)
-        setValue(
-          "profilePhotos",
-          next.map((item) => item.file),
-          { shouldValidate: true }
-        )
+        const selectedFiles = next
+          .map((item) => item.file)
+          .filter((file): file is File => Boolean(file))
+        setValue("profilePhotos", selectedFiles, { shouldValidate: true })
 
         return next
       })
@@ -227,9 +235,7 @@ export default function CoreIdentity({
       previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url))
     }
   }, [])
- 
 
-  
   return (
     <div className="w-full rounded-2xl bg-[#090B10] p-4 text-white">
       <ModalStepHeader
@@ -247,8 +253,6 @@ export default function CoreIdentity({
           </p>
         )}
 
-        
-
         {photoPreviews.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-3">
             {photoPreviews.map((photo) => (
@@ -263,14 +267,16 @@ export default function CoreIdentity({
                   alt="Selected profile"
                   className="h-full w-full object-cover"
                 />
-                <button
-                  type="button"
-                  aria-label="Remove photo"
-                  onClick={() => handlePhotoRemove(photo.id)}
-                  className="absolute top-1 right-1 inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-[#DB0000] text-[10px] font-bold text-white"
-                >
-                  X
-                </button>
+                {photo.file && (
+                  <button
+                    type="button"
+                    aria-label="Remove photo"
+                    onClick={() => handlePhotoRemove(photo.id)}
+                    className="absolute top-1 right-1 inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-[#DB0000] text-[10px] font-bold text-white"
+                  >
+                    X
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -363,20 +369,22 @@ export default function CoreIdentity({
             }
             error={errors.gender?.message}
           />
-           
-           <div className="w-full">
-              <p className="text-sm text-white">Country & City</p>
-              <CountryCitySelector 
-                  onSelect={(data) => {
-                    setValue("country", data.country_name, { shouldValidate: true });
-                    setValue("city", data.city_name, { shouldValidate: true });
-                  }}
-              />
-           </div>
+
+          <div className="w-full">
+            <p className="text-sm text-white">Country & City</p>
+            <CountryCitySelector
+              initialCountry={draft.country}
+              initialCity={draft.city}
+              onSelect={(data) => {
+                setValue("country", data.country_name, { shouldValidate: true })
+                setValue("city", data.city_name, { shouldValidate: true })
+              }}
+            />
+          </div>
 
           <UiInput
             label="Nationality"
-            placeholder="Canada" 
+            placeholder="Canada"
             className={controlClassName}
             value={draft.nationality || ""}
             onChange={(e) => {
@@ -401,7 +409,7 @@ export default function CoreIdentity({
                 email: e.target.value,
               })
             }}
-          /> 
+          />
 
           <div className="">
             <label className="mb-2 block text-sm font-medium text-white">

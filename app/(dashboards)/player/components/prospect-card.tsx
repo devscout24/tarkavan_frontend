@@ -24,12 +24,18 @@ export default function ProspectCard({
 
   return (
     <div className="relative rounded-lg border-2 border-secondary">
+
+      {/* overlay box */}
+      <div className="absolute bottom-0 left-0 h-full w-full z-2 rounded-lg bg-gradient-to-b from-transparent via-transparent to-black " />
+
+ 
+
       <Image
         width={500}
         height={1000}
         src={basic_info?.image || "/images/playerimage.png"}
         alt="playerimage"
-        className="h-full min-h-130 rounded-lg object-cover"
+        className="h-full min-h-140 rounded-lg object-cover w-full "
       />
 
       <Badge
@@ -72,18 +78,18 @@ export default function ProspectCard({
         )} */}
       </div>
 
-      <div className="absolute right-0 bottom-0 left-0 px-8">
-        <h1 className="text-extrabold text-[32px]">
-          <p className="">{basic_info?.name}</p>
-          <span className="text-brand">{basic_info?.last_name}</span>
+      <div className="absolute right-0 bottom-0 left-0 z-3 px-8">
+        <h1 className=" ">
+          <p className="font-semibold! text-[32px]!">{basic_info?.name}</p>
+          <span className="text-brand font-extrabold! text-[32px]! ">{basic_info?.last_name}</span>
         </h1>
 
-        <p className="py-1 text-[14px]">
+        {/* <p className="py-1 text-xl! ">
           {position_info?.primary_position?.name}{" "}
           {position_info?.club_team ? `| ${position_info?.club_team}` : ""}{" "}
         </p>
 
-        <ul className="space-y-2 text-sm">
+        <ul className="space-y-2 text-lg ">
           <li className="flex items-center gap-1">
             <span className="font-bold">
               <MapPin className="w-5" />{" "}
@@ -105,30 +111,30 @@ export default function ProspectCard({
         <div className="mt-3 flex flex-wrap justify-start gap-2 pb-8">
           <Badge
             variant="outline"
-            className="rounded-[4px] border-secondary py-3 text-[12px] font-medium text-white"
+            className="rounded-[4px] border-secondary py-4 text-[12px] font-medium text-white"
           >
             <img src="/images/footballfull.png" alt="footballfull" />
           </Badge>
           <Badge
             variant="outline"
-            className="rounded-[4px] border-secondary py-3 text-[12px] font-medium text-white uppercase"
+            className="rounded-[4px] border-secondary py-4 text-base font-medium text-white uppercase"
           >
             {basic_info?.gender}
           </Badge>
 
           <Badge
             variant="outline"
-            className="rounded-[4px] border-secondary py-3 text-[12px] font-medium text-white"
+            className="rounded-[4px] border-secondary py-4 text-base font-medium text-white"
           >
             UNDER-{basic_info?.age}
           </Badge>
           <Badge
             variant="outline"
-            className="rounded-[4px] border-secondary py-3 text-[12px] font-medium text-white uppercase"
+            className="rounded-[4px] border-secondary py-4 text-base font-medium text-white uppercase"
           >
             {position_info?.dominant_foot}
           </Badge>
-        </div>
+        </div> */}
       </div>
     </div>
   )

@@ -18,7 +18,7 @@ export type PlayerMediaItem = {
   id: string
   src: string
   alt: string
-  type?: "image" | "video"
+  type?: "image" | "video" | "embed"
   poster?: string
 }
 
@@ -30,9 +30,17 @@ type LocalMediaItem = {
   file?: File
 }
 
-type PreviewMediaItem = LocalMediaItem & {
-  source: "server" | "local"
+type ServerPreviewMediaItem = {
+  id: string
+  url: string
+  type: "image" | "video" | "embed"
+  name: string
+  source: "server"
 }
+
+type PreviewMediaItem =
+  | (LocalMediaItem & { source: "local" })
+  | ServerPreviewMediaItem
 
 type PlayerMediaProps = {
   title?: string
@@ -130,13 +138,22 @@ export default function PlayerMedia({
   const acceptAttr = ACCEPT_MAP[acceptType]
   const hintText = HINT_MAP[acceptType]
   const previewItems: PreviewMediaItem[] = [
-    ...items.map((item) => ({
-      id: item.id,
-      url: item.src,
-      type: (item.type === "video" ? "video" : "image") as "image" | "video",
-      name: item.alt,
-      source: "server" as const,
-    })),
+    ...items.map((item) => {
+      const itemType: ServerPreviewMediaItem["type"] =
+        item.type === "video"
+          ? "video"
+          : item.type === "embed"
+            ? "embed"
+            : "image"
+
+      return {
+        id: item.id,
+        url: item.src,
+        type: itemType,
+        name: item.alt,
+        source: "server" as const,
+      }
+    }),
     ...mediaItems.map((item) => ({ ...item, source: "local" as const })),
   ]
 
@@ -234,13 +251,26 @@ export default function PlayerMedia({
                     <video
                       src={item.url}
                       className="h-full w-full object-cover"
-                      controls
-                      muted
+                      controls 
+                      
                       playsInline
                       preload="metadata"
                     />
                     <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1 rounded-full bg-black/60 px-2 py-0.5 text-[10px] text-white backdrop-blur-sm">
                       <Play className="h-2.5 w-2.5" /> Video
+                    </div>
+                  </>
+                ) : item.type === "embed" ? (
+                  <>
+                    <iframe
+                      src={item.url}
+                      title={item.name}
+                      className="h-full w-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                    <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1 rounded-full bg-black/60 px-2 py-0.5 text-[10px] text-white backdrop-blur-sm">
+                      <Play className="h-2.5 w-2.5" /> YouTube
                     </div>
                   </>
                 ) : (
@@ -252,10 +282,10 @@ export default function PlayerMedia({
                 )}
 
                 {/* Overlay on hover */}
-                <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-200 group-hover:bg-black/40">
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-200 group-hover:bg-black/40">
                   <button
                     onClick={() => handleRemoveMedia(item.id)}
-                    className="flex h-8 w-8 scale-75 items-center justify-center rounded-full bg-brand text-primary opacity-0 shadow-lg transition-all duration-200 group-hover:scale-100 group-hover:opacity-100 hover:bg-brand/80 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="pointer-events-auto flex h-8 w-8 scale-75 items-center justify-center rounded-full bg-brand text-primary opacity-0 shadow-lg transition-all duration-200 group-hover:scale-100 group-hover:opacity-100 hover:bg-brand/80 disabled:cursor-not-allowed disabled:opacity-60"
                     title="Remove"
                   >
                     <X className="h-4 w-4" />

@@ -117,7 +117,7 @@ export default function PositionMap({ data }: PositionMapProps) {
 
   return (
     <SoccerLineUp
-      size="responsive"
+      size="small"
       color="#479A3B"
       pattern="squares"
       awayTeam={awayTeam}

@@ -1,6 +1,7 @@
 "use client" // Next.js hole lagbe
 
 import { TPlayerStrength } from "@/types/player.type"
+import { size } from "@floating-ui/react"
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -72,6 +73,7 @@ export default function RadarChart({
           color: "#fff", // gray text
           backdropColor: "transparent", // no bg
           stepSize: dynamicStep,
+          size: 20,
         },
         grid: {
           color: "rgba(255, 255, 255, 0.5)", // circle line color
@@ -82,7 +84,7 @@ export default function RadarChart({
         pointLabels: {
           color: "rgba(255, 255, 255, 0.7)", // label color (green)
           font: {
-            size: 16,
+            size: 20,
           },
           
         },

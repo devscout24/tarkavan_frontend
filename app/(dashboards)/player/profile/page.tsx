@@ -13,6 +13,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableCaption,
   TableHead,
   TableHeader,
   TableRow,
@@ -46,7 +47,7 @@ export default function PlayerProfile() {
     ? JSON.parse(localStorage.getItem("go_elite_user")!)
     : null
   const [playerData, setPlayerData] = useState<TPlayerProfile>()
- 
+  console.log(playerData)
   const router = useRouter()
   useEffect(() => {
     const profileData = async () => {
@@ -99,6 +100,68 @@ export default function PlayerProfile() {
 
   const [shouldCapture, setShouldCapture] = useState(false)
 
+  const toYouTubeEmbedUrl = (url: string) => {
+    try {
+      const parsed = new URL(url)
+
+      if (parsed.hostname.includes("youtu.be")) {
+        const id = parsed.pathname.replace("/", "")
+        return id ? `https://www.youtube.com/embed/${id}` : null
+      }
+
+      if (parsed.hostname.includes("youtube.com")) {
+        const id = parsed.searchParams.get("v")
+        if (id) return `https://www.youtube.com/embed/${id}`
+
+        const shortsMatch = parsed.pathname.match(/\/shorts\/([^/?]+)/)
+        if (shortsMatch?.[1]) {
+          return `https://www.youtube.com/embed/${shortsMatch[1]}`
+        }
+      }
+    } catch {
+      return null
+    }
+
+    return null
+  }
+
+  const mergedVideoItems = [
+    ...(playerData?.videos?.map((video, index) => {
+      const videoUrl = typeof video === "string" ? video : video.video_url
+
+      return {
+        id: String(video.id),
+        src: videoUrl,
+        alt: `Video ${index + 1}`,
+        type: "video" as const,
+      }
+    }) ?? []),
+    ...(
+      (playerData?.media_links ?? []) as Array<
+        string | { id?: number | string; link?: string }
+      >
+    )
+      .map((linkItem, index) => {
+        const rawUrl =
+          typeof linkItem === "string" ? linkItem : (linkItem.link ?? "")
+        if (!rawUrl) return null
+
+        const embedUrl = toYouTubeEmbedUrl(rawUrl)
+        if (!embedUrl) return null
+
+        return {
+          id:
+            typeof linkItem === "string"
+              ? `media-link-${index}`
+              : String(linkItem.id ?? `media-link-${index}`),
+          src: embedUrl,
+          alt: `Media Link ${index + 1}`,
+          type: "embed" as const,
+        }
+      })
+      .filter((item): item is NonNullable<typeof item> => Boolean(item)),
+  ]
+
   useEffect(() => {
     if (!playerData) return
 
@@ -148,7 +211,7 @@ export default function PlayerProfile() {
           console.error("Upload failed:", error)
         }
       })
- 
+
       setShouldCapture(false)
     }
 
@@ -178,8 +241,8 @@ export default function PlayerProfile() {
         </Card>
 
         {/* profile info */}
-        <div className="mt-6 gap-6 lg:flex" id="og_image">
-          <div className="flex-3">
+        <div className="mt-6 flex gap-10" id="og_image">
+          <div className="sticky top-5 flex-[3] self-start">
             <ProspectCard
               academyVotes={playerData?.professional_votes}
               provincialVotes={playerData?.provencial_votes}
@@ -190,15 +253,105 @@ export default function PlayerProfile() {
             <Achievements achievements={playerData?.achievements} />
             <SocialLinks profileUrl="profile/player" />
           </div>
-          <div className="flex-7">
+          <div className="flex-6">
             {/* position mapping */}
             <div className="">
-              <h2 className="mb-4 text-base font-semibold text-white">
-                Player Position On Mapping
-              </h2>
-
-              <div className="overflow-hidden rounded-xl bg-secondary/30">
-                <PositionMap data={mapPosition as TPlayerPosition[]} />
+              <div className="flex w-full gap-2">
+                <div className="min-w-fit">
+                  <h2 className="mb-4 text-base font-semibold text-white">
+                    Player Position On Mapping
+                  </h2>
+                  <div className="overflow-hidden rounded-xl">
+                    <PositionMap data={mapPosition as TPlayerPosition[]} />
+                  </div>
+                </div>
+                <div className="w-full">
+                  <h2 className="mb-4 text-right text-base font-semibold text-white">
+                    Player Details Table
+                  </h2>
+                  <div className="overflow-hidden rounded-xl! border border-secondary!">
+                    <Table className="w-full">
+                      {/* <TableHeader className="  "   >
+                      <TableRow className="border-secondary!">
+                        <TableHead className=" text-white! font-semibold text-base  ">Invoice</TableHead>
+                        <TableHead className="text-right text-white! font-semibold text-base  ">Amount</TableHead>
+                      </TableRow>
+                    </TableHeader> */}
+                      <TableBody>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Name :
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {playerData?.basic_info?.full_name}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Position :
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {playerData?.position_info?.primary_position?.name}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">Age :</TableCell>
+                          <TableCell className="text-right">
+                            {playerData?.basic_info?.age}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Gender :
+                          </TableCell>
+                          <TableCell className="text-right capitalize">
+                            {playerData?.basic_info?.gender}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            City :
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {playerData?.basic_info?.city}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Country :
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {playerData?.basic_info?.country}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Dominant Foot :
+                          </TableCell>
+                          <TableCell className="text-right capitalize">
+                            {playerData?.position_info?.dominant_foot}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Privacy :
+                          </TableCell>
+                          <TableCell className="text-right capitalize">
+                            {playerData?.basic_info?.privacy_settings}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Team :
+                          </TableCell>
+                          <TableCell className="text-right capitalize">
+                            {playerData?.position_info?.club_team || "N/A"}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -328,52 +481,39 @@ export default function PlayerProfile() {
                 </Table>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* player medias */}
-        <div className="">
-          {/* player image */}
-          <div className="">
-            <PlayerMedia
-              uploadLabel="Upload Image"
-              acceptType="image"
-              items={
-                playerData?.gallery?.map((image, index) => {
-                  const imageUrl =
-                    typeof image === "string" ? image : image.image
+            <div>
+              {/* player image */}
+              <div className="">
+                <PlayerMedia
+                  uploadLabel="Upload Image"
+                  acceptType="image"
+                  items={
+                    playerData?.gallery?.map((image, index) => {
+                      const imageUrl =
+                        typeof image === "string" ? image : image.image
 
-                  return {
-                    id: String(image.id),
-                    src: imageUrl,
-                    alt: `Image ${index + 1}`,
-                    type: "image" as const,
+                      return {
+                        id: String(image.id),
+                        src: imageUrl,
+                        alt: `Image ${index + 1}`,
+                        type: "image" as const,
+                      }
+                    }) ?? []
                   }
-                }) ?? []
-              }
-            />
-          </div>
+                />
+              </div>
 
-          {/* player video */}
-          <div className="">
-            <PlayerMedia
-              uploadLabel="Upload Video"
-              title="My Videos"
-              acceptType="video"
-              items={
-                playerData?.videos?.map((video, index) => {
-                  const videoUrl =
-                    typeof video === "string" ? video : video.video_url
-
-                  return {
-                    id: String(video.id),
-                    src: videoUrl,
-                    alt: `Video ${index + 1}`,
-                    type: "video" as const,
-                  }
-                }) ?? []
-              }
-            />
+              {/* player video */}
+              <div className="">
+                <PlayerMedia
+                  uploadLabel="Upload Video"
+                  title="My Videos"
+                  acceptType="video"
+                  items={mergedVideoItems}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>

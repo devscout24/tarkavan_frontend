@@ -76,8 +76,8 @@ export default function GoalkeeperStatsTab({
       />
 
       <SeasonStatField
-        title="Total Saves"
-        subtitle="Estimated total saves made"
+        title="Penalties saved"
+        subtitle="Number of penalties stopped"
         value={values.goalkeeperTotalSaves}
         onChange={(value) => onChange("goalkeeperTotalSaves", value)}
       />

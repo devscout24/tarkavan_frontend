@@ -62,9 +62,9 @@ export default function RadarStrength({
         {strengths?.map((item) => (
           <li
             key={item.strength_name}
-            className="flex items-center justify-between border-b border-secondary/70 bg-secondary/30 px-4 py-2 text-sm font-medium text-white"
+            className="flex items-center justify-between border-b border-secondary/70 bg-secondary/30 px-4 py-2 text-lg font-medium text-white"
           >
-            <span className="text-[14px] text-white/70">
+            <span className="  text-white/70">
               {item.strength_name}
             </span>
             {isPublic ? (

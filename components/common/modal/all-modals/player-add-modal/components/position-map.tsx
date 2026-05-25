@@ -103,7 +103,7 @@ export default function SelectPosition({
 
         <div className="mt-6 space-y-6">
           <div className="rounded-xl">
-            <div className="relative w-full overflow-hidden rounded-md border border-white/20 bg-white/5">
+            <div className="relative w-full  ">
               <PositionMap data={finalPosition as TPlayerPosition[]} />
             </div>
           </div>

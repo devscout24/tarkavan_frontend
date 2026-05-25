@@ -170,7 +170,11 @@ export default function PlayerProfile() {
   }, [playerData])
 
   useEffect(() => {
-    if (!shouldCapture) return
+
+    
+    if (!shouldCapture || window.innerWidth < 1280) return
+
+ 
 
     async function takeScreenshot() {
       const node = document.getElementById("og_image")
@@ -241,8 +245,8 @@ export default function PlayerProfile() {
         </Card>
 
         {/* profile info */}
-        <div className="mt-6 flex gap-10" id="og_image">
-          <div className="sticky top-5 flex-[3] self-start">
+        <div className="mt-6 xl:flex gap-10" id="og_image">
+          <div className="xl:sticky top-5 flex-[3] self-start">
             <ProspectCard
               academyVotes={playerData?.professional_votes}
               provincialVotes={playerData?.provencial_votes}
@@ -253,12 +257,12 @@ export default function PlayerProfile() {
             <Achievements achievements={playerData?.achievements} />
             <SocialLinks profileUrl="profile/player" />
           </div>
-          <div className="flex-6">
+          <div className="flex-7">
             {/* position mapping */}
             <div className="">
-              <div className="flex w-full gap-2">
+              <div className="xl:flex w-full gap-2">
                 <div className="min-w-fit">
-                  <h2 className="mb-4 text-base font-semibold text-white">
+                  <h2 className="mt-5 xl:mt-0 mb-4 text-base font-semibold text-white">
                     Player Position On Mapping
                   </h2>
                   <div className="overflow-hidden rounded-xl">
@@ -266,7 +270,7 @@ export default function PlayerProfile() {
                   </div>
                 </div>
                 <div className="w-full">
-                  <h2 className="mb-4 text-right text-base font-semibold text-white">
+                  <h2 className="mt-5 xl:mt-0 mb-4 xl:text-right text-base font-semibold text-white">
                     Player Details Table
                   </h2>
                   <div className="overflow-hidden rounded-xl! border border-secondary!">

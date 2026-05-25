@@ -175,12 +175,12 @@ export default function ProfilePage({ data }: ProfilePageProps) {
         id="og_image"
       >
         <div className="flex flex-col items-center justify-center">
-          <Logo className="w-full max-w-111.25!" />
-          <div className="mt-15 h-1 w-full bg-brand" />
+          {/* <Logo className="w-full max-w-111.25!" />
+          <div className="mt-15 h-1 w-full bg-brand" /> */}
 
-          <div className="mt-8 grid w-full grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="mt-8 flex w-full flex-col gap-6 lg:flex-row">
             {/* left */}
-            <div className="">
+            <div className="w-full flex-3 lg:flex-3">
               <ProfileCard
                 academyVotes={data?.professional_votes || 0}
                 provincialVotes={data?.provencial_votes || 0}
@@ -238,13 +238,103 @@ export default function ProfilePage({ data }: ProfilePageProps) {
             </div>
 
             {/* right */}
-            <div className="">
-              {/* position map */}
-              <h2 className="text-[24px] font-semibold text-white">
-                Player positions
-              </h2>
-              <div className="mt-2 overflow-hidden rounded-2xl border border-brand">
-                <PositionMap data={mapPosition as TPlayerPosition[]} />
+            <div className="w-full flex-7 lg:flex-7">
+              <div className="xl:flex gap-5">
+                <div className="">
+                  <h2 className="mb-4 text-base font-semibold text-white">
+                    Player positions
+                  </h2>
+                  <div className="mt-2 min-w-fit   ">
+                    <PositionMap data={mapPosition as TPlayerPosition[]} />
+                  </div>
+                </div>
+                <div className="w-full">
+                  <h2 className="mb-4 text-right text-base font-semibold text-white">
+                    Player Details Table
+                  </h2>
+                  <div className="overflow-hidden rounded-xl! border border-secondary!">
+                    <Table className="w-full text-white">
+                      {/* <TableHeader className="  "   >
+                      <TableRow className="border-secondary!">
+                        <TableHead className=" text-white! font-semibold text-base  ">Invoice</TableHead>
+                        <TableHead className="text-right text-white! font-semibold text-base  ">Amount</TableHead>
+                      </TableRow>
+                    </TableHeader> */}
+                      <TableBody>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Name :
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {data?.basic_info?.full_name}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Position :
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {data?.position_info?.primary_position?.name}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">Age :</TableCell>
+                          <TableCell className="text-right">
+                            {data?.basic_info?.age}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Gender :
+                          </TableCell>
+                          <TableCell className="text-right capitalize">
+                            {data?.basic_info?.gender}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            City :
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {data?.basic_info?.city}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Country :
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {data?.basic_info?.country}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Dominant Foot :
+                          </TableCell>
+                          <TableCell className="text-right capitalize">
+                            {data?.position_info?.dominant_foot}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Privacy :
+                          </TableCell>
+                          <TableCell className="text-right capitalize">
+                            {data?.basic_info?.privacy_settings}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Team :
+                          </TableCell>
+                          <TableCell className="text-right capitalize">
+                            {data?.position_info?.club_team || "N/A"}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
               </div>
 
               {/* Player Attributes */}
@@ -319,7 +409,7 @@ export default function ProfilePage({ data }: ProfilePageProps) {
               </div>
 
               {/* player stats */}
-              <h2 className="text-[24px] font-semibold text-white mt-6  ">
+              <h2 className="mt-6 text-[24px] font-semibold text-white">
                 Player Stats
               </h2>
               <div className="rounded-lg border-2 border-brand p-2">

@@ -63,10 +63,9 @@ export default function ChatInbox({
         setConversationID(res.data.data.conversation_id)
       }
 
-      if(res?.message){
+      if (res?.message) {
         toast.error(res.message)
       }
-
     } catch (err) {
       console.error("Error sending message:", err)
     }
@@ -89,8 +88,6 @@ export default function ChatInbox({
     requestAnimationFrame(scrollToBottom)
   }, [messages, scrollToBottom])
 
- 
-
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#040510] text-white lg:flex-1">
       <header className="flex items-center gap-3 border-b border-white/10 bg-white/8 px-4 py-3 md:px-5 md:py-4">
@@ -99,7 +96,7 @@ export default function ChatInbox({
           height={1000}
           src={chat?.user_image || "/images/coach.png"}
           alt={chat?.user_name || "Chat avatar"}
-          className=" rounded-lg object-cover w-10 h-10  "
+          className="h-10 w-10 rounded-lg object-cover"
         />
 
         <div>
@@ -115,6 +112,7 @@ export default function ChatInbox({
           <div className="space-y-6 pb-3">
             {messages.map((message, i) => {
               const isMe = String(message.sender_id) === userId
+              console.log("Rendering message:", { message, isMe })
 
               return message.message || message.file ? (
                 <div key={i}>
@@ -127,9 +125,9 @@ export default function ChatInbox({
                     <Image
                       width={1000}
                       height={1000}
-                      src={isMe ? message?.sender_image : message?.receiver_image || "/images/coach.png"}
+                      src={ message?.sender_image || "/images/coach.png"}
                       alt={chat?.user_name || "Chat avatar"}
-                      className="mt-1 rounded-md object-cover w-4 h-4 "
+                      className="mt-1 h-4 w-4 rounded-md object-cover"
                     />
 
                     <div
@@ -140,11 +138,15 @@ export default function ChatInbox({
                           : "max-w-[85%] bg-brand text-primary md:max-w-[70%]"
                       )}
                     >
-                      {message.message ? <p className={`${isMe ? "text-white! " : "text-primary!"}`}>{message.message}</p> : null}
+                      {message.message ? (
+                        <p
+                          className={`${isMe ? "text-white!" : "text-primary!"}`}
+                        >
+                          {message.message}
+                        </p>
+                      ) : null}
 
- 
-                      <ChatDeleteTime message={message} isMe={isMe}  />
-
+                      <ChatDeleteTime message={message} isMe={isMe} />
                     </div>
                   </div>
                 </div>

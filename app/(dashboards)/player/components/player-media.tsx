@@ -11,7 +11,11 @@ import {
 import { cn } from "@/lib/utils"
 import CommonBtn from "@/components/common/common-btn"
 import { Upload, X, Play } from "lucide-react"
-import { playerGalleryDelete, playerProfileUpdate } from "../profile/action"
+import {
+  mediaLinkDelete,
+  playerGalleryDelete,
+  playerProfileUpdate,
+} from "../profile/action"
 import { toast } from "sonner"
 
 export type PlayerMediaItem = {
@@ -110,7 +114,6 @@ export default function PlayerMedia({
   const handleRemoveMedia = async (id: string) => {
     try {
       const res = await playerGalleryDelete(id)
-      console.log(res)
       if (res && "success" in res && res.success) {
         toast.success(res?.data?.data || "Media removed successfully")
         window.dispatchEvent(new Event("player_profile_updated"))
@@ -200,6 +203,20 @@ export default function PlayerMedia({
     }
   }
 
+  const handleMediaLinkDelete = async (id: string) => {
+    try {
+      const res = await mediaLinkDelete(id) 
+      if (res && "success" in res && res.success) {
+        toast.success(res?.data?.data || "Media link removed successfully")
+        window.dispatchEvent(new Event("player_profile_updated"))
+        return
+      }
+    } catch (error) {
+      console.error("Link delete error:", (error as Error).message)
+      toast.error("Failed to delete media link")
+    }
+  }
+
   return (
     <Card
       className={cn(
@@ -251,8 +268,7 @@ export default function PlayerMedia({
                     <video
                       src={item.url}
                       className="h-full w-full object-cover"
-                      controls 
-                      
+                      controls
                       playsInline
                       preload="metadata"
                     />
@@ -284,7 +300,11 @@ export default function PlayerMedia({
                 {/* Overlay on hover */}
                 <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-200 group-hover:bg-black/40">
                   <button
-                    onClick={() => handleRemoveMedia(item.id)}
+                    onClick={() =>
+                      item.type === "embed"
+                        ? handleMediaLinkDelete(item.id)
+                        : handleRemoveMedia(item.id)
+                    }
                     className="pointer-events-auto flex h-8 w-8 scale-75 items-center justify-center rounded-full bg-brand text-primary opacity-0 shadow-lg transition-all duration-200 group-hover:scale-100 group-hover:opacity-100 hover:bg-brand/80 disabled:cursor-not-allowed disabled:opacity-60"
                     title="Remove"
                   >

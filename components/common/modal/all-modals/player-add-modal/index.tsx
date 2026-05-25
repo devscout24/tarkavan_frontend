@@ -591,7 +591,7 @@ export default function PlayerAddModal() {
     if (user?.role === "player") { 
       try {
         const res = await playerProfileUpdate(formData)  
-
+        console.log("Update response:", res)
         const response = res as {
           success?: boolean
           message?: string

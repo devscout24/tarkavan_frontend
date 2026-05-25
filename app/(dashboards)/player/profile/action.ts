@@ -87,5 +87,22 @@ export async function PlayerVideoUploader(data: FormData) {
     }
   }
 }
+ 
+
+export async function mediaLinkDelete(media_id: string) {
+  try {
+    const res = await api.post(`player/media/delete/${media_id}`) 
+    return { success: true, data: res.data }
+  }  catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
 
  

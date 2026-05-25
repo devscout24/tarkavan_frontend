@@ -7,6 +7,8 @@ import ProfileHeaderBar from "@/components/custom/coach-profile/profile-header-b
 import { setPlayerOG } from "../../action"
 import { toPng } from "html-to-image"
 import { useEffect, useState } from "react"
+import { CoachProfileData } from "@/components/parentAndCoachApi"
+import { getApiBaseUrl } from "@/lib/url-utils"
 
 export default function MyProfilePage() {
 
@@ -52,15 +54,14 @@ export default function MyProfilePage() {
         const formData = new FormData()
         formData.append("preview", file)
         formData.append("athlete_id", user?.profile_id)
-
-        console.log(file)
+ 
 
         try {
           const uploadRes = await setPlayerOG({
             id: user?.profile_id,
             data: formData,
-          })
-          console.log(uploadRes)
+          }) 
+          
         } catch (error) {
           console.error("Upload failed:", error)
         }
@@ -71,6 +72,52 @@ export default function MyProfilePage() {
 
     takeScreenshot()
   }, [shouldCapture])
+
+
+    const [profileData, setProfileData] = useState<CoachProfileData | null>(null)
+    const [loading, setLoading] = useState(true)
+    console.log(profileData)
+  
+    useEffect(() => {
+      const fetchExperienceData = async () => {
+        try {
+          const token = localStorage.getItem("go_elite_token")
+          const baseUrl = getApiBaseUrl()
+  
+          const response = await fetch(`${baseUrl}/coach/profile`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          })
+  
+          if (response.ok) {
+            const result = await response.json()
+            if (result.status) {
+              setProfileData(result.data)
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching experience data:", error)
+        } finally {
+          setLoading(false)
+        }
+      }
+  
+      fetchExperienceData()
+  
+      const handleProfileUpdated = () => {
+        fetchExperienceData()
+      }
+  
+      window.addEventListener("coachProfileUpdated", handleProfileUpdated)
+  
+      return () => {
+        window.removeEventListener("coachProfileUpdated", handleProfileUpdated)
+      }
+    }, [])
+
+
 
   return (
     <section className="pb-8 xl:pb-10 2xl:pb-12" id="og_image">

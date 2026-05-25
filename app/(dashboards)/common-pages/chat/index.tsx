@@ -74,7 +74,7 @@ export default function MessagePage() {
     initialReceiver ? [initialReceiver] : []
   )
   const [messages, setMessages] = React.useState<TChatMessage[]>([])
-  console.log(messages)
+ 
   // --- FIX: refs so handleRealTimeMessage always reads latest values ---
   const conversationIDRef = React.useRef(conversationID)
   const activeChatIdRef = React.useRef(activeChatId)

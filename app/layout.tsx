@@ -7,7 +7,7 @@ import Toasting from "@/components/custom/toasting"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://tarkavan.thenightowl.team"),
-  title: "Go Elite",
+  title: "GoElite",
   description: "Best football player app",
   openGraph: {
     title: "Go Elite",

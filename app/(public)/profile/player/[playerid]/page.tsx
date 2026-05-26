@@ -9,9 +9,6 @@ type ProfilePageProps = {
   }>
 }
 
-
-
-
 export async function generateMetadata({
   params,
 }: ProfilePageProps): Promise<Metadata> {
@@ -31,17 +28,16 @@ export async function generateMetadata({
     data = res.data.data
   }
 
-  const previewImage = data?.basic_info?.preview 
+  const previewImage = data?.basic_info?.preview
 
   return {
+    metadataBase: new URL("https://goelitesport.com") ,
     title: data?.basic_info?.name || "Player Profile",
-    description:
-      data?.basic_info?.bio || "Player profile preview",
+    description: data?.basic_info?.bio || "Player profile preview",
 
     openGraph: {
       title: data?.basic_info?.name || "Player Profile",
-      description:
-        data?.basic_info?.bio || "Player profile preview",
+      description: data?.basic_info?.bio || "Player profile preview",
       images: previewImage
         ? [
             {
@@ -52,24 +48,21 @@ export async function generateMetadata({
             },
           ]
         : [],
-      type: "profile",
+      type: "website",
     },
 
     twitter: {
       card: "summary_large_image",
       title: data?.basic_info?.name || "Player Profile",
-      description:
-        data?.basic_info?.bio || "Player profile preview",
+      description: data?.basic_info?.bio || "Player profile preview",
       images: previewImage ? [previewImage] : [],
     },
   }
 }
 
-
-
 export default async function ProfilePageFinal({ params }: ProfilePageProps) {
   const { playerid } = await params
-  const res = await getPlayerProfile(String(playerid)) 
+  const res = await getPlayerProfile(String(playerid))
   let data = null
   if (
     res &&
@@ -80,25 +73,7 @@ export default async function ProfilePageFinal({ params }: ProfilePageProps) {
     res.data.data
   ) {
     data = res.data.data
-  } 
+  }
 
   return <ProfilePage data={data as TPlayerProfile} />
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -180,11 +180,7 @@ export default function PlayerProfile() {
   }, [playerData])
 
   useEffect(() => {
-
-    
     if (!shouldCapture || window.innerWidth < 1280) return
-
- 
 
     async function takeScreenshot() {
       const node = document.getElementById("og_image")
@@ -255,8 +251,8 @@ export default function PlayerProfile() {
         </Card>
 
         {/* profile info */}
-        <div className="mt-6 xl:flex gap-10" id="og_image">
-          <div className="xl:sticky top-5 flex-[3] self-start">
+        <div className="mt-6 gap-10 xl:flex" id="og_image">
+          <div className="top-5 flex-[3] self-start xl:sticky">
             <ProspectCard
               academyVotes={playerData?.professional_votes}
               provincialVotes={playerData?.provencial_votes}
@@ -270,17 +266,9 @@ export default function PlayerProfile() {
           <div className="flex-7">
             {/* position mapping */}
             <div className="">
-              <div className="xl:flex w-full gap-2">
-                <div className="min-w-fit">
-                  <h2 className="mt-5 xl:mt-0 mb-4 text-base font-semibold text-white">
-                    Player Position On Mapping
-                  </h2>
-                  <div className="overflow-hidden rounded-xl">
-                    <PositionMap data={mapPosition as TPlayerPosition[]} />
-                  </div>
-                </div>
+              <div className="w-full gap-2 xl:flex">
                 <div className="w-full">
-                  <h2 className="mt-5 xl:mt-0 mb-4 xl:text-right text-base font-semibold text-white">
+                  <h2 className="mt-5 mb-4 text-base font-semibold text-white xl:mt-0">
                     Player Details Table
                   </h2>
                   <div className="overflow-hidden rounded-xl! border border-secondary!">
@@ -364,6 +352,14 @@ export default function PlayerProfile() {
                         </TableRow>
                       </TableBody>
                     </Table>
+                  </div>
+                </div>
+                <div className="min-w-fit">
+                  <h2 className="mt-5 mb-4 text-base font-semibold text-white xl:mt-0 xl:text-right">
+                    Player Position On Map
+                  </h2>
+                  <div className="overflow-hidden rounded-xl">
+                    <PositionMap data={mapPosition as TPlayerPosition[]} />
                   </div>
                 </div>
               </div>
@@ -461,6 +457,16 @@ export default function PlayerProfile() {
                       <TableHead className={"text-primary!"}>
                         Red Cards
                       </TableHead>
+                      {Number(playerData?.player_stats?.clean_sheets) > 0 && (
+                        <TableHead className={"text-primary!"}>
+                          Clean Sheets
+                        </TableHead>
+                      )}
+                      {Number(playerData?.player_stats?.total_saves) > 0 && (
+                        <TableHead className={"text-primary!"}>
+                          Total Penalties Saved
+                        </TableHead>
+                      )}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -489,6 +495,16 @@ export default function PlayerProfile() {
                         <TableCell className={columnBorderClass}>
                           {stat.red_cards}
                         </TableCell>
+                        {Number(playerData?.player_stats?.clean_sheets) > 0 && (
+                          <TableCell className={columnBorderClass}>
+                            {stat.clean_sheets}
+                          </TableCell>
+                        )}
+                        {Number(playerData?.player_stats?.total_saves) > 0 && (
+                          <TableCell className={columnBorderClass}>
+                            {stat.total_saves}
+                          </TableCell>
+                        )}
                       </TableRow>
                     ))}
                   </TableBody>

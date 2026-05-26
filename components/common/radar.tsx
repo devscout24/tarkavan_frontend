@@ -1,5 +1,6 @@
 "use client" // Next.js hole lagbe
 
+import { capitalizeFirstLetter } from "@/lib/make-uppercase"
 import { TPlayerStrength } from "@/types/player.type"
 import { size } from "@floating-ui/react"
 import {
@@ -30,7 +31,7 @@ export default function RadarChart({
   strengths?: TPlayerStrength[]
 }) {
   const data = {
-    labels: strengths?.map((strength) => strength.strength_type) || [],
+    labels: strengths?.map((strength) => capitalizeFirstLetter(strength.strength_type)) || [],
     datasets: [
       {
         data: strengths?.map((strength) => strength.endorse_count) || [

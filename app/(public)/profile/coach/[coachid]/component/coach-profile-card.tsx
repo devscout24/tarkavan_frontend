@@ -68,10 +68,7 @@ export default function CoachProfileCard({
 
         <div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-6">
           <h2 className="text-[42px] leading-[0.88] font-bold tracking-tight text-white">
-            {basic_info?.name}
-            <span className="mt-1 block text-brand">
-              {basic_info?.last_name}
-            </span>
+            {basic_info?.name} 
           </h2>
 
           <p className="mt-3 text-lg leading-tight text-white/92">

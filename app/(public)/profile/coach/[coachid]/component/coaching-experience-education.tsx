@@ -1,31 +1,26 @@
 export default function CoachingExperienceEducation({
-  yearfrom,
-  yearEnd,
-  desc,
+  data,
 }: {
-  yearfrom?: string
-  yearEnd?: string
-  desc?: string
+  data?: { title: string; description: string; duration?: string }[]
 }) {
   return (
     <div className="relative overflow-hidden rounded-[22px] border border-brand/80 bg-[#0d0f16] px-4 py-6 shadow-[0_0_0_1px_rgba(178,246,111,0.2),0_18px_45px_rgba(0,0,0,0.5)]">
-      <h2 className="text-sm font-semibold uppercase">
+      <h2 className="text-sm font-semibold text-white! uppercase">
         Experience & Education
       </h2>
 
-      <div className="mt-4 flex">
-        <div className="mr-4 flex-1">
-          <h3 className="text-lg font-bold text-white">Experience</h3>
-          <p className="text-sm text-white/70">
-            15 years of coaching experience at various levels.
-          </p>
-
-          <p className="mt-6">{desc}</p>
-        </div>
-        <div className="rounded-md bg-secondary p-2 text-center">
-          <h3 className="text-lg font-bold text-white">{yearfrom}</h3> -
-          <p className="text-sm text-white/70">{yearEnd}</p>
-        </div>
+      <div className="mt-4 space-y-4  ">
+        {data &&
+          data.length > 0 &&
+          data.map((item, index) => (
+            <div key={index} className="mr-4 flex items-start justify-between rounded-md border border-secondary/30 bg-[#1a1d29] p-4">
+              <div className="">
+                <h3 className="text-lg font-bold text-white">{item.title}</h3>
+                <p className="text-sm text-white/70">{item.description}</p>
+              </div>
+              {item.duration && <p className="mt-6 bg-secondary/30 p-2 rounded-md   ">{item.duration}</p>}
+            </div>
+          ))}
       </div>
     </div>
   )

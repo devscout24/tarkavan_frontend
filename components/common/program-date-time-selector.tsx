@@ -428,7 +428,7 @@ export default function ProgramDateTimeSelector({
                         onValueChange={(value) => setSelectedChildId(value)}
                         defaultValue={selectedChildId}
                       >
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className="w-full text-primary! ">
                           <SelectValue placeholder="Select a child" />
                         </SelectTrigger>
                         <SelectContent position="popper">

@@ -1,6 +1,6 @@
 "use client"
 
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import {
   SidebarProvider,
   SidebarInset,
@@ -34,12 +34,16 @@ import { RiLogoutCircleRLine } from "react-icons/ri"
 import AuthCheckPoint from "@/components/auth/auth-checkopoint"
 import Modals from "@/components/common/modal"
 import ChildProfileDropdown from "../components/child-profile-dropdown"
+import { handleLogout } from "@/lib/helpers"
+import { MdOutlineArrowBackIosNew } from "react-icons/md";
+
 
 export default function PlayerDashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const params = useParams()
   const child_id = params.child_id
+  const router = useRouter()
 
   const DATA = {
     user: {
@@ -150,8 +154,12 @@ export default function PlayerDashboardLayout({
                 </SidebarMenu>
               </SidebarGroup>
             </SidebarContent>
-            <SidebarFooter>
-              <SidebarMenuButton className={`py-4.5 text-red-500`}>
+            <SidebarFooter >
+              <SidebarMenuButton onClick={()=> router.push("/parent/my-children") } className={`py-4.5 text-white border border-brand cursor-pointer      `}>
+                <MdOutlineArrowBackIosNew />
+                <span className={` `}>Go Back </span>
+              </SidebarMenuButton>
+              <SidebarMenuButton onClick={() => handleLogout(router)} className={`py-4.5 text-primary  bg-brand  cursor-pointer   `}>
                 <RiLogoutCircleRLine />
                 <span className={` `}>Log out</span>
               </SidebarMenuButton>

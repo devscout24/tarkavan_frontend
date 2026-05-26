@@ -161,6 +161,7 @@ export default function PlayerMedia({
   ]
 
   const handleUploadMedia = async () => {
+ 
     setLoading(true)
     try {
       if (!mediaItems.length) {
@@ -183,7 +184,7 @@ export default function PlayerMedia({
       })
 
       const res = await playerProfileUpdate(formData)
-      console.log(res)
+ 
       if (res && "success" in res && res.success) {
         toast.success(res.data?.message || "Media uploaded successfully")
         mediaItems.forEach((item) => {
@@ -205,7 +206,7 @@ export default function PlayerMedia({
 
   const handleMediaLinkDelete = async (id: string) => {
     try {
-      const res = await mediaLinkDelete(id) 
+      const res = await mediaLinkDelete(id)
       if (res && "success" in res && res.success) {
         toast.success(res?.data?.data || "Media link removed successfully")
         window.dispatchEvent(new Event("player_profile_updated"))
@@ -293,7 +294,7 @@ export default function PlayerMedia({
                   <img
                     src={item.url}
                     alt={item.name}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-contain"
                   />
                 )}
 

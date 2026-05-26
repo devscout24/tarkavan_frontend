@@ -3,7 +3,7 @@ import Achievements from "@/app/(dashboards)/player/components/achievements"
 import Bio from "@/app/(dashboards)/player/components/bio"
 import ProspectCard from "@/app/(dashboards)/player/components/prospect-card"
 import SocialLinks from "@/app/(dashboards)/player/components/social-links"
-import CommonBtn from "@/components/common/common-btn" 
+import CommonBtn from "@/components/common/common-btn"
 import { Card } from "@/components/ui/card"
 import { Edit } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
@@ -80,7 +80,68 @@ export default function ChildProfile() {
     only_player: FaUser,
   }
 
+  const toYouTubeEmbedUrl = (url: string) => {
+    try {
+      const parsed = new URL(url)
+
+      if (parsed.hostname.includes("youtu.be")) {
+        const id = parsed.pathname.replace("/", "")
+        return id ? `https://www.youtube.com/embed/${id}` : null
+      }
+
+      if (parsed.hostname.includes("youtube.com")) {
+        const id = parsed.searchParams.get("v")
+        if (id) return `https://www.youtube.com/embed/${id}`
+
+        const shortsMatch = parsed.pathname.match(/\/shorts\/([^/?]+)/)
+        if (shortsMatch?.[1]) {
+          return `https://www.youtube.com/embed/${shortsMatch[1]}`
+        }
+      }
+    } catch {
+      return null
+    }
+
+    return null
+  }
+
   const Icon = iconMap[privacy] ?? FiGlobe
+  const mergedVideoItems = [
+    ...(playerData?.videos?.map((video, index) => {
+      const videoUrl = typeof video === "string" ? video : video.video_url
+
+      return {
+        id: String(video.id),
+        src: videoUrl,
+        alt: `Video ${index + 1}`,
+        type: "video" as const,
+      }
+    }) ?? []),
+    ...(
+      (playerData?.media_links ?? []) as Array<
+        string | { id?: number | string; link?: string }
+      >
+    )
+      .map((linkItem, index) => {
+        const rawUrl =
+          typeof linkItem === "string" ? linkItem : (linkItem.link ?? "")
+        if (!rawUrl) return null
+
+        const embedUrl = toYouTubeEmbedUrl(rawUrl)
+        if (!embedUrl) return null
+
+        return {
+          id:
+            typeof linkItem === "string"
+              ? `media-link-${index}`
+              : String(linkItem.id ?? `media-link-${index}`),
+          src: embedUrl,
+          alt: `Media Link ${index + 1}`,
+          type: "embed" as const,
+        }
+      })
+      .filter((item): item is NonNullable<typeof item> => Boolean(item)),
+  ]
 
   return (
     <section className="text-white">
@@ -119,60 +180,98 @@ export default function ChildProfile() {
           <SocialLinks />
         </div>
         <div className="flex-7">
-          {/* player stats */}
+          {/* position mapping */}
           <div className="">
-            <h2 className="mb-4 text-base font-semibold text-white">
-              Player Stats
-            </h2>
-
-            <div className="mx-auto mt-4 max-w-[95vw] [&>div]:rounded-lg [&>div]:border">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-brand hover:bg-brand">
-                    <TableHead
-                      className={`sticky left-0 z-10 bg-brand ${columnBorderClass} text-primary!`}
-                    >
-                      Year
-                    </TableHead>
-                    <TableHead className={"text-primary!"}>Games</TableHead>
-                    <TableHead className={"text-primary!"}>Goals</TableHead>
-                    <TableHead className={"text-primary!"}>Assists</TableHead>
-                    <TableHead className={"text-primary!"}>
-                      Yellow Cards
-                    </TableHead>
-                    <TableHead className={"text-primary!"}>Red Cards</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {playerData?.season_stats_last_five_years?.map((stat) => (
-                    <TableRow
-                      key={stat.season_year}
-                      className="border-t border-white/20 hover:bg-transparent"
-                    >
-                      <TableCell
-                        className={`sticky left-0 bg-background font-medium ${columnBorderClass}`}
-                      >
-                        {stat.season_year}
-                      </TableCell>
-                      <TableCell className={columnBorderClass}>
-                        {stat.total_played_games}
-                      </TableCell>
-                      <TableCell className={columnBorderClass}>
-                        {stat.goals}
-                      </TableCell>
-                      <TableCell className={columnBorderClass}>
-                        {stat.assist}
-                      </TableCell>
-                      <TableCell className={columnBorderClass}>
-                        {stat.yellow_cards}
-                      </TableCell>
-                      <TableCell className={columnBorderClass}>
-                        {stat.red_cards}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <div className="w-full gap-2 xl:flex">
+              <div className="w-full">
+                <h2 className="mt-5 mb-4 text-base font-semibold text-white xl:mt-0">
+                  Player Details Table
+                </h2>
+                <div className="overflow-hidden rounded-xl! border border-secondary!">
+                  <Table className="w-full">
+                    {/* <TableHeader className="  "   >
+                      <TableRow className="border-secondary!">
+                        <TableHead className=" text-white! font-semibold text-base  ">Invoice</TableHead>
+                        <TableHead className="text-right text-white! font-semibold text-base  ">Amount</TableHead>
+                      </TableRow>
+                    </TableHeader> */}
+                    <TableBody>
+                      <TableRow className="border-secondary!">
+                        <TableCell className="font-semibold">Name :</TableCell>
+                        <TableCell className="text-right">
+                          {playerData?.basic_info?.full_name}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow className="border-secondary!">
+                        <TableCell className="font-semibold">
+                          Position :
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {playerData?.position_info?.primary_position?.name}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow className="border-secondary!">
+                        <TableCell className="font-semibold">Age :</TableCell>
+                        <TableCell className="text-right">
+                          {playerData?.basic_info?.age}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow className="border-secondary!">
+                        <TableCell className="font-semibold">
+                          Gender :
+                        </TableCell>
+                        <TableCell className="text-right capitalize">
+                          {playerData?.basic_info?.gender}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow className="border-secondary!">
+                        <TableCell className="font-semibold">City :</TableCell>
+                        <TableCell className="text-right">
+                          {playerData?.basic_info?.city}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow className="border-secondary!">
+                        <TableCell className="font-semibold">
+                          Country :
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {playerData?.basic_info?.country}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow className="border-secondary!">
+                        <TableCell className="font-semibold">
+                          Dominant Foot :
+                        </TableCell>
+                        <TableCell className="text-right capitalize">
+                          {playerData?.position_info?.dominant_foot}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow className="border-secondary!">
+                        <TableCell className="font-semibold">
+                          Privacy :
+                        </TableCell>
+                        <TableCell className="text-right capitalize">
+                          {playerData?.basic_info?.privacy_settings}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow className="border-secondary!">
+                        <TableCell className="font-semibold">Team :</TableCell>
+                        <TableCell className="text-right capitalize">
+                          {playerData?.position_info?.club_team || "N/A"}
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+              <div className="min-w-fit">
+                <h2 className="mt-5 mb-4 text-base font-semibold text-white xl:mt-0 xl:text-right">
+                  Player Position On Map
+                </h2>
+                <div className="overflow-hidden rounded-xl">
+                  <PositionMap data={mapPosition as TPlayerPosition[]} />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -242,22 +341,83 @@ export default function ChildProfile() {
             </div>
           </div>
 
-          {/* position mapping */}
-          <div className="mt-6">
+          {/* player stats */}
+          <div className="mt-6 ">
             <h2 className="mb-4 text-base font-semibold text-white">
-              Position Mapping
+              Player Stats
             </h2>
 
-            <div className="overflow-hidden rounded-xl bg-secondary/30">
-              <PositionMap data={mapPosition as TPlayerPosition[]} />
+            <div className="mx-auto mt-4 max-w-[95vw] [&>div]:rounded-lg [&>div]:border">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-brand hover:bg-brand">
+                    <TableHead
+                      className={`sticky left-0 z-10 bg-brand ${columnBorderClass} text-primary!`}
+                    >
+                      Year
+                    </TableHead>
+                    <TableHead className={"text-primary!"}>Games</TableHead>
+                    <TableHead className={"text-primary!"}>Goals</TableHead>
+                    <TableHead className={"text-primary!"}>Assists</TableHead>
+                    <TableHead className={"text-primary!"}>
+                      Yellow Cards
+                    </TableHead>
+                    <TableHead className={"text-primary!"}>Red Cards</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {playerData?.season_stats_last_five_years?.map((stat) => (
+                    <TableRow
+                      key={stat.season_year}
+                      className="border-t border-white/20 hover:bg-transparent"
+                    >
+                      <TableCell
+                        className={`sticky left-0 bg-background font-medium ${columnBorderClass}`}
+                      >
+                        {stat.season_year}
+                      </TableCell>
+                      <TableCell className={columnBorderClass}>
+                        {stat.total_played_games}
+                      </TableCell>
+                      <TableCell className={columnBorderClass}>
+                        {stat.goals}
+                      </TableCell>
+                      <TableCell className={columnBorderClass}>
+                        {stat.assist}
+                      </TableCell>
+                      <TableCell className={columnBorderClass}>
+                        {stat.yellow_cards}
+                      </TableCell>
+                      <TableCell className={columnBorderClass}>
+                        {stat.red_cards}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           </div>
 
-          {/* player medias */}
-          <div className="">
+          <div>
             {/* player image */}
             <div className="">
-              <PlayerMedia uploadLabel="Upload Image" acceptType="image" />
+              <PlayerMedia
+                uploadLabel="Upload Image"
+                acceptType="image"
+                items={
+                  playerData?.gallery?.map((image, index) => {
+                    const imageUrl =
+                      typeof image === "string" ? image : image.image
+
+                    return {
+                      id: String(image.id),
+                      src: imageUrl,
+                      alt: `Image ${index + 1}`,
+                      type: "image" as const,
+                    }
+                  }) ?? []
+                }
+              />
             </div>
 
             {/* player video */}
@@ -266,6 +426,7 @@ export default function ChildProfile() {
                 uploadLabel="Upload Video"
                 title="My Videos"
                 acceptType="video"
+                items={mergedVideoItems}
               />
             </div>
           </div>

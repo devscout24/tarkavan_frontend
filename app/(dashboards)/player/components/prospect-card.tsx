@@ -24,19 +24,18 @@ export default function ProspectCard({
 
   return (
     <div className="relative rounded-lg border-2 border-secondary">
-
       {/* overlay box */}
-      <div className="absolute bottom-0 left-0 h-full w-full z-2 rounded-lg bg-gradient-to-b from-transparent via-transparent to-black " />
+      <div className="absolute bottom-0 left-0 z-2 h-full w-full rounded-lg bg-gradient-to-b from-transparent via-transparent to-black" />
 
- 
-
-      <Image
-        width={500}
-        height={1000}
-        src={basic_info?.image || "/images/playerimage.png"}
-        alt="playerimage"
-        className="h-full min-h-140 rounded-lg object-cover w-full "
-      />
+      {basic_info?.image && (
+        <Image
+          width={500}
+          height={1000}
+          src={basic_info?.image}
+          alt="playerimage"
+          className="h-full min-h-140 w-full rounded-lg object-cover"
+        />
+      )}
 
       <Badge
         variant="default"
@@ -80,8 +79,10 @@ export default function ProspectCard({
 
       <div className="absolute right-0 bottom-0 left-0 z-3 px-8">
         <h1 className=" ">
-          <p className="font-semibold! text-[32px]!">{basic_info?.name}</p>
-          <span className="text-brand font-extrabold! text-[32px]! ">{basic_info?.last_name}</span>
+          <p className="text-[32px]! font-semibold!">{basic_info?.name}</p>
+          <span className="text-[32px]! font-extrabold! text-brand">
+            {basic_info?.last_name}
+          </span>
         </h1>
 
         {/* <p className="py-1 text-xl! ">

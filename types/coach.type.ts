@@ -68,3 +68,70 @@ export type TDashboardResponse = {
   summary: Summary;
   recent_opportunities: Opportunity[];
 };
+
+
+export type TCoachPublicProfile  = {
+  coach_id: number
+  visibility: "public" | "private"
+
+  profile: {
+    name: string
+    dob: string
+    age: number
+    gender: string
+
+    sport_option_id: number | null
+    sport_option: string | null
+
+    sports: string
+
+    email: string
+    nationality: string
+
+    city_id: number | null
+    country_id: number | null
+
+    city: string
+    country: string
+
+    profile_image: string
+    bio: string
+
+    facebook_link: string | null
+    twitter_link: string | null
+    instagram_link: string | null
+    tiktok_link: string | null
+    whatsapp_link: string | null
+
+    current_role: {
+      id: number
+      name: string
+    }
+
+    years_of_experience: string
+    highest_education: string
+    coaching_education: string
+
+    player_centric_approach: boolean
+    data_driving_training: boolean
+    visible_reviews: boolean
+    allow_parent_player_reviews: boolean
+
+    overall_avg_rating: number
+    total_reviews: number
+
+    preview: string | null
+  }
+
+  coaching_titles: string[]
+
+  coach_media: unknown[]
+
+  experience_education: {
+    title: string
+    duration?: string
+    description: string
+  }[]
+
+  badges: string[]
+}

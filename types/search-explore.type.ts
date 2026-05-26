@@ -24,7 +24,7 @@ export interface SportOption {
 }
 
 export type  TClubProgramItem = {
-  type: "club_program";
+  type: "program";
   program_id: number;
   club_program_id: number;
   coach_id: Nullable<number>;
@@ -32,17 +32,16 @@ export type  TClubProgramItem = {
   sport_option: Nullable<SportOption>;
   program_name: string;
   sport: string;
-  program_price: string;
+  price: string;
   age_group: string;
   upto_age: number;
   location: string;
-  program_start: string;
-  program_end: string;
-  program_photo: string;
+  start_date: string;
+  end_date: string;
+  photo: string;
   coach_name: string;
   club_name: string;
-  team_name?: string;
-  start_date?: string
+  team_name?: string;  
 }
 
 

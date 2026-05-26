@@ -28,7 +28,7 @@ import CommonBtn from "@/components/common/common-btn"
 import { sortPositions } from "@/lib/sort-position"
 import { TPlayerSportOption, TTeamData } from "@/types"
 import { Input } from "@/components/ui/input"
-import { getHighestNumber } from "@/lib/get-highest-number"
+import { getHighestNumber, getLowestNumber } from "@/lib/get-highest-number"
 import { set } from "date-fns"
 
 type RecruitType = "coach" | "player"
@@ -64,7 +64,7 @@ export default function RecruitmentForm({
   submitLabel = "Post Request",
   positionPlaceholder = "Select Position",
   teamPlaceholder = "Select Team",
-  experiencePlaceholder = "e.g., 3+ years", 
+  experiencePlaceholder = "e.g., 3+ years",
   descriptionPlaceholder = "Write role requirements and expectations...",
   defaultValues,
   onCancel,
@@ -83,7 +83,9 @@ export default function RecruitmentForm({
   const [coachPositions, setCoachPositions] = useState<TPlayerSportOption[]>([])
   const [coachPosition, setCoachPosition] = useState<string>("")
   const [experience, setExperience] = useState(defaultValues?.experience ?? "")
-  const [tryoutDates, setTryoutDates] = useState(defaultValues?.tryoutDates ?? "")
+  const [tryoutDates, setTryoutDates] = useState(
+    defaultValues?.tryoutDates ?? ""
+  )
   const [startDate, setStartDate] = useState("")
 
   console.log(startDate)
@@ -172,7 +174,7 @@ export default function RecruitmentForm({
           res.data &&
           "data" in res.data &&
           res.data.data
-        ) { 
+        ) {
           const recruitment = res.data.data.recruitment
 
           // Populate form with recruitment data
@@ -197,7 +199,48 @@ export default function RecruitmentForm({
     fetchRecruitmentDetails()
   }, [editId])
 
+  const validateForm = () => {
+    if (!recruitType) {
+      toast.error("Please select recruitment type")
+      return false
+    }
+
+    if (recruitType === "coach" && !coachPosition) {
+      toast.error("Please select coach position")
+      return false
+    }
+
+    if (recruitType === "player" && !position) {
+      toast.error("Please select player position")
+      return false
+    }
+
+    if (!team) {
+      toast.error("Please select team")
+      return false
+    }
+
+    if (!startDate || !startDate.trim()) {
+      toast.error("Please select start date")
+      return false
+    }
+
+    if (!tryoutDates || !tryoutDates.trim()) {
+      toast.error("Please select end date")
+      return false
+    }
+
+    if (recruitType === "player" && (!ageGroup || !ageGroup.trim())) {
+      toast.error("Please enter age group")
+      return false
+    }
+
+    return true
+  }
+
   const handleSubmit = async () => {
+    if (!validateForm()) return
+
     try {
       const formData = new FormData()
       formData.append("recruitment_type", recruitType)
@@ -209,9 +252,10 @@ export default function RecruitmentForm({
       formData.append("end_date", tryoutDates.trim())
       formData.append("description", description.trim())
       formData.append("upto_age", String(getHighestNumber(ageGroup)))
+      formData.append("from_age", String(getLowestNumber(ageGroup)))
 
       const res = await addRecruitment(formData)
-      console.log(res)
+      
 
       if (
         typeof res === "object" &&
@@ -242,6 +286,8 @@ export default function RecruitmentForm({
   }
 
   const handleUpdate = async () => {
+    if (!validateForm()) return
+
     try {
       const formData = new FormData()
       formData.append("recruitment_type", recruitType)
@@ -421,11 +467,11 @@ export default function RecruitmentForm({
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div className="space-y-2">
             <label className="pb-2 text-base text-white">Start Date</label>
-            <DatePickerDemo onDateChange={setStartDate} /> 
+            <DatePickerDemo onDateChange={setStartDate} />
           </div>
           <div className="space-y-2">
             <label className="pb-2 text-base text-white">End Date</label>
-            <DatePickerDemo onDateChange={setTryoutDates} /> 
+            <DatePickerDemo onDateChange={setTryoutDates} />
           </div>
         </div>
 

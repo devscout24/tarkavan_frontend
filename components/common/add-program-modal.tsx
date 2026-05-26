@@ -1,24 +1,40 @@
 "use client"
 import React, { useEffect, useState } from "react"
 import { Input } from "../ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select"
 import { Textarea } from "../ui/textarea"
 import CommonBtn from "@/components/common/common-btn"
 import UploadPhoto from "@/components/common/upload-photo"
 import Image from "next/image"
-import { createProgram, getProgramDetails, updateProgram } from "@/app/(dashboards)/club/action"
+import {
+  createProgram,
+  getProgramDetails,
+  updateProgram,
+} from "@/app/(dashboards)/club/action"
 import { toast } from "sonner"
 import { getSportOptions } from "@/app/(dashboards)/action"
 import useModal from "./modal/useModal"
-import { getHighestNumber } from "@/lib/get-highest-number"
+import { getHighestNumber, getLowestNumber } from "@/lib/get-highest-number"
 import TimePicker from "react-time-picker"
 import "react-time-picker/dist/TimePicker.css"
 import "react-clock/dist/Clock.css"
-import { addCoachProgram, updateCoachProgram } from "@/app/(dashboards)/coach/my-programs/action"
- 
+import {
+  addCoachProgram,
+  updateCoachProgram,
+} from "@/app/(dashboards)/coach/my-programs/action"
 
-
-type TSportOption = { id: number; name: string; audience: string; status: string }
+type TSportOption = {
+  id: number
+  name: string
+  audience: string
+  status: string
+}
 
 type TTimeRange = { start: string; end: string }
 type TTimeSlot = { date: string; times: TTimeRange[] }
@@ -47,14 +63,18 @@ const selectCls =
 
 const AddProgramPage: React.FC = () => {
   const { close } = useModal()
-  const currentUser = localStorage.getItem("go_elite_user") ? JSON.parse(localStorage.getItem("go_elite_user") || "{}") : null
+  const currentUser = localStorage.getItem("go_elite_user")
+    ? JSON.parse(localStorage.getItem("go_elite_user") || "{}")
+    : null
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [sportOptions, setSportOptions] = useState<TSportOption[]>([])
   const [form, setForm] = useState(initialForm)
 
-  const set = (name: string, value: string) => setForm((p) => ({ ...p, [name]: value }))
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    set(e.target.name, e.target.value)
+  const set = (name: string, value: string) =>
+    setForm((p) => ({ ...p, [name]: value }))
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => set(e.target.name, e.target.value)
 
   // ─── Goal handlers ───────────────────────────────────────────────────────────
   const handleGoalChange = (idx: number, value: string) =>
@@ -73,11 +93,17 @@ const AddProgramPage: React.FC = () => {
   const addSlot = () =>
     setForm((p) => ({
       ...p,
-      timeSlots: [...p.timeSlots, { date: "", times: [{ start: "", end: "" }] }],
+      timeSlots: [
+        ...p.timeSlots,
+        { date: "", times: [{ start: "", end: "" }] },
+      ],
     }))
 
   const removeSlot = (si: number) =>
-    setForm((p) => ({ ...p, timeSlots: p.timeSlots.filter((_, i) => i !== si) }))
+    setForm((p) => ({
+      ...p,
+      timeSlots: p.timeSlots.filter((_, i) => i !== si),
+    }))
 
   const setSlotDate = (si: number, date: string) =>
     setForm((p) => {
@@ -106,7 +132,12 @@ const AddProgramPage: React.FC = () => {
       return { ...p, timeSlots }
     })
 
-  const setTimeRange = (si: number, ti: number, field: "start" | "end", value: string) =>
+  const setTimeRange = (
+    si: number,
+    ti: number,
+    field: "start" | "end",
+    value: string
+  ) =>
     setForm((p) => {
       const timeSlots = [...p.timeSlots]
       const times = [...timeSlots[si].times]
@@ -131,7 +162,7 @@ const AddProgramPage: React.FC = () => {
     if (!editId) return
     getProgramDetails(String(editId))
       .then((res: any) => {
-        const p = res?.data?.data 
+        const p = res?.data?.data
         if (!p) {
           toast.error("Failed to load program data")
           return
@@ -139,7 +170,8 @@ const AddProgramPage: React.FC = () => {
 
         // Group flat times array by slot_date
         const groupedSlots: TTimeSlot[] = (() => {
-          if (!p.times?.length) return [{ date: "", times: [{ start: "", end: "" }] }]
+          if (!p.times?.length)
+            return [{ date: "", times: [{ start: "", end: "" }] }]
           const grouped: Record<string, TTimeRange[]> = {}
           p.times.forEach(
             (t: {
@@ -152,10 +184,16 @@ const AddProgramPage: React.FC = () => {
             }) => {
               const key = t.slot_date || ""
               if (!grouped[key]) grouped[key] = []
-              grouped[key].push({ start: t.start_time || "", end: t.end_time || "" })
-            },
+              grouped[key].push({
+                start: t.start_time || "",
+                end: t.end_time || "",
+              })
+            }
           )
-          return Object.entries(grouped).map(([date, times]) => ({ date, times }))
+          return Object.entries(grouped).map(([date, times]) => ({
+            date,
+            times,
+          }))
         })()
 
         setForm({
@@ -168,7 +206,9 @@ const AddProgramPage: React.FC = () => {
           start: p.start_date || "",
           end: p.end_date || "",
           about: p.about || "",
-          goals: p.goals?.length ? p.goals.map((g: { goal: string }) => g.goal) : [""],
+          goals: p.goals?.length
+            ? p.goals.map((g: { goal: string }) => g.goal)
+            : [""],
           photo: p.photo || null,
           type: p.program_type || "one_one",
           sportOptionId: p.sport_option ? String(p.sport_option.id) : "",
@@ -193,6 +233,7 @@ const AddProgramPage: React.FC = () => {
       about_program: form.about,
       discount_price: form.discountPrice || "0",
       upto_age: String(getHighestNumber(form.ageGroup)),
+      from_age: String(getLowestNumber(form.ageGroup)),
       sport_option_id: form.sportOptionId,
     }
 
@@ -220,11 +261,45 @@ const AddProgramPage: React.FC = () => {
       const ext = blob.type.split("/")[1]?.toLowerCase() || "jpg"
       formData.append(
         "program_photo",
-        new File([blob], `program-photo.${ext}`, { type: blob.type }),
+        new File([blob], `program-photo.${ext}`, { type: blob.type })
       )
     }
 
     return formData
+  }
+
+  // ─── Simple form validation ──────────────────────────────────────────────────
+  const validateForm = () => {
+    // Require program image
+    if (!form.photo) {
+      toast.error("Please upload a program image")
+      return false
+    }
+
+    if (!form.sport) {
+      toast.error("Please select a sport")
+      return false
+    }
+    if (!form.name || !form.name.trim()) {
+      toast.error("Please enter a program name")
+      return false
+    }
+    if (!form.price || Number(form.price) <= 0) {
+      toast.error("Please enter a valid program price")
+      return false
+    }
+
+    const hasValidTime = form.timeSlots.some((slot) =>
+      Boolean(slot.date && slot.times.some((t) => t.start && t.end))
+    )
+    if (!hasValidTime) {
+      toast.error(
+        "Please add at least one valid time slot with start and end time"
+      )
+      return false
+    }
+
+    return true
   }
 
   // ─── Submit handlers ──────────────────────────────────────────────────────────
@@ -237,11 +312,13 @@ const AddProgramPage: React.FC = () => {
 
   const handleAdd = async () => {
     if (isSubmitting) return
+    if (!validateForm()) return
     setIsSubmitting(true)
 
-    if(currentUser && currentUser.role === "club"){ 
+    if (currentUser && currentUser.role === "club") {
       try {
-        const res: any = await createProgram(await buildFormData())  
+        const res: any = await createProgram(await buildFormData())
+        console.log(res)
 
         res?.success || res?.status
           ? onSuccess("Program created successfully!")
@@ -254,10 +331,10 @@ const AddProgramPage: React.FC = () => {
       }
     }
 
-
-    if(currentUser && currentUser.role === "coach"){
-             try {
-        const res: any = await addCoachProgram(await buildFormData()) 
+    if (currentUser && currentUser.role === "coach") {
+      try {
+        const res: any = await addCoachProgram(await buildFormData())
+        console.log(res)
         res?.success || res?.status
           ? onSuccess("Program created successfully!")
           : toast.error(res?.message || "Failed to create program.")
@@ -268,20 +345,23 @@ const AddProgramPage: React.FC = () => {
         setIsSubmitting(false)
       }
     }
-
   }
 
   const handleUpdate = async () => {
     if (isSubmitting || !editId) return
+    if (!validateForm()) return
     setIsSubmitting(true)
 
-    if(currentUser && currentUser.role === "club"){ 
+    if (currentUser && currentUser.role === "club") {
       try {
-        const res: any = await updateProgram({ program_id: editId, data: await buildFormData() })
+        const res: any = await updateProgram({
+          program_id: editId,
+          data: await buildFormData(),
+        })
         res?.success || res?.status
           ? onSuccess("Program updated successfully!")
           : toast.error(res?.message || "Failed to update program.")
-          window.dispatchEvent(new CustomEvent("programevent"))
+        window.dispatchEvent(new CustomEvent("programevent"))
         close("add-new", ["program"])
       } catch {
         toast.error("Failed to update program. Please try again.")
@@ -289,38 +369,41 @@ const AddProgramPage: React.FC = () => {
         setIsSubmitting(false)
       }
     }
-    
-    
-    if(currentUser && currentUser.role === "coach"){
+
+    if (currentUser && currentUser.role === "coach") {
       try {
-        const res: any = await updateCoachProgram({ program_id: editId, data: await buildFormData() })
+        const res: any = await updateCoachProgram({
+          program_id: editId,
+          data: await buildFormData(),
+        })
         res?.success || res?.status
           ? onSuccess("Program updated successfully!")
           : toast.error(res?.message || "Failed to update program.")
-          window.dispatchEvent(new CustomEvent("programevent"))
+        window.dispatchEvent(new CustomEvent("programevent"))
         close("add-new", ["program"])
       } catch {
         toast.error("Failed to update program. Please try again.")
       } finally {
         setIsSubmitting(false)
       }
-
     }
-
   }
 
   // ─── Render ───────────────────────────────────────────────────────────────────
   return (
     <div className="mx-auto w-full p-0">
       <div className="flex flex-col gap-4 rounded-2xl bg-neutral-900 p-8 text-white">
-        <h2 className="mb-2 text-2xl font-semibold">{editId ? "Edit Program" : "Add Program"}</h2>
+        <h2 className="mb-2 text-2xl font-semibold">
+          {editId ? "Edit Program" : "Add Program"}
+        </h2>
 
         {/* Photo Upload */}
         <div className="mb-2">
           <UploadPhoto
             onFileSelect={(file) => {
               const reader = new FileReader()
-              reader.onload = () => setForm((p) => ({ ...p, photo: reader.result as string }))
+              reader.onload = () =>
+                setForm((p) => ({ ...p, photo: reader.result as string }))
               reader.readAsDataURL(file)
             }}
             title="UPLOAD PHOTO"
@@ -383,7 +466,11 @@ const AddProgramPage: React.FC = () => {
               </SelectTrigger>
               <SelectContent position="popper">
                 {sportOptions.map((s) => (
-                  <SelectItem key={s.id} value={s.name} className="hover:bg-brand!">
+                  <SelectItem
+                    key={s.id}
+                    value={s.name}
+                    className="hover:bg-brand!"
+                  >
                     {s.name}
                   </SelectItem>
                 ))}
@@ -429,7 +516,10 @@ const AddProgramPage: React.FC = () => {
 
           {/* Discount Price */}
           <div className="flex flex-col">
-            <span className="text-sm">Discount Price ($)</span>
+            <p className="text-sm">
+              Discount Price{" "}
+              <span className="ml-1 text-brand!">(Optional)</span>
+            </p>
             <Input
               name="discountPrice"
               value={form.discountPrice}
@@ -442,7 +532,9 @@ const AddProgramPage: React.FC = () => {
 
           {/* Program Location */}
           <div className="flex flex-col">
-            <span className="text-sm">Program Location</span>
+            <p className="text-sm">
+              Program Location{" "} 
+            </p>
             <Input
               name="location"
               value={form.location}
@@ -453,31 +545,38 @@ const AddProgramPage: React.FC = () => {
           </div>
 
           {/* Program Start / End */}
- 
-            <div className="flex flex-col">
-              <span className="text-sm">Program Start</span>
-              <Input
-                name="start" 
-                value={form.start}
-                onChange={handleChange}
-                className={`mt-1 ${fieldCls}`}
-                type="date"
-              />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm">Program End</span>
-              <Input
-                name="end"
-                value={form.end}
-                onChange={handleChange}
-                className={`mt-1 ${fieldCls}`}
-                type="date"
-              />
-            </div> 
+
+          <div className="flex flex-col">
+            <p className="text-sm">
+              Program Start <span className="ml-1 text-brand!">(Optional)</span>
+            </p>
+            <Input
+              name="start"
+              value={form.start}
+              onChange={handleChange}
+              className={`mt-1 ${fieldCls}`}
+              type="date"
+            />
+          </div>
+          <div className="flex flex-col">
+            <p className="text-sm">
+              Program End
+              <span className="ml-1 text-brand!">(Optional)</span>
+            </p>
+            <Input
+              name="end"
+              value={form.end}
+              onChange={handleChange}
+              className={`mt-1 ${fieldCls}`}
+              type="date"
+            />
+          </div>
 
           {/* ── Program Times (date + time slots) ── */}
           <div className="col-span-full flex flex-col gap-2">
-            <span className="text-sm">Program Times</span>
+            <p className="text-sm">
+              Program Times 
+            </p>
 
             <div className="flex flex-col gap-3">
               {form.timeSlots.map((slot, si) => (
@@ -487,7 +586,9 @@ const AddProgramPage: React.FC = () => {
                 >
                   {/* Date row */}
                   <div className="mb-3 flex items-center gap-2">
-                    <span className="min-w-fit text-xs text-neutral-400">Date</span>
+                    <span className="min-w-fit text-xs text-neutral-400">
+                      Date
+                    </span>
                     <Input
                       type="date"
                       value={slot.date}
@@ -509,23 +610,28 @@ const AddProgramPage: React.FC = () => {
                   <div className="flex flex-col gap-2 pl-2">
                     {slot.times.map((t, ti) => (
                       <div key={ti} className="flex items-center gap-2">
-                        <span className="min-w-fit text-xs text-neutral-400">Start</span> 
+                        <span className="min-w-fit text-xs text-neutral-400">
+                          Start
+                        </span>
                         <TimePicker
                           value={t.start}
-                          onChange={(value) =>  setTimeRange(si, ti, "start", value || "")  }
+                          onChange={(value) =>
+                            setTimeRange(si, ti, "start", value || "")
+                          }
                           disableClock
                           format="HH:mm"
                           className="flex-1"
                         />
-                        
- 
-                        <span className="text-xs text-neutral-400">End</span> 
+
+                        <span className="text-xs text-neutral-400">End</span>
                         <TimePicker
                           value={t.end}
-                          onChange={(value) => setTimeRange(si, ti, "end", value || "")}
+                          onChange={(value) =>
+                            setTimeRange(si, ti, "end", value || "")
+                          }
                           disableClock
                           format="HH:mm"
-                          className="flex-1 rounded-md!   "
+                          className="flex-1 rounded-md!"
                         />
                         {slot.times.length > 1 && (
                           <CommonBtn
@@ -546,7 +652,7 @@ const AddProgramPage: React.FC = () => {
                     size="sm"
                     variant="outline"
                     onClick={() => addTimeRange(si)}
-                    className="ml-auto mt-4 w-fit px-2  hover:border-brand hover:bg-brand hover:text-primary"
+                    className="mt-4 ml-auto w-fit px-2 hover:border-brand hover:bg-brand hover:text-primary"
                   />
                 </div>
               ))}
@@ -617,7 +723,13 @@ const AddProgramPage: React.FC = () => {
             className="w-fit px-10 hover:border-brand hover:bg-brand hover:text-primary"
           />
           <CommonBtn
-            text={isSubmitting ? "Saving..." : editId ? "Update Program" : "Save Program"}
+            text={
+              isSubmitting
+                ? "Saving..."
+                : editId
+                  ? "Update Program"
+                  : "Save Program"
+            }
             size="lg"
             variant="default"
             className="w-fit bg-brand px-10 text-black hover:border hover:bg-transparent hover:text-white"

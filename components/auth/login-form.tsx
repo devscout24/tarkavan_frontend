@@ -85,13 +85,13 @@ export default function LoginForm() {
           placeholder="example@exmple.com"
           icon={<UserRound />}
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value.trim())}
         />
         <PwdInput
           label="Password"
           placeholder="••••••••"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value.trim())}
         />
 
         <Link

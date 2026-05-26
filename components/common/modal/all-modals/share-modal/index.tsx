@@ -97,22 +97,22 @@ const PLATFORMS: Platform[] = [
     buildShareUrl: (url) =>
       `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
   },
-  {
-    id: "instagram",
-    label: "Instagram",
-    icon: InstagramIcon,
-    iconBg: "bg-gradient-to-br from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]",
-    copyFirst: true,
-    buildShareUrl: () => "https://www.instagram.com/",
-  },
-  {
-    id: "tiktok",
-    label: "TikTok",
-    icon: TikTokIcon,
-    iconBg: "bg-black hover:bg-zinc-800",
-    copyFirst: true,
-    buildShareUrl: () => "https://www.tiktok.com/",
-  },
+  // {
+  //   id: "instagram",
+  //   label: "Instagram",
+  //   icon: InstagramIcon,
+  //   iconBg: "bg-gradient-to-br from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]",
+  //   copyFirst: true,
+  //   buildShareUrl: () => "https://www.instagram.com/",
+  // },
+  // {
+  //   id: "tiktok",
+  //   label: "TikTok",
+  //   icon: TikTokIcon,
+  //   iconBg: "bg-black hover:bg-zinc-800",
+  //   copyFirst: true,
+  //   buildShareUrl: () => "https://www.tiktok.com/",
+  // },
   {
     id: "twitter",
     label: "X",

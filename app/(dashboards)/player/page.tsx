@@ -24,7 +24,7 @@ export default function PlayerDashboardPage() {
     const getDashboard  = async () => {
       try {
         const res = await getPlayerDashboard()
-
+         console.log("Player Dashboard Response:", res)
         if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
           setDashData(res.data.data)
         }
@@ -49,8 +49,7 @@ export default function PlayerDashboardPage() {
   }, [])
 
   const playerId = dashData?.player_info?.id;
-   
-  console.log("Dashboard Data:", dashData)
+    
  
   return (
     <section className=" ">

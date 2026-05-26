@@ -96,7 +96,8 @@ export default function SocialLinks({
         key={"shareUrl"}
         open={openShareModal}
         onOpenChange={setOpenShareModal}
-        url={`${window.location.origin}/${profileUrl}/${profileId}`}  
+        // url={`${window.location.origin}/${profileUrl}/${profileId}`}  
+        url={`https://docs.google.com/document/d/1KNdNBZ_xqwDcDjD1nnNoW7ssu6N5Vc2LgT63llc47uc/edit?tab=t.0`}  
         title="Watch my Player Card"
       />
       }

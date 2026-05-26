@@ -1,6 +1,6 @@
 "use client"
 
-import Logo from "@/components/common/logo"
+
 import RadarChart from "@/components/common/radar"
 import RadarStrength from "@/components/common/radar-strength"
 import PositionMap from "@/components/common/position-map"
@@ -232,19 +232,19 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                     </a>
                   </ul>
                 </div>
-                <QRCode link="profile/123" />
+                <QRCode link={`${window.location}`} />
               </div>
               <BIO description={String(data?.basic_info?.biography)} />
             </div>
 
             {/* right */}
             <div className="w-full flex-7 lg:flex-7">
-              <div className="xl:flex gap-5">
+              <div className="gap-5 xl:flex">
                 <div className="">
                   <h2 className="mb-4 text-base font-semibold text-white">
                     Player positions
                   </h2>
-                  <div className="mt-2 min-w-fit   ">
+                  <div className="mt-2 min-w-fit">
                     <PositionMap data={mapPosition as TPlayerPosition[]} />
                   </div>
                 </div>

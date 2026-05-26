@@ -53,6 +53,7 @@ export default function SearchExplore() {
   const [totalPage, setTotalPage] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   const [loading , setLoading] = useState(false)
+  console.log("Current Filters:", searchResults)
    
   const getFilteredData = async () => {
     try {
@@ -67,9 +68,11 @@ export default function SearchExplore() {
         data: formData,
         currentPage: String(currentPage),
       }) 
+      // console.log("Search Explore Response:", res)
 
       
       if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) { 
+        
         setSearchResults(res?.data?.data?.data) 
         setLoading(false)
         setTotalPage(res.data.data.pagination.last_page)
@@ -106,16 +109,16 @@ export default function SearchExplore() {
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {searchResults.map((item, index) => {
 
-            if(item.type === "club_program"){
+            if(item.type === "program"){
               return (
               <ProgramCard
               key={index}
-              image={item?.program_photo || "/images/player1.png"}
+              image={item?.photo || "/images/player1.png"}
               name={item?.club_name   }   
-              price={`CAD ${item?.program_price}`}  
+              price={`CAD ${item?.price}`}  
               user={`Coach: ${item?.coach_name}`}
-              duration={moment(item?.program_end).diff(moment(item?.program_start), 'days') + " days program"}
-              calender={moment(item?.program_start).format("MMM Do YY")}
+              duration={moment(item?.end_date).diff(moment(item?.start_date), 'days') + " days program"}
+              calender={moment(item?.start_date).format("MMM Do YY")}
               />
               )
             }
@@ -152,8 +155,7 @@ export default function SearchExplore() {
               )
             }
 
-            if(item.type === "coach"){
-              console.log("Coach item:", item)
+            if(item.type === "coach"){ 
               return ( 
                 <CoachCard 
                 key={index}

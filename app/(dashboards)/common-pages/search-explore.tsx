@@ -52,8 +52,7 @@ export default function SearchExplore() {
   const [searchResults, setSearchResults] = useState<TExploreItem[]>([])
   const [totalPage, setTotalPage] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
-  const [loading , setLoading] = useState(false)
-  console.log("Current Filters:", searchResults)
+  const [loading , setLoading] = useState(false) 
    
   const getFilteredData = async () => {
     try {
@@ -68,7 +67,7 @@ export default function SearchExplore() {
         data: formData,
         currentPage: String(currentPage),
       }) 
-      // console.log("Search Explore Response:", res)
+      console.log("Search Explore Response:", res)
 
       
       if (res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) { 
@@ -94,6 +93,7 @@ export default function SearchExplore() {
 
 
   const router = useRouter()
+  const user = localStorage.getItem("go_elite_user") ? JSON.parse(localStorage.getItem("go_elite_user") as string) : null
 
  
 
@@ -114,11 +114,13 @@ export default function SearchExplore() {
               <ProgramCard
               key={index}
               image={item?.photo || "/images/player1.png"}
-              name={item?.club_name   }   
+              name={item?.program_name}   
               price={`CAD ${item?.price}`}  
               user={`Coach: ${item?.coach_name}`}
               duration={moment(item?.end_date).diff(moment(item?.start_date), 'days') + " days program"}
               calender={moment(item?.start_date).format("MMM Do YY")}
+              btnText="View Program"
+              onClick={()=> router.push(`/${user.role}/programs/${item?.program_id}`)  }
               />
               )
             }
@@ -133,6 +135,7 @@ export default function SearchExplore() {
               location={item?.location as string}
               head={item?.organization_type as string}
               description={item?.club_description as string}
+              onClick={() => router.push(`/profile/club/${item?.club_profile_id}`)}
               />
               )
             }

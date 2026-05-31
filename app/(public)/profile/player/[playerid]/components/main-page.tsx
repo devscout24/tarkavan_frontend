@@ -1,6 +1,5 @@
 "use client"
 
-
 import RadarChart from "@/components/common/radar"
 import RadarStrength from "@/components/common/radar-strength"
 import PositionMap from "@/components/common/position-map"
@@ -39,7 +38,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { storeVote } from "../../../action"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { getChildList } from "@/app/(dashboards)/player/programs/action"
 import {
@@ -162,11 +161,14 @@ export default function ProfilePage({ data }: ProfilePageProps) {
     }
   }
 
+  const router = useRouter()
+
   return (
     <>
       <Nav />
+
       <div
-        className="bg-primary px-8 pt-24 pb-16"
+        className="bg-primary px-8 pt-5 pb-16"
         style={{
           backgroundImage: `url("/images/profilebg.png")`,
           backgroundSize: "cover",
@@ -174,6 +176,15 @@ export default function ProfilePage({ data }: ProfilePageProps) {
         }}
         id="og_image"
       >
+
+        <CommonBtn
+          variant="outline"
+          size="sm"
+          text="Go Back"
+          onClick={() => router.back()}
+          className="mt-30 w-fit cursor-pointer bg-brand px-5 hover:bg-brand"
+        />
+
         <div className="flex flex-col items-center justify-center">
           {/* <Logo className="w-full max-w-111.25!" />
           <div className="mt-15 h-1 w-full bg-brand" /> */}

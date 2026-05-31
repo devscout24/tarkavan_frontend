@@ -5,12 +5,12 @@ import CoachProfileCard from "./component/coach-profile-card"
 import CoachingTitles from "./component/coaching-titles"
 import CoachingBio from "./component/bio"
 import CoachingExperienceEducation from "./component/coaching-experience-education"
-import CertificateCredential from "./component/cirtificate-credentioal"
 import { getCoachProfile } from "@/app/(public)/action"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { TCoachPublicProfile } from "@/types"
+import CommonBtn from "@/components/common/common-btn"
 
 export default function Page() {
   const params = useParams()
@@ -18,8 +18,6 @@ export default function Page() {
   const [data, setData] = useState<TCoachPublicProfile | null>(null)
   const router = useRouter()
   const [loading, setLoading] = useState(true)
-
-  console.log(data)
 
   useEffect(() => {
     if (!coachid) return
@@ -55,33 +53,39 @@ export default function Page() {
 
   if (loading) {
     return <div>Loading...</div>
-  } else if(!loading && !data) {
-    router.back() 
+  } else if (!loading && !data) {
+    router.back()
     toast.error("Failed to fetch coach profile")
-  }
-  else if(!loading && data) {
-
+  } else if (!loading && data) {
     return (
       <section>
         <Nav />
-  
-        <div className="my-30 grid grid-cols-1 gap-5 px-5 sm:grid-cols-2">
+
+        <CommonBtn
+          variant="outline"
+          size="sm"
+          text="Go Back"
+          onClick={() => router.back()}
+          className="mt-30 ml-10 w-fit cursor-pointer bg-brand px-5 hover:bg-brand"
+        />
+
+        <div className="my-5 grid grid-cols-1 gap-5 px-10 sm:grid-cols-2">
           {/* left side */}
           <div className="">
             <CoachProfileCard
               basic_info={{
                 image: data?.profile?.profile_image,
-                name: data?.profile?.name, 
+                name: data?.profile?.name,
                 age: data?.profile?.age,
-                city: data?.profile?.city ,
-                country: data?.profile?.country ,
-                gender: data?.profile?.gender ,
+                city: data?.profile?.city,
+                country: data?.profile?.country,
+                gender: data?.profile?.gender,
                 id: 1,
                 full_name: data?.profile?.name,
                 last_name: "",
                 dob: data?.profile?.dob,
                 nationality: data?.profile?.nationality,
-                email:  data?.profile?.email ,
+                email: data?.profile?.email,
                 biography: "",
                 privacy_settings: "",
                 sports: "",
@@ -107,20 +111,16 @@ export default function Page() {
               provincialVotes={5}
               academyVotes={3}
             />
-  
-            <CoachingTitles
-              titles={data?.coaching_titles}
-            />
+
+            <CoachingTitles titles={data?.coaching_titles} />
           </div>
-  
+
           {/* right side */}
           <div className="space-y-4">
             {/* bio */}
             <CoachingBio bio={data?.profile?.bio} />
-            <CoachingExperienceEducation
-              data={data?.experience_education}
-            />
-  
+            <CoachingExperienceEducation data={data?.experience_education} />
+
             {/* <CertificateCredential
               certificates={[
                 {
@@ -137,7 +137,7 @@ export default function Page() {
             /> */}
           </div>
         </div>
-  
+
         <Footer />
       </section>
     )

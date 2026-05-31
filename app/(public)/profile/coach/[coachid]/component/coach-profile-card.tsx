@@ -81,9 +81,7 @@ export default function CoachProfileCard({
 
             <span>
               {basic_info?.city} , {basic_info?.country}{" "}
-            </span>
-            <CiLock />
-            <span>Parental Control Active</span>
+            </span> 
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2.5">

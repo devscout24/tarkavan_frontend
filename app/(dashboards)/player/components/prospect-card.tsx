@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/badge"
-import { Lock, MapPin } from "lucide-react"
 import Image from "next/image"
 import {
   HoverCard,
@@ -33,10 +32,10 @@ export default function ProspectCard({
           height={1000}
           src={basic_info?.image}
           alt="playerimage"
-          className="h-full min-h-140 w-full rounded-lg object-cover"
+          className="h-full min-h-140 max-h-140 w-full rounded-lg object-cover"
         />
       ):
-      <div className="h-full min-h-140 w-full rounded-lg bg-secondary "></div>
+      <div className="h-full min-h-140 max-h-140 w-full rounded-lg bg-secondary "/>
       }
 
       <Badge

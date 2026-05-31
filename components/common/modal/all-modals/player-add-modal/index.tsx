@@ -20,6 +20,7 @@ import useModal from "../../useModal"
 import { addChild, updateChildProfile } from "@/app/(dashboards)/parent/action"
 import { useParams } from "next/navigation"
 import type { TPlayerProfile } from "@/types/player.type"
+import axios from "axios"
 
 const PLAYER_EDIT_STORAGE_KEY = "go_elite_player_edit_data"
 
@@ -184,6 +185,7 @@ export default function PlayerAddModal() {
   const params = useParams()
   const edit_child_id = params.id
   const child_id = params.child_id
+  const token = localStorage.getItem("go_elite_token")
 
   const { close } = useModal()
 
@@ -469,8 +471,17 @@ export default function PlayerAddModal() {
       }
 
       try {
-        const res = await addChildOrPlayer(formData)
-        console.log("Add player response:", res)
+        const res = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/player/profile/add`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+
         const response = res as {
           success?: boolean
           message?: string
@@ -483,7 +494,7 @@ export default function PlayerAddModal() {
           }
         }
 
-        if (response.success && response.data?.status) {
+        if (response?.success && response?.data?.status) {
           const user = JSON.parse(localStorage.getItem("go_elite_user") || "{}")
           user.status = "approve"
           user.profile_id = response?.data?.data?.id
@@ -496,9 +507,11 @@ export default function PlayerAddModal() {
             )
           )
           resetWizardState()
+          close("add-new", ["update"])
 
           const nextParams = new URLSearchParams(searchParams.toString())
           nextParams.delete("add-new")
+          nextParams.delete("update")
           router.replace(
             nextParams.toString()
               ? `${pathname}?${nextParams.toString()}`
@@ -804,7 +817,17 @@ export default function PlayerAddModal() {
 
     if (user?.role === "player") {
       try {
-        const res = await playerProfileUpdate(formData)
+        const res = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/player/profile/update`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+
         console.log("Update response:", res)
         const response = res as {
           success?: boolean
@@ -828,9 +851,10 @@ export default function PlayerAddModal() {
           )
           window.dispatchEvent(new CustomEvent("player_profile_updated"))
           sessionStorage.removeItem(PLAYER_EDIT_STORAGE_KEY)
-          close("update")
+          close("update", ["add-new"])
           resetWizardState()
           const nextParams = new URLSearchParams(searchParams.toString())
+          nextParams.delete("add-new")
           nextParams.delete("update")
           router.replace(
             nextParams.toString()
@@ -876,9 +900,10 @@ export default function PlayerAddModal() {
           setUpdating(false)
           toast.success("Child profile updated successfully")
           window.dispatchEvent(new CustomEvent("player_profile_updated"))
-          close("update")
+          close("update", ["add-new"])
           resetWizardState()
           const nextParams = new URLSearchParams(searchParams.toString())
+          nextParams.delete("add-new")
           nextParams.delete("update")
           router.replace(
             nextParams.toString()

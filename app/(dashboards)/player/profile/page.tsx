@@ -183,50 +183,69 @@ export default function PlayerProfile() {
     if (!shouldCapture || window.innerWidth < 1280) return
 
     async function takeScreenshot() {
-      const node = document.getElementById("og_image")
-      if (!node) return
+      try {
+        const node = document.getElementById("og_image")
 
-      const images = node.querySelectorAll("img")
-      await Promise.all(
-        Array.from(images).map(
-          (img) =>
-            new Promise<void>((resolve) => {
-              if (img.complete) resolve()
-              else {
+        if (!node) return
+
+        const images = node.querySelectorAll("img")
+
+        await Promise.all(
+          Array.from(images).map(
+            (img) =>
+              new Promise<void>((resolve) => {
+                if (img.complete) {
+                  if (!img.naturalWidth) {
+                    console.error("Failed image:", img.src)
+                  }
+                  resolve()
+                  return
+                }
+
                 img.onload = () => resolve()
-                img.onerror = () => resolve()
-              }
-            })
+
+                img.onerror = () => {
+                  console.error("Failed image:", img.src)
+                  resolve()
+                }
+              })
+          )
         )
-      )
 
-      await document.fonts.ready
-      await new Promise((resolve) => requestAnimationFrame(resolve))
+        await document.fonts.ready
 
-      toPng(node).then(async (dataUrl) => {
-        const res = await fetch(dataUrl)
-        const blob = await res.blob()
-        const file = new File([blob], "og-image.png", { type: "image/png" })
+        await new Promise((resolve) => requestAnimationFrame(resolve))
+
+        const dataUrl = await toPng(node, {
+          cacheBust: true,
+        })
+
+        const response = await fetch(dataUrl)
+        const blob = await response.blob()
+
+        const file = new File([blob], "og-image.png", {
+          type: "image/png",
+        })
 
         const formData = new FormData()
         formData.append("preview", file)
-        formData.append("athlete_id", user?.profile_id)
+        formData.append("athlete_id", String(user?.profile_id))
 
-        try {
-          const uploadRes = await setPlayerOG({
-            id: user?.profile_id,
-            data: formData,
-          })
-        } catch (error) {
-          console.error("Upload failed:", error)
-        }
-      })
+        await setPlayerOG({
+          id: user?.profile_id,
+          data: formData,
+        })
 
-      setShouldCapture(false)
+        console.log("OG image uploaded successfully")
+      } catch (error) {
+        console.error("Screenshot generation failed:", error)
+      } finally {
+        setShouldCapture(false)
+      }
     }
 
     takeScreenshot()
-  }, [shouldCapture])
+  }, [shouldCapture, user?.profile_id])
 
   return (
     <>

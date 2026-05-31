@@ -20,7 +20,7 @@ import { toast } from "sonner"
 import { registerUser } from "./action"
 import { setAuthCookie } from "@/lib/set-token"
 
-type UserRole = "player" | "parent" | "coach" | "team" | "club"
+type UserRole = "player" | "parent" | "coach" | "club"
 
 const roles: Array<{ label: string; value: UserRole }> = [
   { label: "Register as Player", value: "player" },
@@ -119,6 +119,8 @@ export default function RegisterForm() {
       }
 
       const { token, user } = res.data.data
+
+      console.log("Registration response:", res)
 
       if (token) {
         

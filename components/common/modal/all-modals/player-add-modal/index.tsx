@@ -481,50 +481,33 @@ export default function PlayerAddModal() {
             },
           }
         )
+        console.log("Add player response:", res)
 
-        const response = res as {
-          success?: boolean
-          message?: string
-          data?: {
-            status?: boolean
-            message?: string
-            data?: {
-              id?: number
-            }
-          }
-        }
+   
 
-        if (response?.success && response?.data?.status) {
+        if (res.data.status) {
+ 
+
           const user = JSON.parse(localStorage.getItem("go_elite_user") || "{}")
+ 
           user.status = "approve"
-          user.profile_id = response?.data?.data?.id
+          user.profile_id = res.data.data.id
+
           localStorage.setItem("go_elite_user", JSON.stringify(user))
 
           toast.success(
             getToastMessage(
-              response.data?.message ?? response.message,
+              res.data?.message ,
               "Player added successfully"
             )
           )
-          resetWizardState()
-          close("add-new", ["update"])
+          // resetWizardState()
+          close("add-new")
 
-          const nextParams = new URLSearchParams(searchParams.toString())
-          nextParams.delete("add-new")
-          nextParams.delete("update")
-          router.replace(
-            nextParams.toString()
-              ? `${pathname}?${nextParams.toString()}`
-              : pathname
-          )
-        } else {
-          toast.error(
-            getToastMessage(
-              response.data?.message ?? response.message,
-              "Failed to add player"
-            )
-          )
-        }
+ 
+        }else{
+          toast.error(res.data?.message || "Failed to add player")
+        }  
       } catch (error) {
         toast.error("Failed to add player")
         console.error("Error saving player profile:", error)
@@ -828,44 +811,33 @@ export default function PlayerAddModal() {
           }
         )
 
-        console.log("Update response:", res)
-        const response = res as {
-          success?: boolean
-          message?: string
-          data?: {
-            status?: boolean
-            message?: string
-            data?: {
-              id?: number
-            }
-          }
-        }
+ 
 
-        if (response.success && response.data?.status) {
+        if (res.data.status) {
           setUpdating(false)
           toast.success(
             getToastMessage(
-              response.data.message,
+              res.data.message,
               "Player updated successfully"
             )
           )
           window.dispatchEvent(new CustomEvent("player_profile_updated"))
           sessionStorage.removeItem(PLAYER_EDIT_STORAGE_KEY)
-          close("update", ["add-new"])
-          resetWizardState()
-          const nextParams = new URLSearchParams(searchParams.toString())
-          nextParams.delete("add-new")
-          nextParams.delete("update")
-          router.replace(
-            nextParams.toString()
-              ? `${pathname}?${nextParams.toString()}`
-              : pathname
-          )
+          close("update")
+          // resetWizardState()
+          // const nextParams = new URLSearchParams(searchParams.toString())
+          // nextParams.delete("add-new")
+          // nextParams.delete("update")
+          // router.replace(
+          //   nextParams.toString()
+          //     ? `${pathname}?${nextParams.toString()}`
+          //     : pathname
+          // )
         } else {
           setUpdating(false)
           toast.error(
             getToastMessage(
-              response.data?.message ?? response.message,
+              res.data?.message ,
               "Failed to update player"
             )
           )
@@ -900,16 +872,16 @@ export default function PlayerAddModal() {
           setUpdating(false)
           toast.success("Child profile updated successfully")
           window.dispatchEvent(new CustomEvent("player_profile_updated"))
-          close("update", ["add-new"])
-          resetWizardState()
-          const nextParams = new URLSearchParams(searchParams.toString())
-          nextParams.delete("add-new")
-          nextParams.delete("update")
-          router.replace(
-            nextParams.toString()
-              ? `${pathname}?${nextParams.toString()}`
-              : pathname
-          )
+          close("update")
+          // resetWizardState()
+          // const nextParams = new URLSearchParams(searchParams.toString())
+          // nextParams.delete("add-new")
+          // nextParams.delete("update")
+          // router.replace(
+          //   nextParams.toString()
+          //     ? `${pathname}?${nextParams.toString()}`
+          //     : pathname
+          // )
         } else {
           setUpdating(false)
           toast.error(

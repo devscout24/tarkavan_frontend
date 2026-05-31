@@ -78,6 +78,7 @@ export default function Page() {
                 gender: data?.profile?.gender ,
                 id: 1,
                 full_name: data?.profile?.name,
+                last_name: "",
                 dob: data?.profile?.dob,
                 nationality: data?.profile?.nationality,
                 email:  data?.profile?.email ,

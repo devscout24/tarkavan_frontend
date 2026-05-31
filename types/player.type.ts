@@ -6,6 +6,14 @@ export type TPlayerDashboard = {
   upcoming_training: any[] // later refine if structure known
 }
 
+
+// ------------------ SCOUTING ------------------
+export type ScoutingStatus = {
+  profile_completeness: number
+  total_recruitments_applied: number
+  scouts_viewing: number
+}
+
 // ------------------ PLAYER INFO ------------------
 export type PlayerInfo = {
   id: number
@@ -23,19 +31,6 @@ export type PlayerInfo = {
   privacy_setting: string | null
 }
 
-export type Position = {
-  id: number
-  name: string
-}
-
-export type Location = {
-  city_id: number
-  city: string
-  country_id: number
-  country: string
-}
-
-// ------------------ SUMMARY ------------------
 export type TPlayerStatsSummary = {
   profile_visibility: string | null
   total_programs: number
@@ -44,12 +39,11 @@ export type TPlayerStatsSummary = {
   videos_uploaded: number
 }
 
-// ------------------ SCOUTING ------------------
-export type ScoutingStatus = {
-  profile_completeness: number
-  total_recruitments_applied: number
-  scouts_viewing: number
+export type Position = {
+  id: number
+  name: string
 }
+
 
 // ------------------ OPPORTUNITY ------------------
 export type Opportunity = {
@@ -64,9 +58,24 @@ export type Opportunity = {
   application_status: string
 }
 
+
+export type Location = {
+  city_id: number
+  city: string
+  country_id: number
+  country: string
+}
+
+// ------------------ SUMMARY ------------------
+
+
+
+
+
 export type Club = {
   id: number
   club_name: string
+  logo: string
   club_logo: string
   city: string
   state: string | null
@@ -93,7 +102,7 @@ export type TPlayerSportOption = {
 export type TPlayerBasicInfo = {
   id: number
   name: string
-  last_name?: string 
+  last_name: string 
   full_name: string
   country: string
   city: string

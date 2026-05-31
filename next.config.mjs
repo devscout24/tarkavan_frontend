@@ -1,9 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  turbopack: {},  
-   experimental: {
+  turbopack: {},
+  experimental: {
     serverActions: {
-      bodySizeLimit: '100mb',
+      bodySizeLimit: "100mb",
+    },
+  },
+  api: {
+    bodyParser: {
+      sizeLimit: "100mb",
     },
   },
   images: {
@@ -49,7 +54,7 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/api/:path*',
+        source: "/api/:path*",
         destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`,
       },
     ]

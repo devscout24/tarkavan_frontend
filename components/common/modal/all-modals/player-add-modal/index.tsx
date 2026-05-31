@@ -470,7 +470,7 @@ export default function PlayerAddModal() {
 
       try {
         const res = await addChildOrPlayer(formData)
-
+        console.log("Add player response:", res)
         const response = res as {
           success?: boolean
           message?: string

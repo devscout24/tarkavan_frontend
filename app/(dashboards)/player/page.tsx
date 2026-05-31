@@ -24,7 +24,7 @@ export default function PlayerDashboardPage() {
     const getDashboard  = async () => {
       try {
         const res = await getPlayerDashboard()
-         console.log("Player Dashboard Response:", res)
+
         if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
           setDashData(res.data.data)
         }
@@ -49,7 +49,8 @@ export default function PlayerDashboardPage() {
   }, [])
 
   const playerId = dashData?.player_info?.id;
-    
+   
+  console.log("Dashboard Data:", dashData)
  
   return (
     <section className=" ">
@@ -76,7 +77,7 @@ export default function PlayerDashboardPage() {
               {dashData?.recent_opportunities?.map((opportunity) => (
                 <div key={opportunity.id} className="max-w-[320px] min-w-[320px] shrink-0">
                   <Advertisement
-                    imageUrl={opportunity.club.club_logo}
+                    imageUrl={opportunity.club.logo}
                     positions={opportunity.position.name}
                     teamName={opportunity.club.club_name}
                     ageGroup={String(opportunity.upto_age)}

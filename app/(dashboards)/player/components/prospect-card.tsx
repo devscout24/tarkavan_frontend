@@ -27,7 +27,7 @@ export default function ProspectCard({
       {/* overlay box */}
       <div className="absolute bottom-0 left-0 z-2 h-full w-full rounded-lg bg-gradient-to-b from-transparent via-transparent to-black" />
 
-      {basic_info?.image && (
+      {basic_info?.image ? (
         <Image
           width={500}
           height={1000}
@@ -35,7 +35,9 @@ export default function ProspectCard({
           alt="playerimage"
           className="h-full min-h-140 w-full rounded-lg object-cover"
         />
-      )}
+      ):
+      <div className="h-full min-h-140 w-full rounded-lg bg-secondary "></div>
+      }
 
       <Badge
         variant="default"

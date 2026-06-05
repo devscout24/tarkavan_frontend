@@ -88,8 +88,7 @@ export default function CoachDashboardPage() {
       onClick: handleExportEarnings,
     },
   ]
-
-  console.log(dashboardData)
+ 
  
   useEffect(() => {
     const fetchDashboardData = async () => {

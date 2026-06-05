@@ -76,7 +76,7 @@ export default function MyProfilePage() {
 
     const [profileData, setProfileData] = useState<CoachProfileData | null>(null)
     const [loading, setLoading] = useState(true)
-    console.log(profileData)
+ 
   
     useEffect(() => {
       const fetchExperienceData = async () => {

@@ -2,7 +2,6 @@
 
 import ProgramCard from "@/components/common/program-card"
 import ProgramHead from "../../../../components/common/program-head"
-import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react" 
 import { getSportOptions } from "../../action"
 import { TSportOption } from "@/types"
@@ -17,13 +16,12 @@ export default function PLayerProgramPage({ child_id }: { child_id: string }) {
     const  [programs, setPrograms] = useState<TProgramUpcomming[]>([])
     const [sports, setSports] = useState<TSportOption[]>([])
     const [selectedFilter, setSelectedFilter] = useState<string>("") 
-     console.log(programs)
+    
     useEffect(() => {
   
       const getPrograms = async () => {
         try{ 
-          const res = await getAvailablePlayerParentProgram(selectedFilter)   
-          console.log("Available programs response:", res)
+          const res = await getAvailablePlayerParentProgram(selectedFilter)    
           if(res && "success" in res && res.success && res.data && "data" in res.data && res.data.data ) {
               setPrograms(res.data.data.programs)
             } 

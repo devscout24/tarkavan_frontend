@@ -29,7 +29,7 @@ export type WizardState = {
       jerseyNumber: string
       dominantFoot: string
       clubTeam: string
-      country: string 
+      country: string
       city: string
     }
     positionMap: {
@@ -50,6 +50,9 @@ export type WizardState = {
     highlights: {
       showcaseValue: string
       selectedShowcaseSource: "youtube" | "hudl" | "vimeo" | null
+      facebook_link: string
+      whatsapp_link: string
+      twitter_link: string
       uploadedItems: Array<{
         id: string
         title: string
@@ -91,12 +94,12 @@ export const defaultWizardState: WizardState = {
       jerseyNumber: "",
       dominantFoot: "",
       clubTeam: "",
-      country: "", 
+      country: "",
       city: ""
     },
     positionMap: {
-      primaryPosition: "LW",
-      secondaryPosition: "RCB",
+      primaryPosition: "",
+      secondaryPosition: "",
     },
     seasonStats: {
       activeTab: "outfield",
@@ -125,6 +128,9 @@ export const defaultWizardState: WizardState = {
     highlights: {
       showcaseValue: "",
       selectedShowcaseSource: null,
+      facebook_link: "",
+      whatsapp_link: "",
+      twitter_link: "",
       uploadedItems: [],
     },
     achievements: {

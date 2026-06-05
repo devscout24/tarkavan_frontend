@@ -405,7 +405,7 @@ export default function CoachProfileSetup({
 
         const result: CoachProfileApiResult =
           await createOrUpdateCoachProfile(apiFormData)
-        console.log("API result:", result)
+ 
 
         if (result.success) {
           toast.success(
@@ -428,8 +428,7 @@ export default function CoachProfileSetup({
         } else {
           toast.error(result.message || "Failed to create coach profile")
         }
-      } catch (err) {
-        console.log("Error submitting coach profile:", err)
+      } catch (err) { 
         toast.error("An unexpected error occurred")
       } finally {
         setIsLoading(false)

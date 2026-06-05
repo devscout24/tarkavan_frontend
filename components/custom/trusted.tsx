@@ -241,8 +241,7 @@ function CarouselRow({
   data: TReviewLanding[] | undefined
 }) {
   
-  useCarousel(rowRef, direction)
-  console.log(data)
+  useCarousel(rowRef, direction) 
 
    
   return (

@@ -18,8 +18,7 @@ export default function ProspectCard({
   academyVotes?: number
   basic_info?: TPlayerBasicInfo
   position_info?: TPlayerPositionInfo
-}) {
-  // console.log(position_info)
+}) { 
 
   return (
     <div className="relative rounded-lg border-2 border-secondary">

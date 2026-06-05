@@ -23,14 +23,11 @@ export default function ProfileSettingPage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/parent/profile`
-        console.log("Environment variable:", process.env.NEXT_PUBLIC_API_URL)
-        console.log("Full API URL:", apiUrl)
+        const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/parent/profile` 
 
         const token =
           localStorage.getItem("go_elite_token") ||
-          sessionStorage.getItem("go_elite_token")
-        console.log("Token found:", !!token)
+          sessionStorage.getItem("go_elite_token") 
 
         const response = await fetch(apiUrl, {
           method: "GET",
@@ -40,20 +37,16 @@ export default function ProfileSettingPage() {
             Authorization: `Bearer ${token}`,
           },
         })
-
-        console.log("Response status:", response.status)
-        console.log("Response headers:", response.headers)
+ 
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
 
-        const result = await response.json()
-        console.log("API Response:", result)
+        const result = await response.json() 
 
         if (result.status && result.data) {
-          setProfileData(result.data)
-          console.log("Profile data set:", result.data)
+          setProfileData(result.data) 
         } else {
           console.warn("Invalid response structure:", result)
         }
@@ -64,8 +57,7 @@ export default function ProfileSettingPage() {
           error instanceof Error ? error.message : "Unknown error"
         )
 
-        // Fallback to mock data for development
-        console.log("Using fallback mock data")
+        // Fallback to mock data for development 
         setProfileData({
           name: "Mehedi Noor Khan",
           email: "mehedinoork@gmail.com",
@@ -85,8 +77,7 @@ export default function ProfileSettingPage() {
     try {
       const token =
         localStorage.getItem("go_elite_token") ||
-        sessionStorage.getItem("go_elite_token")
-      console.log("Test API - Token found:", !!token)
+        sessionStorage.getItem("go_elite_token") 
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/parent/profile`,
@@ -95,22 +86,18 @@ export default function ProfileSettingPage() {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
-      console.log("Test API Response:", response)
-      const data = await response.json()
-      console.log("Test API Data:", data)
+      ) 
+      const data = await response.json() 
     } catch (error) {
       console.error("Test API Error:", error)
     }
   }
 
   const updateProfile = async (formData: FormData) => {
-    try {
-      console.log("Updating profile with FormData")
+    try { 
       const token =
         localStorage.getItem("go_elite_token") ||
-        sessionStorage.getItem("go_elite_token")
-      console.log("Token found for update:", !!token)
+        sessionStorage.getItem("go_elite_token") 
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/parent/profile/update`,
@@ -127,12 +114,10 @@ export default function ProfileSettingPage() {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      const result = await response.json()
-      console.log("Update API Response:", result)
+      const result = await response.json() 
 
       if (result.status && result.data) {
-        setProfileData(result.data)
-        console.log("Profile updated successfully:", result.data)
+        setProfileData(result.data) 
         return { success: true, message: result.message }
       } else {
         console.error("Profile update failed:", result.message)
@@ -185,8 +170,7 @@ export default function ProfileSettingPage() {
     formData.append("visible_reviews", privacyData.visible_reviews.toString())
 
     const result = await updateProfile(formData)
-    if (result.success) {
-      console.log("Privacy settings updated successfully")
+    if (result.success) { 
     } else {
       console.error("Failed to update privacy settings:", result.message)
       // Revert to original values if API call fails
@@ -202,8 +186,7 @@ export default function ProfileSettingPage() {
     }
   )
   const [changePasswordLoading, setChangePasswordLoading] = useState(false)
-  const handlePasswordChangeSave = () => {
-    console.log("Password change requested")
+  const handlePasswordChangeSave = () => { 
     setChangePasswordLoading(false)
   }
 
@@ -213,8 +196,7 @@ export default function ProfileSettingPage() {
       formData.append("profile_image", image)
 
       const result = await updateProfile(formData)
-      if (result.success) {
-        console.log("Profile image updated successfully")
+      if (result.success) { 
       } else {
         console.error("Failed to update profile image:", result.message)
       }
@@ -227,8 +209,7 @@ export default function ProfileSettingPage() {
 
     const result = await updateProfile(formData)
     if (result.success) {
-      setEditProfileModalOpen(false)
-      console.log("Profile name updated successfully")
+      setEditProfileModalOpen(false) 
     } else {
       console.error("Failed to update profile name:", result.message)
     }

@@ -129,7 +129,6 @@ export default function Page() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null) 
- console.log("Dashboard Data:", dashboardData)
 
   const handleAddChildren = () => {
     const nextParams = new URLSearchParams(searchParams.toString())

@@ -81,8 +81,7 @@ export default function AdvertisementParent({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedChildId, setSelectedChildId] = useState<string>("")
   const router = useRouter()
-  console.log(selectedChildId)
-  console.log(recruitId)
+ 
 
  
 

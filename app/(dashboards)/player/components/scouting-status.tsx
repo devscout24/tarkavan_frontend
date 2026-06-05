@@ -14,7 +14,7 @@ export default function ScoutingStatus({percentage = 0}: {percentage?: number}) 
 
         <p className="text-extralight mt-2 text-[14px]">
           {percentage < 100 && 
-          "Upload 2 videos to reach 100% and get featured."
+          "Upload 2 videos to reach 100%"
           }
         </p>
       </CardContent>

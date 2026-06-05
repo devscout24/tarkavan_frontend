@@ -91,6 +91,9 @@ export default function Page() {
                 sports: "",
                 sport_option_id: 10,
                 sport_option: { id: 10, name: "" },
+                facebook_link: "",
+                twitter_link: "",
+                whatsapp_link: "",
               }}
               position_info={{
                 jersey_number: 10,

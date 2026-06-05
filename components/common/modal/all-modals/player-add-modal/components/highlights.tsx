@@ -5,6 +5,12 @@ import UploadReel from "./upload-reel"
 import { Badge } from "@/components/ui/badge"
 import ModalStepHeader from "@/components/common/modal-header"
 import type { WizardState } from "../types"
+import {
+  Field,
+  FieldDescription,
+  FieldLabel,
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
 
 const MAX_FILE_SIZE_BYTES = 500 * 1024 * 1024
 
@@ -58,14 +64,36 @@ export default function Highlights({
   const [uploadedItems, setUploadedItems] = useState<UploadedItem[]>(
     draft.uploadedItems
   )
+  const [facebook_link, setFacebookLink] = useState(draft.facebook_link || "")
+  const [whatsapp_link, setWhatsappLink] = useState(draft.whatsapp_link || "")
+  const [twitter_link, setTwitterLink] = useState(draft.twitter_link || "")
+
+  useEffect(() => {
+    setShowcaseValue(draft.showcaseValue)
+    setSelectedShowcaseSource(draft.selectedShowcaseSource)
+    setUploadedItems(draft.uploadedItems)
+    setFacebookLink(draft.facebook_link || "")
+    setWhatsappLink(draft.whatsapp_link || "")
+    setTwitterLink(draft.twitter_link || "")
+  }, [
+    draft.showcaseValue,
+    draft.selectedShowcaseSource,
+    draft.uploadedItems,
+    draft.facebook_link,
+    draft.whatsapp_link,
+    draft.twitter_link,
+  ])
 
   useEffect(() => {
     onDraftChange({
       showcaseValue,
       selectedShowcaseSource,
       uploadedItems,
+      facebook_link,
+      whatsapp_link,
+      twitter_link,
     })
-  }, [showcaseValue, selectedShowcaseSource, uploadedItems, onDraftChange])
+  }, [showcaseValue, selectedShowcaseSource, uploadedItems, facebook_link, whatsapp_link, twitter_link, onDraftChange])
 
   const handleFileUpload = (files: File[]) => {
     if (files.length === 0) {
@@ -195,11 +223,10 @@ click to browse. Max size 500MB."
                     setSelectedShowcaseSource(item.id)
                     setShowcaseError("")
                   }}
-                  className={`h-6 cursor-pointer rounded-full border px-2 py-1 text-[12px] leading-[133.333%] font-medium ${
-                    isSelected
-                      ? "border-[#C6F57A] bg-[#C6F57A] text-[#060807]"
-                      : "border-white/20 bg-white/10 text-white"
-                  }`}
+                  className={`h-6 cursor-pointer rounded-full border px-2 py-1 text-[12px] leading-[133.333%] font-medium ${isSelected
+                    ? "border-[#C6F57A] bg-[#C6F57A] text-[#060807]"
+                    : "border-white/20 bg-white/10 text-white"
+                    }`}
                 >
                   <Icon
                     width="12"
@@ -289,6 +316,46 @@ click to browse. Max size 500MB."
           </p>
         )}
       </div>
+
+
+
+      {/* social media update / add */}
+      <h2 className="text-xl pb-5  font-bold leading-[150%] text-white">
+        Add Social Media Links
+      </h2>
+      <Field>
+        <FieldLabel htmlFor="Facebook">Facebook</FieldLabel>
+        <Input
+          id="Facebook"
+          type="text"
+          value={draft.facebook_link || facebook_link}
+          onChange={(e) => setFacebookLink(e.target.value)}
+          placeholder="https://www.facebook.com/.."
+        />
+      </Field>
+      <Field className="mt-4">
+        <FieldLabel htmlFor="WhatsApp">WhatsApp</FieldLabel>
+        <Input
+          id="WhatsApp"
+          type="text"
+          value={draft.whatsapp_link || whatsapp_link}
+          onChange={(e) => setWhatsappLink(e.target.value)}
+          placeholder="https://chat.whatsapp.com/.."
+        />
+      </Field>
+      <Field className="mt-4">
+        <FieldLabel htmlFor="Twitter">Twitter (X)</FieldLabel>
+        <Input
+          id="Twitter"
+          type="text"
+          value={draft.twitter_link || twitter_link}
+          onChange={(e) => setTwitterLink(e.target.value)}
+          placeholder="https://x.com/.."
+        />
+      </Field>
+
+
+
     </div>
   )
 }

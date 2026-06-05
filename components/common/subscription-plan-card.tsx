@@ -31,7 +31,7 @@ export default function SubscriptionPlanCard({
     try {
       setIsSubmitting(true)
       const res = await purchaseSubscription(String(id))
-      console.log(res)
+ 
 
       const checkoutUrl =
         typeof res === "object" &&

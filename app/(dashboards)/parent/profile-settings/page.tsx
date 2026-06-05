@@ -32,8 +32,7 @@ export default  function ProfileSettingPage() {
         } 
 
       }catch(error){
-        console.error(error)
-        console.log("error", error)
+        console.error(error) 
       }
     }
 
@@ -91,8 +90,7 @@ export default  function ProfileSettingPage() {
           toast.success("Profile name updated successfully") 
         }  
     }catch(error){
-      console.error(error)
-      console.log("error", error)
+      console.error(error) 
     }
  }
   

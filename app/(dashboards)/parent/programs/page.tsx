@@ -20,8 +20,7 @@ export default function ProgramPage() {
   
       const getPrograms = async () => {
         try{ 
-          const res = await getAvailablePlayerParentProgram(selectedFilter) 
-          console.log("programs response:", res)  
+          const res = await getAvailablePlayerParentProgram(selectedFilter)  
           if(res && "success" in res && res.success && res.data && "data" in res.data && res.data.data ) {
               setPrograms(res.data.data.programs)
             } 

@@ -1,7 +1,13 @@
 "use client"
 import { Card, CardContent } from "@/components/ui/card"
-import { Share2 } from "lucide-react"
-import { FaInstagram } from "react-icons/fa"
+import { Share2 } from "lucide-react" 
+import { IoLogoFacebook } from "react-icons/io5" 
+import { RiTwitterXLine } from "react-icons/ri"
+import { FaWhatsapp } from "react-icons/fa6"
+import CommonBtn from "@/components/common/common-btn"
+import ShareModal from "@/components/common/modal/all-modals/share-modal"
+import { useEffect, useState } from "react"
+
 
 interface SocialLinksProps {
   facebookUrl?: string
@@ -13,33 +19,23 @@ interface SocialLinksProps {
   profileUrl?: string
 }
 
-import { IoLogoFacebook } from "react-icons/io5"
-import { FaTiktok } from "react-icons/fa"
-import { RiTwitterXLine } from "react-icons/ri"
-import { FaWhatsapp } from "react-icons/fa6"
-import CommonBtn from "@/components/common/common-btn"
-import ShareModal from "@/components/common/modal/all-modals/share-modal"
-import { useEffect, useState } from "react"
-import { StaticImageData } from "next/image" 
-import { domToPng } from "modern-screenshot" 
+ 
 
 
 export default function SocialLinks({
-  facebookUrl = "#",
-  instagramUrl = "#",
-  tiktokUrl = "#",
-  twitterUrl = "#",
-  whatsappUrl = "#",
+  facebookUrl = "",  
+  twitterUrl = "",
+  whatsappUrl = "",
   onClick,
   profileUrl
 }: SocialLinksProps) {
   const socialLinks = [
-    { icon: IoLogoFacebook, url: facebookUrl, label: "Facebook" },
-    { icon: FaInstagram, url: instagramUrl, label: "Instagram" },
-    { icon: FaTiktok, url: tiktokUrl, label: "TikTok" },
+    { icon: IoLogoFacebook, url: facebookUrl, label: "Facebook" },  
     { icon: RiTwitterXLine, url: twitterUrl, label: "X" },
     { icon: FaWhatsapp, url: whatsappUrl, label: "WhatsApp" },
   ]
+
+ 
 
   const [openShareModal, setOpenShareModal] = useState(false)
   const [profileId, setProfileId] = useState<string | null>(null);
@@ -96,8 +92,7 @@ export default function SocialLinks({
         key={"shareUrl"}
         open={openShareModal}
         onOpenChange={setOpenShareModal}
-        // url={`${window.location.origin}/${profileUrl}/${profileId}`}  
-        url={`https://docs.google.com/document/d/1KNdNBZ_xqwDcDjD1nnNoW7ssu6N5Vc2LgT63llc47uc/edit?tab=t.0`}  
+        url={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/${profileUrl}/${profileId}`}    
         title="Watch my Player Card"
       />
       }

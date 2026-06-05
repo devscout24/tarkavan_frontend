@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +23,25 @@ export default function ProfileDropdown() {
     const stored = localStorage.getItem("go_elite_user")
     return stored ? JSON.parse(stored) : null
   })
+  const [profileImage, setProfileImage] = useState<string>(
+    "https://github.com/shadcn.png"
+  )
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+
+    const storedImage = localStorage.getItem("go_elite_profile_image")
+    if (!storedImage) {
+      return
+    }
+
+    try {
+      const parsedImage = JSON.parse(storedImage)
+      setProfileImage(typeof parsedImage === "string" && parsedImage ? parsedImage : "https://github.com/shadcn.png")
+    } catch {
+      setProfileImage(storedImage)
+    }
+  }, [])
 
   return (
     <DropdownMenu>
@@ -36,7 +55,7 @@ export default function ProfileDropdown() {
 
         <Avatar>
           <AvatarImage
-            src={userInfo?.image || "https://github.com/shadcn.png"}
+            src={profileImage}
             className="-mt-1 min-h-10 min-w-10 rounded-[12px]"
           />
           <AvatarFallback>CN</AvatarFallback>
@@ -49,8 +68,8 @@ export default function ProfileDropdown() {
             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm text-white">
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage
-                  src={"https://avatars.githubusercontent.com/u/124599?v=4"}
-                  alt={"https://avatars.githubusercontent.com/u/124599?v=4"}
+                  src={profileImage}
+                  alt={userInfo?.name || "Profile image"}
                 />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>

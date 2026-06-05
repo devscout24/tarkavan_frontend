@@ -87,8 +87,7 @@ export default function RecruitmentForm({
     defaultValues?.tryoutDates ?? ""
   )
   const [startDate, setStartDate] = useState("")
-
-  console.log(startDate)
+ 
   const [ageGroup, setAgeGroup] = useState("")
   const [description, setDescription] = useState(
     defaultValues?.description ?? ""

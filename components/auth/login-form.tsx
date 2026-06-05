@@ -9,18 +9,20 @@ import { toast } from "sonner"
 import { loginUser } from "./action"
 import { setAuthCookie } from "@/lib/set-token"
 import { useRouter } from "next/navigation"
+import { useAppDispatch } from "@/lib/hooks"
+import { selectUserImage } from "@/lib/features/userSlice"
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const router = useRouter()
+  const dispatch = useAppDispatch()
 
   const handleLogin = async () => {
     setLoading(true)
     try {
-      const res = await loginUser({ email, password })  
-      console.log("Login response:", res)
+      const res = await loginUser({ email, password })   
       if (res?.data?.status) {
         toast.success("Login successful! Welcome back.")
         await setAuthCookie(res.data.data.token)
@@ -55,6 +57,7 @@ export default function LoginForm() {
           .toLowerCase()
 
         const isPending = newUserData.status === "pending"
+        // dispatch(selectUserImage("https://avatars.githubusercontent.com/u/124599?v=4"))
 
         if (isPending && (normalizedRole === "coach" || normalizedRole === "club")) {
           router.replace(`/${normalizedRole}?${normalizedRole}=profile-setup`)

@@ -102,7 +102,7 @@ export type TPlayerSportOption = {
 export type TPlayerBasicInfo = {
   id: number
   name: string
-  last_name: string 
+  last_name: string
   full_name: string
   country: string
   city: string
@@ -117,6 +117,9 @@ export type TPlayerBasicInfo = {
   sports: string
   sport_option_id: number
   sport_option: TPlayerSportOption
+  facebook_link: string
+  twitter_link: string
+  whatsapp_link: string
 }
 
 // ================= POSITION INFO =================
@@ -309,6 +312,9 @@ export type TCompletePlayerData = {
   highlights: {
     showcaseValue: string
     selectedShowcaseSource: "youtube" | "hudl" | "vimeo" | null
+    facebook_link: string
+    whatsapp_link: string
+    twitter_link: string
     uploadedItems: Array<{
       id: string
       title: string

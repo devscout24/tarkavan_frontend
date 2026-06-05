@@ -55,7 +55,7 @@ export default function CoachCardForRecruitment({
 }: CoachCardProps) {
   const handleReleasePlayer = async () => {
 
-    console.log(team_player_id)
+ 
  
     if (!team_player_id) {
       toast.error("Invalid team player ID")

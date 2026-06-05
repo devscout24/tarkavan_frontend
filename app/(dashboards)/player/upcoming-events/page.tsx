@@ -9,8 +9,7 @@ export default async function UpcomingEventPage() {
   let UpcomingEvents: TUpcomingEvent[] = []
 
   try {
-    const res = await getUpcomingEvents()
-     console.log("API Response for Upcoming Events:", res)
+    const res = await getUpcomingEvents() 
     if (
       res &&
       "success" in res &&
@@ -25,8 +24,7 @@ export default async function UpcomingEventPage() {
   } catch (err) {
     console.error("Error fetching upcoming events:", err)
   }
-
-  console.log("Top Upcoming Event:", UpcomingEvents)
+ 
 
   return (
     <section>

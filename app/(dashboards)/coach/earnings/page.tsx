@@ -55,8 +55,7 @@ export default function EarningsPage() {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      const result = await response.json()
-      console.log("Earnings API Response:", result)
+      const result = await response.json() 
 
       if (result.status && result.data) {
         setEarningsData(result.data)
@@ -121,8 +120,7 @@ export default function EarningsPage() {
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
       
-      console.log(`Earnings data exported successfully as ${fileExtension.toUpperCase()}`)
-    } catch (error) {
+     } catch (error) {
       console.error("Error exporting earnings data:", error)
     } finally {
       setExporting(false)

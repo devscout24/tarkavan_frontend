@@ -71,8 +71,7 @@ export default function ProfileSettingPage() {
           window.dispatchEvent(new Event("profile_update"))
         } 
         setProfileImage("")
-      } catch (error) {
-        console.log(error) 
+      } catch (error) { 
         setProfileImage("")
       }
     }

@@ -97,7 +97,7 @@ export default function ProgramDateTimeSelector({
   const [allChields, setAllChields] = useState<TChield[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedChildId, setSelectedChildId] = useState<string>("")
-  console.log(availableTimes)
+ 
 
   useEffect(() => {
     const storedUser = localStorage.getItem("go_elite_user")
@@ -141,8 +141,7 @@ export default function ProgramDateTimeSelector({
         const res = await getDateForMonth({
           program_id: programid,
           month: currentMonth,
-        })
-        console.log(res)
+        }) 
         if (
           res &&
           "success" in res &&

@@ -75,8 +75,7 @@ export default function ProgramCard({
 
     if(currentUser && currentUser.role === "club"){ 
       try {
-        const res = await deleteProgram(id as string)
-        console.log("Delete response:", res)
+        const res = await deleteProgram(id as string) 
         if (res && "success" in res && res.success) {
           toast.success("Program deleted successfully")
           window.dispatchEvent(new Event("programDeleted"))
@@ -88,8 +87,7 @@ export default function ProgramCard({
 
     if(currentUser && currentUser.role === "coach"){ 
       try {
-        const res = await deleteCoachProgram({ program_id: String(id) })
-        console.log("Delete response:", res)
+        const res = await deleteCoachProgram({ program_id: String(id) }) 
         if (res && "success" in res && res.success) {
           toast.success("Program deleted successfully")
           window.dispatchEvent(new Event("programDeleted"))

@@ -57,8 +57,7 @@ export default function TeamAddModal() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const res = await getCompetitionLabel()
-        console.log("Competition Levels Response:", res) // Debug log
+        const res = await getCompetitionLabel() 
         if (res && "success" in res && res.success && "data" in res) {
           setCompetitionLevels(res.data?.data || [])
         }

@@ -43,7 +43,7 @@ export function useChatListener(
     const syncToken = () => {
       const storedToken = localStorage.getItem("go_elite_token")
       const good = storedToken && isValidToken(storedToken) ? storedToken : null
-      if (good !== token) console.log("useChatListener: token sync ->", good)
+      if (good !== token)  
       setToken(good)
     }
 

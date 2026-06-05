@@ -111,8 +111,7 @@ export default function ChatInbox({
         <ScrollArea className="h-[45vh] px-3 py-4 md:px-5 md:py-5 xl:h-[70vh]">
           <div className="space-y-6 pb-3">
             {messages.map((message, i) => {
-              const isMe = String(message.sender_id) === userId
-              console.log("Rendering message:", { message, isMe })
+              const isMe = String(message.sender_id) === userId 
 
               return message.message || message.file ? (
                 <div key={i}>

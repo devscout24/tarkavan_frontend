@@ -41,7 +41,9 @@ export default function RootLayout({
         className="text-fg-primary min-h-screen bg-background"
       >
         <Toasting />
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )

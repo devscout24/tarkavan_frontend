@@ -120,7 +120,7 @@ export default function RegisterForm() {
 
       const { token, user } = res.data.data
 
-      console.log("Registration response:", res)
+ 
 
       if (token) {
         

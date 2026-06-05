@@ -59,10 +59,11 @@ const normalizeMediaLink = (
 }
 
 const buildWizardStateFromProfile = (profile: TPlayerProfile) => {
+ 
   const latestStat = profile.season_stats_last_five_years?.[0]
-  const primaryPosition = profile.position_info?.primary_position?.name ?? "LW"
+  const primaryPosition = String(profile.position_info?.primary_position?.id) ?? ""
   const secondaryPosition =
-    profile.position_info?.secondary_position?.name ?? "RCB"
+    String(profile.position_info?.secondary_position?.id) ?? ""
   const strengths =
     profile.strengths?.reduce<Record<string, string>>((accumulator, item) => {
       if (item?.strength_type) {
@@ -106,7 +107,7 @@ const buildWizardStateFromProfile = (profile: TPlayerProfile) => {
       seasonStats: {
         activeTab:
           latestStat &&
-          (latestStat.clean_sheets > 0 || latestStat.total_saves > 0)
+            (latestStat.clean_sheets > 0 || latestStat.total_saves > 0)
             ? "goalkeeper"
             : "outfield",
         values: {
@@ -136,6 +137,9 @@ const buildWizardStateFromProfile = (profile: TPlayerProfile) => {
       highlights: {
         showcaseValue: firstHighlightLink,
         selectedShowcaseSource: firstHighlightSource,
+        facebook_link: profile.basic_info?.facebook_link ?? "",
+        whatsapp_link: profile.basic_info?.whatsapp_link ?? "",
+        twitter_link: profile.basic_info?.twitter_link ?? "",
         uploadedItems: [
           ...(profile.videos ?? []).map((video, index) => ({
             id: `existing-video-${video.id}`,
@@ -347,8 +351,11 @@ export default function PlayerAddModal() {
     : null
 
   // Safe profile creation for player role
+  const [handleSetting, setHandleSetting] = useState(false)
   const handleSetProfile = useCallback(async () => {
     const completeData = collectCompletePlayerData()
+
+    setHandleSetting(true)
 
     if (user?.role === "player") {
       // Format strengths data properly
@@ -459,6 +466,9 @@ export default function PlayerAddModal() {
       )
       const firstLinkTitle = firstLink?.title
       const firstLinkSource = firstLink?.source ?? null
+      appendText("facebook_link", completeData.highlights.facebook_link)
+      appendText("whatsapp_link", completeData.highlights.whatsapp_link)
+      appendText("twitter_link", completeData.highlights.twitter_link)
       if (firstLinkTitle) {
         appendText("link[0]", firstLinkTitle)
         appendText("link_status[0]", firstLinkSource)
@@ -481,15 +491,12 @@ export default function PlayerAddModal() {
             },
           }
         )
-        console.log("Add player response:", res)
-
-   
 
         if (res.data.status) {
- 
+          setHandleSetting(false)
 
           const user = JSON.parse(localStorage.getItem("go_elite_user") || "{}")
- 
+
           user.status = "approve"
           user.profile_id = res.data.data.id
 
@@ -497,18 +504,19 @@ export default function PlayerAddModal() {
 
           toast.success(
             getToastMessage(
-              res.data?.message ,
+              res.data?.message,
               "Player added successfully"
             )
           )
           // resetWizardState()
           close("add-new")
 
- 
-        }else{
+
+        } else {
           toast.error(res.data?.message || "Failed to add player")
-        }  
+        }
       } catch (error) {
+        setHandleSetting(false)
         toast.error("Failed to add player")
         console.error("Error saving player profile:", error)
       }
@@ -637,6 +645,7 @@ export default function PlayerAddModal() {
       try {
         const res = await addChild(formData)
 
+
         if (
           res &&
           "success" in res &&
@@ -648,6 +657,7 @@ export default function PlayerAddModal() {
           toast.success(
             getToastMessage(res.data.message, "Child added successfully")
           )
+          setHandleSetting(false)
           resetWizardState()
           close("add-new")
           window.dispatchEvent(new CustomEvent("child_added"))
@@ -661,7 +671,7 @@ export default function PlayerAddModal() {
           toast.error(getToastMessage(res.data.message, "Failed to add child"))
         }
       } catch (error) {
-        console.log(error)
+
         toast.error("Failed to add child")
         console.error("Error saving parent profile:", error)
       }
@@ -787,6 +797,9 @@ export default function PlayerAddModal() {
     )
     const firstLinkTitle = firstLink?.title
     const firstLinkSource = firstLink?.source ?? null
+    appendText("facebook_link", completeData.highlights.facebook_link)
+    appendText("whatsapp_link", completeData.highlights.whatsapp_link)
+    appendText("twitter_link", completeData.highlights.twitter_link)
     if (firstLinkTitle) {
       appendText("link[0]", firstLinkTitle)
       appendText("link_status[0]", firstLinkSource)
@@ -811,7 +824,7 @@ export default function PlayerAddModal() {
           }
         )
 
- 
+
 
         if (res.data.status) {
           setUpdating(false)
@@ -824,20 +837,11 @@ export default function PlayerAddModal() {
           window.dispatchEvent(new CustomEvent("player_profile_updated"))
           sessionStorage.removeItem(PLAYER_EDIT_STORAGE_KEY)
           close("update")
-          // resetWizardState()
-          // const nextParams = new URLSearchParams(searchParams.toString())
-          // nextParams.delete("add-new")
-          // nextParams.delete("update")
-          // router.replace(
-          //   nextParams.toString()
-          //     ? `${pathname}?${nextParams.toString()}`
-          //     : pathname
-          // )
         } else {
           setUpdating(false)
           toast.error(
             getToastMessage(
-              res.data?.message ,
+              res.data?.message,
               "Failed to update player"
             )
           )
@@ -988,6 +992,7 @@ export default function PlayerAddModal() {
             text="Finish & Update Profile"
             onClick={handleUpdateProfile}
             isLoading={updating}
+            disabled={updating}
             className="w-fit cursor-pointer bg-brand px-5 py-2 font-semibold text-primary hover:bg-secondary/20 hover:text-white"
           />
         ) : (
@@ -996,6 +1001,7 @@ export default function PlayerAddModal() {
             size="lg"
             text="Finish & Create Profile"
             onClick={handleSetProfile}
+
             className="w-fit cursor-pointer bg-brand px-5 py-2 font-semibold text-primary hover:bg-secondary/20 hover:text-white"
           />
         )}

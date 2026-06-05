@@ -18,7 +18,7 @@ export default function page() {
     const fetchData = async () => {
       try {
         const res = await getPublicClubData(String(clubid))
-        console.log("Fetched Club Profile Data:", res)
+   
         if (
           res &&
           typeof res === "object" &&

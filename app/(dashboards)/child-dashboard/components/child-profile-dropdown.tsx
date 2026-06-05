@@ -27,8 +27,7 @@ export default function ChildProfileDropdown() {
   })
     const params = useParams()
     const child_id = params.child_id
-    const [playerData, setPlayerData] = useState<TPlayerProfile>()
-    console.log("child profile dropdown render", playerData)
+    const [playerData, setPlayerData] = useState<TPlayerProfile>() 
     useEffect(() => {
       if (!child_id) {
         return

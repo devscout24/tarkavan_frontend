@@ -35,6 +35,7 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { RiLogoutCircleRLine } from "react-icons/ri"
 import AuthCheckPoint from "@/components/auth/auth-checkopoint"
 import Modals from "@/components/common/modal"
+import { Provider } from "react-redux"
 
 export default function PlayerDashboardLayout({
   children,
@@ -43,7 +44,7 @@ export default function PlayerDashboardLayout({
     user: {
       name: "Skyleen",
       email: "skyleen@example.com",
-      avatar: "https://avatars.githubusercontent.com/u/124599?v=4",
+      avatar:  "https://avatars.githubusercontent.com/u/124599?v=4",
     },
     navMain: [
       {
@@ -92,7 +93,7 @@ export default function PlayerDashboardLayout({
 
   const pathname = usePathname()
 
-  return (
+  return ( 
     <TooltipProvider>
       <AuthCheckPoint role="player">
         <Modals />

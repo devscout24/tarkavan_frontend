@@ -318,7 +318,7 @@ const AddProgramPage: React.FC = () => {
     if (currentUser && currentUser.role === "club") {
       try {
         const res: any = await createProgram(await buildFormData())
-        console.log(res)
+       
 
         res?.success || res?.status
           ? onSuccess("Program created successfully!")
@@ -334,7 +334,7 @@ const AddProgramPage: React.FC = () => {
     if (currentUser && currentUser.role === "coach") {
       try {
         const res: any = await addCoachProgram(await buildFormData())
-        console.log(res)
+     
         res?.success || res?.status
           ? onSuccess("Program created successfully!")
           : toast.error(res?.message || "Failed to create program.")

@@ -39,8 +39,7 @@ export default function ClubRecruitmentClientPage() {
 
   const router = useRouter()
   const params = useParams()
-  const [data, setData] = useState<TCoachApplication[]>([])
-  console.log(data)
+  const [data, setData] = useState<TCoachApplication[]>([]) 
   useEffect(() => {
     const handleGetRecruitDetails = async () => {
       try {
@@ -86,8 +85,7 @@ export default function ClubRecruitmentClientPage() {
       const res = await changeStatus({
         applicantId: applicantId as string,
         status: formData,
-      })  
-      console.log(res)
+      })   
       if (
         res &&
         "success" in res &&

@@ -35,6 +35,7 @@ export default function SelectPosition({
   const [positions, setPositions] = useState<TPlayerPosition[]>()
   const [primaryPosition, setPrimaryPosition] = useState<string>("")
   const [secondaryPosition, setSecondaryPosition] = useState<string>("")
+  const [hydratedFromDraft, setHydratedFromDraft] = useState(false)
 
   useEffect(() => {
     const getPositions = async () => {
@@ -57,9 +58,62 @@ export default function SelectPosition({
     getPositions()
   }, [])
 
+  const resolvePositionValue = (value: string) => {
+    if (!value || !positions?.length) {
+      return ""
+    }
+
+    const trimmedValue = value.trim()
+
+    const matchedById = positions.find(
+      (position) => String(position.id) === trimmedValue
+    )
+    if (matchedById) {
+      return String(matchedById.id)
+    }
+
+    const matchedByName = positions.find(
+      (position) =>
+        position.name.trim().toLowerCase() === trimmedValue.toLowerCase()
+    )
+    if (matchedByName) {
+      return String(matchedByName.id)
+    }
+
+    const matchedByShortCode = positions.find((position) => {
+      const codeMatch = position.name.match(/\(([^)]+)\)\s*$/)
+      if (!codeMatch) return false
+
+      const code = codeMatch[1].trim().toLowerCase()
+      const draftCodeMatch = trimmedValue.match(/\(([^)]+)\)\s*$/)
+      const draftCode = draftCodeMatch?.[1]?.trim().toLowerCase()
+
+      return draftCode === code
+    })
+
+    return matchedByShortCode ? String(matchedByShortCode.id) : ""
+  }
+
   useEffect(() => {
+    if (!positions?.length) {
+      return
+    }
+
+    const nextPrimaryPosition = resolvePositionValue(draft.primaryPosition)
+    const nextSecondaryPosition = resolvePositionValue(draft.secondaryPosition)
+
+    setPrimaryPosition(nextPrimaryPosition)
+    setSecondaryPosition(nextSecondaryPosition)
+    setHydratedFromDraft(true)
+  }, [draft.primaryPosition, draft.secondaryPosition, positions])
+
+  useEffect(() => {
+    if (!hydratedFromDraft) {
+      return
+    }
+
     onDraftChange({ primaryPosition, secondaryPosition })
-  }, [primaryPosition, secondaryPosition])
+  }, [hydratedFromDraft, onDraftChange, primaryPosition, secondaryPosition])
 
   // make a array using selected value
   const selectedPositionArray = useMemo<TPlayerPosition[]>(() => {
@@ -81,6 +135,8 @@ export default function SelectPosition({
       return { ...position, type: "Secondary" }
     }
   })
+
+
 
   return (
     <div className="mx-auto w-full max-w-4xl rounded-2xl bg-[#090B10] p-4 text-white">

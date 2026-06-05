@@ -87,8 +87,7 @@ export default function PaymentTable({ payments = [] }: PaymentTableProps) {
   const handleExport = async (booking_id: string) => {
     try{
 
-      const res = await getPaymentExport(booking_id)
-      console.log("Export response:", res)
+      const res = await getPaymentExport(booking_id) 
       const resAny = res as any
       if (res && "success" in res && res.success && "data" in resAny && resAny.data) {
         let blob: Blob

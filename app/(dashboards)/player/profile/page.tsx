@@ -47,15 +47,16 @@ export default function PlayerProfile() {
     ? JSON.parse(localStorage.getItem("go_elite_user")!)
     : null
   const [playerData, setPlayerData] = useState<TPlayerProfile>()
-  console.log(playerData)
+ 
   const router = useRouter()
   useEffect(() => {
     const profileData = async () => {
       try {
-        const res = await getPlayerProfile(user?.profile_id)
-
+        const res = await getPlayerProfile(user?.profile_id) 
         if (res && "success" in res && res.data && res.data.data) {
           setPlayerData(res.data.data)
+          localStorage.setItem("go_elite_profile_image", JSON.stringify(res?.data?.data?.basic_info
+            ?.image))
         }
       } catch (error) {
         console.error(error)
@@ -236,7 +237,6 @@ export default function PlayerProfile() {
           data: formData,
         })
 
-        console.log("OG image uploaded successfully")
       } catch (error) {
         console.error("Screenshot generation failed:", error)
       } finally {
@@ -246,6 +246,8 @@ export default function PlayerProfile() {
 
     takeScreenshot()
   }, [shouldCapture, user?.profile_id])
+
+ 
 
   return (
     <>
@@ -280,7 +282,12 @@ export default function PlayerProfile() {
             />
             <Bio description={String(playerData?.basic_info?.biography)} />
             <Achievements achievements={playerData?.achievements} />
-            <SocialLinks profileUrl="profile/player" />
+            <SocialLinks
+              profileUrl="profile/player"
+              facebookUrl={playerData?.basic_info?.facebook_link}
+              twitterUrl={playerData?.basic_info?.twitter_link}
+              whatsappUrl={playerData?.basic_info?.whatsapp_link}
+            />
           </div>
           <div className="flex-7">
             {/* position mapping */}

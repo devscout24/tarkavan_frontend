@@ -68,8 +68,7 @@ export default function Advertisement({
     const formData = new FormData () ;
     formData.append("recruitment_id", recruitId || "");
 
-    const res = await applyRecruitment(formData)
-    console.log("Apply response:", res)
+    const res = await applyRecruitment(formData) 
     if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
       toast.success("Application submitted successfully") 
       window.dispatchEvent(new CustomEvent("load_coach_dashboard"))

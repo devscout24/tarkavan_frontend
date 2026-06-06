@@ -39,9 +39,9 @@ useEffect(() => {
     
 
   return (
-    <Dialog open={editProfileModalOpen} onOpenChange={setEditProfileModalOpen}>
+    <Dialog   open={editProfileModalOpen} onOpenChange={setEditProfileModalOpen}>
       <form>
-        <DialogTrigger asChild>
+        <DialogTrigger asChild className="ml-auto">
           <Button variant="outline" className="bg-transparent flex gap-2 hover:bg-transparent border border-brand text-brand hover:text-brand     ">
             <Edit2/>
             <span>Edit</span>

@@ -1001,7 +1001,8 @@ export default function PlayerAddModal() {
             size="lg"
             text="Finish & Create Profile"
             onClick={handleSetProfile}
-
+            isLoading={handleSetting}
+            disabled={handleSetting}
             className="w-fit cursor-pointer bg-brand px-5 py-2 font-semibold text-primary hover:bg-secondary/20 hover:text-white"
           />
         )}

@@ -75,11 +75,11 @@ export default function CoreIdentity({
   const [photoPreviews, setPhotoPreviews] = useState<PhotoPreview[]>(
     existingProfilePhotoUrl
       ? [
-          {
-            id: "existing-profile-photo",
-            url: existingProfilePhotoUrl,
-          },
-        ]
+        {
+          id: "existing-profile-photo",
+          url: existingProfilePhotoUrl,
+        },
+      ]
       : []
   )
   const previewUrlsRef = useRef<string[]>([])
@@ -421,8 +421,8 @@ export default function CoreIdentity({
                 setValue("sport", value, { shouldValidate: true })
               }
             >
-              <SelectTrigger className="w-full py-5.5">
-                <SelectValue placeholder="Sport Selection" />
+              <SelectTrigger className="w-full py-5.5 text-white data-[placeholder]:text-white/50  ">
+                <SelectValue placeholder="Sport Selection" className="text-white  " />
               </SelectTrigger>
               <SelectContent position="popper">
                 <SelectGroup>
@@ -438,11 +438,11 @@ export default function CoreIdentity({
                 </SelectGroup>
               </SelectContent>
             </Select>
-          </div>
+          </div> 
 
           <UiInput
             label="Jersey Number"
-            placeholder="#"
+            placeholder="e.g. 10"
             className={controlClassName}
             value={draft.jerseyNumber || ""}
             onChange={(e) => {

@@ -47,7 +47,7 @@ export default function ProgramCoachCard({
   role,
   bio,
   tags = defaultTags,
-  imageUrl = "/images/coach.png",
+  imageUrl = "/images/bannerbg.png",
   imageAlt = "Program coach",
   verified = true,
   verifiedLabel = "VERIFIED",
@@ -91,7 +91,7 @@ export default function ProgramCoachCard({
         <Image
           width={1000}
           height={1000}
-          src={resolveAssetUrl(imageUrl) || "/images/coach.png"}
+          src={resolveAssetUrl(imageUrl) || "/images/bannerbg.png"}
           alt={imageAlt}
           className="min-h-100 w-full object-cover object-center"
         />

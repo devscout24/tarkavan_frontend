@@ -46,7 +46,7 @@ export default function RecruitmentCard({
       if (res && 'success' in res && res.success) {
         toast.success("Recruitment deleted successfully")
         // Dispatch custom event to refresh recruitment data without page reload
-        window.dispatchEvent(new CustomEvent('recruitmentDeleted'))
+        window.dispatchEvent(new CustomEvent('recruitmentEvent'))
       } else {
         const message = 
           typeof res === "object" && 

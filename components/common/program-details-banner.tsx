@@ -39,15 +39,15 @@ const calculateDuration = (startDate?: string, endDate?: string): string => {
 }
 
 export default function ProgramDetailsBanner({
-  title = "Varsity Prep Mentorship",
-  category = "Football",
-  duration = "12 Weeks Duration",
+  title = "",
+  category = "",
+  duration = "",
   startDate,
   endDate,
-  dateRange = "01-03-2026 to 15-05-2026",
-  location = "GoElite Sports Complex, Toronto",
-  ageRange = "Ages 8-14",
-  program_photo = "/images/programsBannerImg.png",
+  dateRange = "",
+  location = "",
+  ageRange = "",
+  program_photo = "/images/bannerbg.png",
   className,
 }: ProgramDetailsBannerProps) {
   const displayDuration =

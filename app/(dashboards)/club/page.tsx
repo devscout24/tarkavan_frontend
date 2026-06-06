@@ -238,7 +238,7 @@ export default function ClubDashboardPage() {
         </div>
 
         {/* quick actions */}
-        <div className="flex-1 rounded-2xl border border-white/20">
+        <div className="flex-1 rounded-2xl border border-white/20 pb-2">
           <h3 className="mt-2 mb-2 ml-6 text-base font-semibold">
             Quick Actions
           </h3>

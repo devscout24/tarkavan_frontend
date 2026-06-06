@@ -166,7 +166,7 @@ export default function ProgramDetailsPage() {
             className=""
             highlightedName=""
             imageAlt=""
-            imageUrl={details?.provider?.image || "/images/coach.png"}
+            imageUrl={details?.provider?.image || "/images/bannerbg.png"}
             location=""
             messageLabel={`Message ${details?.provider?.type}`} 
             name={details?.provider?.name || ""}

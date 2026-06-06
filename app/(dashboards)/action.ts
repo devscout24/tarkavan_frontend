@@ -1,14 +1,14 @@
 "use server"
 
 import api from "@/lib/api-fetcher"
-import { TApiError } from "@/types" 
+import { TApiError } from "@/types"
 import axios from "axios"
 
 export async function getSportOptions() {
   try {
-    const res = await api.get("/sport/options") 
+    const res = await api.get("/sport/options")
     return { success: true, data: res.data }
-  }  catch (err: unknown) {
+  } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {
       return err?.response?.data
     }
@@ -22,14 +22,14 @@ export async function getSportOptions() {
 
 
 export async function getCompetitionLabel() {
-    try {
+  try {
     const res = await api.get(`/competition/club`)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {
       return err?.response?.data
     }
-  
+
     return {
       success: false,
       message: "Unexpected error",
@@ -41,14 +41,14 @@ export async function getCompetitionLabel() {
 
 
 export async function getCities() {
-    try {
+  try {
     const res = await api.get(`/locations/cities`)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {
       return err?.response?.data
     }
-  
+
     return {
       success: false,
       message: "Unexpected error",
@@ -59,14 +59,14 @@ export async function getCities() {
 
 
 export async function getCountries() {
-    try {
+  try {
     const res = await api.get(`/locations/countries`)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {
       return err?.response?.data
     }
-  
+
     return {
       success: false,
       message: "Unexpected error",
@@ -85,9 +85,9 @@ export async function getCountries() {
 
 export async function getOrganizationsTypes() {
   try {
-    const res = await api.get("/organization/types") 
+    const res = await api.get("/organization/types")
     return { success: true, data: res.data }
-  }  catch (err: unknown) {
+  } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {
       return err?.response?.data
     }
@@ -101,9 +101,9 @@ export async function getOrganizationsTypes() {
 
 
 
-export async function getSearchList({data , currentPage}: {data: FormData, currentPage: string}) {
+export async function getSearchList({ data, currentPage }: { data: FormData, currentPage: string }) {
   try {
-    const res = await api.post(`/search/explore/list?page=${currentPage}` , data)
+    const res = await api.post(`/search/explore/list?page=${currentPage}`, data)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {
@@ -120,7 +120,7 @@ export async function getSearchList({data , currentPage}: {data: FormData, curre
 
 export async function addChildOrPlayer(data: FormData) {
   try {
-    const res = await api.post(`/player/profile/add` , data)
+    const res = await api.post(`/player/profile/add`, data)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {
@@ -134,7 +134,7 @@ export async function addChildOrPlayer(data: FormData) {
   }
 }
 
- 
+
 export async function getPlayerPosition() {
   try {
     const res = await api.get(`/player/positions`)
@@ -151,7 +151,7 @@ export async function getPlayerPosition() {
   }
 }
 
- 
+
 export async function getCoachPositions() {
   try {
     const res = await api.get(`/coach/positions`)
@@ -166,9 +166,9 @@ export async function getCoachPositions() {
       status: 500,
     }
   }
-}  
+}
 
- 
+
 export async function getPlayerDashboard() {
   try {
     const res = await api.get(`/player/dashboard`)
@@ -183,12 +183,12 @@ export async function getPlayerDashboard() {
       status: 500,
     }
   }
-} 
- 
- 
- 
+}
 
-export async function getDateForMonth({program_id , month}: {program_id: string , month: string}) {
+
+
+
+export async function getDateForMonth({ program_id, month }: { program_id: string, month: string }) {
 
   try {
     const res = await api.get(`/program/${program_id}/available-slots?month=${month}`)
@@ -206,7 +206,7 @@ export async function getDateForMonth({program_id , month}: {program_id: string 
 }
 
 
-export async function getAvailableTimes({program_id , date}: {program_id: string , date: string}) {
+export async function getAvailableTimes({ program_id, date }: { program_id: string, date: string }) {
   try {
     const res = await api.get(`/program/${program_id}/available-times?date=${date}`)
     return { success: true, data: res.data }
@@ -220,13 +220,13 @@ export async function getAvailableTimes({program_id , date}: {program_id: string
       status: 500,
     }
   }
-} 
+}
 
- 
 
-export async function setPlayerOG({id , data}: {id: string , data: FormData}) {
+
+export async function setPlayerOG({ id, data }: { id: string, data: FormData }) {
   try {
-    const res = await api.post(`/preview/athlete/${id}`,  data)
+    const res = await api.post(`/preview/athlete/${id}`, data)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {
@@ -238,11 +238,27 @@ export async function setPlayerOG({id , data}: {id: string , data: FormData}) {
       status: 500,
     }
   }
-} 
+}
 
- 
 
- 
+
+export async function deleteAccount() {
+  try {
+
+    const res = await api.delete(`/auth/delete-account`)
+    return res.data
+
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
 
 
 

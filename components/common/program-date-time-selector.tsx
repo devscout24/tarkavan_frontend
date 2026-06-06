@@ -142,6 +142,7 @@ export default function ProgramDateTimeSelector({
           program_id: programid,
           month: currentMonth,
         }) 
+        console.log("API response for available dates:", res)
         if (
           res &&
           "success" in res &&

@@ -93,6 +93,11 @@ export default function UpcomingEventPage() {
   const [programsData, setProgramsData] = useState<ProgramsData | null>(null)
   const [loading, setLoading] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)  
+  const [filter, setFilter] = useState({
+    program_type: "" , 
+    status: "", 
+  })
+  
  
  
 
@@ -101,7 +106,7 @@ export default function UpcomingEventPage() {
     const getPrograms = async () => {
       try{
         setLoading(true)
-        const res = await getProgramList()  
+        const res = await getProgramList(filter)  
         if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data) {
           setProgramsData(res.data.data)
           setLoading(false)
@@ -124,7 +129,7 @@ export default function UpcomingEventPage() {
       window.removeEventListener('programevent', handleProgramEvent)
     }
 
-  }, [refreshKey])  
+  }, [refreshKey , filter ])  
 
   // Function to refresh programs list
   const refreshPrograms = () => {
@@ -178,7 +183,7 @@ export default function UpcomingEventPage() {
               <Image
                 width={1000}
                 height={1000}
-                src={programsData.latest_upcoming_program.photo || "/images/player1.png"}
+                src={encodeURI(programsData.latest_upcoming_program.photo) || "/images/player1.png"}
                 alt={programsData.latest_upcoming_program.program_name}
                 className="h-full max-h-55 w-full object-fill lg:max-w-[288px]"
               />
@@ -249,7 +254,7 @@ export default function UpcomingEventPage() {
        <h2 className="mt-6 text-xl font-bold text-white sm:text-2xl">
         My Available Programs
       </h2>
-      <ProgramFilterDropdown />
+      <ProgramFilterDropdown filter={filter} setFilter={setFilter} />
      </div>
       {/* programs cards */}
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -277,6 +282,7 @@ export default function UpcomingEventPage() {
         ) : (
           <div className="col-span-full text-center text-primary">No programs available</div>
         )}
+                 
       </div>
     </section>
   )

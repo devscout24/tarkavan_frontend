@@ -14,6 +14,7 @@ import moment from "moment"
 
 export default function PlayerDashboardPage() {
   const router = useRouter()
+  const userInfo = localStorage.getItem("go_elite_user") ? JSON.parse(localStorage.getItem("go_elite_user") as string) : null
 
   const [openShareModal, setOpenShareModal] = useState(false)
 
@@ -53,7 +54,7 @@ export default function PlayerDashboardPage() {
  
   return (
     <section className=" ">
-      <h2 className="text-base font-bold text-white">Welcome, Daniel</h2>
+      <h2 className="text-base font-bold text-white">Welcome, {userInfo?.name}</h2>
       <p className="mt-1 text-base text-white">
         Here is a summary of your children recent activity and upcoming
         sessions.{" "}

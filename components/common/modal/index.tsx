@@ -59,10 +59,8 @@ export default function Modals() {
         modalId="add-new"
         openId="program"  
         className="max-w-full overflow-hidden! border border-brand/50 p-0! lg:max-w-[62%]! 2xl:max-w-[56%]!"
-      >
-        <ScrollArea className="max-h-[90vh]">
-          <AddProgramPage />
-        </ScrollArea>
+      > 
+          <AddProgramPage /> 
       </Modal>  
       <Modal
         modalId="review"

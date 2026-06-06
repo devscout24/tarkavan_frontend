@@ -79,6 +79,7 @@ function ExploreFilter({
   const [sportsOptions, setSportsOptions] = useState<
     { id: number; name: string }[]
   >([])
+  const [locationResetSignal, setLocationResetSignal] = useState(0)
 
   useEffect(() => {
     const init = async () => {
@@ -148,16 +149,17 @@ function ExploreFilter({
       </div>
 
       <div className="mt-5 rounded-xl bg-[#2B2E36]/80 p-5">
-        <div className="flex">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <UiInput
             placeholder="Search players, coaches, teams, programs..."
             value={filters.button_type}
+            className="w-full"
             onChange={(e) => updateFilter("button_type", e.target.value)}
           />
           <CommonBtn
             variant="default"
             size="sm"
-            className="ml-2 h-12 w-fit rounded-lg border border-white/10 bg-brand px-3 text-primary hover:bg-brand/90 hover:text-primary"
+            className="h-12 w-full rounded-lg border border-white/10 bg-brand px-3 text-primary hover:bg-brand/90 hover:text-primary sm:ml-2 sm:w-fit"
             text="Search"
             icon={<Search />}
           />
@@ -168,10 +170,11 @@ function ExploreFilter({
             Quick Filters
           </div>
 
-          <div className="flex flex-1 gap-3">
+          <div className="flex flex-1 flex-col gap-3 justify-end lg:flex-row lg:items-center">
             {/* Location */}
             <CountryCitySelector
-              className="min-w-[300px]"
+              className="w-full min-w-0 lg:min-w-[300px]"
+              resetSignal={locationResetSignal}
               onSelect={(data) => {
                 if (data.country_name) {
                   handleSelectCountry(data.country_name)
@@ -189,7 +192,7 @@ function ExploreFilter({
                 updateFilter("sports", value === "all" ? "" : value)
               }
             >
-              <SelectTrigger className="h-11 w-full rounded-xl border-white/15 bg-transparent py-5 text-white">
+              <SelectTrigger className="h-11 w-full rounded-xl border-white/15 bg-transparent py-5 text-white lg:w-fit">
                 <SelectValue placeholder="Select a sport" />
               </SelectTrigger>
               <SelectContent
@@ -215,7 +218,7 @@ function ExploreFilter({
               value={filters.age_group}
               onValueChange={(value) => updateFilter("age_group", value)}
             >
-              <SelectTrigger className="w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white">
+              <SelectTrigger className="w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white lg:w-fit">
                 <SelectValue placeholder="Select Age Group" />
               </SelectTrigger>
               <SelectContent position="popper">
@@ -245,7 +248,7 @@ function ExploreFilter({
               value={filters.priceRange}
               onValueChange={(value) => updateFilter("priceRange", value)}
             >
-              <SelectTrigger className="w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white">
+              <SelectTrigger className="w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white lg:w-fit">
                 <SelectValue placeholder="Select Price Range" />
               </SelectTrigger>
               <SelectContent position="popper">
@@ -274,7 +277,10 @@ function ExploreFilter({
           variant="default"
           size="sm"
           className="h-8 w-fit rounded-lg border border-white/10 px-3 text-white hover:bg-white/5 hover:text-white"
-          onClick={() => setFilters(initialState)}
+          onClick={() => {
+            setFilters(initialState)
+            setLocationResetSignal((prev) => prev + 1)
+          }}
           text="Reset Filters"
         />
       </div>

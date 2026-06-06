@@ -35,8 +35,7 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { RiLogoutCircleRLine } from "react-icons/ri"
 import AuthCheckPoint from "@/components/auth/auth-checkopoint"
 import Modals from "@/components/common/modal"
-import { TPlayerProfile } from "@/types"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { getPlayerProfile } from "./profile/action"
 import { useAppDispatch } from "@/lib/hooks"
 import { setUserImage } from "@/lib/features/userSlice"
@@ -49,7 +48,7 @@ export default function PlayerDashboardLayout({
     user: {
       name: "Skyleen",
       email: "skyleen@example.com",
-      avatar:  "https://avatars.githubusercontent.com/u/124599?v=4",
+      avatar: "https://avatars.githubusercontent.com/u/124599?v=4",
     },
     navMain: [
       {
@@ -97,28 +96,39 @@ export default function PlayerDashboardLayout({
   }
 
   const pathname = usePathname()
-    const user = localStorage.getItem("go_elite_user")
-      ? JSON.parse(localStorage.getItem("go_elite_user")!)
-      : null 
+  const dispatch = useAppDispatch()
 
-    const dispatch = useAppDispatch()
-    
-    useEffect(() => {
-      const profileData = async () => {
-        try {
-          const res = await getPlayerProfile(user?.profile_id) 
-          if (res && "success" in res && res.data && res.data.data) { 
-            dispatch(setUserImage(res?.data?.data?.basic_info?.image))
-          }
-        } catch (error) {
-          console.error(error)
-        }
+  useEffect(() => {
+    const profileData = async () => {
+      if (typeof window === "undefined") return
+
+      const rawUser = window.localStorage.getItem("go_elite_user")
+      if (!rawUser) return
+
+      let profileId: string | number | undefined
+      try {
+        profileId = JSON.parse(rawUser)?.profile_id
+      } catch (error) {
+        console.error("Failed to parse go_elite_user from localStorage", error)
+        return
       }
-  
-      profileData() 
-    }, [])
 
-  return ( 
+      if (!profileId) return
+
+      try {
+        const res = await getPlayerProfile(String(profileId))
+        if (res && "success" in res && res.data && res.data.data) {
+          dispatch(setUserImage(res?.data?.data?.basic_info?.image))
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    profileData()
+  }, [dispatch])
+
+  return (
     <TooltipProvider>
       <AuthCheckPoint role="player">
         <Modals />

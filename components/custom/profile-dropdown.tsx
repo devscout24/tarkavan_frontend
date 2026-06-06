@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +14,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ChevronDown, Power, Settings } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
 import { TbPlayFootball } from "react-icons/tb"
+import { selectUserImage } from "@/lib/features/userSlice"
+import { useAppSelector } from "@/lib/hooks"
 
 export default function ProfileDropdown() {
   const role = usePathname().split("/")[1]
@@ -23,25 +25,10 @@ export default function ProfileDropdown() {
     const stored = localStorage.getItem("go_elite_user")
     return stored ? JSON.parse(stored) : null
   })
-  const [profileImage, setProfileImage] = useState<string>(
-    "https://github.com/shadcn.png"
-  )
 
-  useEffect(() => {
-    if (typeof window === "undefined") return
+  const userImage = useAppSelector(selectUserImage)
 
-    const storedImage = localStorage.getItem("go_elite_profile_image")
-    if (!storedImage) {
-      return
-    }
 
-    try {
-      const parsedImage = JSON.parse(storedImage)
-      setProfileImage(typeof parsedImage === "string" && parsedImage ? parsedImage : "https://github.com/shadcn.png")
-    } catch {
-      setProfileImage(storedImage)
-    }
-  }, [])
 
   return (
     <DropdownMenu>
@@ -54,11 +41,15 @@ export default function ProfileDropdown() {
         <ChevronDown className="mx-2 hidden text-white sm:inline-block" />
 
         <Avatar>
-          <AvatarImage
-            src={profileImage}
-            className="-mt-1 min-h-10 min-w-10 rounded-[12px]"
-          />
-          <AvatarFallback>CN</AvatarFallback>
+          {userImage ? (
+            <AvatarImage
+              src={userImage}
+              className="-mt-1 min-h-10 min-w-10 rounded-[12px]"
+            />
+          ) : (
+            <AvatarFallback>GEU</AvatarFallback>
+          )}
+
         </Avatar>
       </DropdownMenuTrigger>
 
@@ -67,11 +58,15 @@ export default function ProfileDropdown() {
           <DropdownMenuItem className="">
             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm text-white">
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage
-                  src={profileImage}
-                  alt={userInfo?.name || "Profile image"}
-                />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                {userImage ?
+                  <AvatarImage
+                    src={userImage}
+                    alt={userInfo?.name || "Profile image"}
+                  />
+                  : 
+                  <AvatarFallback className="rounded-lg">GEU</AvatarFallback>
+                }
+
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{userInfo?.name}</span>

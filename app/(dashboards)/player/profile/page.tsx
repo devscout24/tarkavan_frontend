@@ -55,8 +55,6 @@ export default function PlayerProfile() {
         const res = await getPlayerProfile(user?.profile_id) 
         if (res && "success" in res && res.data && res.data.data) {
           setPlayerData(res.data.data)
-          localStorage.setItem("go_elite_profile_image", JSON.stringify(res?.data?.data?.basic_info
-            ?.image))
         }
       } catch (error) {
         console.error(error)

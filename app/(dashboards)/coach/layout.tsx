@@ -34,6 +34,10 @@ import Logo from "@/components/common/logo"
 import MenuBtn from "@/components/custom/menu-btn"
 import Link from "next/link"
 import AuthCheckPoint from "@/components/auth/auth-checkopoint"
+import { getApiBaseUrl } from "@/lib/url-utils"
+import { useEffect } from "react"
+import { useAppDispatch } from "@/lib/hooks"
+import { setUserImage } from "@/lib/features/userSlice"
 
 const EarningsNavIcon = ({ className }: { className?: string }) => (
   <Image
@@ -110,6 +114,35 @@ export default function ParentDashboardLayout({
   }
 
   const pathname = usePathname()
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    const fetchExperienceData = async () => {
+      try {
+        const token = localStorage.getItem("go_elite_token")
+        const baseUrl = getApiBaseUrl()
+
+        const response = await fetch(`${baseUrl}/coach/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })
+
+        if (response.ok) {
+          const result = await response.json()
+          dispatch(setUserImage(result?.data?.profile?.profile_image)) 
+        }
+      } catch (error) {
+        console.error("Error fetching experience data:", error)
+      }  
+    }
+
+    fetchExperienceData()
+
+ 
+  }, [])
+
 
   return (
     <AuthCheckPoint role="coach">
@@ -172,9 +205,9 @@ export default function ParentDashboardLayout({
                           <item.icon
                             className={
                               item.title === "My Programs" ||
-                              item.title === "Bookings" ||
-                              item.title === "Earnings" ||
-                              item.title === "Messages"
+                                item.title === "Bookings" ||
+                                item.title === "Earnings" ||
+                                item.title === "Messages"
                                 ? "text-white"
                                 : undefined
                             }

@@ -4,6 +4,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 import Toasting from "@/components/custom/toasting"
+import StoreProvider from "./StoreProvider"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://tarkavan.thenightowl.team"),
@@ -42,7 +43,10 @@ export default function RootLayout({
       >
         <Toasting />
         <ThemeProvider>
-          {children}
+          <StoreProvider>
+
+            {children}
+          </StoreProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -55,9 +55,10 @@ export default function PlayerCard({
         {image && (
           <Image
             src={image}
-            alt={name || "Player Image"}
-            fill
-            className="object-cover"  
+            alt={name || "Player Image"} 
+            width={500}
+            height={300}
+            className="object-contain h-50 max-h-50"  
           />
         )}
         

@@ -36,9 +36,10 @@ export default function ProgramCard({
       <div className="min-h-50">
         <Image
           src={image}
-          alt={name || "Coach Image"}
-          fill
-          className="relative h-50 max-h-50 object-cover"
+          alt={name || "Coach Image"} 
+          width={500}
+          height={300}
+          className="relative h-50 max-h-50 object-contain "
         />
       </div>
 

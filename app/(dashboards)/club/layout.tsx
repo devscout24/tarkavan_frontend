@@ -43,6 +43,10 @@ import { IoIosFootball } from "react-icons/io"
 import { CiCreditCard2 } from "react-icons/ci"
 import Modals from "@/components/common/modal"
 import AuthCheckPoint from "@/components/auth/auth-checkopoint"
+import { useEffect } from "react"
+import { getClubProfile } from "./action"
+import { useAppDispatch } from "@/lib/hooks"
+import { setUserImage } from "@/lib/features/userSlice"
 
 export default function PlayerDashboardLayout({
   children,
@@ -114,6 +118,31 @@ export default function PlayerDashboardLayout({
   }
 
   const pathname = usePathname()
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+
+    const getData = async () => {
+      try {
+          const res = await getClubProfile() 
+      
+          if (
+            res &&
+            typeof res === "object" &&
+            "success" in res &&
+            res.success &&
+            "data" in res
+          ) { 
+            dispatch(setUserImage(res?.data?.data?.club_logo_url))
+          }
+        } catch (err) {
+          console.error("Error fetching club profile:", err)
+        }
+    }
+    getData()
+
+  } ,  [])
+
 
   return (
     <AuthCheckPoint role="club">

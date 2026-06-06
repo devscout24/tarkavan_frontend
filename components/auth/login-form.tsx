@@ -9,8 +9,7 @@ import { toast } from "sonner"
 import { loginUser } from "./action"
 import { setAuthCookie } from "@/lib/set-token"
 import { useRouter } from "next/navigation"
-import { useAppDispatch } from "@/lib/hooks"
-import { selectUserImage } from "@/lib/features/userSlice"
+import { useAppDispatch } from "@/lib/hooks" 
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
@@ -57,8 +56,7 @@ export default function LoginForm() {
           .toLowerCase()
 
         const isPending = newUserData.status === "pending"
-        // dispatch(selectUserImage("https://avatars.githubusercontent.com/u/124599?v=4"))
-
+ 
         if (isPending && (normalizedRole === "coach" || normalizedRole === "club")) {
           router.replace(`/${normalizedRole}?${normalizedRole}=profile-setup`)
         } else {

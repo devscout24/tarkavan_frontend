@@ -35,7 +35,12 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { RiLogoutCircleRLine } from "react-icons/ri"
 import AuthCheckPoint from "@/components/auth/auth-checkopoint"
 import Modals from "@/components/common/modal"
-import { Provider } from "react-redux"
+import { TPlayerProfile } from "@/types"
+import { useEffect, useState } from "react"
+import { getPlayerProfile } from "./profile/action"
+import { useAppDispatch } from "@/lib/hooks"
+import { setUserImage } from "@/lib/features/userSlice"
+
 
 export default function PlayerDashboardLayout({
   children,
@@ -92,6 +97,26 @@ export default function PlayerDashboardLayout({
   }
 
   const pathname = usePathname()
+    const user = localStorage.getItem("go_elite_user")
+      ? JSON.parse(localStorage.getItem("go_elite_user")!)
+      : null 
+
+    const dispatch = useAppDispatch()
+    
+    useEffect(() => {
+      const profileData = async () => {
+        try {
+          const res = await getPlayerProfile(user?.profile_id) 
+          if (res && "success" in res && res.data && res.data.data) { 
+            dispatch(setUserImage(res?.data?.data?.basic_info?.image))
+          }
+        } catch (error) {
+          console.error(error)
+        }
+      }
+  
+      profileData() 
+    }, [])
 
   return ( 
     <TooltipProvider>

@@ -20,7 +20,11 @@ export default function CoachProfileCard({
   academyVotes?: number
   basic_info?: TPlayerBasicInfo
   position_info?: TPlayerPositionInfo
+  
 }) {
+
+  console.log(basic_info)
+
   return (
     <div className="relative overflow-hidden rounded-[22px] border border-brand/80 bg-[#0d0f16] shadow-[0_0_0_1px_rgba(178,246,111,0.2),0_18px_45px_rgba(0,0,0,0.5)]">
       <div className="absolute top-4 left-4 z-10 rounded-md bg-brand px-3 py-1 text-sm font-semibold text-primary italic">
@@ -30,7 +34,7 @@ export default function CoachProfileCard({
       {/* stars */}
       <div className=" absolute top-0 right-0 z-2 flex w-full flex-col items-end justify-end gap-2 px-5 pt-5">
         {/* provincial votes */}
-        <HoverCard openDelay={0}>
+        {/* <HoverCard openDelay={0}>
           <HoverCardTrigger className="relative">
             <FaStar className="text-7xl text-yellow-500" />
             <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
@@ -40,10 +44,10 @@ export default function CoachProfileCard({
           <HoverCardContent>
             Provincial Team Votes: {provincialVotes} votes
           </HoverCardContent>
-        </HoverCard>
+        </HoverCard> */}
 
         {/* Professional Academy Votess */}
-        <HoverCard openDelay={0}>
+        {/* <HoverCard openDelay={0}>
           <HoverCardTrigger className="relative">
             <FaStar className="text-7xl text-red-500" />
             <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
@@ -53,7 +57,7 @@ export default function CoachProfileCard({
           <HoverCardContent>
             Professional Academy Votes: {academyVotes} votes
           </HoverCardContent>
-        </HoverCard>
+        </HoverCard> */}
       </div>
 
       <div className="relative max-h-170 w-full">

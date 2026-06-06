@@ -17,6 +17,7 @@ export async function generateMetadata({
 
   let data = null
 
+
   if (
     res &&
     "success" in res &&
@@ -25,7 +26,7 @@ export async function generateMetadata({
     "data" in res.data &&
     res.data.data
   ) {
-    data = res.data.data
+    data = res.data.data 
   }
 
   const previewImage = data?.basic_info?.preview

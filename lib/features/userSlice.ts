@@ -28,4 +28,5 @@ export const { setUserImage } = userSlice.actions
 // Other code such as selectors can use the imported `RootState` type
 export const selectUserImage = (state: RootState) => state.user.image
 
+
 export default userSlice.reducer

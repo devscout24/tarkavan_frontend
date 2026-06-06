@@ -58,7 +58,7 @@ export default function ProfileCard({
 
       <div className="relative min-h-140 w-full">
         <Image
-          src={basic_info?.image || "/images/bannerbg.png"}
+          src={encodeURI(basic_info?.image || "/images/bannerbg.png")}
           alt="Shahin Tarkavan"
           width={1000}
           height={1000}

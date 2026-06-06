@@ -51,8 +51,9 @@ export default function CoachCard({
           <Image
             src={image}
             alt={name || "Coach Image"}
-            fill
-            className="object-cover h-50 " 
+            width={500}
+            height={300}
+            className="object-cover  h-50 max-h-50 " 
           />
         )}
         

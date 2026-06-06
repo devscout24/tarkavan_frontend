@@ -45,9 +45,10 @@ export default function ClubCard({
         {image && (
           <Image
             src={image}
-            alt={name || "Coach Image"}
-            fill
-            className="object-cover"  
+            alt={name || "Coach Image"} 
+            width={500}
+            height={300}
+            className="object-contain h-50 max-h-50 "  
           />
         )}
         

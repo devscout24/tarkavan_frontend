@@ -14,7 +14,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/animate-ui/components/radix/sidebar"
-import { Calendars, CreditCard, Settings } from "lucide-react"
+import {  CreditCard, Settings } from "lucide-react"
 import {
   RiDashboardFill,
   RiLogoutCircleRLine,
@@ -32,8 +32,10 @@ import Image from "next/image"
 import Logo from "@/components/common/logo"
 import MenuBtn from "@/components/custom/menu-btn"
 import Link from "next/link"
-import AuthCheckPoint from "@/components/auth/auth-checkopoint"
-import { handleLogout } from "@/lib/helpers"
+import AuthCheckPoint from "@/components/auth/auth-checkopoint" 
+import { useAppDispatch } from "@/lib/hooks"
+import { useEffect } from "react"
+import { setUserImage } from "@/lib/features/userSlice"
 
 const MessagesNavIcon = ({ className }: { className?: string }) => (
   <Image
@@ -101,6 +103,11 @@ export default function ParentDashboardLayout({
 
   const pathname = usePathname()
   const router = useRouter()
+  const dispatch = useAppDispatch()
+  
+  useEffect(() => {
+    dispatch(setUserImage("")) 
+  } ,  [])
 
   return (
     <AuthCheckPoint role="parent">

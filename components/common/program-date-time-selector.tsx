@@ -141,8 +141,7 @@ export default function ProgramDateTimeSelector({
         const res = await getDateForMonth({
           program_id: programid,
           month: currentMonth,
-        }) 
-        console.log("API response for available dates:", res)
+        })  
         if (
           res &&
           "success" in res &&

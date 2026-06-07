@@ -116,6 +116,7 @@ export default function UpcomingEventPage() {
       try {
         setIsLoading(true) 
         const response = await getCoachProgramList(filter)
+        console.log("API Response:", response)
         const res = response as any
         if (res && res.success && res.data?.data) {
           setPrograms(res.data.data.programs || [])
@@ -275,31 +276,7 @@ export default function UpcomingEventPage() {
           {programs.length > 0 ? (
             <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {programs.map((program) => {
-                return (
-                  // <ProgramCard
-                  //   key={program.id}
-                  //   id={program.id}
-                  //   title={program.program_name}
-                  //   coachName={program.provider?.name || "N/A"}
-                  //   schedule={formatScheduleLabel(
-                  //     program.start_date,
-                  //     program.end_date,
-                  //     program.times?.[0]?.time
-                  //   )}
-                  //   duration={formatDuration(
-                  //     program.start_date,
-                  //     program.end_date
-                  //   )}
-                  //   currentPrice={`$${program.discount_price || program.price}`}
-                  //   imageSrc={program.photo || "/images/player1.png"}
-                  //   imageAlt={program.program_name}
-                  //   buttonLabel="View Details"
-                  //   onClick={() =>
-                  //     router.push(`/coach/my-programs/${program.id}`)
-                  //   }
-                  //   threeDotsItems={programActions(program)}
-                  //   viewOnly={false}
-                  // />
+                return ( 
                   <ProgramCard
                     key={program.id}
                     id={program.id.toString()}
@@ -322,7 +299,7 @@ export default function UpcomingEventPage() {
                     imageAlt={program.program_name}
                     buttonLabel="View Details"
                     viewOnly={false}
-                    editLink={`/coach/my-programs/${program.id}?add-new=program`}
+                    editLink={`/coach/my-programs/${program.id}`}
                   />
                 )
               })}

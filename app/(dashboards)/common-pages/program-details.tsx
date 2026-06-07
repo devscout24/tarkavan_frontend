@@ -42,6 +42,7 @@ export default function ProgramDetailsPage() {
       }
       try {
         const res = await getAvailablePlayerParentProgramDetails(String(id))
+        console.log("  program details:", res)
         if (
           res &&
           "success" in res &&

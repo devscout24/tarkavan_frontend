@@ -1,16 +1,18 @@
 "use client"
 import MemberSection from "./components/member-section"
 import { getTeamDetails, getTeams } from "../action"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { TTeamDetails, TTeamDetailsForClub } from "@/types/team.type"
 import NoData from "@/components/common/no-data"
 import CoachCardForRecruitment from "./components/coach-card"
+import { Button } from "@/components/ui/button"
 
 export default function ClubTeamDetailsClientPage() {
   const params = useParams()
   const team_id = params.detailsID
   const [teamDetails, setTeamDetails] = useState<TTeamDetails | null>(null)
+  const router = useRouter()
 
   useEffect(() => {
     const getTeamData = async () => {
@@ -67,6 +69,11 @@ export default function ClubTeamDetailsClientPage() {
 
   return (
     <div className="space-y-4 bg-[#050713]">
+
+      <Button onClick={() => router.back()} className="bg-brand text-white hover:bg-brand text-primary hover:text-primary   ">
+        Go back
+      </Button>
+
       {teamDetails &&
         teamDetails?.coaches.length > 0 &&
         teamDetails.coaches.map((coach) => (

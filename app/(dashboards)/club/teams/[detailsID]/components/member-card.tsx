@@ -26,6 +26,7 @@ import { TPlayerTeam, TTeamDetailsForClub } from "@/types/team.type"
 import { releasePlayer, TransferPlayerOrCoach } from "../../action"
 import { toast } from "sonner"
 import { useState } from "react"
+import { FaSpinner } from "react-icons/fa"
 
 export type MemberStats = {
   games: number
@@ -235,7 +236,9 @@ export default function TeamMemberCard({
                               key={team.id}
                               className="cursor-pointer hover:bg-brand"
                               onClick={()=> handleTransferPlayer(String(member.team_player_id) , String(team.id))}
+                              disabled={loadingTransfer}
                             >
+                              {loadingTransfer ? <FaSpinner className="h-4 w-4" /> : null}
                               {team.name}
                             </DropdownMenuItem>
                           )

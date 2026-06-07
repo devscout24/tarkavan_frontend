@@ -26,3 +26,22 @@ export async function getUpcomingEvents() {
 
 
 
+export async function programReview(program_id: string , data: FormData) {
+  try {
+    const res = await api.post(`/coach/program/review/${program_id}` , data) 
+    return { success: true, data: res.data }
+  }  catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+
+
+
+

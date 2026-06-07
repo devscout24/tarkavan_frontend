@@ -1,8 +1,9 @@
 import PlayerActivePrograms from "@/components/common/player-active-programs"
 import { getUpcomingEvents } from "./action"
 import { TUpcomingEvent } from "@/types"
-import moment from "moment"
-import ProgramCard from "@/components/common/program-card"
+import moment from "moment" 
+import ProgramCard from "./component/program-card"
+// import ProgramCard from "@/components/common/program-card"
 
 export default async function UpcomingEventPage() {
   let TopUpcommingEvent: TUpcomingEvent | null = null
@@ -10,6 +11,7 @@ export default async function UpcomingEventPage() {
 
   try {
     const res = await getUpcomingEvents() 
+    console.log(res)
     if (
       res &&
       "success" in res &&
@@ -56,8 +58,7 @@ export default async function UpcomingEventPage() {
         {UpcomingEvents.map((event, index) => (
           <ProgramCard
             key={index} 
-            {...event} 
-            viewOnly={true}
+            {...event}  
             imageSrc={event.program_photo || "/images/player1.png"}
             imageAlt={event.title || "Upcoming Event"}
             buttonLabel={`Start On ${moment(event.start_date).format("MMM Do YY")}`}

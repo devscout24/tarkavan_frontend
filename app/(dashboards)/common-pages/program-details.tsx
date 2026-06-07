@@ -17,6 +17,7 @@ import { TProgramDetailsParentAndPlayer } from "@/types"
 import ProgramDateTimeSelector from "@/components/common/program-date-time-selector"
 import { getAvailablePlayerParentProgramDetails } from "../player/programs/action"
 import CommonBtn from "@/components/common/common-btn"
+import { WriteReviewDialog } from "@/components/common/review-write"
 
 export default function ProgramDetailsPage() {
   const router = useRouter()
@@ -25,11 +26,11 @@ export default function ProgramDetailsPage() {
   const [details, setDetails] = useState<TProgramDetailsParentAndPlayer | null>(
     null
   )
- 
+
   const currentUser = localStorage.getItem("go_elite_user")
     ? JSON.parse(localStorage.getItem("go_elite_user") as string)
     : null
- 
+
 
   useEffect(() => {
     const getDetailsOfProgram = async () => {
@@ -59,19 +60,19 @@ export default function ProgramDetailsPage() {
     }
 
     getDetailsOfProgram()
-    
+
     const getUpdatedData = () => {
-        getDetailsOfProgram() 
+      getDetailsOfProgram()
     }
 
-    window.addEventListener("programevent" , getUpdatedData)
+    window.addEventListener("programevent", getUpdatedData)
 
-    return ()=> {
-        window.removeEventListener("programevent" , getUpdatedData)
+    return () => {
+      window.removeEventListener("programevent", getUpdatedData)
     }
 
   }, [id])
- 
+
 
   return (
     <section className="text-white">
@@ -84,17 +85,17 @@ export default function ProgramDetailsPage() {
           <ArrowLeftIcon />
           <span>Back to Programs</span>
         </Button>
-        {currentUser?.id === details?.provider?.user_id && 
-            <CommonBtn
+        {currentUser?.id === details?.provider?.user_id &&
+          <CommonBtn
             text="Edit Program"
             className="h-10 w-fit rounded-[8px] bg-brand px-4 font-medium text-primary hover:bg-brand xl:h-11 xl:px-5 xl:text-base 2xl:h-12 2xl:px-6 2xl:text-lg"
             size="sm"
             variant="default"
             onClick={() => {
-                localStorage.setItem("edit_program_id", String(id))
-                router.push(`?add-new=program`)
+              localStorage.setItem("edit_program_id", String(id))
+              router.push(`?add-new=program`)
             }}
-            />
+          />
         }
       </div>
 
@@ -121,6 +122,13 @@ export default function ProgramDetailsPage() {
             description={details?.about}
           />
 
+          {/* <WriteReviewDialog
+            trigger={<Button>Write a review</Button>}
+          /> */}
+
+
+
+
           {/* program review */}
           {details && details?.recent_feedback?.length > 0 && (
             <ProgramReview
@@ -146,7 +154,7 @@ export default function ProgramDetailsPage() {
                 placeholder="Choose short"
                 title="Recent Feedback"
                 selectedFilter=""
-                setSelectedFilter={() => {}}
+                setSelectedFilter={() => { }}
               />
 
               <ProgramFeedbackCard
@@ -169,7 +177,7 @@ export default function ProgramDetailsPage() {
             imageAlt=""
             imageUrl={details?.provider?.image || "/images/bannerbg.png"}
             location=""
-            messageLabel={`Message ${details?.provider?.type}`} 
+            messageLabel={`Message ${details?.provider?.type}`}
             name={details?.provider?.name || ""}
             verifiedLabel={details?.provider?.type}
             showMessageButton={details?.provider?.is_program_maker ? false : true}

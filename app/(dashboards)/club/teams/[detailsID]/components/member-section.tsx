@@ -1,8 +1,6 @@
 "use client"
 import { TPlayerTeam, TTeamDetailsForClub } from "@/types/team.type"
-import TeamMemberCard from "./member-card"
-import { useEffect, useState } from "react"
-import { getTeams } from "../../action" 
+import TeamMemberCard from "./member-card" 
 
 type MemberSectionProps = {
   title: string

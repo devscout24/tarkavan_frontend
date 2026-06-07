@@ -259,7 +259,7 @@ export default function UpcomingEventPage() {
       {/* programs cards */}
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {loading ? (
-          <div className="col-span-full text-center text-primary">Loading programs...</div>
+          <div className="col-span-full text-center text-white">Loading programs...</div>
         ) : programsData && programsData.programs.length > 0 ? (
           programsData.programs.map((program: Program) => (  
             
@@ -280,7 +280,7 @@ export default function UpcomingEventPage() {
             />
           ))
         ) : (
-          <div className="col-span-full text-center text-primary">No programs available</div>
+          <div className="col-span-full text-center text-white">No programs available</div>
         )}
                  
       </div>

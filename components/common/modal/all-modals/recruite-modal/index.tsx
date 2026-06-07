@@ -197,15 +197,17 @@ export default function RecruitmentForm({
   const buildFormData = () => {
     const formData = new FormData()
     formData.append("recruitment_type", recruitType)
-    formData.append("player_position", position)
     formData.append("coach_position_id", coachPosition)
     formData.append("team_id", team)
     formData.append("experience", experience.trim())
     formData.append("start_date", startDate.trim())
     formData.append("end_date", tryoutDates.trim())
     formData.append("description", description.trim())
-    formData.append("upto_age", String(getHighestNumber(ageGroup)))
-    formData.append("from_age", String(getLowestNumber(ageGroup)))
+    if(recruitType === "player"){ 
+      formData.append("player_position", position)
+      formData.append("upto_age", String(getHighestNumber(ageGroup)))
+      formData.append("from_age", String(getLowestNumber(ageGroup)))
+    }
     return formData
   }
 

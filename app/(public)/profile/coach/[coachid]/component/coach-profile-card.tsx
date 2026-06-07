@@ -1,13 +1,8 @@
-import { FaStar } from "react-icons/fa6"
+ 
 import { MapPin } from "lucide-react"
-import Image from "next/image"
-import { CiLock } from "react-icons/ci"
+import Image from "next/image" 
 import { IoIosFootball } from "react-icons/io"
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card"
+ 
 import { TPlayerBasicInfo, TPlayerPositionInfo } from "@/types"
 
 export default function CoachProfileCard({
@@ -24,6 +19,7 @@ export default function CoachProfileCard({
 }) {
 
   console.log(basic_info)
+ 
 
   return (
     <div className="relative overflow-hidden rounded-[22px] border border-brand/80 bg-[#0d0f16] shadow-[0_0_0_1px_rgba(178,246,111,0.2),0_18px_45px_rgba(0,0,0,0.5)]">

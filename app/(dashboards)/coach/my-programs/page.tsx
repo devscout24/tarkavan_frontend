@@ -101,18 +101,21 @@ export default function UpcomingEventPage() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
- 
+
 
   const [programs, setPrograms] = useState<any[]>([])
   const [latestUpcomingProgram, setLatestUpcomingProgram] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [filter, setFilter] = useState({
+    program_type: "",
+    status: "",
+  })
 
   useEffect(() => {
     const fetchPrograms = async () => {
       try {
-        setIsLoading(true)
-        const filterStr = searchParams.get("filter") || "active"
-        const response = await getCoachProgramList(filterStr) 
+        setIsLoading(true) 
+        const response = await getCoachProgramList(filter)
         const res = response as any
         if (res && res.success && res.data?.data) {
           setPrograms(res.data.data.programs || [])
@@ -129,8 +132,8 @@ export default function UpcomingEventPage() {
     fetchPrograms()
 
 
-    const reloadData = ()=> {
-       fetchPrograms()
+    const reloadData = () => {
+      fetchPrograms()
     }
 
     window.addEventListener("programDeleted", reloadData)
@@ -139,7 +142,7 @@ export default function UpcomingEventPage() {
       window.removeEventListener("programDeleted", reloadData)
     }
 
-  }, [searchParams])
+  }, [searchParams , filter])
 
   return (
     <section>
@@ -187,7 +190,7 @@ export default function UpcomingEventPage() {
 
                   <span className="absolute bottom-3 left-3 rounded-full bg-[#16A34A] px-3 py-1 text-[10px] font-bold tracking-[0.08em] text-white uppercase">
                     {latestUpcomingProgram.status === "active" ||
-                    !latestUpcomingProgram.status
+                      !latestUpcomingProgram.status
                       ? "In Progress"
                       : latestUpcomingProgram.status}
                   </span>
@@ -266,7 +269,7 @@ export default function UpcomingEventPage() {
             <h2 className="mt-6 text-xl font-bold text-white sm:text-2xl">
               My Available Programs
             </h2>
-            <ProgramFilterDropdown />
+            <ProgramFilterDropdown filter={filter} setFilter={setFilter} />
           </div>
           {/* programs cards */}
           {programs.length > 0 ? (
@@ -317,7 +320,7 @@ export default function UpcomingEventPage() {
                     )}
                     imageSrc={program.photo}
                     imageAlt={program.program_name}
-                    buttonLabel="View Details" 
+                    buttonLabel="View Details"
                     viewOnly={false}
                     editLink={`/coach/my-programs/${program.id}?add-new=program`}
                   />

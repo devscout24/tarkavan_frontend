@@ -11,6 +11,7 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { TCoachPublicProfile } from "@/types"
 import CommonBtn from "@/components/common/common-btn"
+import { Star } from "lucide-react"
 
 export default function Page() {
   const params = useParams()
@@ -94,6 +95,9 @@ export default function Page() {
                 facebook_link: "",
                 twitter_link: "",
                 whatsapp_link: "",
+                overall_avg_rating: data?.profile?.overall_avg_rating,
+                years_of_experience: data?.profile?.years_of_experience,
+                total_reviews: data?.profile?.total_reviews,
               }}
               position_info={{
                 jersey_number: 10,
@@ -114,6 +118,44 @@ export default function Page() {
               provincialVotes={5}
               academyVotes={3}
             />
+
+            <div className="w-full rounded-2xl border border-brand bg-[#0d0f16] p-6 shadow-xl my-3  ">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-semibold! text-sm uppercase text-white!  ">
+                    Average Rating
+                  </p>
+                  <h3 className="mt-1 text-3xl font-bold text-white">{data?.profile?.overall_avg_rating?.toFixed(1) || "0.0"}</h3>
+                </div>
+
+                <div className="rounded-xl bg-brand/10 p-3">
+                  <Star className="h-6 w-6 fill-brand text-brand" />
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center gap-1">
+                {[...Array(Math.floor(data?.profile?.overall_avg_rating || 0))].map((_, i) => (
+                  <Star
+                    key={i}
+                    className="h-5 w-5 fill-brand text-brand"
+                  />
+                ))}
+              </div>
+
+              <div className="mt-5">
+                <div className="mb-2 flex justify-between text-sm">
+                  <span className="text-zinc-400">Based on reviews</span>
+                  <span className="font-medium text-white">{data?.profile?.total_reviews}</span>
+                </div>
+
+                <div className="h-2 overflow-hidden rounded-full bg-zinc-800">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-brand to-brand transition-all duration-500"
+                    style={{ width: `${((data?.profile?.overall_avg_rating || 0) / 5) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
 
             <CoachingTitles titles={data?.coaching_titles} />
           </div>

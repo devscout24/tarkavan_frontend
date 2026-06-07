@@ -47,7 +47,7 @@ export default function PlayerProfile() {
     ? JSON.parse(localStorage.getItem("go_elite_user")!)
     : null
   const [playerData, setPlayerData] = useState<TPlayerProfile>()
- 
+  console.log(playerData)
   const router = useRouter()
   useEffect(() => {
     const profileData = async () => {

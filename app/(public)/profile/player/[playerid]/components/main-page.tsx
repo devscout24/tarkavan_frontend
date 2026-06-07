@@ -162,6 +162,7 @@ export default function ProfilePage({ data }: ProfilePageProps) {
   }
 
   const router = useRouter()
+  console.log("Player Profile Data:", data?.basic_info)
 
   return (
     <>
@@ -207,35 +208,21 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                   </h2>
                   <ul className="mt-8.5 flex gap-7.5 rounded-lg bg-white/20 p-4 text-2xl text-white">
                     <a
-                      href="http://example.com"
+                      href={data?.basic_info?.facebook_link || "http://example.com"}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       <FaFacebookF />
-                    </a>
+                    </a>  
                     <a
-                      href="http://example.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <IoLogoInstagram />
-                    </a>
-                    <a
-                      href="http://example.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <FaTiktok />
-                    </a>
-                    <a
-                      href="http://example.com"
+                      href={data?.basic_info?.twitter_link || "http://example.com"}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       <FaXTwitter />
                     </a>
                     <a
-                      href="http://example.com"
+                      href={data?.basic_info?.whatsapp_link || "http://example.com"}
                       target="_blank"
                       rel="noopener noreferrer"
                     >

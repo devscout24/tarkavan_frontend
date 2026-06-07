@@ -16,6 +16,8 @@ import { usePathname, useRouter } from "next/navigation"
 import { TbPlayFootball } from "react-icons/tb"
 import { selectUserImage } from "@/lib/features/userSlice"
 import { useAppSelector } from "@/lib/hooks"
+ 
+
 
 export default function ProfileDropdown() {
   const role = usePathname().split("/")[1]
@@ -27,7 +29,7 @@ export default function ProfileDropdown() {
   })
 
   const userImage = useAppSelector(selectUserImage)
-
+ 
 
 
   return (
@@ -63,7 +65,7 @@ export default function ProfileDropdown() {
                     src={userImage}
                     alt={userInfo?.name || "Profile image"}
                   />
-                  : 
+                  :
                   <AvatarFallback className="rounded-lg">GEU</AvatarFallback>
                 }
 
@@ -101,7 +103,8 @@ export default function ProfileDropdown() {
           <DropdownMenuShortcut>
             <Power className="text-[#ff0000]!" />
           </DropdownMenuShortcut>
-        </DropdownMenuItem>
+        </DropdownMenuItem> 
+ 
       </DropdownMenuContent>
     </DropdownMenu>
   )

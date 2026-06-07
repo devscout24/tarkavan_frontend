@@ -55,9 +55,9 @@ export async function createCoachProgram(data: FormData) {
   }
 }
 
-export async function getCoachProgramList(filter: string = "active") {
+export async function getCoachProgramList(filter: { program_type?: string, status?: string }) {
   try {
-    const res = await api.get(`/coach/program/list?filter=${filter}`)
+    const res = await api.get(`/coach/program/list?program_type=${filter.program_type}&filter=${filter.status}`)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {

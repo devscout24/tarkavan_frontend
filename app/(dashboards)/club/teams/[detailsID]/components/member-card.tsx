@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { Edit2, Lock, MapPin, Shield, Trash2 } from "lucide-react"
+import {  Lock, MapPin, Shield  } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -23,8 +23,9 @@ import {
 } from "@/components/animate-ui/components/radix/dropdown-menu"
 import { DropdownMenuPortal } from "@/components/animate-ui/primitives/radix/dropdown-menu"
 import { TPlayerTeam, TTeamDetailsForClub } from "@/types/team.type"
-import { releasePlayer } from "../../action"
+import { releasePlayer, TransferPlayerOrCoach } from "../../action"
 import { toast } from "sonner"
+import { useState } from "react"
 
 export type MemberStats = {
   games: number
@@ -79,6 +80,44 @@ export default function TeamMemberCard({
       console.error("Error releasing player:", error)
     }
   }
+
+  const [loadingTransfer , setLoadingTransfer] = useState(false)
+  const handleTransferPlayer = async (team_player_id: string , new_team_id: string) => {
+
+    if(!team_player_id){
+      toast.error("Invalid team player ID or not provided")
+      return
+    }
+
+    if(!new_team_id){
+      toast.error("Invalid new team ID or not provided")
+      return
+    }
+
+    try{
+      setLoadingTransfer(true)
+
+      const formData = new FormData()
+      formData.append("team_player_id", team_player_id)
+      formData.append("new_team_id", new_team_id)
+
+      const res = await TransferPlayerOrCoach(formData) 
+      if(res && "data" in res && res.data && res.data.status){
+        toast.success("Transferred to new team successfully")
+        window.dispatchEvent(new CustomEvent("teamDetailsRefetch"))
+        setLoadingTransfer(false)
+      } 
+
+    }catch(error){
+      console.error("Error transferring player:", error)
+      setLoadingTransfer(false)
+    }
+    finally{
+      setLoadingTransfer(false)
+    }
+
+  }
+
 
   return (
     <Card className="gap-0 overflow-hidden rounded-xl border border-white/12 bg-[#060916] p-0 text-white">
@@ -195,6 +234,7 @@ export default function TeamMemberCard({
                             <DropdownMenuItem
                               key={team.id}
                               className="cursor-pointer hover:bg-brand"
+                              onClick={()=> handleTransferPlayer(String(member.team_player_id) , String(team.id))}
                             >
                               {team.name}
                             </DropdownMenuItem>

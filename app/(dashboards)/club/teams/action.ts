@@ -58,6 +58,23 @@ export async function releasePlayer(team_player_id: string) {
 }
 
 
+export async function TransferPlayerOrCoach(data: FormData) {
+  try {
+    const res = await api.post(`/club/team/player/transfer`, data) 
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+
+
 
 
 

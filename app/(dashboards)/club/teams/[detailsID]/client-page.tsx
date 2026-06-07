@@ -11,7 +11,7 @@ export default function ClubTeamDetailsClientPage() {
   const params = useParams()
   const team_id = params.detailsID
   const [teamDetails, setTeamDetails] = useState<TTeamDetails | null>(null)
- 
+
   useEffect(() => {
     const getTeamData = async () => {
       try {

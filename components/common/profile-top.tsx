@@ -17,6 +17,8 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { handleLogout } from "@/lib/helpers"
+import { useAppSelector } from "@/lib/hooks"
+import { selectUserImage } from "@/lib/features/userSlice"
 
 export default function ProfileTop({
   setProfileImage,
@@ -39,20 +41,21 @@ export default function ProfileTop({
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const handleDeleteAccount = async () => {
-    try{
+    try {
       setLoading(true)
-      const res = await  deleteAccount() 
+      const res = await deleteAccount()
       console.log(res)
-      if(res.status){
+      if (res.status) {
         toast.success("Account deleted successfully")
-        setLoading(false) 
+        setLoading(false)
         handleLogout(router)
       }
-    }catch(error) {
+    } catch (error) {
       setLoading(false)
       console.error(error)
     }
   }
+  const userImage = useAppSelector(selectUserImage)
 
 
   return (
@@ -63,7 +66,7 @@ export default function ProfileTop({
         <div className="flex items-center gap-4">
           <div className="relative border border-brand rounded-full overflow-hidden">
             <Image
-              src={profileTopInfo?.image || "/images/bannerbg.png"}
+              src={userImage || "/images/bannerbg.png"}
               alt={profileTopInfo?.name}
               width={80}
               height={80}
@@ -113,15 +116,8 @@ export default function ProfileTop({
               <DialogHeader>
                 <DialogTitle className="text-xl text-red-500 ">Are you absolutely sure?</DialogTitle>
                 <DialogDescription>
-                  <p className="text-secondary! text-sm">
-                    If you delete your account, this action cannot be undone. Please make sure you are certain before proceeding.
-                  </p>
-
-
-
-                  <p className="text-secondary! text-sm  mt-4 ">
-
-                    Once your account is deleted, all of your data will be permanently removed from our servers and cannot be recovered.
+                  <p className="text-secondary! text-xs">
+                    Deleting your account is permanent and cannot be undone. All data will be removed from our servers and cannot be recovered.
                   </p>
                 </DialogDescription>
               </DialogHeader>

@@ -120,6 +120,9 @@ export type TPlayerBasicInfo = {
   facebook_link: string
   twitter_link: string
   whatsapp_link: string
+  overall_avg_rating: number
+  years_of_experience: string
+  total_reviews: number
 }
 
 // ================= POSITION INFO =================

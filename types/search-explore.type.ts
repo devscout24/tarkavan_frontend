@@ -1,3 +1,5 @@
+import { SportOption } from "./coach.type";
+
 export type Nullable<T> = T | null;
 
 
@@ -17,15 +19,12 @@ export type TClubItem = {
 }
 
 
-export interface SportOption {
-  id: number;
-  name: string; 
-
-}
+ 
 
 export type  TClubProgramItem = {
   type: "program";
   program_id: number;
+  id: number;
   club_program_id: number;
   coach_id: Nullable<number>;
   sport_option_id: Nullable<number>;

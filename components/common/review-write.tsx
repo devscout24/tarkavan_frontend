@@ -70,8 +70,7 @@ export function WriteReviewDialog({ trigger }: { trigger: React.ReactNode }) {
         setForm((prev) => ({ ...prev, [field]: value }))
     }
 
-    const handleSubmit = () => {
-        console.log("Submitting review:", form)
+    const handleSubmit = () => { 
         // TODO: call API
         setOpen(false)
         setForm(INITIAL_FORM)

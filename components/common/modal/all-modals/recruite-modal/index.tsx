@@ -215,8 +215,7 @@ export default function RecruitmentForm({
     if (!validateForm()) return
     setLoading(true)
     try {
-      const res = await addRecruitment(buildFormData())
-      console.log(res)
+      const res = await addRecruitment(buildFormData()) 
       if (typeof res === "object" && res !== null && "success" in res && res.success) {
         window.dispatchEvent(new Event("recruitmentEvent"))
         toast.success("Recruitment created successfully")

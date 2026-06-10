@@ -92,7 +92,12 @@ export default function SearchExplore() {
 
 
   const router = useRouter()
-  const user = localStorage.getItem("go_elite_user") ? JSON.parse(localStorage.getItem("go_elite_user") as string) : null
+  let user = null;
+
+  if (typeof window !== "undefined") {
+    const storedUser = localStorage.getItem("go_elite_user");
+    user = storedUser ? JSON.parse(storedUser) : null;
+  }
 
 
 

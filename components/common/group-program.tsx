@@ -235,7 +235,7 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
         if (currentUser && currentUser.role === "club") {
             try {
                 const res: any = await createProgram(await buildFormData())
-                console.log("Create Program Response:", res)
+ 
 
 
                 res?.success || res?.status

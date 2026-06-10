@@ -115,8 +115,7 @@ export default function UpcomingEventPage() {
     const fetchPrograms = async () => {
       try {
         setIsLoading(true) 
-        const response = await getCoachProgramList(filter)
-        console.log("API Response:", response)
+        const response = await getCoachProgramList(filter) 
         const res = response as any
         if (res && res.success && res.data?.data) {
           setPrograms(res.data.data.programs || [])
@@ -144,6 +143,10 @@ export default function UpcomingEventPage() {
     }
 
   }, [searchParams , filter])
+
+
+ 
+
 
   return (
     <section>
@@ -268,7 +271,7 @@ export default function UpcomingEventPage() {
           {/* upcoming events content */}
           <div className="flex items-center justify-between">
             <h2 className="mt-6 text-xl font-bold text-white sm:text-2xl">
-              My Available Programs
+              My Programs
             </h2>
             <ProgramFilterDropdown filter={filter} setFilter={setFilter} />
           </div>
@@ -283,7 +286,7 @@ export default function UpcomingEventPage() {
                     title={program.program_name}
                     type={program.coach_name}
                     schedule={moment(
-                      program.times[0].start_time,
+                      program.times[0].start_time || program.times[0].time ,
                       "HH:mm:ss"
                     ).format("hh:mm A")}
                     duration={`${moment(program.program_start).format("MMM Do YY")} - ${moment(program.program_end).format("MMM Do YY")}`}

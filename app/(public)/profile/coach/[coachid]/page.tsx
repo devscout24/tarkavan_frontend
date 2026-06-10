@@ -12,6 +12,11 @@ import { toast } from "sonner"
 import { TCoachPublicProfile } from "@/types"
 import CommonBtn from "@/components/common/common-btn"
 import { Star } from "lucide-react"
+import CredentialsCard from "@/components/custom/coach-profile/credentials-card"
+import ProgramCard from "@/app/(dashboards)/components/program-card"
+import moment from "moment"
+import isValidToken from "@/lib/isValid-token"
+import { handleLogout } from "@/lib/helpers"
 
 export default function Page() {
   const params = useParams()
@@ -29,7 +34,9 @@ export default function Page() {
         if (res?.status === false) {
           setLoading(false)
           toast.error(res?.message || "Failed to fetch coach profile")
-          router.back()
+          setTimeout(() => {
+            router.back()
+          }, 1000)
           return
         }
         if (
@@ -54,10 +61,18 @@ export default function Page() {
 
   if (loading) {
     return <div>Loading...</div>
-  } else if (!loading && !data) {
-    router.back()
-    toast.error("Failed to fetch coach profile")
   } else if (!loading && data) {
+    let user = null;
+
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("go_elite_user");
+      user = storedUser ? JSON.parse(storedUser) : null;
+    }
+    const token = typeof window !== "undefined" ? localStorage.getItem("go_elite_token") : null;
+
+
+    console.log(data)
+
     return (
       <section>
         <Nav />
@@ -70,9 +85,9 @@ export default function Page() {
           className="mt-30 ml-10 w-fit cursor-pointer bg-brand px-5 hover:bg-brand"
         />
 
-        <div className="my-5 grid grid-cols-1 gap-5 px-10 sm:grid-cols-2">
+        <div className="my-5 grid grid-cols-1 gap-5 px-10 sm:grid-cols-2 items-start">
           {/* left side */}
-          <div className="">
+          <div className="sticky top-24">
             <CoachProfileCard
               basic_info={{
                 image: data?.profile?.profile_image,
@@ -166,20 +181,41 @@ export default function Page() {
             <CoachingBio bio={data?.profile?.bio} />
             <CoachingExperienceEducation data={data?.experience_education} />
 
-            {/* <CertificateCredential
-              certificates={[
+            <CredentialsCard
+              coach_media={data?.coach_media || []}
+            />
+
+            {/* programs */}
+            {data && data?.program && data?.program.length > 0 &&
+              <div className="grid grid-cols-1 md:grid-cols-2 mt-4 gap-2 ">
                 {
-                  id: "12389udjs",
-                  title: "UEFA Pro License",
-                  image: "https://picsum.photos/seed/picsum/200/300",
-                },
-                {
-                  id: "2dawr23eads",
-                  title: "FIFA Coaching Certificate",
-                  image: "https://picsum.photos/seed/picsum/200/300",
-                },
-              ]}
-            /> */}
+                  data.program.map((item, index) => (
+                    <ProgramCard
+                      key={index}
+                      image={item?.photo || "/images/bannerbg.png"}
+                      name={item?.program_name}
+                      price={`CAD ${item?.price}`}
+                      user={`Coach: ${item?.provider?.name}`}
+                      duration={moment(item?.end_date).diff(moment(item?.start_date), 'days') + " days program"}
+                      calender={moment(item?.start_date).format("MMM Do YY")}
+                      btnText="View Program"
+                      onClick={() => {
+                        const isvalid = isValidToken(token as string)
+                        if (!isvalid) {
+                          handleLogout(router)
+                          router.push("/auth")
+                          return
+                        }
+                        router.push(`/${user.role}/programs/${item?.id}`)
+                      }}
+                    />
+                  ))
+                }
+              </div>
+
+            }
+
+
           </div>
         </div>
 

@@ -10,8 +10,7 @@ export default async function UpcomingEventPage() {
   let UpcomingEvents: TUpcomingEvent[] = []
 
   try {
-    const res = await getUpcomingEvents() 
-    console.log(res)
+    const res = await getUpcomingEvents()  
     if (
       res &&
       "success" in res &&

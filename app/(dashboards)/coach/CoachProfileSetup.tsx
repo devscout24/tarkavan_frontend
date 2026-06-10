@@ -154,7 +154,7 @@ export default function CoachProfileSetup({
   // Edit mode
   const [editData, setEditData] = useState<CoachEditPayload | null>(null)
   const [isEditDataLoaded, setIsEditDataLoaded] = useState(false)
-  console.log(editData)
+ 
 
   // ── Effects ──────────────────────────────────────────────────────────────
 

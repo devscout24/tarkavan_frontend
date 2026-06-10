@@ -11,8 +11,7 @@ export default function TrainingReminderCard(
     reminder? : TProgramBookingRemiender
   }
 ) {
-   
-  console.log(reminder, "reminder")
+    
 
 
   return (

@@ -43,8 +43,7 @@ export default function ProfileTop({
   const handleDeleteAccount = async () => {
     try {
       setLoading(true)
-      const res = await deleteAccount()
-      console.log(res)
+      const res = await deleteAccount() 
       if (res.status) {
         toast.success("Account deleted successfully")
         setLoading(false)

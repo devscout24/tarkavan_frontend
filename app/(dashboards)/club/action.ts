@@ -241,7 +241,6 @@ export async function updateProgram({ program_id, data}: {program_id: string, da
 }
 
 export async function getProgramList(filter: { program_type?: string, status?: string }) {
-  // console.log(`/club/program/list?program_type=${filter.program_type || ""}&status=${filter.status || ""}`)
     try {
     const res = await api.get(`/club/program/list?program_type=${filter.program_type || ""}&filter=${filter.status || ""}`)
     return { success: true, data: res.data }

@@ -17,8 +17,7 @@ export default function CoachProfileCard({
   position_info?: TPlayerPositionInfo
   
 }) {
-
-  console.log(basic_info)
+ 
  
 
   return (

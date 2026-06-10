@@ -26,10 +26,15 @@ export default function ProgramDetailsPage() {
   const [details, setDetails] = useState<TProgramDetailsParentAndPlayer | null>(
     null
   )
+  console.log("Program Details:", details)
 
-  const currentUser = localStorage.getItem("go_elite_user")
-    ? JSON.parse(localStorage.getItem("go_elite_user") as string)
-    : null
+  const currentUser =
+    typeof window !== "undefined"
+      ? (() => {
+        const storedUser = localStorage.getItem("go_elite_user");
+        return storedUser ? JSON.parse(storedUser) : null;
+      })()
+      : null;
 
 
   useEffect(() => {
@@ -37,13 +42,13 @@ export default function ProgramDetailsPage() {
       if (!id) {
         toast.error("Program ID is missing.")
         setTimeout(() => {
-          router.push("/player/programs")
+          router.push(`/${currentUser?.role}/programs`)
         }, 1000)
         return
       }
       try {
         const res = await getAvailablePlayerParentProgramDetails(String(id))
-        console.log("  program details:", res)
+
         if (
           res &&
           "success" in res &&
@@ -108,7 +113,7 @@ export default function ProgramDetailsPage() {
           .humanize()}
         dateRange={`${moment(details?.start_date).format("MMM Do YY")} - ${moment(details?.end_date).format("MMM Do YY")}`}
         location={details?.location}
-        ageRange={`Age U${details?.age_limit}`}
+        ageRange={`Age U${details?.age_limit == details?.from_age  || details?.from_age == null ? details?.age_limit : `${details?.from_age} - ${details?.age_limit}` }`}
         program_photo={details?.photo || ""}
       />
 

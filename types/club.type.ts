@@ -1,3 +1,5 @@
+import { TClubProgramItem } from "./search-explore.type"
+
  
 
 export type TSubscriptionPlan = {
@@ -111,6 +113,7 @@ export type TClubProfile = {
   sport_option_id: number | null;
   sport_option: string | null;
   sports_name: string | null;
+  program: TClubProgramItem[]
   privacy_settings:
     | "public"
     | "private"

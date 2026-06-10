@@ -1,3 +1,5 @@
+ 
+
 type Position = {
   id: number | null;
   name: string | null;
@@ -125,7 +127,7 @@ export type TCoachPublicProfile  = {
 
   coaching_titles: string[]
 
-  coach_media: unknown[]
+  coach_media: { id: number; image: string }[]
 
   experience_education: {
     title: string
@@ -134,6 +136,7 @@ export type TCoachPublicProfile  = {
   }[]
 
   badges: string[]
+  program: TCoachProgram[]
 }
 
 
@@ -197,4 +200,62 @@ export type TCoachProfileData = {
   overall_avg_rating: number
   total_reviews: number
 
+}
+
+export interface TCoachProgram {
+  id: number;
+  program_name: string;
+  program_type: string;
+  sport: string;
+  sport_option: SportOption;
+  price: number;
+  discount_price: number;
+  location: string;
+  start_date: string;
+  end_date: string;
+  photo: string;
+  about: string;
+  from_age: number;
+  age_limit: number;
+  age_group: string;
+  provider: Provider;
+  times: ProgramTime[];
+  goals: ProgramGoal[];
+}
+
+export interface SportOption {
+  id: number;
+  name: string;
+}
+
+export interface Provider {
+  type: string;
+  id: number;
+  profile_id: number;
+  user_id: number;
+  is_program_maker: boolean;
+  title: string | null;
+  coach_title: string | null;
+  name: string;
+  image: string;
+  logo: string;
+  designation: string;
+  email: string;
+  user_mail: string | null;
+  city: string;
+  is_verified: boolean;
+}
+
+export interface ProgramTime {
+  id: number;
+  time: string;
+  slot_date: string;
+  start_time: string | null;
+  end_time: string | null;
+  is_available: boolean;
+}
+
+export interface ProgramGoal {
+  id: number;
+  goal: string;
 }

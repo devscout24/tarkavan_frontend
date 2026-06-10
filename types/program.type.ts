@@ -15,6 +15,7 @@ export type TProgramDetailsParentAndPlayer = {
   photo: string;
   about: string;
   age_limit: number;
+  from_age: number | null;
   age_group: string;
   provider: {
     type: string;

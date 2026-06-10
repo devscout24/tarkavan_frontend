@@ -90,10 +90,11 @@ export default function MyProfilePage() {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
-          })
+          }) 
   
           if (response.ok) {
             const result = await response.json() 
+            console.log("Fetched coach profile data:", result)
             if (result.status) {
               setProfileData(result.data) 
             }
@@ -118,7 +119,7 @@ export default function MyProfilePage() {
       }
     }, [])
 
-    console.log(profileData)
+ 
  
 
 

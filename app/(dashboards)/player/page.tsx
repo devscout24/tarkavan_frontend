@@ -52,8 +52,7 @@ export default function PlayerDashboardPage() {
   }, [])
 
   const playerId = dashData?.player_info?.id;
-
-  console.log(dashData, "dashData")
+ 
  
  
   return (

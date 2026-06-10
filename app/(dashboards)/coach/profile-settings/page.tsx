@@ -59,9 +59,9 @@ export default function ProfileSettingPage() {
 
         // Fallback to mock data for development 
         setProfileData({
-          name: "Mehedi Noor Khan",
-          email: "mehedinoork@gmail.com",
-          profile_image: "https://tarkavan.thenightowl.team/",
+          name: "",
+          email: "",
+          profile_image: "",
           privacy_settings: null,
         })
       } finally {

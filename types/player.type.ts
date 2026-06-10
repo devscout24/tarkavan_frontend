@@ -2,10 +2,25 @@ export type TPlayerDashboard = {
   player_info: PlayerInfo
   summary: TPlayerStatsSummary
   scouting_status: ScoutingStatus
-  recent_opportunities: Opportunity[]
-  upcoming_training: any[] // later refine if structure known
+  recent_opportunities: Opportunity[] 
+  upcoming_program_reminders: TProgramBookingRemiender[]
 }
 
+export type TProgramBookingRemiender = {
+  event_type: string;
+  booking_id: number;
+  athlete_name: string;
+  provider_name: string;
+  provider_image: string;
+  status: string;
+  title: string;
+  location: string;
+  start_date: string; // YYYY-MM-DD
+  start_date_display: string;
+  end_date: string; // YYYY-MM-DD
+  photo: string;
+  session_time: string;
+};
 
 // ------------------ SCOUTING ------------------
 export type ScoutingStatus = {

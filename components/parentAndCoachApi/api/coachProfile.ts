@@ -65,24 +65,24 @@ export function convertToFormData(data: CoachProfileFormData): FormData {
         ? String(data.current_role)
         : data.current_role && typeof data.current_role === "object"
           ? String(
-              (
-                data.current_role as {
-                  id?: number | string
-                  value?: number | string
-                  name?: string
-                }
-              ).id ??
-                (
-                  data.current_role as {
-                    id?: number | string
-                    value?: number | string
-                    name?: string
-                  }
-                ).value ??
-                ""
-            ) ||
-            (data.current_role as { name?: string }).name ||
+            (
+              data.current_role as {
+                id?: number | string
+                value?: number | string
+                name?: string
+              }
+            ).id ??
+            (
+              data.current_role as {
+                id?: number | string
+                value?: number | string
+                name?: string
+              }
+            ).value ??
             ""
+          ) ||
+          (data.current_role as { name?: string }).name ||
+          ""
           : ""
 
   const playerCentricApproach = Boolean(data.player_centric_approach)
@@ -107,7 +107,13 @@ export function convertToFormData(data: CoachProfileFormData): FormData {
 
   // Profile picture
   if (data.coach_profile_pic) {
-    formData.append("coach_profile_pic", data.coach_profile_pic)
+    const pic = data.coach_profile_pic as File | string
+
+    if (pic instanceof File) {
+      formData.append("coach_profile_pic", pic)
+    } else if (typeof pic === "string" && pic.trim()) {
+      formData.append("coach_profile_pic", pic)
+    }
   }
 
   // Experience and education

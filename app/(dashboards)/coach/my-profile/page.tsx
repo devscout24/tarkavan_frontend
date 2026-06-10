@@ -6,9 +6,9 @@ import ExperienceEducationCard from "@/components/custom/coach-profile/experienc
 import ProfileHeaderBar from "@/components/custom/coach-profile/profile-header-bar"
 import { setPlayerOG } from "../../action"
 import { toPng } from "html-to-image"
-import { useEffect, useState } from "react"
-import { CoachProfileData } from "@/components/parentAndCoachApi"
+import { useEffect, useState } from "react" 
 import { getApiBaseUrl } from "@/lib/url-utils"
+import { TCoachProfile, TCoachProfileData } from "@/types"
 
 export default function MyProfilePage() {
 
@@ -74,7 +74,8 @@ export default function MyProfilePage() {
   }, [shouldCapture])
 
 
-    const [profileData, setProfileData] = useState<CoachProfileData | null>(null)
+    const [profileData, setProfileData] = useState<TCoachProfile | null>(null)
+ 
     const [loading, setLoading] = useState(true)
  
   
@@ -92,9 +93,9 @@ export default function MyProfilePage() {
           })
   
           if (response.ok) {
-            const result = await response.json()
+            const result = await response.json() 
             if (result.status) {
-              setProfileData(result.data)
+              setProfileData(result.data) 
             }
           }
         } catch (error) {
@@ -117,6 +118,8 @@ export default function MyProfilePage() {
       }
     }, [])
 
+    console.log(profileData)
+ 
 
 
   return (
@@ -124,12 +127,15 @@ export default function MyProfilePage() {
       <ProfileHeaderBar />
 
       <div className="grid gap-5 md:gap-6 lg:gap-6 xl:grid-cols-[460px_minmax(0,1fr)] xl:gap-6 2xl:grid-cols-[560px_minmax(0,1fr)] 2xl:gap-7">
-        <CoachLeftColumn />
+        <CoachLeftColumn 
+          profileData={profileData?.profile as TCoachProfileData}
+          coaching_titles={profileData?.coaching_titles || []} 
+        />
 
         <div className="space-y-4 xl:space-y-5 2xl:space-y-6">
-          <CoachBioCard />
-          <ExperienceEducationCard />
-          <CredentialsCard />
+          <CoachBioCard profileData={profileData?.profile as TCoachProfileData} />
+          <ExperienceEducationCard experience_education={profileData?.experience_education || []} />
+          <CredentialsCard coach_media={profileData?.coach_media || []} />
         </div>
       </div>
     </section>

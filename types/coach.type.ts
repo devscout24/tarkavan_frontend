@@ -135,3 +135,66 @@ export type TCoachPublicProfile  = {
 
   badges: string[]
 }
+
+
+
+
+
+export type TCoachProfile = {
+  profile: TCoachProfileData ,
+  coaching_titles: string[],
+  experience_education: {
+    title: string | number
+    duration: string
+    description: string
+  }[]
+  coach_media: {id: number , image: string}[]
+
+}
+
+export type TCoachProfileData = {
+  user_id: number
+  name: string
+  last_name: string
+  dob: string
+  bio: string
+  gender: string
+  status: string
+  nationality: string
+  email: string
+  sport_option_id?: number
+  sports: string
+  city: string
+  city_id?: number
+  country: string
+  country_id?: number
+  coach_profile_pic: string 
+  profile_image: string 
+  current_role: {
+    id: number
+    name: string
+  }
+  years_of_experience: string
+  highest_education: string
+  coaching_education: string
+  coaching_philosophy: string
+  facebook_link?: string
+  twitter_link?: string
+  instagram_link?: string
+  tiktok_link?: string
+  whatsapp_link?: string
+  player_centric_approach: boolean
+  data_driving_training: boolean
+  visible_reviews: boolean
+  allow_parent_player_reviews: boolean
+  updated_at: string
+  created_at: string
+  id: number    
+  privacy_settings: {
+    visible_reviews: boolean
+    allow_parent_player_reviews: boolean
+  },
+  overall_avg_rating: number
+  total_reviews: number
+
+}

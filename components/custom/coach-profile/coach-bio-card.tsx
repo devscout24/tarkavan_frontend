@@ -1,97 +1,23 @@
 "use client"
+ 
+import { Card } from "@/components/ui/card" 
+import { TCoachProfileData } from "@/types"
 
-import { useState, useEffect } from "react"
-import { Card } from "@/components/ui/card"
-import { getApiBaseUrl } from "@/lib/url-utils"
+ 
 
-interface CoachProfileData {
-  profile: {
-    bio: string
-    player_centric_approach: boolean
-    data_driving_training: boolean
-  }
-  badges: string[]
-}
+export default function CoachBioCard({ profileData }: { profileData: TCoachProfileData }) {  
 
-export default function CoachBioCard() {
-  const [profileData, setProfileData] = useState<CoachProfileData | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchBioData = async () => {
-      try {
-        const token = localStorage.getItem("go_elite_token")
-        const baseUrl = getApiBaseUrl()
-
-        const response = await fetch(`${baseUrl}/coach/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        })
-
-        if (response.ok) {
-          const result = await response.json()
-          if (result.status) {
-            setProfileData(result.data)
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching coach bio data:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchBioData()
-
-    const handleProfileUpdated = () => { 
-      fetchBioData()
-    }
-
-    window.addEventListener("coachProfileUpdated", handleProfileUpdated)
-
-    return () => {
-      window.removeEventListener("coachProfileUpdated", handleProfileUpdated)
-    }
-
-
-  }, [])
-
-  if (loading) {
-    return (
-      <Card className="rounded-[12px] border border-secondary/60 bg-primary p-6 xl:p-7 2xl:p-8">
-        <div className="animate-pulse">
-          <div className="mb-4 h-20 rounded bg-secondary/20"></div>
-          <div className="mb-4 h-32 rounded bg-secondary/20"></div>
-          <div className="h-16 rounded bg-secondary/20"></div>
-        </div>
-      </Card>
-    )
-  }
-
-  if (!profileData) {
-    return (
-      <Card className="rounded-[12px] border border-secondary/60 bg-primary p-6 xl:p-7 2xl:p-8">
-        <div className="text-center text-white">
-          <p>Unable to load bio data</p>
-        </div>
-      </Card>
-    )
-  }
-
-  const badges = profileData?.badges || []
-
+  
   return (
     <Card className="rounded-[12px] border border-secondary/60 bg-primary p-6 xl:p-7 2xl:p-8">
       <h5 className="text-base leading-[150%] font-bold text-white xl:text-lg 2xl:text-xl">
         Bio
       </h5>
       <p className="mt-2 text-sm leading-[150%] text-white/85 xl:mt-3 xl:text-base 2xl:text-lg">
-        {profileData?.profile?.bio || "No bio available"}
+        {profileData?.bio || "No bio available"}
       </p>
 
-      {badges.length > 0 && (
+      {/* {badges.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-2 xl:mt-5 xl:gap-3">
           {badges.map((badge, index) => (
             <span
@@ -102,7 +28,7 @@ export default function CoachBioCard() {
             </span>
           ))}
         </div>
-      )}
+      )} */}
     </Card>
   )
 }

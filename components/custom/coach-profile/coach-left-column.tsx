@@ -1,252 +1,50 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import CommonBtn from "@/components/common/common-btn"
 import ProgramCoachCard from "@/components/common/program-coach-card"
 import { Card } from "@/components/ui/card"
-import { getApiBaseUrl } from "@/lib/url-utils"
 import {
-  FacebookIcon,
   FullStarIcon,
-  InstagramIcon,
   PartialStarIcon,
-  ProfileShareIcon,
-  TiktokIcon,
-  WhatsappIcon,
-  XIcon,
 } from "./icons"
 import SocialLinks from "@/app/(dashboards)/player/components/social-links"
+import { TCoachProfileData } from "@/types"
 
-interface CoachProfileData {
-  id: number
-  name: string
-  last_name: string
-  dob: string
-  gender: string
-  status: string
-  nationality: string
-  email: string
-  sports: string
-  coach_profile_pic: string | null
-  current_role: {
-    id: number
-    name: string
-  } | null
-  years_of_experience: string
-  highest_education: string
-  coaching_education: string
-  coaching_philosophy: string
-  player_centric_approach: boolean
-  data_driving_training: boolean
-  facebook_link: string | null
-  twitter_link: string | null
-  instagram_link: string | null
-  tiktok_link: string | null
-  whatsapp_link: string | null
-  privacy_settings: string
-  visible_reviews: boolean
-  allow_parent_player_reviews: boolean
-  city: string
-  country: string
-  city_id: number | null
-  country_id: number | null
-  coaching_titles: Array<{
-    id: number
-    coach_id: number
-    title: string
-  }>
-  overall_avg_rating: number
-  total_reviews: number
-}
 
-interface City {
-  id: number
-  country_id: number
-  name: string
-}
 
-interface Country {
-  id: number
-  name: string
-  iso_code: string
-}
 
-export default function CoachLeftColumn() {
-  const [profileData, setProfileData] = useState<CoachProfileData | null>(null)
-  const [cities, setCities] = useState<City[]>([])
-  const [countries, setCountries] = useState<Country[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem("go_elite_token")
-        const baseUrl = getApiBaseUrl()
-
-        // Fetch coach profile data
-        const profileResponse = await fetch(
-          `${baseUrl}/coach/profile/data/edit`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        )
-
-        if (profileResponse.ok) {
-          const profileResult = await profileResponse.json()
-          if (profileResult.status) {
-            setProfileData(profileResult.data)
-          }
-        } else {
-          console.error("Profile response not ok:", profileResponse.status)
-        }
-
-        // Fetch cities data
-        try {
-          const authHeaders: HeadersInit | undefined = token
-            ? {
-                Authorization: `Bearer ${token}`,
-              }
-            : undefined
-
-          const citiesResponse = await fetch(`${baseUrl}/locations/cities`, {
-            headers: authHeaders,
-          })
-          if (citiesResponse.ok) {
-            const citiesResult = await citiesResponse.json()
-            if (citiesResult.status) {
-              setCities(citiesResult.data)
-            }
-          } else {
-            console.error("Cities response not ok:", citiesResponse.status)
-          }
-        } catch (error) {
-          console.error("Error fetching cities:", error)
-        }
-
-        // Fetch countries data
-        try {
-          const countriesResponse = await fetch(
-            `${baseUrl}/locations/countries`,
-            {
-              headers: token
-                ? {
-                    Authorization: `Bearer ${token}`,
-                  }
-                : {},
-            }
-          )
-          if (countriesResponse.ok) {
-            const countriesResult = await countriesResponse.json()
-            if (countriesResult.status) {
-              setCountries(countriesResult.data)
-            }
-          } else {
-            console.error(
-              "Countries response not ok:",
-              countriesResponse.status
-            )
-          }
-        } catch (error) {
-          console.error("Error fetching countries:", error)
-        }
-      } catch (error) {
-        console.error("Error fetching coach profile data:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchData()
-
-    const handleProfileUpdated = () => { 
-      fetchData()
-    }
-
-    window.addEventListener("coachProfileUpdated", handleProfileUpdated)
-
-    return () => {
-      window.removeEventListener("coachProfileUpdated", handleProfileUpdated)
-    }
-
-  }, [])
-
-  const getCityName = () => {
-    if (!profileData?.city_id) return profileData?.city || ""
-    const city = cities.find((c) => c.id === profileData.city_id)
-    return city?.name || profileData?.city || ""
+export default function CoachLeftColumn(
+  {
+    profileData,
+    coaching_titles
   }
-
-  const getCountryName = () => {
-    if (!profileData?.country_id) return profileData?.country || ""
-    const country = countries.find((c) => c.id === profileData.country_id)
-    return country?.name || profileData?.country || ""
-  }
-
-  const getLocation = () => {
-    const cityName = getCityName()
-    const countryName = getCountryName()
-    return cityName && countryName
-      ? `${cityName}, ${countryName}`
-      : cityName || countryName || ""
-  }
-
-  if (loading) {
-    return (
-      <aside className="space-y-4 xl:space-y-5 2xl:space-y-6">
-        <div className="animate-pulse">
-          <div className="h-64 rounded-[12px] bg-secondary/20"></div>
-        </div>
-        <div className="animate-pulse">
-          <div className="h-32 rounded-[12px] bg-secondary/20"></div>
-        </div>
-      </aside>
-    )
-  }
-
-  if (!profileData) {
-    return (
-      <aside className="space-y-4 xl:space-y-5 2xl:space-y-6">
-        <div className="text-center text-white">
-          <p>Unable to load profile data</p>
-        </div>
-      </aside>
-    )
-  }
-
-  const tags = [
-    profileData.gender?.toUpperCase(),
-    ...profileData.coaching_titles.map((title) => title.title.toUpperCase()),
-  ]
+    :
+    {
+      profileData: TCoachProfileData,
+      coaching_titles: string[]
+    }) {
 
   return (
     <aside className="space-y-4 xl:space-y-5 2xl:space-y-6">
       <ProgramCoachCard
         className="rounded-[12px] border border-secondary/60 bg-primary xl:[&_h3]:text-[38px] 2xl:[&_h3]:text-[46px] xl:[&_p]:text-[17px] 2xl:[&_p]:text-[19px] xl:[&_span]:text-[11px] 2xl:[&_span]:text-[12px]"
-        name={profileData.name}
-        highlightedName={profileData.last_name}
-        role={profileData.current_role?.name || ""}
-        location={getLocation()}
-        tags={tags}
-        imageUrl={profileData.coach_profile_pic || "/images/coach.png"}
+        name={profileData?.name}
+        highlightedName={profileData?.last_name}
+        role={profileData?.current_role?.name || ""}
+        location={profileData?.city && profileData?.country ? `${profileData?.city}, ${profileData?.country}` : profileData?.city || profileData?.country || ""}
+        tags={["tag"]}
+        imageUrl={profileData?.profile_image || "/images/bannerbg.png"}
         showMessageButton={false}
       />
 
       <Card className="rounded-[12px] border border-secondary/60 bg-primary p-6 xl:p-7 2xl:p-8">
         <p className="text-[32px] leading-[125%] font-bold text-white xl:text-[38px] 2xl:text-[44px]">
-          {profileData.overall_avg_rating || 0}
+          {profileData?.overall_avg_rating?.toFixed(1) || "0.0"}
         </p>
-        <div className="mt-1 flex items-center gap-1 xl:mt-2 xl:gap-1.5 xl:[&_svg]:scale-110 2xl:[&_svg]:scale-125">
-          <FullStarIcon />
-          <FullStarIcon />
-          <FullStarIcon />
-          <FullStarIcon />
-          <PartialStarIcon />
-        </div>
+
+        <StarRating rating={profileData?.overall_avg_rating || 0} />
+
         <p className="mt-2 text-base leading-[150%] font-semibold tracking-[-0.32px] text-white xl:text-lg 2xl:text-xl">
-          Average Rating Based on {profileData.total_reviews || 0} reviews
+          Average Rating Based on {profileData?.total_reviews || 0} reviews
         </p>
       </Card>
 
@@ -255,18 +53,51 @@ export default function CoachLeftColumn() {
           Coaching Titles
         </h5>
         <div className="mt-3 flex flex-wrap gap-4 xl:mt-4 xl:gap-5">
-          {profileData.coaching_titles.map((title) => (
+          {coaching_titles && coaching_titles.length > 0 && coaching_titles?.map((title, index) => (
             <span
-              key={title.id}
+              key={index}
               className="rounded-[6px] bg-white/10 p-2 text-[10px] leading-[120%] font-medium text-white xl:px-2.5 xl:py-2.5 xl:text-[11px] 2xl:text-xs"
             >
-              {title.title}
+              {title}
             </span>
           ))}
         </div>
       </Card>
 
-      <SocialLinks profileUrl={`profile/coach`} />
+      <SocialLinks
+        profileUrl={`profile/coach`}
+        facebookUrl={profileData?.facebook_link || undefined}
+        twitterUrl={profileData?.twitter_link || undefined}
+        whatsappUrl={profileData?.whatsapp_link || undefined}
+
+      />
     </aside>
+  )
+}
+
+
+// Add this helper above the component
+function StarRating({ rating }: { rating: number }) {
+  return (
+    <div className="mt-1 flex items-center gap-1 xl:mt-2 xl:gap-1.5 xl:[&_svg]:scale-110 2xl:[&_svg]:scale-125">
+      {Array.from({ length: 5 }, (_, i) => {
+        const filled = rating - i
+        if (filled >= 1) return <FullStarIcon key={i} />
+        if (filled > 0) return <PartialStarIcon key={i} />
+        return <EmptyStarIcon key={i} />   // add EmptyStarIcon to your icons if not already there
+      })}
+    </div>
+  )
+}
+
+// icons.tsx
+export function EmptyStarIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M8 1l1.8 3.6 4 .6-2.9 2.8.7 4L8 10l-3.6 1.9.7-4L2.2 5.2l4-.6L8 1z"
+        stroke="#6B7280" strokeWidth="1.2" fill="none"
+      />
+    </svg>
   )
 }

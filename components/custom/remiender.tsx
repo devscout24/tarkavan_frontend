@@ -1,8 +1,20 @@
-import { MapPin } from "lucide-react" 
+import { MapPin } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import CommonBtn from "../common/common-btn"
+import moment from "moment"
+import { TProgramBookingRemiender } from "@/types"
 
-export default function TrainingReminderCard() {
+export default function TrainingReminderCard(
+  {
+    reminder
+  }: { 
+    reminder? : TProgramBookingRemiender
+  }
+) {
+   
+  console.log(reminder, "reminder")
+
+
   return (
     <Card className="w-full overflow-hidden border-secondary bg-secondary/25 mt-6  text-white relative h-fit pb-0! z-1 ">
       <CardHeader className="">
@@ -15,20 +27,19 @@ export default function TrainingReminderCard() {
         {/* Date + Event Info */}
         <div className="flex gap-4">
           {/* Date Badge */}
-          <div className="flex p-2 flex-shrink-0 flex-col items-center justify-center rounded-md bg-secondary  text-white shadow-lg">
-            <span className="text-xs font-medium tracking-widest opacity-90">
-              MAR
+          <div className="flex p-2 flex-shrink-0 flex-col items-center justify-center rounded-md bg-secondary max-w-15 text-white shadow-lg">
+            <span className="text-xl leading-none font-extrabold text-center  ">
+              {moment(reminder?.start_date).format("MMM Do")}
             </span>
-            <span className="text-xl leading-none font-extrabold">15</span>
           </div>
 
           {/* Event Details */}
           <div className="flex-1 pt-1">
             <h3 className="text-base font-semibold text-white">
-              Elite Technical Clinic
+              {reminder?.title || ""}
             </h3>
             <p className="mt-1 text-sm text-white/60">
-              Friday, 4:30 PM - 6:00 PM
+              {reminder?.start_date_display || ""}
             </p>
           </div>
         </div>
@@ -38,13 +49,13 @@ export default function TrainingReminderCard() {
           <MapPin className="mt-0.5 h-5 w-5 text-zinc-500" />
           <div>
             <p className="text-sm leading-relaxed">
-              West Side Sports Complex, Field 4
+              {reminder?.location || ""}
             </p>
           </div>
         </div>
 
-        {/* Button */} 
-        <CommonBtn variant="default" size="lg" text="View Location" className="h-12 w-full bg-white text-base font-medium text-zinc-950 transition-all hover:bg-white/90"/>
+        {/* Button */}
+        <CommonBtn variant="default" size="lg" text="View Location" className="h-12 w-full bg-white text-base font-medium text-zinc-950 transition-all hover:bg-white/90" />
 
         {/* football */}
         <img

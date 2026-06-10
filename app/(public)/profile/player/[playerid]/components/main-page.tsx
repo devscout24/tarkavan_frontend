@@ -162,7 +162,6 @@ export default function ProfilePage({ data }: ProfilePageProps) {
   }
 
   const router = useRouter()
-  console.log("Player Profile Data:", data?.basic_info)
 
   return (
     <>
@@ -213,7 +212,7 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                       rel="noopener noreferrer"
                     >
                       <FaFacebookF />
-                    </a>  
+                    </a>
                     <a
                       href={data?.basic_info?.twitter_link || "http://example.com"}
                       target="_blank"
@@ -238,16 +237,8 @@ export default function ProfilePage({ data }: ProfilePageProps) {
             {/* right */}
             <div className="w-full flex-7 lg:flex-7">
               <div className="gap-5 xl:flex">
-                <div className="">
-                  <h2 className="mb-4 text-base font-semibold text-white">
-                    Player positions
-                  </h2>
-                  <div className="mt-2 min-w-fit">
-                    <PositionMap data={mapPosition as TPlayerPosition[]} />
-                  </div>
-                </div>
                 <div className="w-full">
-                  <h2 className="mb-4 text-right text-base font-semibold text-white">
+                  <h2 className="mb-4 text-base font-semibold text-white text-left  ">
                     Player Details Table
                   </h2>
                   <div className="overflow-hidden rounded-xl! border border-secondary!">
@@ -333,6 +324,15 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                     </Table>
                   </div>
                 </div>
+                <div className="">
+                  <h2 className="mb-4 text-base font-semibold text-white text-right ">
+                    Player positions
+                  </h2>
+                  <div className="mt-2 min-w-fit">
+                    <PositionMap data={mapPosition as TPlayerPosition[]} />
+                  </div>
+                </div>
+
               </div>
 
               {/* Player Attributes */}

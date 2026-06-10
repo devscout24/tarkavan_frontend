@@ -102,7 +102,7 @@ export interface CoachProfileData {
   city_id?: number
   country: string
   country_id?: number
-  coach_profile_pic?: string
+  coach_profile_pic: string 
   current_role?: CurrentRole
   years_of_experience: string
   highest_education: string
@@ -124,6 +124,13 @@ export interface CoachProfileData {
   coaching_titles: CoachingTitle[]
   media: Media[]
   current_position?: CurrentRole
+  privacy_settings: {
+    visible_reviews: boolean
+    allow_parent_player_reviews: boolean
+  },
+  overall_avg_rating: number
+  total_reviews: number
+
 }
 
 export interface CoachProfileResponse {

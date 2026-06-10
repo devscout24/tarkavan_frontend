@@ -9,7 +9,7 @@ import ShareModal from "@/components/common/modal/all-modals/share-modal"
 import { useEffect, useState } from "react"
 import Advertisement from "@/components/custom/advertisement"
 import { getPlayerDashboard } from "../action"
-import { TPlayerDashboard, TPlayerStatsSummary } from "@/types/player.type"
+import { TPlayerDashboard, TPlayerStatsSummary, TProgramBookingRemiender } from "@/types/player.type"
 import moment from "moment"
 
 export default function PlayerDashboardPage() {
@@ -19,7 +19,9 @@ export default function PlayerDashboardPage() {
   const [openShareModal, setOpenShareModal] = useState(false)
 
   const [dashData, setDashData] = useState<TPlayerDashboard>()
-  console.log("dashData", dashData)
+   
+
+
   useEffect(() => {
     
     const getDashboard  = async () => {
@@ -50,6 +52,8 @@ export default function PlayerDashboardPage() {
   }, [])
 
   const playerId = dashData?.player_info?.id;
+
+  console.log(dashData, "dashData")
  
  
   return (
@@ -119,7 +123,7 @@ export default function PlayerDashboardPage() {
               key={playerId}
               open={openShareModal}
               onOpenChange={setOpenShareModal}
-              url={`${typeof window !== "undefined" ? window.location.origin : ""}/profile/${playerId}`}
+              url={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/profile/player/${playerId}`}
               title="Watch my Player Card"
             />
 
@@ -133,7 +137,13 @@ export default function PlayerDashboardPage() {
             />
           </div>
 
-          <TrainingReminderCard />
+          {dashData && dashData?.upcoming_program_reminders && dashData?.upcoming_program_reminders.length > 0 && 
+            dashData?.upcoming_program_reminders.map((reminder)=> ( 
+              <TrainingReminderCard
+                reminder={reminder as TProgramBookingRemiender}
+              />
+            )) 
+          }
 
  
         </div>

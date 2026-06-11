@@ -21,16 +21,10 @@ import { toast } from "sonner"
 import { getSportOptions } from "@/app/(dashboards)/action"
 import useModal from "./modal/useModal"
 import { getHighestNumber, getLowestNumber } from "@/lib/get-highest-number"
-import TimePicker from "react-time-picker"
-import "react-time-picker/dist/TimePicker.css"
-import "react-clock/dist/Clock.css"
 import {
     addCoachProgram,
     updateCoachProgram,
 } from "@/app/(dashboards)/coach/my-programs/action"
-
-
-
 
 
 type TSportOption = {
@@ -64,6 +58,106 @@ const fieldCls =
 const selectCls =
     "mt-1 w-full border-neutral-700 bg-neutral-800 py-5 text-white data-[placeholder]:text-neutral-300"
 
+// ─── Time helpers ─────────────────────────────────────────────────────────────
+
+/**
+ * Convert "HH:mm" (24-hr) → { hour, minute, period }
+ * Used when loading existing program data from the server.
+ */
+function from24(time: string): { hour: string; minute: string; period: "AM" | "PM" } {
+    if (!time) return { hour: "12", minute: "00", period: "AM" }
+    const [hStr, mStr] = time.split(":")
+    let h = parseInt(hStr, 10)
+    const period: "AM" | "PM" = h >= 12 ? "PM" : "AM"
+    if (h === 0) h = 12
+    else if (h > 12) h -= 12
+    return { hour: String(h), minute: mStr || "00", period }
+}
+
+/**
+ * Format { hour, minute, period } → "02:00AM" for the API.
+ */
+function toAmPmString(hour: string, minute: string, period: "AM" | "PM"): string {
+    return `${String(hour).padStart(2, "0")}:${minute}${period}`
+}
+
+type TTimeParts = { hour: string; minute: string; period: "AM" | "PM" }
+
+const defaultTimeParts: TTimeParts = { hour: "12", minute: "00", period: "AM" }
+
+// ─── AM/PM Time Picker Component ─────────────────────────────────────────────
+function AmPmTimePicker({
+    label,
+    value,
+    onChange,
+}: {
+    label: string
+    value: TTimeParts
+    onChange: (v: TTimeParts) => void
+}) {
+    const hours = Array.from({ length: 12 }, (_, i) => String(i + 1))
+    const minutes = ["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"]
+
+    const triggerCls =
+        "border-neutral-700 bg-neutral-800 text-white h-10 px-3 rounded-md border text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+
+    return (
+        <div className="flex flex-col gap-1.5 flex-1">
+            <span className="text-xs text-neutral-400">{label}</span>
+            <div className="flex items-center gap-1.5">
+                {/* Hour */}
+                <select
+                    value={value.hour}
+                    onChange={(e) => onChange({ ...value, hour: e.target.value })}
+                    className={triggerCls}
+                    style={{ minWidth: 56 }}
+                >
+                    {hours.map((h) => (
+                        <option key={h} value={h} className="bg-neutral-800">
+                            {h.padStart(2, "0")}
+                        </option>
+                    ))}
+                </select>
+
+                <span className="text-neutral-400 font-bold">:</span>
+
+                {/* Minute */}
+                <select
+                    value={value.minute}
+                    onChange={(e) => onChange({ ...value, minute: e.target.value })}
+                    className={triggerCls}
+                    style={{ minWidth: 56 }}
+                >
+                    {minutes.map((m) => (
+                        <option key={m} value={m} className="bg-neutral-800">
+                            {m}
+                        </option>
+                    ))}
+                </select>
+
+                {/* AM/PM */}
+                <div className="flex rounded-md overflow-hidden border border-neutral-700">
+                    {(["AM", "PM"] as const).map((p) => (
+                        <button
+                            key={p}
+                            type="button"
+                            onClick={() => onChange({ ...value, period: p })}
+                            className={`px-3 h-10 text-sm font-medium transition-colors ${
+                                value.period === p
+                                    ? "bg-brand text-black"
+                                    : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
+                            }`}
+                        >
+                            {p}
+                        </button>
+                    ))}
+                </div>
+            </div>
+        </div>
+    )
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") => void }> = ({ setProgramType }) => {
     const { close } = useModal()
     const currentUser = localStorage.getItem("go_elite_user")
@@ -73,10 +167,13 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
     const [sportOptions, setSportOptions] = useState<TSportOption[]>([])
     const [form, setForm] = useState(initialForm)
 
+    // AM/PM time parts (separate from form so we can convert cleanly)
+    const [startTime, setStartTime] = useState<TTimeParts>(defaultTimeParts)
+    const [endTime, setEndTime] = useState<TTimeParts>(defaultTimeParts)
+
     const set = (name: string, value: string) =>
         setForm((p) => ({ ...p, [name]: value }))
-    const setTimeSlot = (field: keyof TTimeSlot, value: string) =>
-        setForm((p) => ({ ...p, timeSlot: { ...p.timeSlot, [field]: value } }))
+
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => set(e.target.name, e.target.value)
@@ -119,6 +216,9 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
                 const firstTime = p.times?.[0]
                 setProgramType(p.program_type)
 
+                // Populate AM/PM pickers from saved 24-hr strings
+                if (firstTime?.start_time) setStartTime(from24(firstTime.start_time))
+                if (firstTime?.end_time) setEndTime(from24(firstTime.end_time))
 
                 setForm({
                     sport: p.sport || "",
@@ -145,9 +245,13 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
             .catch(console.error)
     }, [editId])
 
-    // ─── Build FormData ─────── 
+    // ─── Build FormData ───────────────────────────────────────────────────────────
     const buildFormData = async () => {
         const formData = new FormData()
+
+        // Format as "02:00AM" / "03:00PM" for the API
+        const start24 = toAmPmString(startTime.hour, startTime.minute, startTime.period)
+        const end24 = toAmPmString(endTime.hour, endTime.minute, endTime.period)
 
         const fields: Record<string, string> = {
             sport: form.sport,
@@ -166,8 +270,8 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
 
         Object.entries(fields).forEach(([k, v]) => formData.append(k, v))
 
-        if (form.timeSlot.start && form.timeSlot.end) {
-            formData.append("program_times[0]", `${form.timeSlot.start}-${form.timeSlot.end}`)
+        if (start24 && end24) {
+            formData.append("program_times[0]", `${start24}-${end24}`)
         }
 
         form.goals
@@ -186,14 +290,12 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
         return formData
     }
 
-    // ─── Simple form validation ──────────────────────────────────────────────────
+    // ─── Validation ───────────────────────────────────────────────────────────────
     const validateForm = () => {
-        // Require program image
         if (!form.photo) {
             toast.error("Please upload a program image")
             return false
         }
-
         if (!form.sport) {
             toast.error("Please select a sport")
             return false
@@ -206,15 +308,10 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
             toast.error("Please enter a valid program price")
             return false
         }
-
-        const hasValidTime = Boolean(
-            form.start && form.end && form.timeSlot.start && form.timeSlot.end
-        )
-        if (!hasValidTime) {
+        if (!form.start || !form.end) {
             toast.error("Please select program start/end dates and start/end times")
             return false
         }
-
         return true
     }
 
@@ -231,13 +328,9 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
         if (!validateForm()) return
         setIsSubmitting(true)
 
-
-        if (currentUser && currentUser.role === "club") {
+        if (currentUser?.role === "club") {
             try {
                 const res: any = await createProgram(await buildFormData())
- 
-
-
                 res?.success || res?.status
                     ? onSuccess("Program created successfully!")
                     : toast.error(res?.message || "Failed to create program.")
@@ -249,10 +342,9 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
             }
         }
 
-        if (currentUser && currentUser.role === "coach") {
+        if (currentUser?.role === "coach") {
             try {
                 const res: any = await addCoachProgram(await buildFormData())
-
                 res?.success || res?.status
                     ? onSuccess("Program created successfully!")
                     : toast.error(res?.message || "Failed to create program.")
@@ -270,7 +362,7 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
         if (!validateForm()) return
         setIsSubmitting(true)
 
-        if (currentUser && currentUser.role === "club") {
+        if (currentUser?.role === "club") {
             try {
                 const res: any = await updateProgram({
                     program_id: editId,
@@ -288,7 +380,7 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
             }
         }
 
-        if (currentUser && currentUser.role === "coach") {
+        if (currentUser?.role === "coach") {
             try {
                 const res: any = await updateCoachProgram({
                     program_id: editId,
@@ -310,9 +402,7 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
     // ─── Render ───────────────────────────────────────────────────────────────────
     return (
         <div className="mx-auto w-full p-0">
-            <div className="flex flex-col gap-4 rounded-2xl bg-neutral-900 p-8 text-white  overflow-auto  ">
-
-
+            <div className="flex flex-col gap-4 rounded-2xl bg-neutral-900 p-8 text-white overflow-auto">
 
                 {/* Photo Upload */}
                 <div className="mb-2">
@@ -347,8 +437,6 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
                         </div>
                     )}
                 </div>
-
-
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     {/* Sport Selection */}
@@ -433,9 +521,7 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
 
                     {/* Program Location */}
                     <div className="flex flex-col">
-                        <p className="text-sm">
-                            Program Location{" "}
-                        </p>
+                        <p className="text-sm">Program Location</p>
                         <Input
                             name="location"
                             value={form.location}
@@ -445,12 +531,9 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
                         />
                     </div>
 
-                    {/* Program Start / End */}
-
+                    {/* Program Start */}
                     <div className="flex flex-col">
-                        <p className="text-sm">
-                            Program Start
-                        </p>
+                        <p className="text-sm">Program Start</p>
                         <Input
                             name="start"
                             value={form.start}
@@ -459,11 +542,10 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
                             type="date"
                         />
                     </div>
-                    <div className="flex flex-col">
-                        <p className="text-sm">
-                            Program End
 
-                        </p>
+                    {/* Program End */}
+                    <div className="flex flex-col">
+                        <p className="text-sm">Program End</p>
                         <Input
                             name="end"
                             value={form.end}
@@ -473,40 +555,30 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
                         />
                     </div>
 
-                    {/* ── Program Times (date + time slots) ── */}
-                    <div className="col-span-full flex flex-col gap-2 bg-secondary/10 p-2 rounded-lg border border-secondary     ">
-                        <p className="text-sm">
-                            Program Time
-                        </p>
-                        <div className="flex flex-col gap-2 pl-2">
-                            <div className="flex items-center gap-2">
-                                <span className="min-w-fit text-xs text-neutral-400">
-                                    Start
-                                </span>
-                                <TimePicker
-                                    value={form.timeSlot.start || null}
-                                    onChange={(value) =>
-                                        setTimeSlot("start", Array.isArray(value) ? value[0] || "" : value || "")
-                                    }
-                                    disableClock
-                                    format="HH:mm"
-                                    className="flex-1"
-                                />
-
-                                <span className="text-xs text-neutral-400">End</span>
-                                <TimePicker
-                                    value={form.timeSlot.end || null}
-                                    onChange={(value) =>
-                                        setTimeSlot("end", Array.isArray(value) ? value[0] || "" : value || "")
-                                    }
-                                    disableClock
-                                    format="HH:mm"
-                                    className="flex-1 rounded-md!"
-                                />
-                            </div>
+                    {/* ── Program Time (AM/PM) ── */}
+                    <div className="col-span-full flex flex-col gap-3 rounded-lg border border-secondary bg-secondary/10 p-4">
+                        <p className="text-sm">Program Time</p>
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                            <AmPmTimePicker
+                                label="Start Time"
+                                value={startTime}
+                                onChange={setStartTime}
+                            />
+                            <AmPmTimePicker
+                                label="End Time"
+                                value={endTime}
+                                onChange={setEndTime}
+                            />
                         </div>
-
-
+                        {/* Live preview of what will be sent to the API */}
+                        <p className="text-xs text-neutral-500">
+                            Sends as:{" "}
+                            <span className="text-neutral-300">
+                                {toAmPmString(startTime.hour, startTime.minute, startTime.period)}
+                                {"-"}
+                                {toAmPmString(endTime.hour, endTime.minute, endTime.period)}
+                            </span>
+                        </p>
                     </div>
                 </div>
 

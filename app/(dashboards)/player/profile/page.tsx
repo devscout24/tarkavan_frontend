@@ -47,7 +47,6 @@ export default function PlayerProfile() {
     ? JSON.parse(localStorage.getItem("go_elite_user")!)
     : null
   const [playerData, setPlayerData] = useState<TPlayerProfile>()
- 
   const router = useRouter()
   useEffect(() => {
     const profileData = async () => {
@@ -565,6 +564,7 @@ export default function PlayerProfile() {
                   title="My Videos"
                   acceptType="video"
                   items={mergedVideoItems}
+                  linkUpload={true}
                 />
               </div>
             </div>

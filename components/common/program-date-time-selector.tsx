@@ -89,7 +89,7 @@ export default function ProgramDateTimeSelector({
 
   const [monthData, setMonthData] = useState<any[]>([])
   const [currentMonth, setCurrentMonth] = useState(moment().format("YYYY-MM"))
-    
+
 
   const [selectedDate, setSelectedDate] = useState<Date | string>("")
   const [selectedTime, setSelectedTime] = useState<TTimeSlot>()
@@ -97,7 +97,7 @@ export default function ProgramDateTimeSelector({
   const [allChields, setAllChields] = useState<TChield[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedChildId, setSelectedChildId] = useState<string>("")
- 
+
 
   useEffect(() => {
     const storedUser = localStorage.getItem("go_elite_user")
@@ -141,7 +141,7 @@ export default function ProgramDateTimeSelector({
         const res = await getDateForMonth({
           program_id: programid,
           month: currentMonth,
-        })  
+        })
         if (
           res &&
           "success" in res &&
@@ -313,6 +313,7 @@ export default function ProgramDateTimeSelector({
       }
     }
   }
+  console.log("Available Times:", availableTimes)
 
   return (
     <div className="mt-4 space-y-6 rounded-2xl bg-white p-4 sm:p-6">
@@ -377,23 +378,25 @@ export default function ProgramDateTimeSelector({
           </div>
 
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            {availableTimes?.map((slot, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                className={`${!slot.is_available || slot.is_past || slot.is_booked ? "line-through" : ""} ${selectedTime?.id === slot.id ? "border-brand" : "border-[#DEDEDE]"} relative h-10 rounded-xl bg-white text-sm font-medium text-[#202020] hover:bg-[#F8F8F8]`}
-                onClick={() => setSelectedTime(slot)}
-                disabled={!slot.is_available || slot.is_past || slot.is_booked}
-              >
-                {moment(slot.start_time, "HH:mm").format("LT")} -{" "}
-                {moment(slot.end_time, "HH:mm").format("LT")}
-                {selectedTime?.id === slot.id && (
-                  <div className="absolute top-0 right-0 h-4 w-4 rounded-2xl bg-brand">
-                    <IoIosCheckmark className="absolute top-0 right-0" />
-                  </div>
-                )}
-              </Button>
-            ))}
+            {availableTimes?.map((slot, index) => {
+              
+              return (
+                <Button
+                  key={index}
+                  variant="outline"
+                  className={`${!slot.is_available || slot.is_past || slot.is_booked ? "line-through" : ""} ${selectedTime?.id === slot.id ? "border-brand" : "border-[#DEDEDE]"} relative h-10 rounded-xl bg-white text-sm font-medium text-[#202020] hover:bg-[#F8F8F8]`}
+                  onClick={() => setSelectedTime(slot)}
+                  disabled={!slot.is_available || slot.is_past || slot.is_booked}
+                >
+                  {slot.time ? slot.time : `${slot.start_time} - ${slot.end_time}`}
+                  {selectedTime?.id === slot.id && (
+                    <div className="absolute top-0 right-0 h-4 w-4 rounded-2xl bg-brand">
+                      <IoIosCheckmark className="absolute top-0 right-0" />
+                    </div>
+                  )}
+                </Button>
+              )
+            })}
           </div>
         </>
       )}

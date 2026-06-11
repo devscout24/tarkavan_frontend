@@ -10,13 +10,25 @@ import {
 } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import CommonBtn from "@/components/common/common-btn"
-import { Upload, X, Play } from "lucide-react"
+import { Upload, X, Play, PlayCircle, Globe } from "lucide-react"
 import {
   mediaLinkDelete,
   playerGalleryDelete,
   playerProfileUpdate,
 } from "../profile/action"
 import { toast } from "sonner"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { Plus, Trash2, Link2 } from "lucide-react"
+
 
 export type PlayerMediaItem = {
   id: string
@@ -53,6 +65,7 @@ type PlayerMediaProps = {
   uploadLabel?: string
   className?: string
   acceptType?: "image" | "video" | "both"
+  linkUpload?: boolean
 }
 
 const MAX_MEDIA = 5
@@ -76,17 +89,21 @@ function isAllowed(file: File, acceptType: "image" | "video" | "both") {
 }
 
 export default function PlayerMedia({
-  title = "My Images",
-  subtitle = "Match highlights & training",
+  title = "",
+  subtitle = "",
   uploadLabel = "Upload Media",
   className,
   items = [],
   acceptType = "both",
+  linkUpload = false,
 }: PlayerMediaProps) {
   const [mediaItems, setMediaItems] = useState<LocalMediaItem[]>([])
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
+
+  // ── scroll-to-bottom ref for the links modal ──
+  const linkListBottomRef = useRef<HTMLDivElement>(null)
 
   const addFiles = useCallback(
     (files: FileList | File[]) => {
@@ -122,7 +139,6 @@ export default function PlayerMedia({
     } catch (error) {
       console.error("Remove error:", (error as Error).message)
       toast.error("Failed to remove media")
-    } finally {
     }
   }
 
@@ -161,7 +177,6 @@ export default function PlayerMedia({
   ]
 
   const handleUploadMedia = async () => {
- 
     setLoading(true)
     try {
       if (!mediaItems.length) {
@@ -184,7 +199,7 @@ export default function PlayerMedia({
       })
 
       const res = await playerProfileUpdate(formData)
- 
+
       if (res && "success" in res && res.success) {
         toast.success(res.data?.message || "Media uploaded successfully")
         mediaItems.forEach((item) => {
@@ -218,6 +233,76 @@ export default function PlayerMedia({
     }
   }
 
+  // ── modal links state ──
+  const [modallinks, setModalLinks] = useState<string[]>([""])
+
+  // ── auto-scroll to bottom when a new link field is added ──
+  const addLinkField = () => {
+    setModalLinks((prev) => [...prev, ""])
+    setTimeout(() => {
+      linkListBottomRef.current?.scrollIntoView({ behavior: "smooth" })
+    }, 50)
+  }
+
+  const updateLink = (index: number, value: string) => {
+    setModalLinks((prev) => {
+      const updated = [...prev]
+      updated[index] = value
+      return updated
+    })
+  }
+
+  const removeLinkField = (index: number) => {
+    setModalLinks((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const getYoutubeId = (url: string) => {
+    try {
+      const regExp =
+        /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#&?]*).*/
+      const match = url.match(regExp)
+      return match && match[2].length === 11 ? match[2] : null
+    } catch {
+      return null
+    }
+  }
+
+  const getHostname = (url: string) => {
+    try {
+      return new URL(url).hostname.replace("www.", "")
+    } catch {
+      return ""
+    }
+  }
+
+  const [modalOpen , setModalOpen] = useState(false)
+  const handleUploadMediaLinks = async  () => {
+    setLoading(true)
+    try { 
+      const formData = new FormData()
+
+      modallinks.forEach((link) => {
+        formData.append("link[]", link)
+      })
+
+      const res = await playerProfileUpdate(formData)
+
+      if (res && "success" in res && res.success) {
+        toast.success(res.data?.message || "Media uploaded successfully") 
+        setModalLinks([""])
+        setModalOpen(false)
+        window.dispatchEvent(new Event("player_profile_updated"))
+      }
+
+      setLoading(false)
+
+    } catch (error) {
+      console.error("Upload links error:", (error as Error).message)
+      setLoading(false)
+    }
+
+  }
+
   return (
     <Card
       className={cn(
@@ -234,15 +319,141 @@ export default function PlayerMedia({
             {subtitle}
           </CardDescription>
         </div>
-        <CommonBtn
-          size="lg"
-          variant="default"
-          text={uploadLabel}
-          onClick={handleUploadMedia}
-          className="w-fit cursor-pointer border-2 border-white/50 bg-secondary/70 px-4 text-base"
-          icon={<Upload />}
-          isLoading={loading}
-        />
+        <div className="flex items-center gap-2">
+          {linkUpload && (
+            <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+              <DialogTrigger asChild>
+                <CommonBtn
+                  size="lg"
+                  variant="default"
+                  text="Add Links"
+                  className="w-fit cursor-pointer border-2 border-white/50 bg-secondary/70 px-4 text-base"
+                  icon={<Upload />}
+                />
+              </DialogTrigger>
+
+              <DialogContent className="max-h-[80vh] overflow-y-auto [&::-webkit-scrollbar]:hidden  ">
+                <DialogHeader>
+                  <DialogTitle>Add Media Links</DialogTitle>
+                </DialogHeader>
+
+                <div className="space-y-4">
+                  {modallinks.map((link, index) => {
+                    const videoId = getYoutubeId(link)
+
+                    return (
+                      <div
+                        key={index}
+                        className="group relative rounded-xl border border-border/50 bg-muted/20 p-4 transition-all hover:border-primary/40 hover:bg-muted/30"
+                      >
+                        <div className="mb-2 flex items-center justify-between">
+                          <Label className="flex items-center gap-2 text-sm font-medium">
+                            <Link2 className="h-4 w-4 text-primary" />
+                            Media {index + 1}
+                          </Label>
+
+                          {modallinks.length > 1 && (
+                            <Button
+                              type="button"
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => removeLinkField(index)}
+                              className="h-8 w-8 text-red-500 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-500/10 hover:text-red-500"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <Input
+                            type="url"
+                            value={link}
+                            onChange={(e) => updateLink(index, e.target.value)}
+                            placeholder="https://youtube.com/watch?v=..."
+                            className="h-11 flex-1 border-border/60 bg-transparent"
+                          />
+
+                          {link.trim() && (
+                            <div className="group/preview shrink-0">
+                              {videoId ? (
+                                <a
+                                  href={link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block"
+                                >
+                                  <div className="relative overflow-hidden rounded-lg border border-border">
+                                    <img
+                                      src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
+                                      alt="Youtube Preview"
+                                      className="h-11 w-15 object-cover transition-transform duration-200 group-hover/preview:scale-105"
+                                    />
+                                  </div>
+                                </a>
+                              ) : (
+                                <a
+                                  href={link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block"
+                                >
+                                  <div className="flex h-11 min-w-[80px] items-center justify-center rounded-lg border border-border bg-background/40 px-3">
+                                    <div className="flex items-center gap-1">
+                                      <Globe className="h-3.5 w-3.5 text-primary" />
+                                      <span className="max-w-[50px] truncate text-[10px] text-muted-foreground">
+                                        {getHostname(link)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </a>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+
+                  {/* ── scroll anchor ── */}
+                  <div ref={linkListBottomRef} />
+
+                  <div className="flex items-center justify-between sticky bg-white py-4 -bottom-5 left-0 w-full   ">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={addLinkField}
+                      className="border-dashed bg-transparent"
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Another
+                    </Button>
+
+                    <CommonBtn
+                      variant="outline"
+                      size="lg"
+                      text="Save Links"
+                      onClick={handleUploadMediaLinks}
+                      isLoading={loading}
+                      disabled={loading || modallinks.some((link) => !link.trim())}
+                      className="cursor-pointer bg-brand text-primary hover:bg-brand w-fit px-2 border-0"
+                    />
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+
+          <CommonBtn
+            size="lg"
+            variant="default"
+            text={uploadLabel}
+            onClick={handleUploadMedia}
+            className="w-fit cursor-pointer border-2 border-white/50 bg-secondary/70 px-4 text-base"
+            icon={<Upload />}
+            isLoading={loading}
+          />
+        </div>
       </CardHeader>
 
       <CardContent className="space-y-4">

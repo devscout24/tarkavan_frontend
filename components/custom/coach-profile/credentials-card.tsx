@@ -58,7 +58,7 @@ export default function CredentialsCard(
                 className="cursor-pointer p-2 border border-secondary rounded-md "
               >
                 <Image
-                  src={media.image}
+                  src={encodeURI(media.image)}
                   alt="credential"
                   width={100}
                   height={100}

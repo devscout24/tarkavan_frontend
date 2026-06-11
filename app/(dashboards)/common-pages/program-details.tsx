@@ -25,8 +25,7 @@ export default function ProgramDetailsPage() {
   const id = params.detailsID
   const [details, setDetails] = useState<TProgramDetailsParentAndPlayer | null>(
     null
-  )
-  console.log("Program Details:", details)
+  ) 
 
   const currentUser =
     typeof window !== "undefined"
@@ -113,7 +112,7 @@ export default function ProgramDetailsPage() {
           .humanize()}
         dateRange={`${moment(details?.start_date).format("MMM Do YY")} - ${moment(details?.end_date).format("MMM Do YY")}`}
         location={details?.location}
-        ageRange={`Age U${details?.age_limit == details?.from_age  || details?.from_age == null ? details?.age_limit : `${details?.from_age} - ${details?.age_limit}` }`}
+        ageRange={`Age U${details?.age_limit == details?.from_age  || details?.from_age == null ? details?.age_limit : `${details?.from_age} - U${details?.age_limit}` }`}
         program_photo={details?.photo || ""}
       />
 

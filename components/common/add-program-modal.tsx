@@ -22,10 +22,10 @@ const AddProgramPage: React.FC = () => {
   const [programType, setProgramType] = React.useState<string>("")
   const [tabValue, setTabValue] = React.useState("group");
   React.useEffect(() => {
-  if (editId && programType) {
-    setTabValue(programType);
-  }
-}, [editId, programType]); 
+    if (editId && programType) {
+      setTabValue(programType);
+    }
+  }, [editId, programType]);
 
 
 

@@ -25,7 +25,7 @@ export default function ProgramDetailsPage() {
   const id = params.detailsID
   const [details, setDetails] = useState<TProgramDetailsParentAndPlayer | null>(
     null
-  ) 
+  )
 
   const currentUser =
     typeof window !== "undefined"
@@ -76,6 +76,7 @@ export default function ProgramDetailsPage() {
     }
 
   }, [id])
+ 
 
 
   return (
@@ -112,7 +113,7 @@ export default function ProgramDetailsPage() {
           .humanize()}
         dateRange={`${moment(details?.start_date).format("MMM Do YY")} - ${moment(details?.end_date).format("MMM Do YY")}`}
         location={details?.location}
-        ageRange={`Age U${details?.age_limit == details?.from_age  || details?.from_age == null ? details?.age_limit : `${details?.from_age} - U${details?.age_limit}` }`}
+        ageRange={`Age U${details?.age_limit == details?.from_age || details?.from_age == null ? details?.age_limit : `${details?.from_age} - U${details?.age_limit}`}`}
         program_photo={details?.photo || ""}
       />
 
@@ -126,29 +127,22 @@ export default function ProgramDetailsPage() {
             description={details?.about}
           />
 
-          {/* <WriteReviewDialog
-            trigger={<Button>Write a review</Button>}
-          /> */}
-
-
-
 
           {/* program review */}
           {details && details?.recent_feedback?.length > 0 && (
             <ProgramReview
-              rating={4.9}
-              totalReviews={47}
-              feedbackLabel="Total Feedback"
-              reviewLabel="Write a Review"
-              breakdown={[
-                { stars: 5, percentage: 85 },
-                { stars: 4, percentage: 12 },
-                { stars: 3, percentage: 3 },
-                { stars: 2, percentage: 0 },
-                { stars: 1, percentage: 0 },
-              ]}
+              review_summary={details.review_summary}
             />
           )}
+
+          {
+            details?.booking_status == "completed" || details?.booking_status == "confirmed"
+            &&
+            <WriteReviewDialog
+              program_id={String(id)}
+              trigger={<Button className="mt-4 bg-brand text-primary font-medium w-full cursor-pointer    ">Write a review</Button>}
+            />
+          }
 
           {/* recent feedback */}
           {details && details?.recent_feedback?.length > 0 && (
@@ -161,13 +155,18 @@ export default function ProgramDetailsPage() {
                 setSelectedFilter={() => { }}
               />
 
-              <ProgramFeedbackCard
-                name="John Doe"
-                date="September 28, 2023"
-                review="The program was very well structured and the instructors were very knowledgeable."
-                rating={4.5}
-                avatarUrl="/images/Dainel.png"
-              />
+              {details?.recent_feedback.map((feedback, idx) => (
+                
+                <ProgramFeedbackCard
+                  key={feedback.id || idx}
+                  name={feedback?.reviewer?.name || "Anonymous"}
+                  date={feedback?.created_at ? moment(feedback.created_at).format("MMMM Do YYYY") : "Unknown Date"}
+                  review={feedback?.review || ""}
+                  rating={feedback?.rating ||  0}
+                  avatarUrl={feedback?.reviewer?.profile_image || "/images/bannerbg.png"}
+                />
+              ) 
+              )}
             </div>
           )}
         </div>

@@ -20,7 +20,7 @@ export default function AboutProgram({
   return (
     <section
       className={cn(
-        " rounded-2xl border border-secondary/70 bg-[#030612]/90 p-4 md:p-6",
+        " rounded-2xl border border-secondary/70 bg-secondary/20 p-4 md:p-6",
         className
       )}
       aria-label={sectionTitle}

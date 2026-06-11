@@ -318,6 +318,7 @@ export type TClubBookingData = {
     name: string;
     last_name: string;
     profile_image: string;
+    image: string;
     primary_position: string | null;
     secondary_position: string | null;
   };

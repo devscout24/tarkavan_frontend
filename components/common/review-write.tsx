@@ -14,17 +14,18 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { programReview } from "@/app/(dashboards)/player/upcoming-events/action"
+import CommonBtn from "./common-btn"
+import { toast } from "sonner"
 
 // ─── Types ────────────────────────────────────────────────
 interface ReviewFormState {
     rating: number
-    title: string
     body: string
 }
 
 const INITIAL_FORM: ReviewFormState = {
     rating: 0,
-    title: "",
     body: "",
 }
 
@@ -37,6 +38,8 @@ function StarRating({
     onChange: (val: number) => void
 }) {
     const [hovered, setHovered] = useState(0)
+
+
 
     return (
         <div className="flex items-center gap-2">
@@ -51,7 +54,7 @@ function StarRating({
                 >
                     <Star
                         className={`h-7 w-7 transition-colors ${star <= (hovered || value)
-                            ? "fill-amber-400 text-amber-400"
+                            ? "fill-brand text-brand"
                             : "text-zinc-600"
                             }`}
                     />
@@ -62,18 +65,13 @@ function StarRating({
 }
 
 // ─── Main Component ───────────────────────────────────────
-export function WriteReviewDialog({ trigger }: { trigger: React.ReactNode }) {
+export function WriteReviewDialog({ trigger, program_id }: { trigger: React.ReactNode; program_id: string }) {
     const [open, setOpen] = useState(false)
     const [form, setForm] = useState<ReviewFormState>(INITIAL_FORM)
+    const [submitting, setSubmitting] = useState(false)
 
     const handleChange = (field: keyof ReviewFormState, value: string | number) => {
         setForm((prev) => ({ ...prev, [field]: value }))
-    }
-
-    const handleSubmit = () => { 
-        // TODO: call API
-        setOpen(false)
-        setForm(INITIAL_FORM)
     }
 
     const handleCancel = () => {
@@ -81,11 +79,57 @@ export function WriteReviewDialog({ trigger }: { trigger: React.ReactNode }) {
         setForm(INITIAL_FORM)
     }
 
+    const handleReview = async () => {
+
+        if (!form.rating) {
+            toast.error("Please provide a rating")
+            return
+        }
+
+        if (!form.body.trim()) {
+            toast.error("Please write a review")
+            return
+        }
+
+
+        setSubmitting(true)
+
+        try {
+            const formData = new FormData()
+            formData.append("rating", String(form.rating))
+            formData.append("review", form.body)
+
+            const res = await programReview(program_id, formData) 
+            if (res && "success" in res && res.success && "data" in res) {
+                const { status, message } = res.data
+
+                if (status) {
+                    window.dispatchEvent(new Event("programevent"))
+                    toast.success(message || "Review submitted successfully!")
+                    setSubmitting(false)
+                } else {
+                    setSubmitting(false)
+                    toast.error(message || "Already reviewed or failed")
+                }
+            }
+            
+
+        } catch (err) {
+            console.error("Failed to submit review:", err)
+            setSubmitting(false)
+        } finally {
+            setSubmitting(false)
+            setOpen(false)
+            setForm(INITIAL_FORM)
+        }
+    }
+
+
     return (
         <Dialog open={open} onOpenChange={setOpen}  >
             <DialogTrigger asChild>{trigger}</DialogTrigger>
 
-            <DialogContent className="border-border/50 bg-zinc-950 text-white sm:max-w-lg">
+            <DialogContent className="border-border/50 bg-zinc-950 text-white sm:max-w-lg border border-secondary   ">
                 <DialogHeader>
                     <DialogTitle className="text-xl font-semibold">
                         Write a review
@@ -105,17 +149,6 @@ export function WriteReviewDialog({ trigger }: { trigger: React.ReactNode }) {
                         />
                     </div>
 
-                    {/* Title */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-zinc-300">Review title</label>
-                        <Input
-                            value={form.title}
-                            onChange={(e) => handleChange("title", e.target.value)}
-                            placeholder="Summarize your experience..."
-                            className="border-zinc-800 bg-zinc-900"
-                        />
-                    </div>
-
                     {/* Body */}
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-zinc-300">Your review</label>
@@ -124,22 +157,25 @@ export function WriteReviewDialog({ trigger }: { trigger: React.ReactNode }) {
                             value={form.body}
                             onChange={(e) => handleChange("body", e.target.value)}
                             placeholder="Tell others about your experience..."
-                            className="resize-none border-zinc-800 bg-zinc-900"
+                            className="resize-none border-zinc-800 bg-zinc-900 mt-2 "
                         />
                     </div>
                 </div>
 
-                <DialogFooter className="gap-2">
-                    <Button variant="outline" onClick={handleCancel}>
+                <DialogFooter className="gap-2 bg-primary border-t border-secondary   ">
+                    <Button variant="outline" onClick={handleCancel} className="bg-transparent hover:bg-transparent hover:text-white   "  >
                         Cancel
                     </Button>
-                    <Button
-                        onClick={handleSubmit}
-                        disabled={!form.rating || !form.title || !form.body}
-                        className="bg-gradient-to-r from-indigo-500 to-violet-600 text-white hover:opacity-90"
-                    >
-                        Submit review
-                    </Button>
+
+                    <CommonBtn
+                        onClick={handleReview}
+                        text="Submit review"
+                        className="bg-brand! hover:bg-brand!  text-primary w-fit  px-2    "
+                        variant="default"
+                        size="sm"
+                        disabled={submitting}
+                        isLoading={submitting}
+                    />
                 </DialogFooter>
             </DialogContent>
         </Dialog>

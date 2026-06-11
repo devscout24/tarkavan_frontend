@@ -1,6 +1,6 @@
 "use client"
 
-import BookingsTable, {  
+import BookingsTable, {
 } from "@/components/common/bookings-table"
 import StatusFilterSelect from "@/components/common/status-filter-select"
 import Loader from "@/components/common/loader"
@@ -16,10 +16,10 @@ const statusOptions = [
   { value: "completed", label: "Completed" },
   { value: "refund", label: "Refund" },
 ]
- 
 
- 
- 
+
+
+
 export default function BookingsPage() {
   const [status, setStatus] = useState("all")
   const [bookings, setBookings] = useState<TClubBookingData[]>([])
@@ -32,14 +32,14 @@ export default function BookingsPage() {
 
     return bookings.filter((booking) => booking.status === status)
   }, [bookings, status])
- 
+
 
   useEffect(() => {
     const fetchBookings = async () => {
       try {
         setLoading(true)
-        const response = await api.get("/coach/program/bookings") 
-        if(response?.data?.data) { 
+        const response = await api.get("/coach/program/bookings")
+        if (response?.data?.data) {
           setBookings(response?.data?.data)
         }
       } catch (error) {
@@ -63,6 +63,8 @@ export default function BookingsPage() {
     }
 
   }, [])
+
+  console.log(bookings)
 
   return (
     <section className="w-full max-w-full min-w-0 overflow-x-hidden text-white">

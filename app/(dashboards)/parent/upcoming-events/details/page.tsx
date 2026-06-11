@@ -74,7 +74,7 @@ export default function UpcomingEventDetails() {
           />
 
           {/* event review */}
-          <ProgramReview
+          {/* <ProgramReview
             rating={4.8}
             totalReviews={23}
             feedbackLabel="Total Feedback"
@@ -86,7 +86,7 @@ export default function UpcomingEventDetails() {
               { stars: 2, percentage: 0 },
               { stars: 1, percentage: 0 },
             ]}
-          />
+          /> */}
 
           {/* recent feedback */}
           <div className="mt-6">

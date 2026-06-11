@@ -1,6 +1,5 @@
 "use client"
-
-import { Badge } from "@/components/ui/badge"
+ 
 import {
   Table,
   TableBody,
@@ -19,9 +18,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
+  DropdownMenuItem, 
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { PiDotsThreeOutline } from "react-icons/pi"
@@ -56,52 +53,7 @@ export default function BookingsTable({ bookings }: BookingsTableProps) {
   }
 
   return (
-    <>
-      {/* <div className="space-y-3 lg:hidden">
-        {bookings.map((booking) => (
-          <article
-            key={booking.id}
-            className="rounded-xl border border-secondary/40 bg-primary/30 p-4"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex min-w-0 items-center gap-3">
-                <Image
-                  src={booking.avatar}
-                  alt={booking.athlete.name}
-                  width={40}
-                  height={40}
-                  className="h-10 w-10 rounded-full object-cover"
-                />
-                <div className="min-w-0">
-                  <p className="truncate text-base font-medium text-white">
-                    {booking.athlete.name}
-                  </p>
-                  <p className="truncate text-sm text-white/70">
-                    {booking.program.program_name}
-                  </p>
-                </div>
-              </div> 
-            </div>
-
-            <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
-              <div>
-                <p className="text-white/50">Amount</p>
-                <p className="text-white">{booking.amount}</p>
-              </div>
-              <div>
-                <p className="text-white/50">Date</p>
-                <p className="text-white!">{booking.booking_date}</p>
-              </div>
-            </div>
-
-            <div className="mt-3">
-              actions
- 
-            </div>
-          </article>
-        ))}
-      </div> */}
-
+    <> 
       <div className="hidden w-full max-w-full min-w-0 overflow-x-auto overflow-y-hidden rounded-2xl border border-secondary/40 [scrollbar-color:rgba(198,245,122,0.75)_transparent] [scrollbar-width:thin] lg:block [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-brand/75 [&::-webkit-scrollbar-track]:bg-transparent">
         <Table className="w-full min-w-full table-fixed">
           <TableHeader>
@@ -137,7 +89,7 @@ export default function BookingsTable({ bookings }: BookingsTableProps) {
                   <div className="flex min-w-0 items-center gap-2 xl:gap-3">
                     <Image
                       src={
-                        booking.athlete.profile_image || "/images/bannerbg.png"
+                        booking?.athlete?.profile_image?.startsWith("http") ? booking?.athlete?.profile_image : booking?.athlete?.image?.startsWith("http") ? booking?.athlete?.image : "/images/bannerbg.png"
                       }
                       alt={booking.athlete.name}
                       width={40}

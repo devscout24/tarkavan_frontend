@@ -16,7 +16,7 @@ export default function ExperienceEducationCard(
   }
 ) {
  
- 
+ console.log("ExperienceEducationCard data:", experience_education) // Debug log to check data structure
 
   
 

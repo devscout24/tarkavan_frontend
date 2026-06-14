@@ -5,26 +5,25 @@ import { IoIosFootball } from "react-icons/io"
  
 import { TPlayerBasicInfo, TPlayerPositionInfo } from "@/types"
 
-export default function CoachProfileCard({
-  provincialVotes = 0,
-  academyVotes = 0,
+export default function CoachProfileCard({ 
   basic_info,
   position_info,
-}: {
-  provincialVotes?: number
-  academyVotes?: number
+  jersey_shown = true,
+}: { 
   basic_info?: TPlayerBasicInfo
   position_info?: TPlayerPositionInfo
-  
+  jersey_shown: boolean
 }) {
  
  
 
   return (
     <div className="relative overflow-hidden rounded-[22px] border border-brand/80 bg-[#0d0f16] shadow-[0_0_0_1px_rgba(178,246,111,0.2),0_18px_45px_rgba(0,0,0,0.5)]">
-      <div className="absolute top-4 left-4 z-10 rounded-md bg-brand px-3 py-1 text-sm font-semibold text-primary italic">
-        JERSEY #{position_info?.jersey_number}
-      </div>
+      {jersey_shown && (
+        <div className="absolute top-4 left-4 z-10 rounded-md bg-brand px-3 py-1 text-sm font-semibold text-primary italic">
+          JERSEY #{position_info?.jersey_number}
+        </div>
+      )}
 
       {/* stars */}
       <div className=" absolute top-0 right-0 z-2 flex w-full flex-col items-end justify-end gap-2 px-5 pt-5">

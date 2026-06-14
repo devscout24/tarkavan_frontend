@@ -44,11 +44,14 @@ interface Program {
   price: number
   discount_price: number
   upto_age: number
+  from_age: number  
+  age_limit: number
   program_location: string
   program_start: string
   program_end: string
   program_photo: string
   photo: string
+  location: string
   status: string
   club_name: string
   coach_name: string
@@ -86,9 +89,7 @@ interface ProgramsData {
   }
 } 
 export default function UpcomingEventPage() {
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
+  const router = useRouter() 
 
   const [programsData, setProgramsData] = useState<ProgramsData | null>(null)
   const [loading, setLoading] = useState(false)
@@ -97,6 +98,7 @@ export default function UpcomingEventPage() {
     program_type: "" , 
     status: "", 
   })
+  console.log("programsData", programsData)
   
  
  
@@ -267,8 +269,8 @@ export default function UpcomingEventPage() {
               key={program.id}
               id={program.id.toString()}
               title={program.program_name}
-              type={program.coach_name}
-              schedule={moment(program.times[0].start_time, "HH:mm:ss").format("hh:mm A")}
+              type={`Age U${program?.age_limit == program?.from_age || program?.from_age == null ? program?.age_limit : `${program?.from_age} - U${program?.age_limit}`}`}
+              schedule={program.location}
               duration={`${moment(program.program_start).format("MMM Do YY") } - ${moment(program.program_end).format("MMM Do YY")}`}
               currentPrice={program.price ? `$${program.price - program.discount_price  }` : `$${program.program_price}`}
               previousPrice={String(program.discount_price + program.price )}

@@ -129,9 +129,8 @@ export default function Page() {
                 sports_selection: "football",
                 club_team: "FC Example",
                 dominant_foot: "right",
-              }}
-              provincialVotes={5}
-              academyVotes={3}
+              }} 
+              jersey_shown={false}
             />
 
             <div className="w-full rounded-2xl border border-brand bg-[#0d0f16] p-6 shadow-xl my-3  ">
@@ -195,9 +194,9 @@ export default function Page() {
                       image={item?.photo || "/images/bannerbg.png"}
                       name={item?.program_name}
                       price={`CAD ${item?.price}`}
-                      user={`Coach: ${item?.provider?.name}`}
-                      duration={moment(item?.end_date).diff(moment(item?.start_date), 'days') + " days program"}
-                      calender={moment(item?.start_date).format("MMM Do YY")}
+                      user={`Age U${item?.age_limit == item?.from_age || item?.from_age == null ? item?.age_limit : `${item?.from_age} - U${item?.age_limit}`}`} 
+                      duration={`${moment(item?.start_date || item?.times[0].slot_date   ).format("MMM Do YY")} - ${moment(item?.end_date || item?.times[item.times.length - 1].slot_date ).format("MMM Do YY")}`}
+                      calender={item?.location}
                       btnText="View Program"
                       onClick={() => {
                         const isvalid = isValidToken(token as string)

@@ -162,6 +162,7 @@ export default function ProfilePage({ data }: ProfilePageProps) {
   }
 
   const router = useRouter()
+  console.log("Profile data:", data) // Debug log to check the structure of the data
 
   return (
     <>
@@ -176,7 +177,6 @@ export default function ProfilePage({ data }: ProfilePageProps) {
         }}
         id="og_image"
       >
-
         <CommonBtn
           variant="outline"
           size="sm"
@@ -207,21 +207,27 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                   </h2>
                   <ul className="mt-8.5 flex gap-7.5 rounded-lg bg-white/20 p-4 text-2xl text-white">
                     <a
-                      href={data?.basic_info?.facebook_link || "http://example.com"}
+                      href={
+                        data?.basic_info?.facebook_link || "http://example.com"
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       <FaFacebookF />
                     </a>
                     <a
-                      href={data?.basic_info?.twitter_link || "http://example.com"}
+                      href={
+                        data?.basic_info?.twitter_link || "http://example.com"
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       <FaXTwitter />
                     </a>
                     <a
-                      href={data?.basic_info?.whatsapp_link || "http://example.com"}
+                      href={
+                        data?.basic_info?.whatsapp_link || "http://example.com"
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -238,7 +244,7 @@ export default function ProfilePage({ data }: ProfilePageProps) {
             <div className="w-full flex-7 lg:flex-7">
               <div className="gap-5 xl:flex">
                 <div className="w-full">
-                  <h2 className="mb-4 text-base font-semibold text-white text-left  ">
+                  <h2 className="mb-4 text-left text-base font-semibold text-white">
                     Player Details Table
                   </h2>
                   <div className="overflow-hidden rounded-xl! border border-secondary!">
@@ -325,14 +331,13 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                   </div>
                 </div>
                 <div className="">
-                  <h2 className="mb-4 text-base font-semibold text-white text-right ">
+                  <h2 className="mb-4 text-right text-base font-semibold text-white">
                     Player positions
                   </h2>
                   <div className="mt-2 min-w-fit">
                     <PositionMap data={mapPosition as TPlayerPosition[]} />
                   </div>
                 </div>
-
               </div>
 
               {/* Player Attributes */}
@@ -435,6 +440,16 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                         <TableHead className={"font-semibold text-primary!"}>
                           Red Cards
                         </TableHead>
+                        {Number(data?.player_stats?.clean_sheets) > 0 && (
+                          <TableHead className={"text-primary!"}>
+                            Clean Sheets
+                          </TableHead>
+                        )}
+                        {Number(data?.player_stats?.total_saves) > 0 && (
+                          <TableHead className={"text-primary!"}>
+                            Total Penalties Saved
+                          </TableHead>
+                        )}
                       </TableRow>
                     </TableHeader>
                     <TableBody className="text-white">
@@ -463,6 +478,18 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                           <TableCell className={columnBorderClass}>
                             {stat.red_cards}
                           </TableCell>
+                          {Number(data?.player_stats?.clean_sheets) >
+                            0 && (
+                            <TableCell className={columnBorderClass}>
+                              {stat.clean_sheets}
+                            </TableCell>
+                          )}
+                          {Number(data?.player_stats?.total_saves) >
+                            0 && (
+                            <TableCell className={columnBorderClass}>
+                              {stat.total_saves}
+                            </TableCell>
+                          )}
                         </TableRow>
                       ))}
                     </TableBody>

@@ -25,7 +25,8 @@ export type TProgramUpcomming = {
   program_type: "one_one" | "group";
   sport_option_id: number;
   sport_option: TSportOption;
-
+  start_date: string;
+  end_date: string;
   program_name: string;
   sport: string;
 
@@ -34,8 +35,11 @@ export type TProgramUpcomming = {
 
   upto_age: number;
   age_group: string;
+  from_age: number ;
+  age_limit: number;
 
   program_location: string;
+  location: string;
   program_start: string;
   program_end: string;
 

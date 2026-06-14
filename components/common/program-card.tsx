@@ -25,6 +25,7 @@ import { deleteProgram } from "@/app/(dashboards)/club/action"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { deleteCoachProgram } from "@/app/(dashboards)/coach/my-programs/action"
+import { RiMapPin2Line } from "react-icons/ri";
 
 type ProgramCardProps = {
   title?: string
@@ -49,8 +50,7 @@ type ProgramCardProps = {
 export default function ProgramCard({
   title,
   sport,
-  type,
-  coachName,
+  type, 
   schedule,
   duration,
   currentPrice,
@@ -96,7 +96,6 @@ export default function ProgramCard({
         toast.error("Failed to delete program")
       }
     }
-
   }
 
   return (
@@ -112,7 +111,7 @@ export default function ProgramCard({
           height={1000}
           src={imageSrc || "/images/bannerbg.png"}
           alt={imageAlt}
-          className="h-full w-full object-contain"
+          className="h-60 max-h-60  w-full object-contain"
         />
 
         {discountLabel && (
@@ -146,18 +145,16 @@ export default function ProgramCard({
           <div className="flex items-center gap-2">
             <UserRound className="size-4" />
             <span>
-              {coachName
-                ? `Coach: ${coachName}`
-                : `Type: ${type === "one_one" ? "Single" : "Group"}`}
+              {type}
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <Clock3 className="size-4" />
+            <RiMapPin2Line  className="size-5" /> 
             <span>{schedule}</span>
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="size-4" />
-            <span>{duration} program</span>
+            <span>{duration}</span>
           </div>
         </div>
         <div className="flex gap-4">

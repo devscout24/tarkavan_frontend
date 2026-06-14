@@ -32,7 +32,7 @@ import { useParams, useRouter } from "next/navigation"
 import { bookProgram } from "@/app/(dashboards)/parent/action"
 import { toast } from "sonner"
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ─── Types ────── 
 
 type ProgramDateTimeSelectorProps = {
   programStartDate?: string | Date
@@ -44,12 +44,13 @@ type ProgramDateTimeSelectorProps = {
   detailsID: string
   priceToShow?: number
   programid: string
+  slots?: {booking_date: string , booking_time_ids: number[]}[]
 }
 
 // date string (YYYY-MM-DD) → set of time IDs selected for that date
 type TSelectedSlots = Record<string, number[]>
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// ─── Component ──────────────── 
 
 export default function ProgramDateTimeSelector({
   programStartDate,
@@ -60,6 +61,7 @@ export default function ProgramDateTimeSelector({
   detailsID,
   programid,
   priceToShow,
+  slots , 
 }: ProgramDateTimeSelectorProps) {
   const params = useParams()
   const child_id = params.child_id
@@ -140,7 +142,7 @@ export default function ProgramDateTimeSelector({
   const availableDatesFromAPI = useMemo(
     () =>
       monthData
-        .filter((d: any) => d.has_available_slots)
+        .filter((d: any) => d.has_slots)
         .map((d: any) => parseISO(d.date)),
     [monthData]
   )
@@ -148,6 +150,7 @@ export default function ProgramDateTimeSelector({
   const canSelectDate = (day: Date) =>
     availableDatesFromAPI.some((d) => isSameDay(d, day))
 
+  // fetch available dates for the month when user changes month in calendar
   useEffect(() => {
     const getMonth = async () => {
       try {
@@ -155,6 +158,7 @@ export default function ProgramDateTimeSelector({
           program_id: programid,
           month: currentMonth,
         })
+         
         if (
           res &&
           "success" in res &&
@@ -172,6 +176,7 @@ export default function ProgramDateTimeSelector({
     getMonth()
   }, [currentMonth, programid])
 
+  // fetch available times when user selects a date
   useEffect(() => {
     if (!selectedDate) return
     const fetchAvailableTimes = async () => {
@@ -197,6 +202,7 @@ export default function ProgramDateTimeSelector({
     fetchAvailableTimes()
   }, [selectedDate])
 
+  // get child list for parent to select which child to book for (if parent has multiple children)
   useEffect(() => {
     const getChild = async () => {
       try {
@@ -218,16 +224,17 @@ export default function ProgramDateTimeSelector({
     getChild()
   }, [])
 
-  // ─── Build booking payload ────────────────────────────────────────────────────
+ 
 
-  /**
-   * Converts selectedSlots into the API payload:
-   * { program_id, athlete_profile_id, slots: [{ booking_date, booking_time_ids }] }
-   */
+  // ─── Build booking payload ─────── 
+
+ 
   const buildPayload = (athleteProfileId: string | number) => ({
     program_id: Number(detailsID),
     athlete_profile_id: Number(athleteProfileId),
-    slots: Object.entries(selectedSlots)
+    slots: 
+    slots && slots.length > 0 ? slots :
+     Object.entries(selectedSlots)
       .filter(([, ids]) => ids.length > 0)
       .map(([booking_date, booking_time_ids]) => ({
         booking_date,
@@ -238,10 +245,10 @@ export default function ProgramDateTimeSelector({
   // ─── Booking handlers ─────────────────────────────────────────────────────────
 
   const handleBooking = async (bookBy: "parent" | "player") => {
-    if (totalSelected === 0) {
-      toast.error("Please select at least one time slot.")
-      return
-    }
+    // if (totalSelected === 0) {
+    //   toast.error("Please select at least one time slot.")
+    //   return
+    // }
 
     const athleteId =
       bookBy === "parent"
@@ -257,8 +264,7 @@ export default function ProgramDateTimeSelector({
 
     try {
       setLoading(true)
-      const res = await bookProgram(payload as any)
-
+      const res = await bookProgram(payload as any) 
       if (res?.status === false && res?.message) {
         toast.error(res.message)
         setLoading(false)
@@ -287,7 +293,7 @@ export default function ProgramDateTimeSelector({
       console.error("Error booking program:", err)
     }
   }
-
+ 
   // ─── Render ───────────────────────────────────────────────────────────────────
 
   return (
@@ -301,6 +307,9 @@ export default function ProgramDateTimeSelector({
         selected={date}
         defaultMonth={startDate}
         onSelect={(d) => {
+          if(slots && slots.length > 0) {
+            return
+          }
           if (d && canSelectDate(d)) {
             setDate(d)
             setSelectedDate(d)

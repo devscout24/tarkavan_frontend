@@ -54,7 +54,7 @@ export default function ProgramDetailsBanner({
     startDate && endDate ? calculateDuration(startDate, endDate) : duration
   const sanitize = (s?: string) => s?.replace(/[,\s]+$/g, "")?.trim() || ""
   const displayLocation = sanitize(location) || "N/A"
- 
+
   const displayDateRange =
     startDate && endDate
       ? `${format(parseISO(startDate), "dd-MM-yyyy")} to ${format(
@@ -83,35 +83,46 @@ export default function ProgramDetailsBanner({
 
       <div className="absolute inset-x-0 bottom-0 z-10 p-4 md:p-6">
         <div className="flex items-center gap-2">
-          <Badge className="h-auto rounded-md bg-brand/50 px-2 py-1 text-[14px] font-semibold tracking-wide text-primary uppercase">
-            {category}
-          </Badge>
+          {category && (
+            <Badge className="h-auto rounded-md bg-brand/50 px-2 py-1 text-[14px] font-semibold tracking-wide text-primary uppercase">
+              {category}
+            </Badge>
+          )}
 
-          <p className="flex items-center gap-1 text-xs text-gray-400! md:text-sm">
-            <Clock3 className="size-3.5" />
-            {displayDuration} duration
-          </p>
+          {displayDuration && (
+            <p className="flex items-center gap-1 text-xs text-gray-400! md:text-sm">
+              <Clock3 className="size-3.5" />
+              {displayDuration} duration
+            </p>
+          )}
         </div>
 
-        <h1 className="mt-2 text-[36px] leading-tight font-bold text-white md:text-5xl">
-          {title}
-        </h1>
+        {title && (
+          <h1 className="mt-2 text-[36px] leading-tight font-bold text-white md:text-5xl">
+            {title}
+          </h1>
+        )}
 
         <ul className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-white/85 md:text-base">
-          <li className="flex items-center gap-1.5">
-            <CalendarDays className="size-4" />
-            {displayDateRange}
-          </li>
+          {displayDateRange && (
+            <li className="flex items-center gap-1.5">
+              <CalendarDays className="size-4" />
+              {displayDateRange}
+            </li>
+          )}
+          {displayLocation && (
+            <li className="flex items-center gap-1.5">
+              <MapPin className="size-4" />
+              {displayLocation}
+            </li>
+          )}
 
-          <li className="flex items-center gap-1.5">
-            <MapPin className="size-4" />
-            {displayLocation}
-          </li>
-
-          <li className="flex items-center gap-1.5">
-            <Users className="size-4" />
-            {ageRange}
-          </li>
+          {ageRange && (
+            <li className="flex items-center gap-1.5">
+              <Users className="size-4" />
+              {ageRange}
+            </li>
+          )}
         </ul>
       </div>
     </div>

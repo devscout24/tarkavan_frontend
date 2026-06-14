@@ -30,11 +30,10 @@ export default function ProgramDetailsPage() {
   const currentUser =
     typeof window !== "undefined"
       ? (() => {
-        const storedUser = localStorage.getItem("go_elite_user");
-        return storedUser ? JSON.parse(storedUser) : null;
-      })()
-      : null;
-
+          const storedUser = localStorage.getItem("go_elite_user")
+          return storedUser ? JSON.parse(storedUser) : null
+        })()
+      : null
 
   useEffect(() => {
     const getDetailsOfProgram = async () => {
@@ -74,10 +73,7 @@ export default function ProgramDetailsPage() {
     return () => {
       window.removeEventListener("programevent", getUpdatedData)
     }
-
   }, [id])
- 
-
 
   return (
     <section className="text-white">
@@ -90,7 +86,7 @@ export default function ProgramDetailsPage() {
           <ArrowLeftIcon />
           <span>Back to Programs</span>
         </Button>
-        {currentUser?.id === details?.provider?.user_id &&
+        {currentUser?.id === details?.provider?.user_id && (
           <CommonBtn
             text="Edit Program"
             className="h-10 w-fit rounded-[8px] bg-brand px-4 font-medium text-primary hover:bg-brand xl:h-11 xl:px-5 xl:text-base 2xl:h-12 2xl:px-6 2xl:text-lg"
@@ -101,7 +97,7 @@ export default function ProgramDetailsPage() {
               router.push(`?add-new=program`)
             }}
           />
-        }
+        )}
       </div>
 
       {/* program details banner */}
@@ -127,22 +123,22 @@ export default function ProgramDetailsPage() {
             description={details?.about}
           />
 
-
           {/* program review */}
           {details && details?.recent_feedback?.length > 0 && (
-            <ProgramReview
-              review_summary={details.review_summary}
-            />
+            <ProgramReview review_summary={details.review_summary} />
           )}
 
-          {
-            details?.booking_status == "completed" || details?.booking_status == "confirmed"
-            &&
-            <WriteReviewDialog
-              program_id={String(id)}
-              trigger={<Button className="mt-4 bg-brand text-primary font-medium w-full cursor-pointer    ">Write a review</Button>}
-            />
-          }
+          {details?.booking_status == "completed" ||
+            (details?.booking_status == "confirmed" && (
+              <WriteReviewDialog
+                program_id={String(id)}
+                trigger={
+                  <Button className="mt-4 w-full cursor-pointer bg-brand font-medium text-primary">
+                    Write a review
+                  </Button>
+                }
+              />
+            ))}
 
           {/* recent feedback */}
           {details && details?.recent_feedback?.length > 0 && (
@@ -152,21 +148,25 @@ export default function ProgramDetailsPage() {
                 placeholder="Choose short"
                 title="Recent Feedback"
                 selectedFilter=""
-                setSelectedFilter={() => { }}
+                setSelectedFilter={() => {}}
               />
 
               {details?.recent_feedback.map((feedback, idx) => (
-                
                 <ProgramFeedbackCard
                   key={feedback.id || idx}
                   name={feedback?.reviewer?.name || "Anonymous"}
-                  date={feedback?.created_at ? moment(feedback.created_at).format("MMMM Do YYYY") : "Unknown Date"}
+                  date={
+                    feedback?.created_at
+                      ? moment(feedback.created_at).format("MMMM Do YYYY")
+                      : "Unknown Date"
+                  }
                   review={feedback?.review || ""}
-                  rating={feedback?.rating ||  0}
-                  avatarUrl={feedback?.reviewer?.profile_image || "/images/bannerbg.png"}
+                  rating={feedback?.rating || 0}
+                  avatarUrl={
+                    feedback?.reviewer?.profile_image || "/images/bannerbg.png"
+                  }
                 />
-              ) 
-              )}
+              ))}
             </div>
           )}
         </div>
@@ -183,7 +183,9 @@ export default function ProgramDetailsPage() {
             messageLabel={`Message ${details?.provider?.type}`}
             name={details?.provider?.name || ""}
             verifiedLabel={details?.provider?.type}
-            showMessageButton={details?.provider?.is_program_maker ? false : true}
+            showMessageButton={
+              details?.provider?.is_program_maker ? false : true
+            }
             chatId={String(details?.provider?.user_id)}
             provider={details?.provider}
           />
@@ -197,6 +199,21 @@ export default function ProgramDetailsPage() {
             }
             isOwner={details?.provider?.is_program_maker}
             programid={String(id)}
+            slots={
+              details?.program_type == "group" &&
+              details.times &&
+              details.times.length > 0
+                ? details.times
+                    .filter(
+                      (time): time is typeof time & { slot_date: string } =>
+                        time.slot_date !== null
+                    )
+                    .map((time) => ({
+                      booking_date: time.slot_date,
+                      booking_time_ids: [time.id],
+                    }))
+                : undefined
+            }
           />
         </div>
       </div>

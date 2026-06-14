@@ -8,6 +8,7 @@ import { TSportOption } from "@/types"
 import moment from "moment" 
 import { TProgramUpcomming } from "@/types/upcomming.type"
 import { getAvailablePlayerParentProgram } from "../../player/programs/action"
+import { details } from "motion/react-client"
 
 export default function ProgramPage() { 
  
@@ -15,7 +16,7 @@ export default function ProgramPage() {
     const  [programs, setPrograms] = useState<TProgramUpcomming[]>([])
     const [sports, setSports] = useState<TSportOption[]>([])
     const [selectedFilter, setSelectedFilter] = useState<string>("") 
-  
+    console.log("selectedFilter:", programs)
     useEffect(() => {
   
       const getPrograms = async () => {
@@ -66,9 +67,10 @@ export default function ProgramPage() {
             key={index}
             id={program.id}
             title={program.program_name}
-            type={program.program_type}
-            schedule={moment(program.times[0].start_time, "HH:mm:ss").format("hh:mm A")}
-            duration={moment(program.program_start).format("MMM Do YY")}
+            type={`Age U${program?.age_limit == program?.from_age || program?.from_age == null ? program?.age_limit : `${program?.from_age} - U${program?.age_limit}`}`}
+            schedule={program?.location}
+            // duration={moment(program.program_start).format("MMM Do YY")}
+            duration={`${moment(program?.start_date).format("MMM Do YY")} - ${moment(program?.end_date).format("MMM Do YY")}`}
             currentPrice={String(program.price - program.discount_price)}
             previousPrice={String(program.price)}
            discountLabel={`${(

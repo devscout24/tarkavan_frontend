@@ -4,6 +4,7 @@ import CommonBtn from "@/components/common/common-btn"
 import { LuUserRound } from "react-icons/lu"
 import { CiAlarmOn } from "react-icons/ci"
 import { SlCalender } from "react-icons/sl"
+import { RiMapPin2Line } from "react-icons/ri";
 
 export type ProgramCardProps = {
   image: string | StaticImageData
@@ -31,7 +32,7 @@ export default function ProgramCard({
   return (
     <div
       className={`relative flex w-full flex-col overflow-hidden rounded-2xl border border-white/12 transition-all duration-300 ${className} `}
-      onClick={onClick}
+      // onClick={onClick}
     >
       <div className="min-h-50">
         <Image
@@ -58,7 +59,8 @@ export default function ProgramCard({
             <span>{user}</span>
           </p>
           <p className="flex items-center text-sm text-white">
-            <SlCalender className="mr-2 text-lg" />
+            {/* <SlCalender /> */}
+            <RiMapPin2Line className="mr-2 text-lg"  />
             <span>{calender}</span>
           </p>
           <p className="flex items-center text-sm text-white">

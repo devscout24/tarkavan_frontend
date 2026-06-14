@@ -104,6 +104,7 @@ export default function UpcomingEventPage() {
 
 
   const [programs, setPrograms] = useState<any[]>([])
+  console.log(programs)
   const [latestUpcomingProgram, setLatestUpcomingProgram] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [filter, setFilter] = useState({
@@ -284,11 +285,8 @@ export default function UpcomingEventPage() {
                     key={program.id}
                     id={program.id.toString()}
                     title={program.program_name}
-                    type={program.coach_name}
-                    schedule={moment(
-                      program.times[0].start_time || program.times[0].time ,
-                      "HH:mm:ss"
-                    ).format("hh:mm A")}
+                    type={`Age U${program?.age_limit == program?.from_age || program?.from_age == null ? program?.age_limit : `${program?.from_age} - U${program?.age_limit}`}`}
+                    schedule={program.location}
                     duration={`${moment(program.program_start).format("MMM Do YY")} - ${moment(program.program_end).format("MMM Do YY")}`}
                     currentPrice={
                       program.price

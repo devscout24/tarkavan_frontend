@@ -6,21 +6,20 @@ import ExperienceEducationCard from "@/components/custom/coach-profile/experienc
 import ProfileHeaderBar from "@/components/custom/coach-profile/profile-header-bar"
 import { setPlayerOG } from "../../action"
 import { toPng } from "html-to-image"
-import { useEffect, useState } from "react" 
+import { useEffect, useState } from "react"
 import { getApiBaseUrl } from "@/lib/url-utils"
 import { TCoachProfile, TCoachProfileData } from "@/types"
 
 export default function MyProfilePage() {
-
   const [shouldCapture, setShouldCapture] = useState(false)
-  const user = localStorage.getItem("go_elite_user")    ? JSON.parse(localStorage.getItem("go_elite_user")!)
+  const user = localStorage.getItem("go_elite_user")
+    ? JSON.parse(localStorage.getItem("go_elite_user")!)
     : null
 
-  useEffect(() => { 
-
+  useEffect(() => {
     const timer = setTimeout(() => setShouldCapture(true), 2000)
     return () => clearTimeout(timer)
-  }, [ ])
+  }, [])
 
   useEffect(() => {
     if (!shouldCapture) return
@@ -54,14 +53,12 @@ export default function MyProfilePage() {
         const formData = new FormData()
         formData.append("preview", file)
         formData.append("athlete_id", user?.profile_id)
- 
 
         try {
           const uploadRes = await setPlayerOG({
             id: user?.profile_id,
             data: formData,
-          }) 
-          
+          })
         } catch (error) {
           console.error("Upload failed:", error)
         }
@@ -73,69 +70,67 @@ export default function MyProfilePage() {
     takeScreenshot()
   }, [shouldCapture])
 
+  const [profileData, setProfileData] = useState<TCoachProfile | null>(null)
 
-    const [profileData, setProfileData] = useState<TCoachProfile | null>(null)
- 
-    const [loading, setLoading] = useState(true)
- 
-  
-    useEffect(() => {
-      const fetchExperienceData = async () => {
-        try {
-          const token = localStorage.getItem("go_elite_token")
-          const baseUrl = getApiBaseUrl()
-  
-          const response = await fetch(`${baseUrl}/coach/profile`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }) 
-  
-          if (response.ok) {
-            const result = await response.json() 
-            console.log("Fetched coach profile data:", result)
-            if (result.status) {
-              setProfileData(result.data) 
-            }
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchExperienceData = async () => {
+      try {
+        const token = localStorage.getItem("go_elite_token")
+        const baseUrl = getApiBaseUrl()
+
+        const response = await fetch(`${baseUrl}/coach/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })
+
+        if (response.ok) {
+          const result = await response.json()
+          console.log("Fetched coach profile data:", result)
+          if (result.status) {
+            setProfileData(result.data)
           }
-        } catch (error) {
-          console.error("Error fetching experience data:", error)
-        } finally {
-          setLoading(false)
         }
+      } catch (error) {
+        console.error("Error fetching experience data:", error)
+      } finally {
+        setLoading(false)
       }
-  
+    }
+
+    fetchExperienceData()
+
+    const handleProfileUpdated = () => {
       fetchExperienceData()
-  
-      const handleProfileUpdated = () => {
-        fetchExperienceData()
-      }
-  
-      window.addEventListener("coachProfileUpdated", handleProfileUpdated)
-  
-      return () => {
-        window.removeEventListener("coachProfileUpdated", handleProfileUpdated)
-      }
-    }, [])
+    }
 
- 
- 
+    window.addEventListener("coachProfileUpdated", handleProfileUpdated)
 
+    return () => {
+      window.removeEventListener("coachProfileUpdated", handleProfileUpdated)
+    }
+  }, [])
 
   return (
     <section className="pb-8 xl:pb-10 2xl:pb-12" id="og_image">
       <ProfileHeaderBar />
 
       <div className="grid gap-5 md:gap-6 lg:gap-6 xl:grid-cols-[460px_minmax(0,1fr)] xl:gap-6 2xl:grid-cols-[560px_minmax(0,1fr)] 2xl:gap-7">
-        <CoachLeftColumn 
+        <CoachLeftColumn
           profileData={profileData?.profile as TCoachProfileData}
-          coaching_titles={profileData?.coaching_titles || []} 
+          coaching_titles={profileData?.coaching_titles || []}
         />
 
         <div className="space-y-4 xl:space-y-5 2xl:space-y-6">
-          <CoachBioCard profileData={profileData?.profile as TCoachProfileData} />
-          <ExperienceEducationCard experience_education={profileData?.experience_education || []} />
+          <CoachBioCard
+            profileData={profileData?.profile as TCoachProfileData}
+          />
+          <ExperienceEducationCard
+            experience_education={profileData?.experience_education || []}
+          />
           <CredentialsCard coach_media={profileData?.coach_media || []} />
         </div>
       </div>

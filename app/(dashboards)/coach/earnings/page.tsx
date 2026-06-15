@@ -11,8 +11,10 @@ import {
   NetEarningsIcon,
   PlatformFeeIcon,
 } from "@/components/custom/coach-dashboard-icons"
-import { Button } from "@/components/ui/button"
 import Export from "@/components/common/export"
+import { useAppSelector } from "@/lib/hooks"
+import { selectIsSubscriptionActive } from "@/lib/features/userSlice"
+import ClubDashboardSubscription from "@/components/custom/club-dashboard-subscription"
 
 interface EarningsData {
   applied_filter: string
@@ -36,26 +38,32 @@ export default function EarningsPage() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState("month")
   const [exporting, setExporting] = useState(false)
+  const isUbscriber = useAppSelector(selectIsSubscriptionActive)
 
   const fetchEarnings = async (filterValue: string) => {
     try {
       setLoading(true)
-      const token = localStorage.getItem('go_elite_token') || sessionStorage.getItem('go_elite_token')
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/coach/earnings/view?filter=${filterValue}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      })
+      const token =
+        localStorage.getItem("go_elite_token") ||
+        sessionStorage.getItem("go_elite_token")
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/coach/earnings/view?filter=${filterValue}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      const result = await response.json() 
+      const result = await response.json()
 
       if (result.status && result.data) {
         setEarningsData(result.data)
@@ -72,16 +80,22 @@ export default function EarningsPage() {
   const handleExport = async () => {
     try {
       setExporting(true)
-      const token = localStorage.getItem('go_elite_token') || sessionStorage.getItem('go_elite_token')
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/coach/earnings/export`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/pdf, application/csv, application/vnd.ms-excel, */*',
-          'Authorization': `Bearer ${token}`,
-        },
-      })
+      const token =
+        localStorage.getItem("go_elite_token") ||
+        sessionStorage.getItem("go_elite_token")
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/coach/earnings/export`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept:
+              "application/pdf, application/csv, application/vnd.ms-excel, */*",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
@@ -89,38 +103,40 @@ export default function EarningsPage() {
 
       // Get the blob from the response
       const blob = await response.blob()
-      
+
       // Determine file extension from content type
-      const contentType = response.headers.get('content-type') || ''
-      let fileExtension = 'pdf' // Default to PDF
-      
-      if (contentType.includes('csv')) {
-        fileExtension = 'csv'
-      } else if (contentType.includes('excel') || contentType.includes('spreadsheet')) {
-        fileExtension = 'xlsx'
-      } else if (contentType.includes('pdf')) {
-        fileExtension = 'pdf'
+      const contentType = response.headers.get("content-type") || ""
+      let fileExtension = "pdf" // Default to PDF
+
+      if (contentType.includes("csv")) {
+        fileExtension = "csv"
+      } else if (
+        contentType.includes("excel") ||
+        contentType.includes("spreadsheet")
+      ) {
+        fileExtension = "xlsx"
+      } else if (contentType.includes("pdf")) {
+        fileExtension = "pdf"
       }
-      
+
       // Create a download link
       const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.style.display = 'none'
+      const a = document.createElement("a")
+      a.style.display = "none"
       a.href = url
-      
+
       // Generate filename with current date and correct extension
-      const currentDate = new Date().toISOString().split('T')[0]
+      const currentDate = new Date().toISOString().split("T")[0]
       a.download = `earnings_export_${currentDate}.${fileExtension}`
-      
+
       // Trigger download
       document.body.appendChild(a)
       a.click()
-      
+
       // Clean up
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
-      
-     } catch (error) {
+    } catch (error) {
       console.error("Error exporting earnings data:", error)
     } finally {
       setExporting(false)
@@ -132,28 +148,35 @@ export default function EarningsPage() {
   }, [filter])
 
   const stats = [
-    { 
-      icon: <ActiveProgramsIcon />, 
-      title: "Active Programs", 
-      text: earningsData ? earningsData.summary.active_programs.toString() : "--" 
+    {
+      icon: <ActiveProgramsIcon />,
+      title: "Active Programs",
+      text: earningsData
+        ? earningsData.summary.active_programs.toString()
+        : "--",
     },
-    { 
-      icon: <NetEarningsIcon />, 
-      title: "Total Earnings", 
-      text: earningsData ? `$${earningsData.summary.total_earnings.toFixed(2)}` : "$--.--"
+    {
+      icon: <NetEarningsIcon />,
+      title: "Total Earnings",
+      text: earningsData
+        ? `$${earningsData.summary.total_earnings.toFixed(2)}`
+        : "$--.--",
     },
-    { 
-      icon: <NetEarningsIcon />, 
-      title: filter === "year" ? "Net Earnings (Year)" : "Net Earnings (Month)", 
-      text: earningsData 
-        ? filter === "year" 
+    {
+      icon: <NetEarningsIcon />,
+      title: filter === "year" ? "Net Earnings (Year)" : "Net Earnings (Month)",
+      text: earningsData
+        ? filter === "year"
           ? `$${earningsData.summary.net_earnings.toFixed(2)}`
           : `$${earningsData.summary.net_earnings_month.toFixed(2)}`
-        : "$--.--"
+        : "$--.--",
     },
     {
       icon: <PlatformFeeIcon />,
-      title: filter === "year" ? "10% Platform Fee (Year)" : "10% Platform Fee (Month)",
+      title:
+        filter === "year"
+          ? "10% Platform Fee (Year)"
+          : "10% Platform Fee (Month)",
       text: earningsData
         ? filter === "year"
           ? `$${earningsData.summary.platform_fee.toFixed(2)}`
@@ -162,34 +185,43 @@ export default function EarningsPage() {
     },
   ]
 
-  return (
-    <section>
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-white">Earnings</h2>
-        <Export onExport={handleExport} loading={exporting} />
-       
-      </div>
+  if (isUbscriber) {
+    return (
+      <section>
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-white">Earnings</h2>
+          <Export onExport={handleExport} loading={exporting} />
+        </div>
 
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {stats.map((stat) => (
-          <StatCard
-            key={stat.title}
-            icon={stat.icon}
-            title={stat.title}
-            text={stat.text}
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {stats.map((stat) => (
+            <StatCard
+              key={stat.title}
+              icon={stat.icon}
+              title={stat.title}
+              text={stat.text}
+            />
+          ))}
+        </div>
+
+        <div className="max-w-[95dvw] space-y-5 self-center xl:space-y-6">
+          <EarningsTable earnings={earningsData?.earnings || []} />
+          <EarningsGrowthChart
+            labels={earningsData?.monthly_growth?.labels || []}
+            values={earningsData?.monthly_growth?.values || []}
+            currentFilter={filter}
+            onFilterChange={setFilter}
           />
-        ))}
-      </div>
-
-      <div className="max-w-[95dvw] space-y-5 self-center xl:space-y-6">
-        <EarningsTable earnings={earningsData?.earnings || []} />
-        <EarningsGrowthChart 
-          labels={earningsData?.monthly_growth?.labels || []}
-          values={earningsData?.monthly_growth?.values || []}
-          currentFilter={filter}
-          onFilterChange={setFilter}
-        />
-      </div>
-    </section>
-  )
+        </div>
+      </section>
+    )
+  } else {
+    return (
+      <ClubDashboardSubscription
+        text={"May be you are not logged in or not authenticated subscription."}
+        link="/coach/subscription"
+        btnText="Get Subscription"
+      />
+    )
+  }
 }

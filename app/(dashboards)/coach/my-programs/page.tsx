@@ -17,6 +17,9 @@ import {
   parseISO,
 } from "date-fns"
 import moment from "moment"
+import { useAppSelector } from "@/lib/hooks"
+import { selectIsSubscriptionActive } from "@/lib/features/userSlice"
+import ClubDashboardSubscription from "@/components/custom/club-dashboard-subscription"
 
 const formatWeekdaySchedule = (startDate?: string, endDate?: string) => {
   if (!startDate || !endDate) return "N/A"
@@ -100,11 +103,9 @@ export default function UpcomingEventPage() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-
-
+  const isUbscriber = useAppSelector(selectIsSubscriptionActive)
 
   const [programs, setPrograms] = useState<any[]>([])
-  console.log(programs)
   const [latestUpcomingProgram, setLatestUpcomingProgram] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [filter, setFilter] = useState({
@@ -115,8 +116,8 @@ export default function UpcomingEventPage() {
   useEffect(() => {
     const fetchPrograms = async () => {
       try {
-        setIsLoading(true) 
-        const response = await getCoachProgramList(filter) 
+        setIsLoading(true)
+        const response = await getCoachProgramList(filter)
         const res = response as any
         if (res && res.success && res.data?.data) {
           setPrograms(res.data.data.programs || [])
@@ -132,7 +133,6 @@ export default function UpcomingEventPage() {
     }
     fetchPrograms()
 
-
     const reloadData = () => {
       fetchPrograms()
     }
@@ -142,178 +142,187 @@ export default function UpcomingEventPage() {
     return () => {
       window.removeEventListener("programDeleted", reloadData)
     }
+  }, [searchParams, filter])
 
-  }, [searchParams , filter])
-
-
- 
-
-
-  return (
-    <section>
-      {isLoading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader />
-        </div>
-      ) : (
-        <>
-          <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-            <h2 className="text-xl font-bold text-white sm:text-2xl">
-              Upcoming Programs
-            </h2>
-            <CommonBtn
-              text="Add Program"
-              icon={<PlusIcon />}
-              className="h-10 w-fit rounded-[8px] bg-brand px-4 font-medium text-primary hover:bg-brand xl:h-11 xl:px-5 xl:text-base 2xl:h-12 2xl:px-6 2xl:text-lg"
-              size="sm"
-              variant="default"
-              onClick={() => {
-                localStorage.removeItem("edit_program_id")
-                const nextParams = new URLSearchParams(searchParams.toString())
-                nextParams.set("add-new", "program")
-                router.replace(
-                  nextParams.toString()
-                    ? `${pathname}?${nextParams.toString()}`
-                    : pathname
-                )
-              }}
-            />
+  if (isUbscriber) {
+    return (
+      <section>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader />
           </div>
+        ) : (
+          <>
+            <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+              <h2 className="text-xl font-bold text-white sm:text-2xl">
+                Upcoming Programs
+              </h2>
+              <CommonBtn
+                text="Add Program"
+                icon={<PlusIcon />}
+                className="h-10 w-fit rounded-[8px] bg-brand px-4 font-medium text-primary hover:bg-brand xl:h-11 xl:px-5 xl:text-base 2xl:h-12 2xl:px-6 2xl:text-lg"
+                size="sm"
+                variant="default"
+                onClick={() => {
+                  localStorage.removeItem("edit_program_id")
+                  const nextParams = new URLSearchParams(
+                    searchParams.toString()
+                  )
+                  nextParams.set("add-new", "program")
+                  router.replace(
+                    nextParams.toString()
+                      ? `${pathname}?${nextParams.toString()}`
+                      : pathname
+                  )
+                }}
+              />
+            </div>
 
-          {/* Upcoming Program Card */}
-          {latestUpcomingProgram ? (
-            <article className="overflow-hidden rounded-2xl border border-white/10 bg-brand">
-              <div className="lg:flex">
-                <div className="relative min-h-44 w-50 md:min-h-full lg:w-62.5">
-                  <Image
-                    width={1000}
-                    height={1000}
-                    src={latestUpcomingProgram.photo || "/images/player1.png"}
-                    alt={latestUpcomingProgram.program_name || "Program photo"}
-                    className="h-full w-full object-fill"
-                  />
+            {/* Upcoming Program Card */}
+            {latestUpcomingProgram ? (
+              <article className="overflow-hidden rounded-2xl border border-white/10 bg-brand">
+                <div className="lg:flex">
+                  <div className="relative min-h-44 w-50 md:min-h-full lg:w-62.5">
+                    <Image
+                      width={1000}
+                      height={1000}
+                      src={latestUpcomingProgram.photo || "/images/player1.png"}
+                      alt={
+                        latestUpcomingProgram.program_name || "Program photo"
+                      }
+                      className="h-full w-full object-fill"
+                    />
 
-                  <span className="absolute bottom-3 left-3 rounded-full bg-[#16A34A] px-3 py-1 text-[10px] font-bold tracking-[0.08em] text-white uppercase">
-                    {latestUpcomingProgram.status === "active" ||
+                    <span className="absolute bottom-3 left-3 rounded-full bg-[#16A34A] px-3 py-1 text-[10px] font-bold tracking-[0.08em] text-white uppercase">
+                      {latestUpcomingProgram.status === "active" ||
                       !latestUpcomingProgram.status
-                      ? "In Progress"
-                      : latestUpcomingProgram.status}
-                  </span>
-                </div>
+                        ? "In Progress"
+                        : latestUpcomingProgram.status}
+                    </span>
+                  </div>
 
-                <div className="flex-1 px-4 py-5 sm:px-6 md:py-6 lg:py-7">
-                  <h3 className="text-[22px] leading-tight font-bold sm:text-[24px] lg:text-[28px]">
-                    {latestUpcomingProgram.program_name}
-                  </h3>
+                  <div className="flex-1 px-4 py-5 sm:px-6 md:py-6 lg:py-7">
+                    <h3 className="text-[22px] leading-tight font-bold sm:text-[24px] lg:text-[28px]">
+                      {latestUpcomingProgram.program_name}
+                    </h3>
 
-                  <p className="mt-2 flex items-center gap-2 text-sm font-normal text-gray-500! sm:text-base">
-                    <UserRound className="size-4" />
-                    Coach: {latestUpcomingProgram.provider?.name || "N/A"}
-                  </p>
+                    <p className="mt-2 flex items-center gap-2 text-sm font-normal text-gray-500! sm:text-base">
+                      <UserRound className="size-4" />
+                      Coach: {latestUpcomingProgram.provider?.name || "N/A"}
+                    </p>
 
-                  <div className="mt-4 flex gap-3 text-primary md:mt-5 md:gap-8">
-                    <div>
-                      <p className="text-sm font-normal text-gray-500! sm:text-base">
-                        Schedule
-                      </p>
-                      <p className="text-sm font-normal text-black! sm:text-base lg:text-lg">
-                        {formatScheduleLabel(
-                          latestUpcomingProgram.start_date,
-                          latestUpcomingProgram.end_date,
-                          latestUpcomingProgram.times?.[0]?.time
-                        )}
-                      </p>
-                      <p className="text-sm font-normal text-gray-500! sm:text-base lg:text-lg">
-                        {formatDuration(
-                          latestUpcomingProgram.start_date,
-                          latestUpcomingProgram.end_date
-                        )}
-                      </p>
+                    <div className="mt-4 flex gap-3 text-primary md:mt-5 md:gap-8">
+                      <div>
+                        <p className="text-sm font-normal text-gray-500! sm:text-base">
+                          Schedule
+                        </p>
+                        <p className="text-sm font-normal text-black! sm:text-base lg:text-lg">
+                          {formatScheduleLabel(
+                            latestUpcomingProgram.start_date,
+                            latestUpcomingProgram.end_date,
+                            latestUpcomingProgram.times?.[0]?.time
+                          )}
+                        </p>
+                        <p className="text-sm font-normal text-gray-500! sm:text-base lg:text-lg">
+                          {formatDuration(
+                            latestUpcomingProgram.start_date,
+                            latestUpcomingProgram.end_date
+                          )}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex flex-col gap-4 px-4 pb-5 sm:flex-row sm:items-end sm:justify-between sm:px-6 md:flex-col md:items-end md:justify-center md:px-6 md:py-6">
-                  <div className="w-full rounded-xl border border-primary/35 px-4 py-2 text-right text-black! sm:w-auto">
-                    <p className="text-xs font-medium text-black! opacity-75 sm:text-sm">
-                      Current Focus
-                    </p>
-                    <p className="text-[14px] font-medium text-black! sm:text-base lg:text-lg">
-                      {latestUpcomingProgram.sport || "N/A"}
-                    </p>
+                  <div className="flex flex-col gap-4 px-4 pb-5 sm:flex-row sm:items-end sm:justify-between sm:px-6 md:flex-col md:items-end md:justify-center md:px-6 md:py-6">
+                    <div className="w-full rounded-xl border border-primary/35 px-4 py-2 text-right text-black! sm:w-auto">
+                      <p className="text-xs font-medium text-black! opacity-75 sm:text-sm">
+                        Current Focus
+                      </p>
+                      <p className="text-[14px] font-medium text-black! sm:text-base lg:text-lg">
+                        {latestUpcomingProgram.sport || "N/A"}
+                      </p>
+                    </div>
+
+                    <CommonBtn
+                      text="Edit Details"
+                      className="h-11 w-full rounded-xl bg-primary px-5 text-sm font-medium text-white hover:bg-primary/90 sm:w-auto md:w-full"
+                      size="sm"
+                      variant="default"
+                      onClick={() => {
+                        localStorage.setItem(
+                          "edit_program_id",
+                          String(latestUpcomingProgram.id)
+                        )
+                        router.push(
+                          `/coach/my-programs/${latestUpcomingProgram.id}?add-new=program`
+                        )
+                      }}
+                    />
                   </div>
-
-                  <CommonBtn
-                    text="Edit Details"
-                    className="h-11 w-full rounded-xl bg-primary px-5 text-sm font-medium text-white hover:bg-primary/90 sm:w-auto md:w-full"
-                    size="sm"
-                    variant="default"
-                    onClick={() => {
-                      localStorage.setItem(
-                        "edit_program_id",
-                        String(latestUpcomingProgram.id)
-                      )
-                      router.push(
-                        `/coach/my-programs/${latestUpcomingProgram.id}?add-new=program`
-                      )
-                    }}
-                  />
                 </div>
-              </div>
-            </article>
-          ) : (
-            !isLoading && (
-              <div className="flex items-center justify-center rounded-2xl border border-white/10 bg-primary py-10 text-white/50">
-                No upcoming programs found.
-              </div>
-            )
-          )}
+              </article>
+            ) : (
+              !isLoading && (
+                <div className="flex items-center justify-center rounded-2xl border border-white/10 bg-primary py-10 text-white/50">
+                  No upcoming programs found.
+                </div>
+              )
+            )}
 
-          {/* upcoming events content */}
-          <div className="flex items-center justify-between">
-            <h2 className="mt-6 text-xl font-bold text-white sm:text-2xl">
-              My Programs
-            </h2>
-            <ProgramFilterDropdown filter={filter} setFilter={setFilter} />
-          </div>
-          {/* programs cards */}
-          {programs.length > 0 ? (
-            <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {programs.map((program) => {
-                return ( 
-                  <ProgramCard
-                    key={program.id}
-                    id={program.id.toString()}
-                    title={program.program_name}
-                    type={`Age U${program?.age_limit == program?.from_age || program?.from_age == null ? program?.age_limit : `${program?.from_age} - U${program?.age_limit}`}`}
-                    schedule={program.location}
-                    duration={`${moment(program.program_start).format("MMM Do YY")} - ${moment(program.program_end).format("MMM Do YY")}`}
-                    currentPrice={
-                      program.price
-                        ? `$${program.price - program.discount_price}`
-                        : `$${program.program_price}`
-                    }
-                    previousPrice={String(
-                      program.discount_price + program.price
-                    )}
-                    imageSrc={program.photo}
-                    imageAlt={program.program_name}
-                    buttonLabel="View Details"
-                    viewOnly={false}
-                    editLink={`/coach/my-programs/${program.id}`}
-                  />
-                )
-              })}
+            {/* upcoming events content */}
+            <div className="flex items-center justify-between">
+              <h2 className="mt-6 text-xl font-bold text-white sm:text-2xl">
+                My Programs
+              </h2>
+              <ProgramFilterDropdown filter={filter} setFilter={setFilter} />
             </div>
-          ) : (
-            !isLoading && (
-              <div className="mt-6 flex items-center justify-center rounded-2xl border border-white/10 bg-primary py-10 text-white/50">
-                No programs found.
+            {/* programs cards */}
+            {programs.length > 0 ? (
+              <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {programs.map((program) => {
+                  return (
+                    <ProgramCard
+                      key={program.id}
+                      id={program.id.toString()}
+                      title={program.program_name}
+                      type={`Age U${program?.age_limit == program?.from_age || program?.from_age == null ? program?.age_limit : `${program?.from_age} - U${program?.age_limit}`}`}
+                      schedule={program.location}
+                      duration={`${moment(program.program_start).format("MMM Do YY")} - ${moment(program.program_end).format("MMM Do YY")}`}
+                      currentPrice={
+                        program.price
+                          ? `$${program.price - program.discount_price}`
+                          : `$${program.program_price}`
+                      }
+                      previousPrice={String(
+                        program.discount_price + program.price
+                      )}
+                      imageSrc={program.photo}
+                      imageAlt={program.program_name}
+                      buttonLabel="View Details"
+                      viewOnly={false}
+                      editLink={`/coach/my-programs/${program.id}`}
+                    />
+                  )
+                })}
               </div>
-            )
-          )}
-        </>
-      )}
-    </section>
-  )
+            ) : (
+              !isLoading && (
+                <div className="mt-6 flex items-center justify-center rounded-2xl border border-white/10 bg-primary py-10 text-white/50">
+                  No programs found.
+                </div>
+              )
+            )}
+          </>
+        )}
+      </section>
+    )
+  } else {
+    return (
+      <ClubDashboardSubscription
+        text={"May be you are not logged in or not authenticated subscription."}
+        link="/coach/subscription"
+        btnText="Get Subscription"
+      />
+    )
+  }
 }

@@ -1,12 +1,14 @@
 "use client"
 
-import BookingsTable, {
-} from "@/components/common/bookings-table"
+import BookingsTable from "@/components/common/bookings-table"
 import StatusFilterSelect from "@/components/common/status-filter-select"
 import Loader from "@/components/common/loader"
 import api from "@/lib/api-fetcher"
 import { useEffect, useMemo, useState } from "react"
 import { TClubBookingData } from "@/types"
+import { useAppSelector } from "@/lib/hooks"
+import { selectIsSubscriptionActive } from "@/lib/features/userSlice"
+import ClubDashboardSubscription from "@/components/custom/club-dashboard-subscription"
 
 const statusOptions = [
   { value: "all", label: "All Status" },
@@ -17,13 +19,11 @@ const statusOptions = [
   { value: "refund", label: "Refund" },
 ]
 
-
-
-
 export default function BookingsPage() {
   const [status, setStatus] = useState("all")
   const [bookings, setBookings] = useState<TClubBookingData[]>([])
   const [loading, setLoading] = useState(true)
+  const isUbscriber = useAppSelector(selectIsSubscriptionActive)
 
   const filteredBookings = useMemo(() => {
     if (status === "all") {
@@ -32,7 +32,6 @@ export default function BookingsPage() {
 
     return bookings.filter((booking) => booking.status === status)
   }, [bookings, status])
-
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -61,31 +60,38 @@ export default function BookingsPage() {
     return () => {
       window.removeEventListener("bookingChanged", revaliteOnBookingChange)
     }
-
   }, [])
 
-  console.log(bookings)
-
-  return (
-    <section className="w-full max-w-full min-w-0 overflow-x-hidden text-white">
-      <div className="mb-4 flex w-full min-w-0 justify-start sm:justify-end mt-1  ">
-        <StatusFilterSelect
-          value={status}
-          onValueChange={setStatus}
-          options={statusOptions}
-          className="w-full max-w-45"
-        />
-      </div>
-
-      {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader />
+  if (isUbscriber) {
+    return (
+      <section className="w-full max-w-full min-w-0 overflow-x-hidden text-white">
+        <div className="mt-1 mb-4 flex w-full min-w-0 justify-start sm:justify-end">
+          <StatusFilterSelect
+            value={status}
+            onValueChange={setStatus}
+            options={statusOptions}
+            className="w-full max-w-45"
+          />
         </div>
-      ) : filteredBookings.length === 0 ? (
-        <p className="py-8 text-center text-white/70">No Bookings yet</p>
-      ) : (
-        <BookingsTable bookings={filteredBookings} />
-      )}
-    </section>
-  )
+
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader />
+          </div>
+        ) : filteredBookings.length === 0 ? (
+          <p className="py-8 text-center text-white/70">No Bookings yet</p>
+        ) : (
+          <BookingsTable bookings={filteredBookings} />
+        )}
+      </section>
+    )
+  } else {
+    return (
+      <ClubDashboardSubscription
+        text={"May be you are not logged in or not authenticated subscription."}
+        link="/coach/subscription"
+        btnText="Get Subscription"
+      />
+    )
+  }
 }

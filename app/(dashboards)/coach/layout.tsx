@@ -37,7 +37,8 @@ import AuthCheckPoint from "@/components/auth/auth-checkopoint"
 import { getApiBaseUrl } from "@/lib/url-utils"
 import { useEffect } from "react"
 import { useAppDispatch } from "@/lib/hooks"
-import { setUserImage } from "@/lib/features/userSlice"
+import { setIssubscription_active, setUserImage } from "@/lib/features/userSlice"
+import { CiCreditCard2 } from "react-icons/ci"
 
 const EarningsNavIcon = ({ className }: { className?: string }) => (
   <Image
@@ -101,6 +102,11 @@ export default function ParentDashboardLayout({
         icon: RiMenuSearchLine,
       },
       {
+        title: "Subscription",
+        url: "/coach/subscription",
+        icon: CiCreditCard2,
+      },
+      {
         title: "Messages",
         url: "/coach/messages",
         icon: MessagesNavIcon,
@@ -131,18 +137,16 @@ export default function ParentDashboardLayout({
 
         if (response.ok) {
           const result = await response.json()
-          dispatch(setUserImage(result?.data?.profile?.profile_image)) 
+          dispatch(setUserImage(result?.data?.profile?.profile_image))
+          dispatch(setIssubscription_active(result?.data?.is_subscription_active))
         }
       } catch (error) {
         console.error("Error fetching experience data:", error)
-      }  
+      }
     }
 
     fetchExperienceData()
-
- 
   }, [])
-
 
   return (
     <AuthCheckPoint role="coach">
@@ -205,9 +209,9 @@ export default function ParentDashboardLayout({
                           <item.icon
                             className={
                               item.title === "My Programs" ||
-                                item.title === "Bookings" ||
-                                item.title === "Earnings" ||
-                                item.title === "Messages"
+                              item.title === "Bookings" ||
+                              item.title === "Earnings" ||
+                              item.title === "Messages"
                                 ? "text-white"
                                 : undefined
                             }

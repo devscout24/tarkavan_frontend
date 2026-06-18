@@ -6,6 +6,7 @@ export interface CoachProfileFormData {
   dob: string
   gender: 'male' | 'female' | 'other'
   nationality: string
+  province: string
   email: string
   sports: string
   coach_profile_pic?: File

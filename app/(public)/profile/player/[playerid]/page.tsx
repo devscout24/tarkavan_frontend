@@ -33,11 +33,11 @@ export async function generateMetadata({
 
   return {
     metadataBase: new URL("https://goelitesport.com") ,
-    title: data?.basic_info?.name || "Player Profile",
+    title:  "Player Profile",
     description: data?.basic_info?.bio || "Player profile preview",
 
     openGraph: {
-      title: data?.basic_info?.name || "Player Profile",
+      title:  "Player Profile",
       description: data?.basic_info?.bio || "Player profile preview",
       images: previewImage
         ? [

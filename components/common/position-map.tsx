@@ -1,5 +1,5 @@
 import { TPlayerPosition } from "@/types/player.type"
-import SoccerLineUp, { type Team } from "react-soccer-lineup"
+import SoccerLineUp, { PitchSize, type Team } from "react-soccer-lineup"
 
 type Player = {
   name?: string
@@ -16,6 +16,7 @@ type Player = {
 
 type PositionMapProps = {
   data?: TPlayerPosition[] | null
+  size?: PitchSize 
 }
 
 const extractShortCode = (name: string): string => {
@@ -51,7 +52,7 @@ const makeSlot = (
   }
 }
 
-export default function PositionMap({ data }: PositionMapProps) {
+export default function PositionMap({ data , size = "small" }: PositionMapProps) {
 
 
  
@@ -117,7 +118,7 @@ export default function PositionMap({ data }: PositionMapProps) {
 
   return (
     <SoccerLineUp
-      size="small"
+      size={size}
       color="#479A3B"
       pattern="squares"
       awayTeam={awayTeam}

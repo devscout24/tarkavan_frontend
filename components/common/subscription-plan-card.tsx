@@ -71,7 +71,7 @@ export default function SubscriptionPlanCard({
   return (
     <Card
       className={cn(
-        "relative h-125 w-full max-w-92.5 overflow-hidden rounded-[24px] border p-0 shadow-none",
+        "relative  w-full max-w-92.5 overflow-hidden rounded-[24px] border p-0 shadow-none",
         highlighted
           ? "border-brand/80 bg-[#1b1b24] text-white shadow-[0_0_0_1px_rgba(177,248,103,0.18),0_18px_50px_rgba(0,0,0,0.26)]"
           : "border-transparent bg-[#24242d] text-white",

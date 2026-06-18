@@ -95,6 +95,7 @@ export default function Page() {
                 age: data?.profile?.age,
                 city: data?.profile?.city,
                 country: data?.profile?.country,
+                province: data?.profile?.province,
                 gender: data?.profile?.gender,
                 id: 1,
                 full_name: data?.profile?.name,

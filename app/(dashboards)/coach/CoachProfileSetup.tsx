@@ -46,6 +46,7 @@ type CoachEditPayload = {
   player_centric_approach?: boolean; data_driving_training?: boolean
   coaching_titles?: Array<{ title?: string }>
   city?: string; country?: string
+  province?: string
   facebook_link?: string; twitter_link?: string; instagram_link?: string
   tiktok_link?: string; whatsapp_link?: string; coach_profile_pic?: string
   privacy_settings?: { visible_reviews: boolean; allow_parent_player_reviews: boolean }
@@ -61,7 +62,7 @@ const INITIAL_FORM_DATA = (): CoachProfileFormData => ({
   player_centric_approach: false, data_driving_training: false,
   coaching_title: ["", ""], images: [],
   privacy_settings: { visible_reviews: true, allow_parent_player_reviews: true },
-  city: "", country: "",
+  city: "", country: "", province: "",
   facebook_link: "", twitter_link: "", instagram_link: "",
   tiktok_link: "", whatsapp_link: "",
 })
@@ -252,6 +253,7 @@ export default function CoachProfileSetup({
       facebook_link: editData.facebook_link || "", twitter_link: editData.twitter_link || "",
       instagram_link: editData.instagram_link || "", tiktok_link: editData.tiktok_link || "",
       whatsapp_link: editData.whatsapp_link || "",
+      province: editData.province || "",
       privacy_settings: editData.privacy_settings || prev.privacy_settings,
     }))
     setIsEditDataLoaded(true)
@@ -469,8 +471,8 @@ export default function CoachProfileSetup({
 
             <div className="mt-4">
               <CountryCitySelector onSelect={(data) => {
-                setFormData((prev) => ({ ...prev, country: data.country_name, city: data.city_name }))
-                updateBasicInfo?.({ ...formData, country: data.country_name, city: data.city_name })
+                setFormData((prev) => ({ ...prev, country: data.country_name, city: data.city_name , province: data.province_name }))
+                updateBasicInfo?.({ ...formData, country: data.country_name, city: data.city_name, province: data.province_name })
               }} />
             </div>
           </div>

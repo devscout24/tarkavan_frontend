@@ -31,6 +31,7 @@ export type WizardState = {
       clubTeam: string
       country: string
       city: string
+      province: string
     }
     positionMap: {
       primaryPosition: string
@@ -95,7 +96,8 @@ export const defaultWizardState: WizardState = {
       dominantFoot: "",
       clubTeam: "",
       country: "",
-      city: ""
+      city: "",
+      province: ""
     },
     positionMap: {
       primaryPosition: "",

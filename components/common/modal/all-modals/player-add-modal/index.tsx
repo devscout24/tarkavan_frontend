@@ -99,6 +99,7 @@ const buildWizardStateFromProfile = (profile: TPlayerProfile) => {
         clubTeam: profile.position_info?.club_team ?? "",
         country: profile.basic_info?.country ?? "",
         city: profile.basic_info?.city ?? "",
+        province: profile.basic_info?.province ?? "",
       },
       positionMap: {
         primaryPosition,
@@ -312,6 +313,7 @@ export default function PlayerAddModal() {
       lastName: wizardState.forms.coreIdentity.lastName,
       city: wizardState.forms.coreIdentity.city,
       country: wizardState.forms.coreIdentity.country,
+      province: wizardState.forms.coreIdentity.province,
       email: wizardState.forms.coreIdentity.email,
       dateOfBirth: wizardState.forms.coreIdentity.dateOfBirth,
       gender: wizardState.forms.coreIdentity.gender,
@@ -401,6 +403,7 @@ export default function PlayerAddModal() {
       appendText("last_name", completeData.lastName)
       appendText("city", completeData.city)
       appendText("country", completeData.country)
+      appendText("province", completeData.province)
       appendText("dob", toDateOnly(completeData.dateOfBirth))
       appendText("gender", completeData.gender)
       appendText("nationality", completeData.nationality)
@@ -566,6 +569,7 @@ export default function PlayerAddModal() {
       appendText("last_name", completeData.lastName)
       appendText("city", completeData.city)
       appendText("country", completeData.country)
+      appendText("province", completeData.province)
       appendText("dob", toDateOnly(completeData.dateOfBirth))
       appendText("gender", completeData.gender)
       appendText("nationality", completeData.nationality)
@@ -732,6 +736,7 @@ export default function PlayerAddModal() {
     appendText("last_name", completeData.lastName)
     appendText("city", completeData.city)
     appendText("country", completeData.country)
+    appendText("province", completeData.province)
     appendText("dob", toDateOnly(completeData.dateOfBirth))
     appendText("gender", completeData.gender)
     appendText("nationality", completeData.nationality)

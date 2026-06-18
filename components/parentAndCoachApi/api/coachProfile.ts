@@ -154,6 +154,7 @@ export function convertToFormData(data: CoachProfileFormData): FormData {
   // Location
   formData.append("city", data.city || "")
   formData.append("country", data.country || "")
+  formData.append("province", data.province || "")
 
   // Social media links
   if (data.facebook_link) {

@@ -95,6 +95,7 @@ export type TCoachPublicProfile  = {
 
     city: string
     country: string
+    province: string
 
     profile_image: string
     bio: string

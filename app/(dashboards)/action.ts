@@ -227,6 +227,7 @@ export async function getAvailableTimes({ program_id, date }: { program_id: stri
 export async function setPlayerOG({ id, data }: { id: string, data: FormData }) {
   try {
     const res = await api.post(`/preview/athlete/${id}`, data)
+    // console.log(res)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {

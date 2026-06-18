@@ -133,11 +133,13 @@ export default function ProgramCard({
 
           <div className="text-right">
             <p className="text-lg leading-none font-bold text-brand!">
-              {currentPrice}
+              ${currentPrice}
             </p>
+            {Number(previousPrice) === Number(currentPrice) ? null : 
             <p className="mt-1 text-lg text-white/70 line-through">
-              {previousPrice}
+              ${previousPrice}
             </p>
+            }
           </div>
         </div>
 

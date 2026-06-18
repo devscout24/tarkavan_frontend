@@ -21,7 +21,7 @@ export default function ProspectCard({
 }) { 
 
   return (
-    <div className="relative rounded-lg border-2 border-secondary">
+    <div className="relative rounded-lg border-2 border-secondary min-w-50  ">
       {/* overlay box */}
       <div className="absolute bottom-0 left-0 z-2 h-full w-full rounded-lg bg-gradient-to-b from-transparent via-transparent to-black" />
 

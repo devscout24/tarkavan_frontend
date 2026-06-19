@@ -89,8 +89,7 @@ export default function MyProfilePage() {
         })
 
         if (response.ok) {
-          const result = await response.json()
-          console.log("Fetched coach profile data:", result)
+          const result = await response.json() 
           if (result.status) {
             setProfileData(result.data)
           }

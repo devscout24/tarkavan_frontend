@@ -25,8 +25,7 @@ export default function ProgramDetailsPage() {
   const id = params.detailsID
   const [details, setDetails] = useState<TProgramDetailsParentAndPlayer | null>(
     null
-  )
-  console.log("details", details)
+  ) 
 
   const currentUser =
     typeof window !== "undefined"

@@ -214,34 +214,33 @@
 //   );
 // }
 
+"use client"
 
-
-
-
-"use client";
-
-import { useEffect, useMemo, useRef, useState } from "react";
-import Select from "react-select";
-import { Country, State, City } from "country-state-city";
+import { useEffect, useMemo, useRef, useState } from "react"
+import Select from "react-select"
+import { Country, State, City } from "country-state-city"
 
 type Props = {
-  className?: string;
-  initialCountry?: string;
-  initialProvince?: string;
-  initialCity?: string;
-  resetSignal?: number;
-  onReset?: (country: "", province: "", city: "") => void;
+  className?: string
+  initialCountry?: string
+  initialProvince?: string
+  initialCity?: string
+  resetSignal?: number
+  onReset?: (country: "", province: "", city: "") => void
   onSelect: (data: {
-    country_name: string;
-    province_name: string;
-    city_name: string;
-  }) => void;
-};
+    country_name: string
+    province_name: string
+    city_name: string
+  }) => void
+  showCountry?: boolean
+  showProvince?: boolean
+  showCity?: boolean
+}
 
 type OptionType = {
-  value: string;
-  label: string;
-};
+  value: string
+  label: string
+}
 
 export default function CountryCitySelector({
   onSelect,
@@ -250,31 +249,33 @@ export default function CountryCitySelector({
   initialProvince,
   initialCity,
   resetSignal,
+  showCountry = true,
+  showProvince = true,
+  showCity = true,
 }: Props) {
-  const countries = Country.getAllCountries();
+  const countries = Country.getAllCountries()
 
   const lastEmittedRef = useRef<{
-    country_name: string;
-    province_name: string;
-    city_name: string;
-  } | null>(null);
+    country_name: string
+    province_name: string
+    city_name: string
+  } | null>(null)
 
-  const [selectedCountry, setSelectedCountry] =
-    useState<OptionType | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<OptionType | null>(
+    null
+  )
 
-  const [selectedProvince, setSelectedProvince] =
-    useState<OptionType | null>(null);
+  const [selectedProvince, setSelectedProvince] = useState<OptionType | null>(
+    null
+  )
 
-  const [selectedCity, setSelectedCity] =
-    useState<OptionType | null>(null);
+  const [selectedCity, setSelectedCity] = useState<OptionType | null>(null)
 
-  const [states, setStates] = useState<
-    ReturnType<typeof State.getAllStates>
-  >([]);
+  const [states, setStates] = useState<ReturnType<typeof State.getAllStates>>(
+    []
+  )
 
-  const [cities, setCities] = useState<
-    ReturnType<typeof City.getAllCities>
-  >([]);
+  const [cities, setCities] = useState<ReturnType<typeof City.getAllCities>>([])
 
   const countryOptions: OptionType[] = useMemo(
     () =>
@@ -283,7 +284,7 @@ export default function CountryCitySelector({
         label: country.name,
       })),
     [countries]
-  );
+  )
 
   const stateOptions: OptionType[] = useMemo(
     () =>
@@ -292,7 +293,7 @@ export default function CountryCitySelector({
         label: state.name,
       })),
     [states]
-  );
+  )
 
   const cityOptions: OptionType[] = useMemo(
     () =>
@@ -301,87 +302,74 @@ export default function CountryCitySelector({
         label: city.name,
       })),
     [cities]
-  );
+  )
 
   /**
    * Initial Values
    */
   useEffect(() => {
-    if (!initialCountry) return;
+    if (!initialCountry) return
 
     const country = countries.find(
-      (c) =>
-        c.name === initialCountry ||
-        c.isoCode === initialCountry
-    );
+      (c) => c.name === initialCountry || c.isoCode === initialCountry
+    )
 
-    if (!country) return;
+    if (!country) return
 
     const countryOption: OptionType = {
       value: country.isoCode,
       label: country.name,
-    };
+    }
 
-    setSelectedCountry(countryOption);
+    setSelectedCountry(countryOption)
 
-    const stateList =
-      State.getStatesOfCountry(country.isoCode) || [];
+    const stateList = State.getStatesOfCountry(country.isoCode) || []
 
-    setStates(stateList);
+    setStates(stateList)
 
     if (initialProvince) {
       const state = stateList.find(
-        (s) =>
-          s.name === initialProvince ||
-          s.isoCode === initialProvince
-      );
+        (s) => s.name === initialProvince || s.isoCode === initialProvince
+      )
 
       if (state) {
         const stateOption: OptionType = {
           value: state.isoCode,
           label: state.name,
-        };
+        }
 
-        setSelectedProvince(stateOption);
+        setSelectedProvince(stateOption)
 
         const cityList =
-          City.getCitiesOfState(
-            country.isoCode,
-            state.isoCode
-          ) || [];
+          City.getCitiesOfState(country.isoCode, state.isoCode) || []
 
-        setCities(cityList);
+        setCities(cityList)
 
         if (initialCity) {
           setSelectedCity({
             value: initialCity,
             label: initialCity,
-          });
+          })
         }
       }
     }
-  }, [
-    countries,
-    initialCountry,
-    initialProvince,
-    initialCity,
-  ]);
+  }, [countries, initialCountry, initialProvince, initialCity])
 
   /**
    * Reset
    */
   useEffect(() => {
-    if (resetSignal === undefined) return;
+    if (resetSignal === undefined) return
 
-    setSelectedCountry(null);
-    setSelectedProvince(null);
-    setSelectedCity(null);
+    setSelectedCountry(null)
+    setSelectedProvince(null)
+    setSelectedCity(null)
 
-    setStates([]);
-    setCities([]);
+    setStates([])
+    setCities([])
 
-    lastEmittedRef.current = null;
-  }, [resetSignal]);
+    lastEmittedRef.current = null
+  }, [resetSignal])
 
   /**
    * Emit selection
@@ -391,28 +379,20 @@ export default function CountryCitySelector({
       country_name: selectedCountry?.label || "",
       province_name: selectedProvince?.label || "",
       city_name: selectedCity?.label || "",
-    };
-
-    if (
-      lastEmittedRef.current?.country_name ===
-        payload.country_name &&
-      lastEmittedRef.current?.province_name ===
-        payload.province_name &&
-      lastEmittedRef.current?.city_name ===
-        payload.city_name
-    ) {
-      return;
     }
 
-    lastEmittedRef.current = payload;
+    if (
+      lastEmittedRef.current?.country_name === payload.country_name &&
+      lastEmittedRef.current?.province_name === payload.province_name &&
+      lastEmittedRef.current?.city_name === payload.city_name
+    ) {
+      return
+    }
 
-    onSelect(payload);
-  }, [
-    selectedCountry,
-    selectedProvince,
-    selectedCity,
-    onSelect,
-  ]);
+    lastEmittedRef.current = payload
+
+    onSelect(payload)
+  }, [selectedCountry, selectedProvince, selectedCity, onSelect])
 
   const customStyles = {
     control: (provided: any) => ({
@@ -473,100 +453,92 @@ export default function CountryCitySelector({
       ...provided,
       backgroundColor: "rgba(255,255,255,0.35)",
     }),
-  };
+  }
 
   return (
-    <div
-      className={`flex w-full flex-col gap-3 md:flex-row ${className}`}
-    >
+    <div className={`flex w-full flex-col gap-3 md:flex-row ${className}`}>
       {/* Country */}
-      <div className="w-full">
-        <Select
-          options={countryOptions}
-          value={selectedCountry}
-          placeholder="Search country..."
-          isSearchable
-          styles={customStyles}
-          onChange={(option) => {
-            const selected =
-              option as OptionType | null;
+      {showCountry ? (
+        <div className="w-full">
+          <Select
+            options={countryOptions}
+            value={selectedCountry}
+            placeholder="Search country..."
+            isSearchable
+            styles={customStyles}
+            onChange={(option) => {
+              const selected = option as OptionType | null
 
-            setSelectedCountry(selected);
+              setSelectedCountry(selected)
 
-            setSelectedProvince(null);
-            setSelectedCity(null);
+              setSelectedProvince(null)
+              setSelectedCity(null)
 
-            if (!selected) {
-              setStates([]);
-              setCities([]);
-              return;
-            }
+              if (!selected) {
+                setStates([])
+                setCities([])
+                return
+              }
 
-            const stateList =
-              State.getStatesOfCountry(
-                selected.value
-              ) || [];
+              const stateList = State.getStatesOfCountry(selected.value) || []
 
-            setStates(stateList);
-            setCities([]);
-          }}
-          className="w-full min-w-0"
-        />
-      </div>
+              setStates(stateList)
+              setCities([])
+            }}
+            className="w-full min-w-0"
+          />
+        </div>
+      ) : null}
 
       {/* Province / State */}
-      <div className="w-full">
-        <Select
-          options={stateOptions}
-          value={selectedProvince}
-          placeholder="Search province..."
-          isSearchable
-          isDisabled={!selectedCountry}
-          styles={customStyles}
-          onChange={(option) => {
-            const selected =
-              option as OptionType | null;
+      {showProvince ? (
+        <div className="w-full">
+          <Select
+            options={stateOptions}
+            value={selectedProvince}
+            placeholder="Search province..."
+            isSearchable
+            isDisabled={!selectedCountry}
+            styles={customStyles}
+            onChange={(option) => {
+              const selected = option as OptionType | null
 
-            setSelectedProvince(selected);
-            setSelectedCity(null);
+              setSelectedProvince(selected)
+              setSelectedCity(null)
 
-            if (
-              !selectedCountry ||
-              !selected
-            ) {
-              setCities([]);
-              return;
-            }
+              if (!selectedCountry || !selected) {
+                setCities([])
+                return
+              }
 
-            const cityList =
-              City.getCitiesOfState(
-                selectedCountry.value,
-                selected.value
-              ) || [];
+              const cityList =
+                City.getCitiesOfState(selectedCountry.value, selected.value) ||
+                []
 
-            setCities(cityList);
-          }}
-          className="w-full min-w-0"
-        />
-      </div>
+              setCities(cityList)
+            }}
+            className="w-full min-w-0"
+          />
+        </div>
+      ) : null}
 
       {/* City */}
-      <div className="w-full">
-        <Select
-          options={cityOptions}
-          value={selectedCity}
-          placeholder="Search city..."
-          isSearchable
-          isDisabled={!selectedProvince}
-          styles={customStyles}
-          onChange={(option) => {
-            setSelectedCity(
-              option as OptionType | null
-            );
-          }}
-          className="w-full min-w-0"
-        />
-      </div>
+      {showCity ? (
+        <div className="w-full">
+          <Select
+            options={cityOptions}
+            value={selectedCity}
+            placeholder="Search city..."
+            isSearchable
+            isDisabled={!selectedProvince}
+            styles={customStyles}
+            onChange={(option) => {
+              setSelectedCity(option as OptionType | null)
+            }}
+            className="w-full min-w-0"
+          />
+        </div>
+      ) : null}
     </div>
-  );
+  )
 }

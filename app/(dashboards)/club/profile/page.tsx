@@ -49,8 +49,7 @@ export default async function page() {
       : privacySetting === "public"
         ? Globe
         : Shield
-
-  console.log("Club Profile Data:", clubProfile)
+ 
  
 
   return (

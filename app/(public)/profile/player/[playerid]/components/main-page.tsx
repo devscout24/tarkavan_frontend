@@ -112,8 +112,7 @@ export default function ProfilePage({ data }: ProfilePageProps) {
   const handleVoteCick = async (
     type: string,
     setOpen: (open: boolean) => void
-  ) => {
-    console.log(user?.role)
+  ) => { 
     if (user?.role === "club") {
       toast.error("Clubs are not allowed to vote.")
       return
@@ -166,8 +165,7 @@ export default function ProfilePage({ data }: ProfilePageProps) {
     }
   }
 
-  const router = useRouter()
-  console.log("Profile data:", data) // Debug log to check the structure of the data
+  const router = useRouter() 
 
   return (
     <>

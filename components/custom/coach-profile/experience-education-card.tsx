@@ -16,9 +16,7 @@ export default function ExperienceEducationCard(
   }
 ) {
  
- console.log("ExperienceEducationCard data:", experience_education) // Debug log to check data structure
-
-  
+ 
 
   return (
     <Card className="rounded-[12px] border border-secondary/60 bg-primary p-6 xl:p-7 2xl:p-8">

@@ -51,8 +51,7 @@ export default function page() {
     typeof window !== "undefined"
       ? localStorage.getItem("go_elite_token")
       : null
-
-  console.log("clubProfile", clubProfile?.program)
+ 
 
   return (
     <>

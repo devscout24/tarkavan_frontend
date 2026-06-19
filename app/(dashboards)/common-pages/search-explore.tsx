@@ -28,6 +28,7 @@ type ExploreFilterState = {
   priceRange: string
   country_id: string
   city_id: string
+  province: string
   max_price: string
   min_price: string
   per_page: string
@@ -41,6 +42,7 @@ const initialState: ExploreFilterState = {
   priceRange: "",
   country_id: "",
   city_id: "",
+  province: "",
   max_price: "",
   min_price: "",
   per_page: "9",

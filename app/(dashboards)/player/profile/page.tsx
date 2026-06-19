@@ -38,7 +38,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
-import { BsDownload } from "react-icons/bs";
+import { BsDownload } from "react-icons/bs"
 import PlayerCard from "./player-card"
 import { captureAndSave } from "@/lib/captureAndSave"
 
@@ -170,9 +170,6 @@ export default function PlayerProfile() {
       .filter((item): item is NonNullable<typeof item> => Boolean(item)),
   ]
 
-  console.log(playerData)
-
-
   return (
     <>
       <PlayerCard playerData={playerData} />
@@ -186,15 +183,20 @@ export default function PlayerProfile() {
             </span>
           </div>
 
-          <div className="flex items-center gap-4"> 
-
+          <div className="flex items-center gap-4">
             <CommonBtn
               size={"lg"}
               variant={"default"}
-              onClick={()=> captureAndSave({elementId: "og_image" , fileName: "go-elite-player-profile-card.png", userId: user?.profile_id || playerData?.basic_info?.id }) }
+              onClick={() =>
+                captureAndSave({
+                  elementId: "og_image",
+                  fileName: "go-elite-player-profile-card.png",
+                  userId: user?.profile_id || playerData?.basic_info?.id,
+                })
+              }
               text="Get Profile Card"
               icon={<BsDownload />}
-              className="w-fit bg-transparent px-3 text-white border border-secondary hover:bg-transparent"
+              className="w-fit border border-secondary bg-transparent px-3 text-white hover:bg-transparent"
             />
 
             <CommonBtn
@@ -245,68 +247,99 @@ export default function PlayerProfile() {
                             {playerData?.basic_info?.full_name}
                           </TableCell>
                         </TableRow>
-                        <TableRow className="border-secondary!">
-                          <TableCell className="font-semibold">
-                            Position :
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {playerData?.position_info?.primary_position?.name}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="border-secondary!">
-                          <TableCell className="font-semibold">Age :</TableCell>
-                          <TableCell className="text-right">
-                            {playerData?.basic_info?.age}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="border-secondary!">
-                          <TableCell className="font-semibold">
-                            Gender :
-                          </TableCell>
-                          <TableCell className="text-right capitalize">
-                            {playerData?.basic_info?.gender}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="border-secondary!">
-                          <TableCell className="font-semibold">
-                            City :
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {playerData?.basic_info?.city}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="border-secondary!">
-                          <TableCell className="font-semibold">
-                            Country :
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {playerData?.basic_info?.country}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="border-secondary!">
-                          <TableCell className="font-semibold">
-                            Dominant Foot :
-                          </TableCell>
-                          <TableCell className="text-right capitalize">
-                            {playerData?.position_info?.dominant_foot}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="border-secondary!">
-                          <TableCell className="font-semibold">
-                            Privacy :
-                          </TableCell>
-                          <TableCell className="text-right capitalize">
-                            {playerData?.basic_info?.privacy_settings}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="border-secondary!">
-                          <TableCell className="font-semibold">
-                            Team :
-                          </TableCell>
-                          <TableCell className="text-right capitalize">
-                            {playerData?.position_info?.club_team || "N/A"}
-                          </TableCell>
-                        </TableRow>
+                        {playerData?.position_info?.primary_position?.name && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              Position :
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {
+                                playerData?.position_info?.primary_position
+                                  ?.name
+                              }
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        {playerData?.basic_info?.age && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              Age :
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {playerData?.basic_info?.age}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        {playerData?.basic_info?.gender && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              Gender :
+                            </TableCell>
+                            <TableCell className="text-right capitalize">
+                              {playerData?.basic_info?.gender}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        {playerData?.basic_info?.country && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              Country :
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {playerData?.basic_info?.country}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        {playerData?.basic_info?.province && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              Province :
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {playerData?.basic_info?.province}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        {playerData?.basic_info?.city && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              City :
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {playerData?.basic_info?.city}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        {playerData?.position_info?.dominant_foot && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              Dominant Foot :
+                            </TableCell>
+                            <TableCell className="text-right capitalize">
+                              {playerData?.position_info?.dominant_foot}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        {playerData?.basic_info?.privacy_settings && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              Privacy :
+                            </TableCell>
+                            <TableCell className="text-right capitalize">
+                              {playerData?.basic_info?.privacy_settings}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        {playerData?.position_info?.club_team && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              Team :
+                            </TableCell>
+                            <TableCell className="text-right capitalize">
+                              {playerData?.position_info?.club_team }
+                            </TableCell>
+                          </TableRow>
+                        )}
                       </TableBody>
                     </Table>
                   </div>

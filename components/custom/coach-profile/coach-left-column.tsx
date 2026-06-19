@@ -30,7 +30,7 @@ export default function CoachLeftColumn(
         name={profileData?.name}
         highlightedName={profileData?.last_name}
         role={profileData?.current_role?.name || ""}
-        location={profileData?.city && profileData?.country ? `${profileData?.city}, ${profileData?.country}` : profileData?.city || profileData?.country || ""}
+        location={`${profileData?.city && `${profileData.city} ,`}${profileData?.province && `${profileData.province}, `}${profileData?.country || ""}`}
         tags={["tag"]}
         imageUrl={profileData?.profile_image || "/images/bannerbg.png"}
         showMessageButton={false}

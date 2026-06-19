@@ -70,8 +70,7 @@ export default function Page() {
     }
     const token = typeof window !== "undefined" ? localStorage.getItem("go_elite_token") : null;
 
-
-    console.log(data)
+ 
 
     return (
       <section>
@@ -199,14 +198,8 @@ export default function Page() {
                       duration={`${moment(item?.start_date || item?.times[0].slot_date   ).format("MMM Do YY")} - ${moment(item?.end_date || item?.times[item.times.length - 1].slot_date ).format("MMM Do YY")}`}
                       calender={item?.location}
                       btnText="View Program"
-                      onClick={() => {
-                        const isvalid = isValidToken(token as string)
-                        if (!isvalid) {
-                          handleLogout(router)
-                          router.push("/auth")
-                          return
-                        }
-                        router.push(`/${user.role}/programs/${item?.id}`)
+                      onClick={() => { 
+                        router.push(`/details/program/${item?.id}`)
                       }}
                     />
                   ))

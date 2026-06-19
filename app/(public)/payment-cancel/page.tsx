@@ -4,15 +4,36 @@ import Lottie from "lottie-react"
 import Error from "../../../public/Error.json"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { useEffect, useState } from "react"
+import { TClubUser } from "../payment-success/page" 
 
 export default function PaymentCancel() {
   const router = useRouter()
-  const user = typeof window !== "undefined" ? localStorage.getItem("go_elite_user") : null
-  const parsedUser = user ? JSON.parse(user) : null
-  const role = parsedUser?.role || "user"
-  setTimeout(() => {
-      router.replace(`/${role}`)
-  }, 3000)
+  const [user, setUser] = useState<TClubUser | null>(null)
+  
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("go_elite_user")
+    if (!storedUser) return
+
+    try {
+      const parsedUser: TClubUser = JSON.parse(storedUser)
+      const updatedUser: TClubUser = {
+        ...parsedUser,
+        is_subscription_active: true,
+      }
+
+      setUser(updatedUser) 
+  
+      const timer = setTimeout(() => {
+        router.replace(`/${parsedUser.role}`)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    } catch {
+      setUser(null)
+    }
+  }, [])
 
   return (
     <div className="grid h-screen place-items-center bg-white">
@@ -30,8 +51,8 @@ export default function PaymentCancel() {
           <p> Please try again later. </p>
           <div className="py-10 text-center">
             <Link
-              href={`/${role}`}
-              className="bg-brand px-12 py-3 font-semibold text-primary  hover:bg-brand/50 rounded-lg  "
+              href={`/${user?.role}`}
+              className="rounded-lg bg-brand px-12 py-3 font-semibold text-primary hover:bg-brand/50"
             >
               GO BACK TO DASHBOARD
             </Link>

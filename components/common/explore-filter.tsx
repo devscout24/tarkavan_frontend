@@ -32,6 +32,7 @@ type ExploreFilterState = {
   sports: string
   age_group: string
   priceRange: string
+  province: string
   country_id: string
   city_id: string
   max_price: string
@@ -117,6 +118,16 @@ function ExploreFilter({
     }))
   }
 
+  const handleSelectProvince = (country: string, province: string , city: string) => {
+    setFilters((prev) => ({
+      ...prev,
+      location: `${city} , ${province}, ${country}`,
+      country_id: String(country),
+      city_id: String(province),
+      province: String(province),
+    }))
+  }
+
   const selectItemClassName =
     "text-white data-[highlighted]:bg-brand data-[highlighted]:text-primary focus:bg-brand focus:text-primary py-2! px-4! rounded-0!"
 
@@ -173,7 +184,7 @@ function ExploreFilter({
           <div className="flex flex-1 flex-col gap-3 justify-end lg:flex-row lg:items-center">
             {/* Location */}
             <CountryCitySelector
-              className="w-full min-w-0 lg:min-w-[300px]"
+              className="w-full min-w-0 lg:min-w-75"
               resetSignal={locationResetSignal}
               onSelect={(data) => {
                 if (data.country_name) {
@@ -182,7 +193,10 @@ function ExploreFilter({
                 if (data.city_name) {
                   handleSelectCity(data.country_name, data.city_name)
                 }
-              }}
+                if (data.province_name) {
+                  handleSelectProvince(data.country_name, data.province_name , data.city_name )
+                }
+              }} 
             />
 
             {/* Sports Select - dynamic from API */}

@@ -172,6 +172,8 @@ export type TCoachProfileData = {
   city_id?: number
   country: string
   country_id?: number
+  province: string
+  province_id?: number
   coach_profile_pic: string 
   profile_image: string 
   current_role: {

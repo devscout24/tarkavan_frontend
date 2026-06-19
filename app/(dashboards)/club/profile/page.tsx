@@ -50,6 +50,7 @@ export default async function page() {
         ? Globe
         : Shield
 
+  console.log("Club Profile Data:", clubProfile)
  
 
   return (
@@ -79,7 +80,7 @@ export default async function page() {
             showMessageButton={false}
             location={
               clubProfile
-                ? `${clubProfile.city}, ${clubProfile.country}`
+                ? `${clubProfile.city ? `${clubProfile.city}, ` : ""} ${clubProfile.province ? `${clubProfile.province}, ` : ""} ${clubProfile.country ? `${clubProfile.country}` : ""}`
                 : "Location not available"
             }
             tags={

@@ -78,8 +78,7 @@ export default function ClubDashboardPage() {
   const router = useRouter()
   const [dashboardData, setDashboardData] = useState<TClubDashboardData | null>(
     null
-  )
-  const [isError, setIsError] = useState(false)
+  ) 
   const user = localStorage.getItem("go_elite_user") ? JSON.parse(localStorage.getItem("go_elite_user") as string) : null 
   const [errorMessage, setErrorMessage] = useState("")
   const recentOpportunities: RecentOpportunity[] = dashboardData?.recent_opportunities as RecentOpportunity[] ?? []
@@ -87,8 +86,7 @@ export default function ClubDashboardPage() {
   const fetchDashboardData = useCallback(async () => {
     try {
       const res = await getClubDashboard()  
-      if (!isClubDashboardSuccessResponse(res)) {
-        setIsError(true)
+      if (!isClubDashboardSuccessResponse(res)) { 
         setErrorMessage(
           "May be you are not logged in or not authenticated subscription."
         )
@@ -97,12 +95,10 @@ export default function ClubDashboardPage() {
         )
         return
       }
-
-      setIsError(false)
+ 
       setErrorMessage("")
       setDashboardData(res.data)
-    } catch {
-      setIsError(true)
+    } catch { 
       setErrorMessage(
         "An error occurred while fetching dashboard data. Please try again later."
       )

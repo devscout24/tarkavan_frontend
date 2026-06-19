@@ -470,7 +470,9 @@ export default function CoachProfileSetup({
             </div>
 
             <div className="mt-4">
-              <CountryCitySelector onSelect={(data) => {
+              <CountryCitySelector 
+               initialCity={formData.city} initialCountry={formData.country} initialProvince={formData.province}
+              onSelect={(data) => {
                 setFormData((prev) => ({ ...prev, country: data.country_name, city: data.city_name , province: data.province_name }))
                 updateBasicInfo?.({ ...formData, country: data.country_name, city: data.city_name, province: data.province_name })
               }} />

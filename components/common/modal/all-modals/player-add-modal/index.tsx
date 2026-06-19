@@ -59,9 +59,9 @@ const normalizeMediaLink = (
 }
 
 const buildWizardStateFromProfile = (profile: TPlayerProfile) => {
- 
   const latestStat = profile.season_stats_last_five_years?.[0]
-  const primaryPosition = String(profile.position_info?.primary_position?.id) ?? ""
+  const primaryPosition =
+    String(profile.position_info?.primary_position?.id) ?? ""
   const secondaryPosition =
     String(profile.position_info?.secondary_position?.id) ?? ""
   const strengths =
@@ -108,7 +108,7 @@ const buildWizardStateFromProfile = (profile: TPlayerProfile) => {
       seasonStats: {
         activeTab:
           latestStat &&
-            (latestStat.clean_sheets > 0 || latestStat.total_saves > 0)
+          (latestStat.clean_sheets > 0 || latestStat.total_saves > 0)
             ? "goalkeeper"
             : "outfield",
         values: {
@@ -192,10 +192,16 @@ export default function PlayerAddModal() {
   const child_id = params.child_id
   const token = localStorage.getItem("go_elite_token")
 
-  const { close } = useModal()
+  const { close } = useModal() 
 
   useEffect(() => {
-    if (!isUpdatePlayer) {
+    // if (!isUpdatePlayer ) {
+    //   setExistingProfilePhotoUrl(null)
+    //   setWizardState(defaultWizardState)
+    //   return
+    // }
+
+    if (!isUpdatePlayer && !isUpdateChild) {
       setExistingProfilePhotoUrl(null)
       setWizardState(defaultWizardState)
       return
@@ -208,6 +214,7 @@ export default function PlayerAddModal() {
 
     try {
       const profile = JSON.parse(storedProfile) as TPlayerProfile
+
       const nextWizardState = buildWizardStateFromProfile(profile)
 
       setWizardState(nextWizardState as WizardState)
@@ -506,15 +513,10 @@ export default function PlayerAddModal() {
           localStorage.setItem("go_elite_user", JSON.stringify(user))
 
           toast.success(
-            getToastMessage(
-              res.data?.message,
-              "Player added successfully"
-            )
+            getToastMessage(res.data?.message, "Player added successfully")
           )
           // resetWizardState()
           close("add-new")
-
-
         } else {
           toast.error(res.data?.message || "Failed to add player")
         }
@@ -649,7 +651,6 @@ export default function PlayerAddModal() {
       try {
         const res = await addChild(formData)
 
-
         if (
           res &&
           "success" in res &&
@@ -675,7 +676,6 @@ export default function PlayerAddModal() {
           toast.error(getToastMessage(res.data.message, "Failed to add child"))
         }
       } catch (error) {
-
         toast.error("Failed to add child")
         console.error("Error saving parent profile:", error)
       }
@@ -829,15 +829,10 @@ export default function PlayerAddModal() {
           }
         )
 
-
-
         if (res.data.status) {
           setUpdating(false)
           toast.success(
-            getToastMessage(
-              res.data.message,
-              "Player updated successfully"
-            )
+            getToastMessage(res.data.message, "Player updated successfully")
           )
           window.dispatchEvent(new CustomEvent("player_profile_updated"))
           sessionStorage.removeItem(PLAYER_EDIT_STORAGE_KEY)
@@ -845,10 +840,7 @@ export default function PlayerAddModal() {
         } else {
           setUpdating(false)
           toast.error(
-            getToastMessage(
-              res.data?.message,
-              "Failed to update player"
-            )
+            getToastMessage(res.data?.message, "Failed to update player")
           )
         }
       } catch (error) {

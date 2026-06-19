@@ -28,13 +28,12 @@ import CountryCitySelector from "./country-city-selector"
 
 type ExploreFilterState = {
   button_type: string
-  location: string
   sports: string
   age_group: string
   priceRange: string
   province: string
-  country_id: string
-  city_id: string
+  city: string
+  country: string
   max_price: string
   min_price: string
   per_page: string
@@ -102,32 +101,6 @@ function ExploreFilter({
     setFilters((prev) => ({ ...prev, [key]: value }))
   }
 
-  const handleSelectCountry = (country: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      country_id: String(country),
-    }))
-  }
-
-  const handleSelectCity = (country: string, city: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      location: `${city}, ${country}`,
-      country_id: String(country),
-      city_id: String(city),
-    }))
-  }
-
-  const handleSelectProvince = (country: string, province: string , city: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      location: `${city} , ${province}, ${country}`,
-      country_id: String(country),
-      city_id: String(province),
-      province: String(province),
-    }))
-  }
-
   const selectItemClassName =
     "text-white data-[highlighted]:bg-brand data-[highlighted]:text-primary focus:bg-brand focus:text-primary py-2! px-4! rounded-0!"
 
@@ -181,22 +154,31 @@ function ExploreFilter({
             Quick Filters
           </div>
 
-          <div className="flex flex-1 flex-col gap-3 justify-end lg:flex-row lg:items-center">
+          <div className="flex flex-1 flex-col justify-end gap-3 lg:flex-row lg:items-center">
             {/* Location */}
             <CountryCitySelector
               className="w-full min-w-0 lg:min-w-75"
               resetSignal={locationResetSignal}
               onSelect={(data) => {
                 if (data.country_name) {
-                  handleSelectCountry(data.country_name)
+                  setFilters((prev) => ({
+                    ...prev,
+                    country: String(data.country_name),
+                  }))
                 }
                 if (data.city_name) {
-                  handleSelectCity(data.country_name, data.city_name)
+                  setFilters((prev) => ({
+                    ...prev,
+                    city: String(data.city_name),
+                  }))
                 }
                 if (data.province_name) {
-                  handleSelectProvince(data.country_name, data.province_name , data.city_name )
+                  setFilters((prev) => ({
+                    ...prev,
+                    province: String(data.province_name),
+                  }))
                 }
-              }} 
+              }}
             />
 
             {/* Sports Select - dynamic from API */}
@@ -232,7 +214,7 @@ function ExploreFilter({
               value={filters.age_group}
               onValueChange={(value) => updateFilter("age_group", value)}
             >
-              <SelectTrigger className="w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white lg:w-fit">
+              <SelectTrigger className="w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 lg:w-fit [&>span]:font-medium [&>span]:text-white">
                 <SelectValue placeholder="Select Age Group" />
               </SelectTrigger>
               <SelectContent position="popper">
@@ -262,7 +244,7 @@ function ExploreFilter({
               value={filters.priceRange}
               onValueChange={(value) => updateFilter("priceRange", value)}
             >
-              <SelectTrigger className="w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 [&>span]:font-medium [&>span]:text-white lg:w-fit">
+              <SelectTrigger className="w-full border-neutral-700 bg-neutral-800 py-5 text-white/60 lg:w-fit [&>span]:font-medium [&>span]:text-white">
                 <SelectValue placeholder="Select Price Range" />
               </SelectTrigger>
               <SelectContent position="popper">

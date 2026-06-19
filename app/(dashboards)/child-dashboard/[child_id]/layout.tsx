@@ -83,7 +83,7 @@ export default function PlayerDashboardLayout({
       <AuthCheckPoint role="parent">
         <Modals />
         <SidebarProvider className="h-screen overflow-hidden">
-          <Sidebar collapsible="icon" className="relative border-secondary">
+          <Sidebar collapsible="icon" className="relative border-secondary bg-primary ">
             <Image
               src={"/images/sidebarbg.png"}
               width={1000}

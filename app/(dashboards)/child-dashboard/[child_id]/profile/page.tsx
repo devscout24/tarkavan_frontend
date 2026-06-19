@@ -31,6 +31,9 @@ import { getPlayerProfile } from "@/app/(public)/action"
 import { IconType } from "react-icons"
 import { FiGlobe, FiLock } from "react-icons/fi"
 import { toast } from "sonner"
+import PlayerCard from "@/app/(dashboards)/player/profile/player-card"
+import { captureAndSave } from "@/lib/captureAndSave"
+import { BsDownload } from "react-icons/bs"
 
 export default function ChildProfile() {
   const router = useRouter()
@@ -71,6 +74,9 @@ export default function ChildProfile() {
   const mapPosition = []
   mapPosition.push(playerData?.position_info?.primary_position)
   mapPosition.push(playerData?.position_info?.secondary_position)
+  const user = localStorage.getItem("go_elite_user")
+    ? JSON.parse(localStorage.getItem("go_elite_user")!)
+    : null
 
   const privacy = playerData?.basic_info?.privacy_settings ?? "public"
 
@@ -144,10 +150,10 @@ export default function ChildProfile() {
       .filter((item): item is NonNullable<typeof item> => Boolean(item)),
   ]
 
-  console.log(playerData)
-
   return (
     <section className="text-white">
+      <PlayerCard playerData={playerData} />
+
       {/* visibility and customization options */}
       <Card className="flex-row items-center justify-between bg-secondary/40 px-5">
         <div className="flex items-center gap-2 rounded-lg bg-brand/90 px-4 py-2 text-primary">
@@ -157,24 +163,41 @@ export default function ChildProfile() {
           </span>
         </div>
 
-        <CommonBtn
-          size={"lg"}
-          variant={"default"}
-          onClick={() => {
-            if (child_id) {
-              sessionStorage.setItem(
-                "go_elite_player_edit_data",
-                JSON.stringify(playerData)
-              )
-              router.push(`?update=child`)
-            } else {
-              toast.error("Child ID is missing. Cannot edit profile.")
+        <div className="flex items-center gap-4">
+          <CommonBtn
+            size={"lg"}
+            variant={"default"}
+            onClick={() =>
+              captureAndSave({
+                elementId: "og_image",
+                fileName: "go-elite-player-profile-card.png",
+                userId: user?.profile_id || playerData?.basic_info?.id,
+              })
             }
-          }}
-          text="Edit"
-          icon={<Edit className="h-5 w-5" />}
-          className="w-fit bg-brand px-3 text-primary hover:bg-brand/80"
-        />
+            text="Get Profile Card"
+            icon={<BsDownload />}
+            className="w-fit border border-secondary bg-transparent px-3 text-white hover:bg-transparent"
+          />
+
+          <CommonBtn
+            size={"lg"}
+            variant={"default"}
+            onClick={() => {
+              if (child_id) {
+                sessionStorage.setItem(
+                  "go_elite_player_edit_data",
+                  JSON.stringify(playerData)
+                )
+                router.push(`?update=child`)
+              } else {
+                toast.error("Child ID is missing. Cannot edit profile.")
+              }
+            }}
+            text="Edit"
+            icon={<Edit className="h-5 w-5" />}
+            className="w-fit bg-brand px-3 text-primary hover:bg-brand/80"
+          />
+        </div>
       </Card>
 
       {/* profile info */}

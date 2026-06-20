@@ -20,18 +20,14 @@ const footerSections = [
   {
     title: "COMPANY",
     links: [
-      { label: "About", href: "#" },
-      { label: "Careers", href: "#" },
-      { label: "Blog", href: "#" },
-      { label: "Contact", href: "#" },
+      { label: "About", href: "#" }, 
+      { label: "Contact", href: "/contact" },
     ],
   },
   {
     title: "LEGAL",
     links: [
-      { label: "Privacy Policy", href: "#" },
-      { label: "Terms of Service", href: "#" },
-      { label: "Cookie Policy", href: "#" },
+      { label: "Terms and Conditions", href: "/terms" },
     ],
   },
 ]

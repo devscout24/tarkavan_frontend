@@ -1,12 +1,13 @@
 "use client"
 
+import Link from "next/link"
 import LoginGetStart from "./login-getstart"
 import Logo from "./logo"
 import { DrawerWithSides } from "./mobile-nav"
 
-export default function Nav() {
+export default function Nav({className}:{className?:string}) {
   return (
-    <nav className="fixed inset-s-0 top-0 z-20 w-full border-b border-white/10 bg-primary/65 backdrop-blur-sm supports-backdrop-filter:bg-primary/5">
+    <nav className={`fixed inset-s-0 top-0 z-20 w-full border-b border-white/10 bg-primary/65 backdrop-blur-sm supports-backdrop-filter:bg-primary/5 ${className || ''}`}>
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between p-4">
         <Logo className="w-25" />
 
@@ -40,11 +41,19 @@ export default function Nav() {
             </li>
             <li>
               <a
-                href="#"
+                href="#how_to_work"
                 className="text-heading hover:bg-neutral-tertiary md:hover:text-fg-brand block rounded px-3 py-2 transition-all duration-300 hover:text-brand md:border-0 md:p-0 md:hover:bg-transparent md:dark:hover:bg-transparent"
               >
                 How It Works
               </a>
+            </li>
+            <li>
+              <Link
+                href="/contact"
+                className="text-heading hover:bg-neutral-tertiary md:hover:text-fg-brand block rounded px-3 py-2 transition-all duration-300 hover:text-brand md:border-0 md:p-0 md:hover:bg-transparent md:dark:hover:bg-transparent"
+              >
+                Contact
+              </Link>
             </li>
           </ul>
         </div>

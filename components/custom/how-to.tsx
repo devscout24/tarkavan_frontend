@@ -8,7 +8,7 @@ import { TStepsResponse } from "@/types"
 
 export default function HowGoEliteWorks({ data }: { data: TStepsResponse | undefined }) {
   return (
-    <section className="w-full bg-[#060807] px-6 py-10 md:py-20 text-white">
+    <section id="how_to_work" className="w-full bg-[#060807] px-6 py-10 md:py-20 text-white">
       {/* Header */}
       <div className=" mb-10 md:mb-20 text-center">
         <h2 className=" text-xl md:text-2xl lg:text-4xl xl:text-[64px]  font-light tracking-tight text-white">

@@ -12,7 +12,7 @@ import ToComplite from "@/components/custom/to-complite"
 import AthletesAndCoaches from "@/components/custom/trusted"
 import { useEffect, useState } from "react"
 import { getLandingPageData } from "./action"
-import { THeroData, TLandingPageData } from "@/types/landing.type"
+import {  TLandingPageData } from "@/types/landing.type"
 
 export default function Page() {
 

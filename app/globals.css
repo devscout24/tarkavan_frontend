@@ -163,8 +163,12 @@
 
 /* custom common css */
 * {
-  font-family: "Nunito Sans", sans-serif;
+  font-family: "Nunito Sans", sans-serif; 
 }
+html {
+  scroll-behavior: smooth;
+}
+
 p{
   @apply text-base leading-[150%] font-normal text-white;
 }

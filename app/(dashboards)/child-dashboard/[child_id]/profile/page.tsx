@@ -30,6 +30,10 @@ import { useEffect, useState } from "react"
 import { getPlayerProfile } from "@/app/(public)/action"
 import { IconType } from "react-icons"
 import { FiGlobe, FiLock } from "react-icons/fi"
+import { toast } from "sonner"
+import PlayerCard from "@/app/(dashboards)/player/profile/player-card"
+import { captureAndSave } from "@/lib/captureAndSave"
+import { BsDownload } from "react-icons/bs"
 
 export default function ChildProfile() {
   const router = useRouter()
@@ -70,6 +74,9 @@ export default function ChildProfile() {
   const mapPosition = []
   mapPosition.push(playerData?.position_info?.primary_position)
   mapPosition.push(playerData?.position_info?.secondary_position)
+  const user = localStorage.getItem("go_elite_user")
+    ? JSON.parse(localStorage.getItem("go_elite_user")!)
+    : null
 
   const privacy = playerData?.basic_info?.privacy_settings ?? "public"
 
@@ -145,6 +152,8 @@ export default function ChildProfile() {
 
   return (
     <section className="text-white">
+      <PlayerCard playerData={playerData} />
+
       {/* visibility and customization options */}
       <Card className="flex-row items-center justify-between bg-secondary/40 px-5">
         <div className="flex items-center gap-2 rounded-lg bg-brand/90 px-4 py-2 text-primary">
@@ -154,16 +163,41 @@ export default function ChildProfile() {
           </span>
         </div>
 
-        <CommonBtn
-          size={"lg"}
-          variant={"default"}
-          onClick={() =>
-            router.push(child_id ? `?update=child` : `?update=player`)
-          }
-          text="Edit"
-          icon={<Edit className="h-5 w-5" />}
-          className="w-fit bg-brand px-3 text-primary hover:bg-brand/80"
-        />
+        <div className="flex items-center gap-4">
+          <CommonBtn
+            size={"lg"}
+            variant={"default"}
+            onClick={() =>
+              captureAndSave({
+                elementId: "og_image",
+                fileName: "go-elite-player-profile-card.png",
+                userId: user?.profile_id || playerData?.basic_info?.id,
+              })
+            }
+            text="Get Profile Card"
+            icon={<BsDownload />}
+            className="w-fit border border-secondary bg-transparent px-3 text-white hover:bg-transparent"
+          />
+
+          <CommonBtn
+            size={"lg"}
+            variant={"default"}
+            onClick={() => {
+              if (child_id) {
+                sessionStorage.setItem(
+                  "go_elite_player_edit_data",
+                  JSON.stringify(playerData)
+                )
+                router.push(`?update=child`)
+              } else {
+                toast.error("Child ID is missing. Cannot edit profile.")
+              }
+            }}
+            text="Edit"
+            icon={<Edit className="h-5 w-5" />}
+            className="w-fit bg-brand px-3 text-primary hover:bg-brand/80"
+          />
+        </div>
       </Card>
 
       {/* profile info */}
@@ -189,12 +223,6 @@ export default function ChildProfile() {
                 </h2>
                 <div className="overflow-hidden rounded-xl! border border-secondary!">
                   <Table className="w-full">
-                    {/* <TableHeader className="  "   >
-                      <TableRow className="border-secondary!">
-                        <TableHead className=" text-white! font-semibold text-base  ">Invoice</TableHead>
-                        <TableHead className="text-right text-white! font-semibold text-base  ">Amount</TableHead>
-                      </TableRow>
-                    </TableHeader> */}
                     <TableBody>
                       <TableRow className="border-secondary!">
                         <TableCell className="font-semibold">Name :</TableCell>
@@ -202,64 +230,96 @@ export default function ChildProfile() {
                           {playerData?.basic_info?.full_name}
                         </TableCell>
                       </TableRow>
-                      <TableRow className="border-secondary!">
-                        <TableCell className="font-semibold">
-                          Position :
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {playerData?.position_info?.primary_position?.name}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow className="border-secondary!">
-                        <TableCell className="font-semibold">Age :</TableCell>
-                        <TableCell className="text-right">
-                          {playerData?.basic_info?.age}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow className="border-secondary!">
-                        <TableCell className="font-semibold">
-                          Gender :
-                        </TableCell>
-                        <TableCell className="text-right capitalize">
-                          {playerData?.basic_info?.gender}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow className="border-secondary!">
-                        <TableCell className="font-semibold">City :</TableCell>
-                        <TableCell className="text-right">
-                          {playerData?.basic_info?.city}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow className="border-secondary!">
-                        <TableCell className="font-semibold">
-                          Country :
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {playerData?.basic_info?.country}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow className="border-secondary!">
-                        <TableCell className="font-semibold">
-                          Dominant Foot :
-                        </TableCell>
-                        <TableCell className="text-right capitalize">
-                          {playerData?.position_info?.dominant_foot}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow className="border-secondary!">
-                        <TableCell className="font-semibold">
-                          Privacy :
-                        </TableCell>
-                        <TableCell className="text-right capitalize">
-                          {playerData?.basic_info?.privacy_settings}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow className="border-secondary!">
-                        <TableCell className="font-semibold">Team :</TableCell>
-                        <TableCell className="text-right capitalize">
-                          {playerData?.position_info?.club_team || "N/A"}
-                        </TableCell>
-                      </TableRow>
+                      {playerData?.position_info?.primary_position?.name && (
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Position :
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {playerData?.position_info?.primary_position?.name}
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      {playerData?.basic_info?.age && (
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">Age :</TableCell>
+                          <TableCell className="text-right">
+                            {playerData?.basic_info?.age}
+                          </TableCell>
+                        </TableRow>
+                      )}
+
+                      {playerData?.basic_info?.gender && (
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Gender :
+                          </TableCell>
+                          <TableCell className="text-right capitalize">
+                            {playerData?.basic_info?.gender}
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      {playerData?.basic_info?.province && (
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Province :
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {playerData?.basic_info?.province}
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      {playerData?.basic_info?.city && (
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            City :
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {playerData?.basic_info?.city}
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      {playerData?.basic_info?.country && (
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Country :
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {playerData?.basic_info?.country}
+                          </TableCell>
+                        </TableRow>
+                      )}
+
+                      {playerData?.position_info?.dominant_foot && (
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Dominant Foot :
+                          </TableCell>
+                          <TableCell className="text-right capitalize">
+                            {playerData?.position_info?.dominant_foot}
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      {playerData?.basic_info?.privacy_settings && (
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Privacy :
+                          </TableCell>
+                          <TableCell className="text-right capitalize">
+                            {playerData?.basic_info?.privacy_settings}
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      {playerData?.position_info?.club_team && (
+                        <TableRow className="border-secondary!">
+                          <TableCell className="font-semibold">
+                            Team :
+                          </TableCell>
+                          <TableCell className="text-right capitalize">
+                            {playerData?.position_info?.club_team}
+                          </TableCell>
+                        </TableRow>
+                      )}
                     </TableBody>
                   </Table>
                 </div>
@@ -342,7 +402,7 @@ export default function ChildProfile() {
           </div>
 
           {/* player stats */}
-          <div className="mt-6 ">
+          <div className="mt-6">
             <h2 className="mb-4 text-base font-semibold text-white">
               Player Stats
             </h2>

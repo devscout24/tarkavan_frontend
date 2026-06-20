@@ -5,14 +5,12 @@ import RadarStrength from "@/components/common/radar-strength"
 import PositionMap from "@/components/common/position-map"
 import QRCode from "@/components/common/qr-code"
 import { FaFacebookF, FaStar } from "react-icons/fa"
-import { IoLogoInstagram } from "react-icons/io5"
-import { FaTiktok } from "react-icons/fa6"
 import { FaXTwitter } from "react-icons/fa6"
 import { IoLogoWhatsapp } from "react-icons/io5"
 import Nav from "@/components/common/nav"
 import Footer from "@/components/common/footer"
 import CommonBtn from "@/components/common/common-btn"
-import { use, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import {
   HoverCard,
   HoverCardContent,
@@ -111,15 +109,21 @@ export default function ProfilePage({ data }: ProfilePageProps) {
     }
   }, [])
 
-  const handleVoteCick = (type: string, setOpen: (open: boolean) => void) => {
+  const handleVoteCick = async (
+    type: string,
+    setOpen: (open: boolean) => void
+  ) => { 
+    if (user?.role === "club") {
+      toast.error("Clubs are not allowed to vote.")
+      return
+    }
+
     if (user?.role === "parent" && !childId) {
       setOpen(true)
       return
-    } else if (user?.role === "club") {
-      toast.error("Clubs are not allowed to vote.")
-    } else {
-      handleVote(type)
     }
+
+    await handleVote(type)
   }
 
   const handleVote = async (type: string) => {
@@ -161,8 +165,7 @@ export default function ProfilePage({ data }: ProfilePageProps) {
     }
   }
 
-  const router = useRouter()
-  console.log("Profile data:", data) // Debug log to check the structure of the data
+  const router = useRouter() 
 
   return (
     <>
@@ -175,7 +178,6 @@ export default function ProfilePage({ data }: ProfilePageProps) {
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
         }}
-        id="og_image"
       >
         <CommonBtn
           variant="outline"
@@ -478,14 +480,12 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                           <TableCell className={columnBorderClass}>
                             {stat.red_cards}
                           </TableCell>
-                          {Number(data?.player_stats?.clean_sheets) >
-                            0 && (
+                          {Number(data?.player_stats?.clean_sheets) > 0 && (
                             <TableCell className={columnBorderClass}>
                               {stat.clean_sheets}
                             </TableCell>
                           )}
-                          {Number(data?.player_stats?.total_saves) >
-                            0 && (
+                          {Number(data?.player_stats?.total_saves) > 0 && (
                             <TableCell className={columnBorderClass}>
                               {stat.total_saves}
                             </TableCell>
@@ -504,18 +504,16 @@ export default function ProfilePage({ data }: ProfilePageProps) {
               open={provincialModalOpen}
               onOpenChange={setProvincialModalOpen}
             >
-              <DialogTrigger>
-                <CommonBtn
-                  size={"lg"}
-                  variant={"default"}
-                  text={"Provincial Team Votes"}
-                  className="w-fit cursor-pointer bg-yellow-500 px-10 text-primary hover:bg-yellow-500/80 hover:text-primary"
-                  onClick={() =>
-                    handleVoteCick("provencial", setProvincialModalOpen)
-                  }
-                  isLoading={loadVoteType === "provencial"}
-                />
-              </DialogTrigger>
+              <CommonBtn
+                size={"lg"}
+                variant={"default"}
+                text={"Provincial Team Votes"}
+                className="w-fit cursor-pointer bg-yellow-500 px-10 text-primary hover:bg-yellow-500/80 hover:text-primary"
+                onClick={() =>
+                  handleVoteCick("provencial", setProvincialModalOpen)
+                }
+                isLoading={loadVoteType === "provencial"}
+              />
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Select a child to vote.</DialogTitle>
@@ -563,7 +561,6 @@ export default function ProfilePage({ data }: ProfilePageProps) {
               open={professionalModalOpen}
               onOpenChange={setProfessionalModalOpen}
             >
-              <DialogTrigger>
                 <CommonBtn
                   size={"lg"}
                   variant={"default"}
@@ -573,8 +570,7 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                     handleVoteCick("professional", setProfessionalModalOpen)
                   }
                   isLoading={loadVoteType === "professional"}
-                />
-              </DialogTrigger>
+                /> 
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Select a child to vote.</DialogTitle>

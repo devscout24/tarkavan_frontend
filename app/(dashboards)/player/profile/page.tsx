@@ -38,8 +38,9 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
-import { toPng } from "html-to-image"
-import { setPlayerOG } from "../../action"
+import { BsDownload } from "react-icons/bs"
+import PlayerCard from "./player-card"
+import { captureAndSave } from "@/lib/captureAndSave"
 
 export default function PlayerProfile() {
   const columnBorderClass = "border-r border-white/15 last:border-r-0"
@@ -51,7 +52,7 @@ export default function PlayerProfile() {
   useEffect(() => {
     const profileData = async () => {
       try {
-        const res = await getPlayerProfile(user?.profile_id) 
+        const res = await getPlayerProfile(user?.profile_id)
         if (res && "success" in res && res.data && res.data.data) {
           setPlayerData(res.data.data)
         }
@@ -96,7 +97,6 @@ export default function PlayerProfile() {
 
   const Icon = iconMap[privacy] ?? FiGlobe
 
-  const [shouldCapture, setShouldCapture] = useState(false)
   const handleEditPlayer = () => {
     if (playerData) {
       sessionStorage.setItem(
@@ -170,84 +170,9 @@ export default function PlayerProfile() {
       .filter((item): item is NonNullable<typeof item> => Boolean(item)),
   ]
 
-  useEffect(() => {
-    if (!playerData) return
-
-    const timer = setTimeout(() => setShouldCapture(true), 500)
-    return () => clearTimeout(timer)
-  }, [playerData])
-
-  useEffect(() => {
-    if (!shouldCapture || window.innerWidth < 1280) return
-
-    async function takeScreenshot() {
-      try {
-        const node = document.getElementById("og_image")
-
-        if (!node) return
-
-        const images = node.querySelectorAll("img")
-
-        await Promise.all(
-          Array.from(images).map(
-            (img) =>
-              new Promise<void>((resolve) => {
-                if (img.complete) {
-                  if (!img.naturalWidth) {
-                    console.error("Failed image:", img.src)
-                  }
-                  resolve()
-                  return
-                }
-
-                img.onload = () => resolve()
-
-                img.onerror = () => {
-                  console.error("Failed image:", img.src)
-                  resolve()
-                }
-              })
-          )
-        )
-
-        await document.fonts.ready
-
-        await new Promise((resolve) => requestAnimationFrame(resolve))
-
-        const dataUrl = await toPng(node, {
-          cacheBust: true,
-        })
-
-        const response = await fetch(dataUrl)
-        const blob = await response.blob()
-
-        const file = new File([blob], "og-image.png", {
-          type: "image/png",
-        })
-
-        const formData = new FormData()
-        formData.append("preview", file)
-        formData.append("athlete_id", String(user?.profile_id))
-
-        await setPlayerOG({
-          id: user?.profile_id,
-          data: formData,
-        })
-
-      } catch (error) {
-        console.error("Screenshot generation failed:", error)
-      } finally {
-        setShouldCapture(false)
-      }
-    }
-
-    takeScreenshot()
-  }, [shouldCapture, user?.profile_id])
-
- 
-
   return (
     <>
+      <PlayerCard playerData={playerData} />
       <section className="text-white">
         {/* visibility and customization options */}
         <Card className="flex-row items-center justify-between bg-secondary/40 px-5">
@@ -258,18 +183,35 @@ export default function PlayerProfile() {
             </span>
           </div>
 
-          <CommonBtn
-            size={"lg"}
-            variant={"default"}
-            onClick={handleEditPlayer}
-            text="Edit"
-            icon={<Edit className="h-5 w-5" />}
-            className="w-fit bg-brand px-3 text-primary hover:bg-brand/80"
-          />
+          <div className="flex items-center gap-4">
+            <CommonBtn
+              size={"lg"}
+              variant={"default"}
+              onClick={() =>
+                captureAndSave({
+                  elementId: "og_image",
+                  fileName: "go-elite-player-profile-card.png",
+                  userId: user?.profile_id || playerData?.basic_info?.id,
+                })
+              }
+              text="Get Profile Card"
+              icon={<BsDownload />}
+              className="w-fit border border-secondary bg-transparent px-3 text-white hover:bg-transparent"
+            />
+
+            <CommonBtn
+              size={"lg"}
+              variant={"default"}
+              onClick={handleEditPlayer}
+              text="Edit"
+              icon={<Edit className="h-5 w-5" />}
+              className="w-fit bg-brand px-3 text-primary hover:bg-brand/80"
+            />
+          </div>
         </Card>
 
         {/* profile info */}
-        <div className="mt-6 gap-10 xl:flex" id="og_image">
+        <div className="mt-6 gap-10 xl:flex">
           <div className="top-5 flex-[3] self-start xl:sticky">
             <ProspectCard
               academyVotes={playerData?.professional_votes}
@@ -296,12 +238,6 @@ export default function PlayerProfile() {
                   </h2>
                   <div className="overflow-hidden rounded-xl! border border-secondary!">
                     <Table className="w-full">
-                      {/* <TableHeader className="  "   >
-                      <TableRow className="border-secondary!">
-                        <TableHead className=" text-white! font-semibold text-base  ">Invoice</TableHead>
-                        <TableHead className="text-right text-white! font-semibold text-base  ">Amount</TableHead>
-                      </TableRow>
-                    </TableHeader> */}
                       <TableBody>
                         <TableRow className="border-secondary!">
                           <TableCell className="font-semibold">
@@ -311,68 +247,99 @@ export default function PlayerProfile() {
                             {playerData?.basic_info?.full_name}
                           </TableCell>
                         </TableRow>
-                        <TableRow className="border-secondary!">
-                          <TableCell className="font-semibold">
-                            Position :
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {playerData?.position_info?.primary_position?.name}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="border-secondary!">
-                          <TableCell className="font-semibold">Age :</TableCell>
-                          <TableCell className="text-right">
-                            {playerData?.basic_info?.age}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="border-secondary!">
-                          <TableCell className="font-semibold">
-                            Gender :
-                          </TableCell>
-                          <TableCell className="text-right capitalize">
-                            {playerData?.basic_info?.gender}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="border-secondary!">
-                          <TableCell className="font-semibold">
-                            City :
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {playerData?.basic_info?.city}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="border-secondary!">
-                          <TableCell className="font-semibold">
-                            Country :
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {playerData?.basic_info?.country}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="border-secondary!">
-                          <TableCell className="font-semibold">
-                            Dominant Foot :
-                          </TableCell>
-                          <TableCell className="text-right capitalize">
-                            {playerData?.position_info?.dominant_foot}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="border-secondary!">
-                          <TableCell className="font-semibold">
-                            Privacy :
-                          </TableCell>
-                          <TableCell className="text-right capitalize">
-                            {playerData?.basic_info?.privacy_settings}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="border-secondary!">
-                          <TableCell className="font-semibold">
-                            Team :
-                          </TableCell>
-                          <TableCell className="text-right capitalize">
-                            {playerData?.position_info?.club_team || "N/A"}
-                          </TableCell>
-                        </TableRow>
+                        {playerData?.position_info?.primary_position?.name && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              Position :
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {
+                                playerData?.position_info?.primary_position
+                                  ?.name
+                              }
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        {playerData?.basic_info?.age && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              Age :
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {playerData?.basic_info?.age}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        {playerData?.basic_info?.gender && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              Gender :
+                            </TableCell>
+                            <TableCell className="text-right capitalize">
+                              {playerData?.basic_info?.gender}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        {playerData?.basic_info?.country && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              Country :
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {playerData?.basic_info?.country}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        {playerData?.basic_info?.province && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              Province :
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {playerData?.basic_info?.province}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        {playerData?.basic_info?.city && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              City :
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {playerData?.basic_info?.city}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        {playerData?.position_info?.dominant_foot && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              Dominant Foot :
+                            </TableCell>
+                            <TableCell className="text-right capitalize">
+                              {playerData?.position_info?.dominant_foot}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        {playerData?.basic_info?.privacy_settings && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              Privacy :
+                            </TableCell>
+                            <TableCell className="text-right capitalize">
+                              {playerData?.basic_info?.privacy_settings}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        {playerData?.position_info?.club_team && (
+                          <TableRow className="border-secondary!">
+                            <TableCell className="font-semibold">
+                              Team :
+                            </TableCell>
+                            <TableCell className="text-right capitalize">
+                              {playerData?.position_info?.club_team }
+                            </TableCell>
+                          </TableRow>
+                        )}
                       </TableBody>
                     </Table>
                   </div>

@@ -98,8 +98,6 @@ export default function UpcomingEventPage() {
     program_type: "" , 
     status: "", 
   })
-  console.log("programsData", programsData)
-  
  
  
 

@@ -16,7 +16,7 @@ export default function PLayerProgramPage({ child_id }: { child_id: string }) {
     const  [programs, setPrograms] = useState<TProgramUpcomming[]>([])
     const [sports, setSports] = useState<TSportOption[]>([])
     const [selectedFilter, setSelectedFilter] = useState<string>("") 
-    console.log(programs)
+ 
     useEffect(() => {
   
       const getPrograms = async () => {

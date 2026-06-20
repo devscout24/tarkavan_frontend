@@ -25,7 +25,7 @@ export default function ProgramDetailsPage() {
   const id = params.detailsID
   const [details, setDetails] = useState<TProgramDetailsParentAndPlayer | null>(
     null
-  )
+  ) 
 
   const currentUser =
     typeof window !== "undefined"
@@ -105,9 +105,16 @@ export default function ProgramDetailsPage() {
         title={details?.program_name || "Program Name"}
         category={details?.sport || "Program Type"}
         duration={moment
-          .duration(moment(details?.end_date).diff(moment(details?.start_date)))
+          .duration(
+            moment(details?.end_date || details?.times[0].slot_date).diff(
+              moment(
+                details?.start_date ||
+                  details?.times[details?.times.length - 1].slot_date
+              )
+            )
+          )
           .humanize()}
-        dateRange={`${moment(details?.start_date).format("MMM Do YY")} - ${moment(details?.end_date).format("MMM Do YY")}`}
+        dateRange={`${moment(details?.start_date || details?.times[0].slot_date).format("MMM Do YY")} - ${moment(details?.end_date || details?.times[details?.times.length - 1].slot_date).format("MMM Do YY")}`}
         location={details?.location}
         ageRange={`Age U${details?.age_limit == details?.from_age || details?.from_age == null ? details?.age_limit : `${details?.from_age} - U${details?.age_limit}`}`}
         program_photo={details?.photo || ""}

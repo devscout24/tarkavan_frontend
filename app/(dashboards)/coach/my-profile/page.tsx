@@ -9,6 +9,7 @@ import { toPng } from "html-to-image"
 import { useEffect, useState } from "react"
 import { getApiBaseUrl } from "@/lib/url-utils"
 import { TCoachProfile, TCoachProfileData } from "@/types"
+import CoachShareCard from "./coach-card"
 
 export default function MyProfilePage() {
   const [shouldCapture, setShouldCapture] = useState(false)
@@ -88,8 +89,7 @@ export default function MyProfilePage() {
         })
 
         if (response.ok) {
-          const result = await response.json()
-          console.log("Fetched coach profile data:", result)
+          const result = await response.json() 
           if (result.status) {
             setProfileData(result.data)
           }
@@ -115,10 +115,12 @@ export default function MyProfilePage() {
   }, [])
 
   return (
-    <section className="pb-8 xl:pb-10 2xl:pb-12" id="og_image">
+    <section className="pb-8 xl:pb-10 2xl:pb-12" >
+
+      <CoachShareCard profileData={profileData as TCoachProfile}/> 
       <ProfileHeaderBar />
 
-      <div className="grid gap-5 md:gap-6 lg:gap-6 xl:grid-cols-[460px_minmax(0,1fr)] xl:gap-6 2xl:grid-cols-[560px_minmax(0,1fr)] 2xl:gap-7">
+      <div  className=" p-2 grid gap-5 md:gap-6 lg:gap-6 xl:grid-cols-[460px_minmax(0,1fr)] xl:gap-6 2xl:grid-cols-[560px_minmax(0,1fr)] 2xl:gap-7">
         <CoachLeftColumn
           profileData={profileData?.profile as TCoachProfileData}
           coaching_titles={profileData?.coaching_titles || []}

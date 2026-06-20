@@ -51,6 +51,7 @@ interface CoreIdentityFormData {
   clubTeam: string
   country: string
   city: string
+  province: string
 }
 
 type PhotoPreview = {
@@ -106,6 +107,7 @@ export default function CoreIdentity({
       clubTeam: draft.clubTeam,
       country: draft.country,
       city: draft.city,
+      province: draft.province,
     },
   })
 
@@ -120,12 +122,14 @@ export default function CoreIdentity({
     register("dominantFoot", { required: "Dominant foot is required" })
     register("country")
     register("city")
+    register("province")
   }, [register])
 
   const dateOfBirth = watch("dateOfBirth")
   const gender = watch("gender")
   const sport = watch("sport")
   const dominantFoot = watch("dominantFoot")
+  const province = watch("province")
 
   // Memoize the handler to prevent it from being recreated on every render
   const handleDraftChange = useCallback(
@@ -147,6 +151,7 @@ export default function CoreIdentity({
         clubTeam: values.clubTeam ?? "",
         country: values.country ?? "",
         city: values.city ?? "",
+        province: values.province ?? "",
       })
     },
     [onDraftChange]
@@ -375,9 +380,11 @@ export default function CoreIdentity({
             <CountryCitySelector
               initialCountry={draft.country}
               initialCity={draft.city}
-              onSelect={(data) => {
+              initialProvince={draft.province}
+              onSelect={(data) => { 
                 setValue("country", data.country_name, { shouldValidate: true })
                 setValue("city", data.city_name, { shouldValidate: true })
+                setValue("province", data.province_name, { shouldValidate: true })
               }}
             />
           </div>

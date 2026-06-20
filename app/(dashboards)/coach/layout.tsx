@@ -152,7 +152,7 @@ export default function ParentDashboardLayout({
     <AuthCheckPoint role="coach">
       <SidebarProvider className={` `}>
         <Modals />
-        <Sidebar collapsible="icon" className="relative border-secondary">
+        <Sidebar collapsible="icon" className="relative border-secondary bg-primary  ">
           <Image
             width={1000}
             height={1000}

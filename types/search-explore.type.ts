@@ -41,6 +41,18 @@ export type  TClubProgramItem = {
   coach_name: string;
   club_name: string;
   team_name?: string;  
+  from_age: Nullable<number>;
+  age_limit: number; 
+  discount_price: number;
+  program_price: number;
+  times: {
+    id: number;
+    time: string;
+    slot_date: string | null;
+    start_time: string | null;
+    end_time: string | null;
+    is_available: boolean;
+  }[];
 }
 
 

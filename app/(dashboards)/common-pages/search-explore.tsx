@@ -21,26 +21,26 @@ import { useRouter } from "next/navigation"
 
 
 type ExploreFilterState = {
-  button_type: string
-  location: string
+  button_type: string 
   sports: string
   age_group: string
-  priceRange: string
-  country_id: string
-  city_id: string
+  priceRange: string  
+  province: string
+  city: string
+  country: string
   max_price: string
   min_price: string
   per_page: string
 }
 
 const initialState: ExploreFilterState = {
-  button_type: "",
-  location: "",
+  button_type: "", 
   sports: "",
   age_group: "",
-  priceRange: "",
-  country_id: "",
-  city_id: "",
+  priceRange: "", 
+  province: "",
+  city: "",
+  country: "",
   max_price: "",
   min_price: "",
   per_page: "9",

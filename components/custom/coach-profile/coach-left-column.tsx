@@ -24,13 +24,13 @@ export default function CoachLeftColumn(
     }) {
 
   return (
-    <aside className="space-y-4 xl:space-y-5 2xl:space-y-6">
+    <aside className="space-y-2 ">
       <ProgramCoachCard
         className="rounded-[12px] border border-secondary/60 bg-primary xl:[&_h3]:text-[38px] 2xl:[&_h3]:text-[46px] xl:[&_p]:text-[17px] 2xl:[&_p]:text-[19px] xl:[&_span]:text-[11px] 2xl:[&_span]:text-[12px]"
         name={profileData?.name}
         highlightedName={profileData?.last_name}
         role={profileData?.current_role?.name || ""}
-        location={profileData?.city && profileData?.country ? `${profileData?.city}, ${profileData?.country}` : profileData?.city || profileData?.country || ""}
+        location={`${profileData?.city && `${profileData.city} ,`}${profileData?.province && `${profileData.province}, `}${profileData?.country || ""}`}
         tags={["tag"]}
         imageUrl={profileData?.profile_image || "/images/bannerbg.png"}
         showMessageButton={false}

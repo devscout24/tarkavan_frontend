@@ -9,9 +9,9 @@ import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { TClubProfile } from "@/types/club.type"
 import moment from "moment"
-import ProgramCard from "@/app/(dashboards)/components/program-card"
 import isValidToken from "@/lib/isValid-token"
 import { handleLogout } from "@/lib/helpers"
+import ProgramCard from "@/components/common/program-card"
 
 export default function page() {
   const [clubProfile, setClubProfile] = useState<TClubProfile | null>(null)
@@ -43,13 +43,15 @@ export default function page() {
   const user =
     typeof window !== "undefined"
       ? (() => {
-        const storedUser = localStorage.getItem("go_elite_user");
-        return storedUser ? JSON.parse(storedUser) : null;
-      })()
-      : null;
-  const token = typeof window !== "undefined" ? localStorage.getItem("go_elite_token") : null;
-
-  console.log("Club Profile Data:", user)
+          const storedUser = localStorage.getItem("go_elite_user")
+          return storedUser ? JSON.parse(storedUser) : null
+        })()
+      : null
+  const token =
+    typeof window !== "undefined"
+      ? localStorage.getItem("go_elite_token")
+      : null
+ 
 
   return (
     <>
@@ -66,9 +68,8 @@ export default function page() {
       <section className="mt-5 px-10 pb-10">
         {/* profile details */}
         <div className="mt-6 flex gap-6">
-          <div className="flex-1 ">
+          <div className="flex-1">
             <div className="sticky top-22">
-
               <ProgramCoachCard
                 showMessageButton={false}
                 location={
@@ -107,38 +108,32 @@ export default function page() {
             </Card>
 
             {/* programs */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mt-4    ">
-
+            <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
               {clubProfile?.program?.map((program) => (
                 <div key={program.id} className="flex-1">
                   <ProgramCard
                     key={program.id}
-                    image={program?.photo || "/images/bannerbg.png"}
-                    name={program?.program_name}
-                    price={`CAD ${program?.price}`}
-                    user={`Coach: ${program?.coach_name}`}
-                    duration={moment(program?.end_date).diff(moment(program?.start_date), 'days') + " days program"}
-                    calender={moment(program?.start_date).format("MMM Do YY")}
-                    btnText="View Program"
-                    onClick={() => {
-                      const isvalid = isValidToken(token as string)
-                      if (!isvalid) {
-                        handleLogout(router)
-                        router.push("/auth")
-                        return
-                      }
-                      router.push(`/${user.role}/programs/${program?.id}`)
-                    }}
+                    id={program.id.toString()}
+                    title={program.program_name}
+                    type={`Age U${program?.age_limit == program?.from_age || program?.from_age == null ? program?.age_limit : `${program?.from_age} - U${program?.age_limit}`}`}
+                    schedule={program.location}
+                    duration={`${moment(program.start_date || program.times[0].slot_date).format(
+                      "MMM Do YY"
+                    )} - ${moment(program.end_date || program.times[program.times.length - 1].slot_date).format("MMM Do YY")}`}
+                    currentPrice={program.price ? `${Number(program.price) - program.discount_price  }` : `$${program.program_price}`}
+                    previousPrice={String(Number(program.discount_price) + Number(program.price) )}
+                    imageSrc={program.photo}
+                    imageAlt={program.program_name}
+                    buttonLabel="View Details" 
+                    editLink={`/details/program/${program.id}?`}
+                    viewOnly={true}
                   />
+
+
                 </div>
               ))}
             </div>
-
           </div>
-
-
-
-
         </div>
       </section>
       <Footer />

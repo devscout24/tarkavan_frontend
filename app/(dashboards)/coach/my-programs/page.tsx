@@ -4,7 +4,7 @@ import ProgramCard from "@/components/common/program-card"
 import ProgramFilterDropdown from "@/components/common/ProgramFilterDropdown"
 import CommonBtn from "@/components/common/common-btn"
 import Loader from "@/components/common/loader"
-import { UserRound } from "lucide-react"
+import { Hourglass, UserRound } from "lucide-react"
 import Image from "next/image"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -20,6 +20,7 @@ import moment from "moment"
 import { useAppSelector } from "@/lib/hooks"
 import { selectIsSubscriptionActive } from "@/lib/features/userSlice"
 import ClubDashboardSubscription from "@/components/custom/club-dashboard-subscription"
+import { CiCalendarDate } from "react-icons/ci";
 
 const formatWeekdaySchedule = (startDate?: string, endDate?: string) => {
   if (!startDate || !endDate) return "N/A"
@@ -47,21 +48,7 @@ const formatStartTime = (time?: string) => {
   )
   return parsedTime.isValid() ? parsedTime.format("h:mm A") : startTime
 }
-
-const formatScheduleLabel = (
-  startDate?: string,
-  endDate?: string,
-  time?: string
-) => {
-  const weekdays = formatWeekdaySchedule(startDate, endDate)
-  const startTime = formatStartTime(time)
-
-  if (weekdays === "N/A" && startTime === "N/A") return "N/A"
-  if (weekdays === "N/A") return startTime
-  if (startTime === "N/A") return weekdays
-
-  return `${weekdays}, ${startTime}`
-}
+ 
 
 const formatDuration = (startDate?: string, endDate?: string) => {
   if (!startDate || !endDate) return "N/A"
@@ -118,6 +105,7 @@ export default function UpcomingEventPage() {
       try {
         setIsLoading(true)
         const response = await getCoachProgramList(filter)
+        console.log("getCoachProgramList response:", response)
         const res = response as any
         if (res && res.success && res.data?.data) {
           setPrograms(res.data.data.programs || [])
@@ -211,23 +199,25 @@ export default function UpcomingEventPage() {
                       Coach: {latestUpcomingProgram.provider?.name || "N/A"}
                     </p>
 
-                    <div className="mt-4 flex gap-3 text-primary md:mt-5 md:gap-8">
-                      <div>
-                        <p className="text-sm font-normal text-gray-500! sm:text-base">
-                          Schedule
+                    <div className="mt-4 space-y-4  ">
+                      <div className="flex ">
+                        <p className="flex items-center gap-2 text-sm font-normal text-gray-500! sm:text-base">
+                         <CiCalendarDate />  Schedule : 
                         </p>
-                        <p className="text-sm font-normal text-black! sm:text-base lg:text-lg">
-                          {formatScheduleLabel(
-                            latestUpcomingProgram.start_date,
-                            latestUpcomingProgram.end_date,
-                            latestUpcomingProgram.times?.[0]?.time
-                          )}
+                        <p className="text-sm font-normal text-black! sm:text-base lg:text-lg ml-1 ">
+                          {moment(latestUpcomingProgram.start_date).format("MMM Do YY")}
+                        </p> 
+                      </div>
+                      <div className="flex ">
+                        <p className="flex items-center gap-2 text-sm font-normal text-gray-500! sm:text-base">
+                         <Hourglass className="size-5" /> Duration : 
                         </p>
-                        <p className="text-sm font-normal text-gray-500! sm:text-base lg:text-lg">
+ 
+                        <p className="text-sm font-normal text-black!  sm:text-base lg:text-lg">
                           {formatDuration(
                             latestUpcomingProgram.start_date,
                             latestUpcomingProgram.end_date
-                          )}
+                          )} 
                         </p>
                       </div>
                     </div>
@@ -287,7 +277,7 @@ export default function UpcomingEventPage() {
                       title={program.program_name}
                       type={`Age U${program?.age_limit == program?.from_age || program?.from_age == null ? program?.age_limit : `${program?.from_age} - U${program?.age_limit}`}`}
                       schedule={program.location}
-                      duration={`${moment(program.program_start).format("MMM Do YY")} - ${moment(program.program_end).format("MMM Do YY")}`}
+                      duration={`${moment(program.start_date || program.times[0]?.slot_date   ).format("MMM Do YY")} - ${moment(program.end_date || program.times[program.times?.length - 1]?.slot_date   ).format("MMM Do YY")}`}
                       currentPrice={
                         program.price
                           ? `$${program.price - program.discount_price}`

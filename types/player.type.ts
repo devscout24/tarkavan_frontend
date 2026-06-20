@@ -121,6 +121,7 @@ export type TPlayerBasicInfo = {
   full_name: string
   country: string
   city: string
+  province: string
   dob: string
   age: number
   gender: "male" | "female" | "other" | string
@@ -284,6 +285,7 @@ export type TCompletePlayerData = {
   lastName: string
   city: string
   country: string
+  province: string
   email: string
   dateOfBirth?: string
   gender: string

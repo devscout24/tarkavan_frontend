@@ -86,6 +86,7 @@ export default function ClubProfileSetup() {
       formData.append("sports_name", selectedSport?.name ?? selectedSportId)
 
       formData.append("city", city) 
+      formData.append("province", provinceState)
       formData.append("country", country)
       formData.append("club_description", description)
 
@@ -209,6 +210,7 @@ export default function ClubProfileSetup() {
             onSelect={(data)=> {
               setCity(data.city_name) 
               setCountry(data.country_name)
+              setProvinceState(data.province_name)
             }}
           /> 
 

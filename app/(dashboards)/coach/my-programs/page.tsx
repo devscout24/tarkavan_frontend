@@ -280,8 +280,8 @@ export default function UpcomingEventPage() {
                       duration={`${moment(program.start_date || program.times[0]?.slot_date   ).format("MMM Do YY")} - ${moment(program.end_date || program.times[program.times?.length - 1]?.slot_date   ).format("MMM Do YY")}`}
                       currentPrice={
                         program.price
-                          ? `$${program.price - program.discount_price}`
-                          : `$${program.program_price}`
+                          ? `${program.price - program.discount_price}`
+                          : `${program.program_price}`
                       }
                       previousPrice={String(
                         program.discount_price + program.price

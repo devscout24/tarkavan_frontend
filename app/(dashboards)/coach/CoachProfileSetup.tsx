@@ -45,6 +45,7 @@ import { handleLogout } from "@/lib/helpers"
 import { useRouter } from "next/navigation"
 import useModal from "@/components/common/modal/useModal"
 import { Input } from "@/components/ui/input"
+import ConnectStripe from "@/components/common/connect-stripe"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -1141,110 +1142,9 @@ export default function CoachProfileSetup({
         </section>
 
         {/* stripe account credentials */}
-        <section className={`${sectionCls} space-y-5 p-5`}>
-          {/* Header */}
-          <div className="flex items-center gap-3 pb-4">
-            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[9px] bg-[#635BFF]">
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 60 60"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M27.9 21.2c0-2.1 1.7-2.9 4.5-2.9 4 0 9.1 1.2 13.1 3.4V9.1C41.3 7.3 37.2 6 30 6 19.5 6 12 11.5 12 22.3c0 16.7 23 14 23 21.1 0 2.5-2.1 3.2-5.1 3.2-4.4 0-10.1-1.8-14.6-4.2v12.8C19.5 57.1 24.4 58 30 58c10.8 0 18.2-5.3 18.2-16.3C48.1 24.3 27.9 27 27.9 21.2z"
-                  fill="white"
-                />
-              </svg>
-            </div>
+        <ConnectStripe/>
 
-            <div>
-              <h3 className="flex flex-wrap items-center gap-2 text-lg font-semibold text-white">
-                Connect Stripe Account
-                <span className="inline-flex items-center gap-1 rounded-full border border-[#635BFF]/30 bg-[#635BFF]/12 px-2.5 py-0.5 text-[11px] text-[#8b85ff]">
-                  <svg
-                    className="h-3 w-3"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <rect x="3" y="11" width="18" height="11" rx="2" />
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                  </svg>
-                  Secure
-                </span>
-              </h3>
-
-              <p className="text-xs text-white/40">
-                Your payout details are encrypted and managed by Stripe.
-              </p>
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="h-px w-full bg-white/10" />
-
-          {/* Fields */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-white/50">
-                Account holder name
-              </label>
-              <Input placeholder="John Doe" />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-white/50">
-                Account email
-              </label>
-              <Input type="email" placeholder="example@example.com" />
-            </div>
-          </div>
-
-          {/* Country */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-medium text-white/50">Country</label>
-
-            <CountryCitySelector
-              onSelect={(data) => {}}
-              showCity={false}
-              showProvince={false}
-            />
-
-            <p className="text-[11px] text-white/30">
-              Must match the country registered in your Stripe dashboard.
-            </p>
-          </div>
-
-          {/* Notice */}
-          <div className="flex items-start gap-2.5 rounded-[10px] border border-[#635BFF]/20 bg-[#635BFF]/10 px-3.5 py-2.5">
-            <svg
-              className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#635BFF]"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-
-            <p className="text-xs leading-relaxed text-white/55">
-              By connecting, you authorise GoElite to send payouts to your
-              Stripe account.
-            </p>
-          </div>
  
-          <CommonBtn
-            className="ml-auto bg-brand hover:bg-brand text-primary w-full py-5!   "
-            text="Connect Stripe"
-            size={"lg"}
-            variant={"default"}
-          />
-        </section>
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
           <CommonBtn

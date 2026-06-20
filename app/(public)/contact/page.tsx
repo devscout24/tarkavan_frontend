@@ -8,6 +8,28 @@ import { FaXTwitter } from "react-icons/fa6"
 import { PiInstagramLogo } from "react-icons/pi"
 import { IoLogoWhatsapp } from "react-icons/io5"
 import { RiTiktokFill } from "react-icons/ri"
+import { submitContact } from "@/app/action"
+import CommonBtn from "@/components/common/common-btn"
+
+
+export type TContactMessageResponse = {
+  success: boolean;
+  data: {
+    status: boolean;
+    message: string;
+    data: {
+      id: number;
+      name: string;
+      email: string;
+      phone: string;
+      subject: string;
+      message: string;
+      created_at: string;
+      updated_at: string;
+    };
+  };
+}
+
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -17,8 +39,9 @@ export default function ContactForm() {
     subject: "",
     message: "",
   })
+  const [loading , setLoading] = useState(false)
 
-  const handleMessage = () => {
+  const handleMessage = async () => {
     if (
       !formData.name.trim() ||
       !formData.email.trim() ||
@@ -29,6 +52,35 @@ export default function ContactForm() {
       toast.error("Please fill all the fields")
       return
     }
+
+    setLoading(true)
+
+    try{
+
+      const form = new FormData()
+      form.append("name", formData.name)
+      form.append("email", formData.email)
+      form.append("phone", formData.phone)
+      form.append("subject", formData.subject)
+      form.append("message", formData.message)
+
+      const res = await submitContact(form)
+      console.log(res)
+
+      const response = res as TContactMessageResponse
+
+      if(response.data.status){
+        toast.success(response.data.message || "Message sent successfully")
+        setLoading(false)
+      }else{
+        setLoading(false)
+        toast.error(response.data.message || "Failed to send message. Please try again later.")
+      }
+ 
+    } catch (error) {
+      toast.error("Failed to send message. Please try again later.")
+      setLoading(false)
+    } 
   }
 
   return (
@@ -240,13 +292,15 @@ export default function ContactForm() {
               ></textarea>
             </div>
 
-            <button
-              type="button"
+ 
+            <CommonBtn
+              text="Send message"
               onClick={handleMessage}
-              className="cursor-pointer rounded-md border border-brand bg-brand px-4 py-2.5 text-sm font-semibold text-secondary transition-all hover:bg-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-            >
-              Send message
-            </button>
+              isLoading={loading}
+              size={"default"}
+              variant={"default"}
+              className="cursor-pointer rounded-md border border-brand bg-brand px-4 py-2.5 text-sm font-semibold text-secondary transition-all hover:bg-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-brand w-full     "
+            />
           </form>
         </div>
       </section>

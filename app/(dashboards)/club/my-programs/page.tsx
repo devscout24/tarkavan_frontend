@@ -270,7 +270,7 @@ export default function UpcomingEventPage() {
               type={`Age U${program?.age_limit == program?.from_age || program?.from_age == null ? program?.age_limit : `${program?.from_age} - U${program?.age_limit}`}`}
               schedule={program.location}
               duration={`${moment(program.program_start).format("MMM Do YY") } - ${moment(program.program_end).format("MMM Do YY")}`}
-              currentPrice={program.price ? `$${program.price - program.discount_price  }` : `$${program.program_price}`}
+              currentPrice={program.price ? `${program.price - program.discount_price  }` : `${program.program_price}`}
               previousPrice={String(program.discount_price + program.price )}
               imageSrc={program.photo}
               imageAlt={program.program_name}

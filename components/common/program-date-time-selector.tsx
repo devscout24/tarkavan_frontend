@@ -31,8 +31,9 @@ import CommonBtn from "./common-btn"
 import { useParams, useRouter } from "next/navigation"
 import { bookProgram } from "@/app/(dashboards)/parent/action"
 import { toast } from "sonner"
+import isValidToken from "@/lib/isValid-token"
 
-// ─── Types ────── 
+// ─── Types ──────
 
 type ProgramDateTimeSelectorProps = {
   programStartDate?: string | Date
@@ -44,13 +45,13 @@ type ProgramDateTimeSelectorProps = {
   detailsID: string
   priceToShow?: number
   programid: string
-  slots?: {booking_date: string , booking_time_ids: number[]}[]
+  slots?: { booking_date: string; booking_time_ids: number[] }[]
 }
 
 // date string (YYYY-MM-DD) → set of time IDs selected for that date
 type TSelectedSlots = Record<string, number[]>
 
-// ─── Component ──────────────── 
+// ─── Component ────────────────
 
 export default function ProgramDateTimeSelector({
   programStartDate,
@@ -61,7 +62,7 @@ export default function ProgramDateTimeSelector({
   detailsID,
   programid,
   priceToShow,
-  slots , 
+  slots,
 }: ProgramDateTimeSelectorProps) {
   const params = useParams()
   const child_id = params.child_id
@@ -127,7 +128,9 @@ export default function ProgramDateTimeSelector({
 
   /** Summary badge: "3 slots across 2 dates" */
   const selectionSummary = useMemo(() => {
-    const dateCount = Object.values(selectedSlots).filter((ids) => ids.length > 0).length
+    const dateCount = Object.values(selectedSlots).filter(
+      (ids) => ids.length > 0
+    ).length
     if (totalSelected === 0) return null
     return `${totalSelected} slot${totalSelected > 1 ? "s" : ""} across ${dateCount} date${dateCount > 1 ? "s" : ""} selected`
   }, [selectedSlots, totalSelected])
@@ -158,7 +161,7 @@ export default function ProgramDateTimeSelector({
           program_id: programid,
           month: currentMonth,
         })
-         
+
         if (
           res &&
           "success" in res &&
@@ -224,25 +227,25 @@ export default function ProgramDateTimeSelector({
     getChild()
   }, [])
 
- 
+  // ─── Build booking payload ───────
 
-  // ─── Build booking payload ─────── 
-
- 
   const buildPayload = (athleteProfileId: string | number) => ({
     program_id: Number(detailsID),
     athlete_profile_id: Number(athleteProfileId),
-    slots: 
-    slots && slots.length > 0 ? slots :
-     Object.entries(selectedSlots)
-      .filter(([, ids]) => ids.length > 0)
-      .map(([booking_date, booking_time_ids]) => ({
-        booking_date,
-        booking_time_ids,
-      })),
+    slots:
+      slots && slots.length > 0
+        ? slots
+        : Object.entries(selectedSlots)
+            .filter(([, ids]) => ids.length > 0)
+            .map(([booking_date, booking_time_ids]) => ({
+              booking_date,
+              booking_time_ids,
+            })),
   })
 
   // ─── Booking handlers ─────────────────────────────────────────────────────────
+
+  const token = localStorage.getItem("go_elite_token")
 
   const handleBooking = async (bookBy: "parent" | "player") => {
     // if (totalSelected === 0) {
@@ -250,9 +253,15 @@ export default function ProgramDateTimeSelector({
     //   return
     // }
 
+    if (!token || !isValidToken(token) || !user || user.role === undefined  ) {
+      toast.error("You must be logged in to book a program.")
+      router.push("/auth")
+      return
+    }
+
     const athleteId =
       bookBy === "parent"
-        ? (selectedChildId || child_id)
+        ? selectedChildId || child_id
         : String(currentUser?.profile_id)
 
     if (bookBy === "parent" && !athleteId) {
@@ -264,7 +273,7 @@ export default function ProgramDateTimeSelector({
 
     try {
       setLoading(true)
-      const res = await bookProgram(payload as any) 
+      const res = await bookProgram(payload as any)
       if (res?.status === false && res?.message) {
         toast.error(res.message)
         setLoading(false)
@@ -293,12 +302,13 @@ export default function ProgramDateTimeSelector({
       console.error("Error booking program:", err)
     }
   }
- 
-  // ─── Render ───────────────────────────────────────────────────────────────────
+
+  // ─── Render ─────
+
+  console.log("user", user?.role)
 
   return (
     <div className="mt-4 space-y-6 rounded-2xl bg-white p-4 sm:p-6">
-
       {/* ── Calendar (UI unchanged) ── */}
       <Calendar
         className="[aria-multiselectable='false']:w-stretch! w-full bg-transparent p-0"
@@ -307,7 +317,7 @@ export default function ProgramDateTimeSelector({
         selected={date}
         defaultMonth={startDate}
         onSelect={(d) => {
-          if(slots && slots.length > 0) {
+          if (slots && slots.length > 0) {
             return
           }
           if (d && canSelectDate(d)) {
@@ -341,8 +351,7 @@ export default function ProgramDateTimeSelector({
             "bg-brand! text-white hover:bg-brand/70 hover:text-primary rounded-xl",
           today:
             "bg-[#ECECEC] text-[#272727] rounded-xl data-[selected=true]:bg-[#101010] data-[selected=true]:text-white",
-          outside:
-            "text-[#B7B7B7] line-through aria-selected:text-[#B7B7B7]",
+          outside: "text-[#B7B7B7] line-through aria-selected:text-[#B7B7B7]",
         }}
         onMonthChange={(month) => {
           setCurrentMonth(moment(month).format("YYYY-MM"))
@@ -378,21 +387,18 @@ export default function ProgramDateTimeSelector({
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {availableTimes.map((slot, index) => {
               const isSelected = currentDateIds.includes(slot.id)
-              const isDisabled = !slot.is_available || slot.is_past || slot.is_booked
+              const isDisabled =
+                !slot.is_available || slot.is_past || slot.is_booked
 
               return (
                 <Button
                   key={index}
                   variant="outline"
-                  className={`
-                    relative h-10 rounded-xl bg-white text-sm font-medium text-[#202020]
-                    hover:bg-[#F8F8F8]
-                    ${isDisabled ? "line-through opacity-50" : ""}
-                    ${isSelected
+                  className={`relative h-10 rounded-xl bg-white text-sm font-medium text-[#202020] hover:bg-[#F8F8F8] ${isDisabled ? "line-through opacity-50" : ""} ${
+                    isSelected
                       ? "border-2 border-brand bg-brand/5"
                       : "border border-[#DEDEDE]"
-                    }
-                  `}
+                  } `}
                   onClick={() => !isDisabled && toggleTime(slot)}
                   disabled={isDisabled}
                 >
@@ -515,21 +521,34 @@ export default function ProgramDateTimeSelector({
               </DialogHeader>
             </DialogContent>
           </Dialog>
-        ) : (
-          (user?.role === "player" || Boolean(child_id)) && (
-            <CommonBtn
-              disabled={isOwner}
-              size="lg"
-              variant="outline"
-              className="cursor-pointer h-10 w-fit rounded-xl border-0 bg-brand px-3 text-lg font-medium text-primary hover:bg-brand/80"
-              onClick={() =>
-                child_id ? handleBooking("parent") : handleBooking("player")
-              }
-              isLoading={loading}
-              text={isOwner ? "Can not book own program" : "Proceed to Payment"}
-            />
-          )
-        )}
+        ) : null}
+
+        {user?.role === "player" || Boolean(child_id) ? (
+          <CommonBtn
+            disabled={isOwner}
+            size="lg"
+            variant="outline"
+            className="h-10 w-fit cursor-pointer rounded-xl border-0 bg-brand px-3 text-lg font-medium text-primary hover:bg-brand/80"
+            onClick={() =>
+              child_id ? handleBooking("parent") : handleBooking("player")
+            }
+            isLoading={loading}
+            text={isOwner ? "Can not book own program" : "Proceed to Payment"}
+          />
+        ) : null}
+
+        {!user || user.role === undefined ? (
+          <CommonBtn 
+            size="lg"
+            variant="outline"
+            className="h-10 w-fit cursor-pointer rounded-xl border-0 bg-brand px-3 text-lg font-medium text-primary hover:bg-brand/80"
+            onClick={() =>
+              child_id ? handleBooking("parent") : handleBooking("player")
+            }
+            isLoading={loading}
+            text={"Proceed to Payment"}
+          />
+        ) : null}
       </div>
     </div>
   )

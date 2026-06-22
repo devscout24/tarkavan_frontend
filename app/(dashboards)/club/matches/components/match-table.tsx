@@ -94,7 +94,7 @@ export default function MatchTable({ matchRequests }: { matchRequests: TMatchReq
                 >
                   <div className="flex items-center gap-3">
                     <Image
-                      src={match?.requested_club?.club_logo || "/images/bannerbg.png"}
+                      src={encodeURI(match?.requested_club?.club_logo || "/images/bannerbg.png")}
                       alt={match?.requested_club?.club_name}
                       width={50}
                       height={50}

@@ -135,7 +135,7 @@ export default function AdvertisementParent({
         <Image
           width={1000}
           height={1000}
-          src={imageUrl}
+          src={encodeURI(imageUrl as string)}
           alt="Advertisement"
           className="block h-full w-full object-cover"
         />

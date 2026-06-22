@@ -94,7 +94,7 @@ export default function CoachCardForRecruitment({
       >
         {image && (
           <Image
-            src={image}
+            src={encodeURI(image as string)}
             alt={name || "Coach Image"}
             fill
             className="h-50 object-cover"

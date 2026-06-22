@@ -89,10 +89,10 @@ export default function BookingsTable({ bookings }: BookingsTableProps) {
                   <div className="flex min-w-0 items-center gap-2 xl:gap-3">
                     <Image
                       src={
-                        booking?.athlete?.profile_image?.startsWith("http") ? booking?.athlete?.profile_image : booking?.athlete?.image?.startsWith("http") ? booking?.athlete?.image : "/images/bannerbg.png"
+                        booking?.athlete?.profile_image?.startsWith("http") ? encodeURI(booking?.athlete?.profile_image) : booking?.athlete?.image?.startsWith("http") ? encodeURI(booking?.athlete?.image) : "/images/bannerbg.png"
                       }
                       alt={booking.athlete.name}
-                      width={40}
+                      width={40} 
                       height={40}
                       className="h-8 w-8 rounded-full object-cover xl:h-9 xl:w-9 2xl:h-10 2xl:w-10"
                     />

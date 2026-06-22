@@ -36,7 +36,7 @@ export default function ProgramCard({
     >
       <div className="min-h-50">
         <Image
-          src={image}
+          src={encodeURI(image as string)}
           alt={name || "Coach Image"} 
           width={500}
           height={300}

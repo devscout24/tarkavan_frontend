@@ -169,6 +169,7 @@ export default function PlayerProfile() {
       })
       .filter((item): item is NonNullable<typeof item> => Boolean(item)),
   ]
+ 
 
   return (
     <>

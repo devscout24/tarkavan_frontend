@@ -124,7 +124,7 @@ export default function TeamMemberCard({
     <Card className="gap-0 overflow-hidden rounded-xl border border-white/12 bg-[#060916] p-0 text-white">
       <div className="relative h-46 w-full">
         <Image
-          src={member.profile_image}
+          src={encodeURI(member.profile_image)}
           alt={member.profile_image ?? member.name}
           className="h-46 max-h-46 object-cover"
           width={1000}

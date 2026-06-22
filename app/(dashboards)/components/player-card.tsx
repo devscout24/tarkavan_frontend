@@ -54,7 +54,7 @@ export default function PlayerCard({
       >
         {image && (
           <Image
-            src={image}
+            src={encodeURI(image as string)}
             alt={name || "Player Image"} 
             width={500}
             height={300}

@@ -94,7 +94,7 @@ export default function ChatInbox({
         <Image
           width={1000}
           height={1000}
-          src={chat?.user_image || "/images/coach.png"}
+          src={encodeURI(chat?.user_image as string) || "/images/coach.png"}
           alt={chat?.user_name || "Chat avatar"}
           className="h-10 w-10 rounded-lg object-cover"
         />
@@ -124,7 +124,7 @@ export default function ChatInbox({
                     <Image
                       width={1000}
                       height={1000}
-                      src={ message?.sender_image || "/images/coach.png"}
+                      src={encodeURI(message?.sender_image as string) || "/images/coach.png"}
                       alt={chat?.user_name || "Chat avatar"}
                       className="mt-1 h-4 w-4 rounded-md object-cover"
                     />
@@ -215,7 +215,7 @@ export default function ChatInbox({
                 >
                   {fileType === "image" && (
                     <Image
-                      src={file.url}
+                      src={encodeURI(file.url)}
                       alt={file.name}
                       width={1000}
                       height={1000}

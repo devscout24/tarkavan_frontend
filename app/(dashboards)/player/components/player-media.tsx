@@ -398,10 +398,10 @@ export default function PlayerMedia({
                                   rel="noopener noreferrer"
                                   className="block"
                                 >
-                                  <div className="flex h-11 min-w-[80px] items-center justify-center rounded-lg border border-border bg-background/40 px-3">
+                                  <div className="flex h-11 min-w-20 items-center justify-center rounded-lg border border-border bg-background/40 px-3">
                                     <div className="flex items-center gap-1">
                                       <Globe className="h-3.5 w-3.5 text-primary" />
-                                      <span className="max-w-[50px] truncate text-[10px] text-muted-foreground">
+                                      <span className="max-w-12.5 truncate text-[10px] text-muted-foreground">
                                         {getHostname(link)}
                                       </span>
                                     </div>
@@ -435,7 +435,7 @@ export default function PlayerMedia({
                       text="Save Links"
                       onClick={handleUploadMediaLinks}
                       isLoading={loading}
-                      disabled={loading || modallinks.some((link) => !link.trim())}
+                      disabled={loading}
                       className="cursor-pointer bg-brand text-primary hover:bg-brand w-fit px-2 border-0"
                     />
                   </div>
@@ -452,6 +452,7 @@ export default function PlayerMedia({
             className="w-fit cursor-pointer border-2 border-white/50 bg-secondary/70 px-4 text-base"
             icon={<Upload />}
             isLoading={loading}
+            disabled={loading}
           />
         </div>
       </CardHeader>

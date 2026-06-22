@@ -304,8 +304,7 @@ export default function ProgramDateTimeSelector({
   }
 
   // ─── Render ─────
-
-  console.log("user", user?.role)
+ 
 
   return (
     <div className="mt-4 space-y-6 rounded-2xl bg-white p-4 sm:p-6">

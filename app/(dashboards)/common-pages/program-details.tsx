@@ -75,6 +75,9 @@ export default function ProgramDetailsPage() {
     }
   }, [id])
 
+ 
+
+
   return (
     <section className="text-white">
       {/* BACK BUTTON */}

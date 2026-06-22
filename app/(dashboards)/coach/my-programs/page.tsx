@@ -104,8 +104,7 @@ export default function UpcomingEventPage() {
     const fetchPrograms = async () => {
       try {
         setIsLoading(true)
-        const response = await getCoachProgramList(filter)
-        console.log("getCoachProgramList response:", response)
+        const response = await getCoachProgramList(filter) 
         const res = response as any
         if (res && res.success && res.data?.data) {
           setPrograms(res.data.data.programs || [])

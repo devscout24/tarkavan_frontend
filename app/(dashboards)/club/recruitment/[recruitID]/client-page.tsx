@@ -139,9 +139,9 @@ export default function ClubRecruitmentClientPage() {
                   >
                     <Image
                       src={
-                        data?.profile_image || "https://github.com/shadcn.png"
+                        encodeURI(data?.profile_image || "/images/bannerbg.png")
                       }
-                      alt="https://github.com/shadcn.png"
+                      alt={encodeURI(data?.profile_image || "/images/bannerbg.png")}
                       width={100}
                       height={100}
                       className="max-h-12.5 min-h-12.5 max-w-12.5 min-w-12.5 rounded-full"

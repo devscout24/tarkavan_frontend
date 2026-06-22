@@ -71,6 +71,7 @@ export default function Page() {
     const token = typeof window !== "undefined" ? localStorage.getItem("go_elite_token") : null;
 
  
+ 
 
     return (
       <section>
@@ -89,7 +90,7 @@ export default function Page() {
           <div className="sticky top-24">
             <CoachProfileCard
               basic_info={{
-                image: data?.profile?.profile_image,
+                image: encodeURI(data?.profile?.profile_image) || "/images/bannerbg.png" ,
                 name: data?.profile?.name,
                 age: data?.profile?.age,
                 city: data?.profile?.city,

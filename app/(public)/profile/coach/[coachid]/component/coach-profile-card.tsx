@@ -23,36 +23,7 @@ export default function CoachProfileCard({
         <div className="absolute top-4 left-4 z-10 rounded-md bg-brand px-3 py-1 text-sm font-semibold text-primary italic">
           JERSEY #{position_info?.jersey_number}
         </div>
-      )}
-
-      {/* stars */}
-      <div className=" absolute top-0 right-0 z-2 flex w-full flex-col items-end justify-end gap-2 px-5 pt-5">
-        {/* provincial votes */}
-        {/* <HoverCard openDelay={0}>
-          <HoverCardTrigger className="relative">
-            <FaStar className="text-7xl text-yellow-500" />
-            <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
-              {provincialVotes}
-            </span>
-          </HoverCardTrigger>
-          <HoverCardContent>
-            Provincial Team Votes: {provincialVotes} votes
-          </HoverCardContent>
-        </HoverCard> */}
-
-        {/* Professional Academy Votess */}
-        {/* <HoverCard openDelay={0}>
-          <HoverCardTrigger className="relative">
-            <FaStar className="text-7xl text-red-500" />
-            <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
-              {academyVotes}
-            </span>
-          </HoverCardTrigger>
-          <HoverCardContent>
-            Professional Academy Votes: {academyVotes} votes
-          </HoverCardContent>
-        </HoverCard> */}
-      </div>
+      )} 
 
       <div className="relative max-h-170 w-full">
         <Image

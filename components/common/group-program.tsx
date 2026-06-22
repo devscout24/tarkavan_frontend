@@ -58,14 +58,35 @@ const fieldCls =
 const selectCls =
     "mt-1 w-full border-neutral-700 bg-neutral-800 py-5 text-white data-[placeholder]:text-neutral-300"
 
-// ─── Time helpers ─────────────────────────────────────────────────────────────
+type TTimeParts = { hour: string; minute: string; period: "AM" | "PM" }
+
+const defaultTimeParts: TTimeParts = { hour: "12", minute: "00", period: "AM" }
 
 /**
- * Convert "HH:mm" (24-hr) → { hour, minute, period }
- * Used when loading existing program data from the server.
+ * Parse a time string that is already in AM/PM format.
+ * Handles formats like:
+ *   "12:00AM"  "04:00AM"  "02:00PM"  "2:30PM"
  */
-function from24(time: string): { hour: string; minute: string; period: "AM" | "PM" } {
-    if (!time) return { hour: "12", minute: "00", period: "AM" }
+function fromAmPmStr(time: string): TTimeParts {
+    if (!time) return defaultTimeParts
+
+    // Match optional leading digits, colon, minutes, then AM/PM
+    const match = time.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i)
+    if (!match) return defaultTimeParts
+
+    const hour = String(parseInt(match[1], 10)) // remove leading zero for Select value
+    const minute = match[2]
+    const period = match[3].toUpperCase() as "AM" | "PM"
+
+    return { hour, minute, period }
+}
+
+/**
+ * Parse a 24-hour time string ("HH:MM") into AM/PM parts.
+ * Used as a fallback when the API does provide start_time / end_time.
+ */
+function from24(time: string): TTimeParts {
+    if (!time) return defaultTimeParts
     const [hStr, mStr] = time.split(":")
     let h = parseInt(hStr, 10)
     const period: "AM" | "PM" = h >= 12 ? "PM" : "AM"
@@ -75,15 +96,40 @@ function from24(time: string): { hour: string; minute: string; period: "AM" | "P
 }
 
 /**
- * Format { hour, minute, period } → "02:00AM" for the API.
+ * Resolve start/end time parts from a times array entry.
+ * Priority:
+ *   1. Parse the `time` field ("12:00AM-04:00AM") — most reliable
+ *   2. Fall back to start_time / end_time (24-hr) if time field is absent
+ */
+function resolveTimeParts(
+    timeEntry: { time?: string | null; start_time?: string | null; end_time?: string | null } | undefined
+): { start: TTimeParts; end: TTimeParts } {
+    if (!timeEntry) return { start: defaultTimeParts, end: defaultTimeParts }
+
+    // Preferred: parse the composite "time" field, e.g. "12:00AM-04:00AM"
+    if (timeEntry.time) {
+        const parts = timeEntry.time.split("-")
+        if (parts.length === 2) {
+            return {
+                start: fromAmPmStr(parts[0]),
+                end: fromAmPmStr(parts[1]),
+            }
+        }
+    }
+
+    // Fallback: use start_time / end_time (24-hr format)
+    return {
+        start: timeEntry.start_time ? from24(timeEntry.start_time) : defaultTimeParts,
+        end: timeEntry.end_time ? from24(timeEntry.end_time) : defaultTimeParts,
+    }
+}
+
+/**
+ * Serialize AM/PM parts back to the format the API expects: "02:00AM"
  */
 function toAmPmString(hour: string, minute: string, period: "AM" | "PM"): string {
     return `${String(hour).padStart(2, "0")}:${minute}${period}`
 }
-
-type TTimeParts = { hour: string; minute: string; period: "AM" | "PM" }
-
-const defaultTimeParts: TTimeParts = { hour: "12", minute: "00", period: "AM" }
 
 // ─── AM/PM Time Picker Component ─────────────────────────────────────────────
 function AmPmTimePicker({
@@ -208,6 +254,7 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
         getProgramDetails(String(editId))
             .then((res: any) => {
                 const p = res?.data?.data
+ 
                 if (!p) {
                     toast.error("Failed to load program data")
                     return
@@ -216,14 +263,17 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
                 const firstTime = p.times?.[0]
                 setProgramType(p.program_type)
 
-                // Populate AM/PM pickers from saved 24-hr strings
-                if (firstTime?.start_time) setStartTime(from24(firstTime.start_time))
-                if (firstTime?.end_time) setEndTime(from24(firstTime.end_time))
+                // Resolve time parts from the first slot.
+                // resolveTimeParts prefers the composite `time` field ("12:00AM-04:00AM")
+                // and falls back to start_time / end_time (24-hr) when available.
+                const { start, end } = resolveTimeParts(firstTime)
+                setStartTime(start)
+                setEndTime(end)
 
                 setForm({
                     sport: p.sport || "",
                     name: p.program_name || "",
-                    ageGroup: p.age_limit ? String(p.age_limit) : "",
+                    ageGroup: p.age_group || (p.age_limit ? String(p.age_limit) : ""),
                     price: p.price ? String(p.price) : "",
                     discountPrice: p.discount_price ? String(p.discount_price) : "",
                     location: p.location || "",
@@ -250,8 +300,8 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
         const formData = new FormData()
 
         // Format as "02:00AM" / "03:00PM" for the API
-        const start24 = toAmPmString(startTime.hour, startTime.minute, startTime.period)
-        const end24 = toAmPmString(endTime.hour, endTime.minute, endTime.period)
+        const startAmPm = toAmPmString(startTime.hour, startTime.minute, startTime.period)
+        const endAmPm = toAmPmString(endTime.hour, endTime.minute, endTime.period)
 
         const fields: Record<string, string> = {
             sport: form.sport,
@@ -270,8 +320,8 @@ const GroupProgram: React.FC<{ setProgramType: (type: "group" | "one-on-one") =>
 
         Object.entries(fields).forEach(([k, v]) => formData.append(k, v))
 
-        if (start24 && end24) {
-            formData.append("program_times[0]", `${start24}-${end24}`)
+        if (startAmPm && endAmPm) {
+            formData.append("program_times[0]", `${startAmPm}-${endAmPm}`)
         }
 
         form.goals

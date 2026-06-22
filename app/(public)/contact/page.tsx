@@ -65,7 +65,7 @@ export default function ContactForm() {
       form.append("message", formData.message)
 
       const res = await submitContact(form)
-      console.log(res)
+ 
 
       const response = res as TContactMessageResponse
 

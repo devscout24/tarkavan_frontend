@@ -108,7 +108,7 @@ export default function ProgramCard({
         <Image
           width={1000}
           height={1000}
-          src={imageSrc || "/images/bannerbg.png"}
+          src={encodeURI(imageSrc as string) || "/images/bannerbg.png"}
           alt={imageAlt}
           className="h-full w-full object-contain"
         />

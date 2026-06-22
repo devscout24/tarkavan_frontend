@@ -59,7 +59,8 @@ interface Program {
   times: ProgramTime[]
   goals: ProgramGoal[]
   start_date: string
-  end_date: string
+  end_date: string 
+  provider: {name: string}
 }
 
 interface ProgramsData {
@@ -87,6 +88,7 @@ interface ProgramsData {
     active: number
     inactive: number
   }
+  provder: {name: string}
 } 
 export default function UpcomingEventPage() {
   const router = useRouter() 
@@ -155,7 +157,7 @@ export default function UpcomingEventPage() {
       window.removeEventListener('programDeleted', handleDashboardRefresh)
     }
   }, [])
-
+ 
  
 
   return (
@@ -200,7 +202,7 @@ export default function UpcomingEventPage() {
 
               <p className="mt-2 flex items-center gap-2 text-sm font-normal text-primary! sm:text-base">
                 <UserRound className="size-4" />
-                Coach: {programsData.latest_upcoming_program.coach_name}
+                Coach: {programsData.latest_upcoming_program.provider.name}
               </p>
 
               <div className="mt-4 flex gap-3 text-primary! md:mt-5 md:gap-8">
@@ -208,17 +210,17 @@ export default function UpcomingEventPage() {
                   <p className="text-sm font-normal text-primary/50! sm:text-base">
                     Schedule
                   </p>
-                  <p className="text-sm font-normal text-primary! sm:text-base lg:text-lg"> 
-                    {moment(programsData.latest_upcoming_program.start_date).add(3, 'days').calendar()}
+                  <p className="text-sm font-normal text-primary! sm:text-base lg:text-lg">  
+                    {moment(programsData.latest_upcoming_program.start_date).format("MMM Do YY")}
                   </p>
                 </div>
 
                 <div>
                   <p className="text-sm font-normal text-primary/50! sm:text-base">
-                    Next Session
+                    Location
                   </p>
                   <p className="text-sm font-normal text-primary! sm:text-base lg:text-lg">
-                    {moment(programsData.latest_upcoming_program.program_end).format("MMM Do YY")}
+                    {programsData.latest_upcoming_program.location}
                   </p>
                 </div>
               </div>
@@ -269,7 +271,7 @@ export default function UpcomingEventPage() {
               title={program.program_name}
               type={`Age U${program?.age_limit == program?.from_age || program?.from_age == null ? program?.age_limit : `${program?.from_age} - U${program?.age_limit}`}`}
               schedule={program.location}
-              duration={`${moment(program.program_start).format("MMM Do YY") } - ${moment(program.program_end).format("MMM Do YY")}`}
+              duration={`${moment(program.start_date).format("MMM Do YY") } - ${moment(program.end_date).format("MMM Do YY")}`}
               currentPrice={program.price ? `${program.price - program.discount_price  }` : `${program.program_price}`}
               previousPrice={String(program.discount_price + program.price )}
               imageSrc={program.photo}

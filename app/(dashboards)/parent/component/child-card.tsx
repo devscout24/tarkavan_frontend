@@ -116,7 +116,7 @@ export default function ChildCard({
         <Image
           width={1000}
           height={1000}
-          src={imageUrl}
+          src={encodeURI(imageUrl)}
           alt={name}
           className="block h-full max-h-45 w-full object-contain lg:max-h-40 xl:max-h-45"
         />

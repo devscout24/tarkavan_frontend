@@ -70,7 +70,7 @@ export default function ConnectStripe({}: {}) {
       formData.append("country", stripeData.country)
       
       const res = await submitStripeData(formData) 
-
+ 
       const response = res as TStripeAccountResponse
 
       if (response.data.status) {

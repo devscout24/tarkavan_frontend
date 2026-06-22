@@ -94,7 +94,7 @@ export default function TeamCard({
     >
       <div className="relative h-48 w-full">
         <Image
-          src={imageSrc?.includes("http") ? imageSrc : "/images/player1.png"}
+          src={imageSrc?.includes("http") ? encodeURI(imageSrc) : "/images/player1.png"}
           alt={imageAlt}
           fill
           className="object-cover"

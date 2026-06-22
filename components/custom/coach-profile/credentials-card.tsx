@@ -98,7 +98,7 @@ export default function CredentialsCard(
             onClick={(e) => e.stopPropagation()}
           >
             <Image
-              src={coach_media[activeIndex].image}
+              src={encodeURI(coach_media[activeIndex].image)}
               alt="preview"
               width={700}
               height={700}
@@ -122,7 +122,7 @@ export default function CredentialsCard(
             {coach_media.map((media, index) => (
               <Image
                 key={media.id}
-                src={media.image}
+                src={encodeURI(media.image)}
                 alt="thumb"
                 width={60}
                 height={60}

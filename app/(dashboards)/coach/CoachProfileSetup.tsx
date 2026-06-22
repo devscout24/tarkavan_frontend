@@ -489,7 +489,7 @@ export default function CoachProfileSetup({
       try {
         const result: CoachProfileApiResult = await createOrUpdateCoachProfile(
           convertToFormData(formData)
-        )
+        ) 
         if (result.success) {
           toast.success(
             result.message ||
@@ -571,7 +571,7 @@ export default function CoachProfileSetup({
                       style={{ width: 120, height: 120 }}
                     >
                       <Image
-                        src={previewUrl}
+                        src={encodeURI(previewUrl)}
                         alt="Selected coach profile"
                         fill
                         className="object-cover transition-transform duration-200 group-hover:scale-105"

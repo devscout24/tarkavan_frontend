@@ -49,41 +49,58 @@ const defaultTimeParts: TTimeParts = { hour: "12", minute: "00", period: "AM" }
 /**
  * "HH:mm" (24-hr from server) → TTimeParts
  */
-function from24(time: string): TTimeParts {
-  if (!time) return { ...defaultTimeParts }
-
-  const match = time.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i)
-
-  if (match) {
+function from24(time?: string | null): TTimeParts {
+  if (!time) {
     return {
-      hour: match[1],
-      minute: match[2],
-      period: match[3].toUpperCase() as "AM" | "PM",
+      hour: "12",
+      minute: "00",
+      period: "AM",
     }
   }
 
-  const [hStr, mStr] = time.split(":")
-  let h = parseInt(hStr, 10)
+  const value = time.trim().toUpperCase()
 
-  const period: "AM" | "PM" = h >= 12 ? "PM" : "AM"
+  // 02:00 AM
+  const ampmMatch = value.match(/^(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)$/)
 
-  if (h === 0) h = 12
-  else if (h > 12) h -= 12
+  if (ampmMatch) {
+    return {
+      hour: String(Number(ampmMatch[1])),
+      minute: ampmMatch[2],
+      period: ampmMatch[3] as "AM" | "PM",
+    }
+  }
+
+  // 14:00
+  const twentyFourMatch = value.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/)
+
+  if (twentyFourMatch) {
+    const h24 = Number(twentyFourMatch[1])
+
+    let h12 = h24 % 12
+
+    if (h12 === 0) h12 = 12
+
+    return {
+      hour: String(h12),
+      minute: twentyFourMatch[2],
+      period: h24 >= 12 ? "PM" : "AM",
+    }
+  }
 
   return {
-    hour: String(h),
-    minute: mStr || "00",
-    period,
+    hour: "12",
+    minute: "00",
+    period: "AM",
   }
 }
 
 /**
  * TTimeParts → "02:00AM" for the API
  */
-function toAmPmString({ hour, minute, period }: TTimeParts): string {
-  const cleanMinute = minute.replace(/\s*(AM|PM)$/i, "")
 
-  return `${String(hour).padStart(2, "0")}:${cleanMinute} ${period}`
+function toAmPmString({ hour, minute, period }: TTimeParts): string {
+  return `${hour.padStart(2, "0")}:${minute.padStart(2, "0")} ${period}`
 }
 
 /**
@@ -127,20 +144,10 @@ function AmPmTimePicker({
   onChange: (v: TTimeParts) => void
 }) {
   const hours = Array.from({ length: 12 }, (_, i) => String(i + 1))
-  const minutes = [
-    "00",
-    "05",
-    "10",
-    "15",
-    "20",
-    "25",
-    "30",
-    "35",
-    "40",
-    "45",
-    "50",
-    "55",
-  ]
+
+  const minutes = Array.from({ length: 60 }, (_, i) =>
+    String(i).padStart(2, "0")
+  )
 
   const selectCls =
     "border-neutral-700 bg-neutral-800 text-white h-9 px-2 rounded-md border text-sm focus:outline-none focus:ring-1 focus:ring-brand"
@@ -282,12 +289,6 @@ const OneonOneProgram: React.FC<{
       return { ...p, timeSlots }
     })
 
-  /**
-   * Add a new time range to slot `si`.
-   * If a valid duration (minutes) is set, the new range starts right after
-   * the last end time and ends `duration` minutes later.
-   * Otherwise a blank range is added.
-   */
   const addTimeRange = (si: number) => {
     setForm((p) => {
       const timeSlots = [...p.timeSlots]
@@ -353,6 +354,7 @@ const OneonOneProgram: React.FC<{
     getProgramDetails(String(editId))
       .then((res: any) => {
         const p = res?.data?.data
+
         if (!p) {
           toast.error("Failed to load program data")
           return
@@ -360,24 +362,32 @@ const OneonOneProgram: React.FC<{
         setProgramType(p.program_type)
 
         // Group flat times array by slot_date
+
         const groupedSlots: TTimeSlot[] = (() => {
-          if (!p.times?.length) return [{ date: "", times: [emptyTimeRange()] }]
+          if (!p?.times?.length) {
+            return [
+              {
+                date: "",
+                times: [emptyTimeRange()],
+              },
+            ]
+          }
 
           const grouped: Record<string, TTimeRange[]> = {}
-          p.times.forEach(
-            (t: {
-              slot_date: string | null
-              start_time: string | null
-              end_time: string | null
-            }) => {
-              const key = t.slot_date || ""
-              if (!grouped[key]) grouped[key] = []
-              grouped[key].push({
-                start: from24(t.start_time || ""),
-                end: from24(t.end_time || ""),
-              })
+
+          p.times.forEach((t: any) => {
+            const date = t.slot_date || ""
+
+            if (!grouped[date]) {
+              grouped[date] = []
             }
-          )
+
+            grouped[date].push({
+              start: from24(t.start_time),
+              end: from24(t.end_time),
+            })
+          })
+
           return Object.entries(grouped).map(([date, times]) => ({
             date,
             times,
@@ -432,10 +442,9 @@ const OneonOneProgram: React.FC<{
     form.timeSlots.forEach((slot) => {
       if (!slot.date) return
 
-      slot.times.forEach((t) => { 
-
+      slot.times.forEach((t) => {
         const startStr = toAmPmString(t.start)
-        const endStr = toAmPmString(t.end) 
+        const endStr = toAmPmString(t.end)
         if (!startStr || !endStr) return
         formData.append(`program_times[${idx}][slot_date]`, slot.date)
         formData.append(`program_times[${idx}][start_time]`, startStr)

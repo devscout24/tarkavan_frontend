@@ -49,7 +49,7 @@ export default function CoachCard({
       >
         {image && (
           <Image
-            src={image}
+            src={encodeURI(image as string)}
             alt={name || "Coach Image"}
             width={500}
             height={300}

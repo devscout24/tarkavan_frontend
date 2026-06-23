@@ -29,7 +29,7 @@ export default function ProspectCard({
         <Image
           width={500}
           height={1000}
-          src={basic_info?.image}
+          src={encodeURI(basic_info?.image)}
           alt="playerimage"
           className="h-full min-h-140 max-h-140 w-full rounded-lg object-cover"
         />

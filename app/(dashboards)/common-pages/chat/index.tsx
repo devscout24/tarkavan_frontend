@@ -265,6 +265,8 @@ export default function MessagePage() {
     }
   }, [chatList, conversationID, initialReceiver])
 
+  
+
   return (
     <section className="flex h-[90dvh] min-h-0 flex-col p-3">
       <div className="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">

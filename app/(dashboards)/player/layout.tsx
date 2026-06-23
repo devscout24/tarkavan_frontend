@@ -37,9 +37,9 @@ import AuthCheckPoint from "@/components/auth/auth-checkopoint"
 import Modals from "@/components/common/modal"
 import { useEffect } from "react"
 import { getPlayerProfile } from "./profile/action"
-import { useAppDispatch } from "@/lib/hooks"
-import { setUserImage } from "@/lib/features/userSlice"
-
+import { useAppDispatch, useAppSelector } from "@/lib/hooks"
+import { selectUnreadCount, setUnreadCount, setUserImage } from "@/lib/features/userSlice"
+import { getUnreadCount } from "../action"
 
 export default function PlayerDashboardLayout({
   children,
@@ -97,6 +97,7 @@ export default function PlayerDashboardLayout({
 
   const pathname = usePathname()
   const dispatch = useAppDispatch()
+  const unread = useAppSelector(selectUnreadCount)
 
   useEffect(() => {
     const profileData = async () => {
@@ -128,12 +129,32 @@ export default function PlayerDashboardLayout({
     profileData()
   }, [dispatch])
 
+  useEffect(() => {
+    const getUnreadData = async () => {
+      try {
+        const res = await getUnreadCount()
+
+        console.log("unread count", res)
+
+        if (res && res.status) {
+          dispatch(setUnreadCount(res.data))
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    getUnreadData()
+  }, [dispatch])
+
   return (
     <TooltipProvider>
       <AuthCheckPoint role="player">
         <Modals />
         <SidebarProvider className="h-screen overflow-hidden">
-          <Sidebar collapsible="icon" className="relative border-secondary bg-primary  ">
+          <Sidebar
+            collapsible="icon"
+            className="relative border-secondary bg-primary"
+          >
             <Image
               src={"/images/sidebarbg.png"}
               width={1000}
@@ -190,11 +211,16 @@ export default function PlayerDashboardLayout({
                             >
                               {item.icon && <item.icon />}
 
-                              <span
-                                className={`${pathname == item.url ? "text-bold text-white" : ""}`}
-                              >
-                                {item.title}
-                              </span>
+                        <p
+                          className={`${pathname == item.url ? "text-bold text-white" : ""} w-full  flex items-center justify-between`}
+                        >
+                          <span>{item.title}</span>
+                          {item.title === "Messages" && unread > 0 && (
+                            <span className="h-5! w-5! grid place-items-center rounded-full bg-brand  px-1.5 text-xs text-primary ml-auto  ">
+                              {unread}
+                            </span>
+                          )}
+                        </p>
                             </SidebarMenuButton>
                           </Link>
                         </CollapsibleTrigger>

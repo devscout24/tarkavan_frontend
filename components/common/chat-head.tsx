@@ -4,6 +4,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { TChatItem } from "@/types"
 import moment from "moment"
+import { markAsRead } from "@/app/(dashboards)/common-pages/chat/action"
+import { useAppDispatch, useAppSelector } from "@/lib/hooks"
+import { selectUnreadCount, setUnreadCount } from "@/lib/features/userSlice"
 
 const getChatIdentity = (chat: TChatItem) =>
   String(chat.receiver_id || chat.chat_id)
@@ -33,6 +36,8 @@ export default function ChatHead({
 }: ChatHeadProps) {
   const visibleChats = React.useMemo(() => dedupeChats(chats), [chats])
 
+ 
+
   return (
     <div className="h-fit overflow-hidden rounded-2xl border border-white/15 text-white lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
       <div className="border-b border-white/10 px-4 py-2 md:px-6 lg:py-5">
@@ -55,9 +60,10 @@ export default function ChatHead({
                   ? "bg-white/8"
                   : "bg-transparent hover:bg-white/5"
               )}
-              onClick={() => {
+              onClick={async () => {
                 onSelectChat(getChatIdentity(chat))
                 setConversationID(chat.conversation_id)
+                await markAsRead(chat.conversation_id) 
               }}
             >
               {String(activeChatId) === getChatIdentity(chat) ? (
@@ -94,9 +100,10 @@ export default function ChatHead({
                   </div>
 
                   <p
-                    className={cn("mt-1 truncate text-[12px] text-secondary!")}
+                    className={cn("mt-1 truncate text-[12px] text-secondary! flex items-center justify-between   ")}
                   >
                     {chat.message}
+                    {chat.unread_count > 0 ? <div className="w-2 h-2 bg-brand rounded-full "  /> : null}
                   </p>
                 </div>
               </div>

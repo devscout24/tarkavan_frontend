@@ -14,7 +14,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/animate-ui/components/radix/sidebar"
-import {  CreditCard, Settings } from "lucide-react"
+import { CreditCard, Settings } from "lucide-react"
 import {
   RiDashboardFill,
   RiLogoutCircleRLine,
@@ -32,10 +32,11 @@ import Image from "next/image"
 import Logo from "@/components/common/logo"
 import MenuBtn from "@/components/custom/menu-btn"
 import Link from "next/link"
-import AuthCheckPoint from "@/components/auth/auth-checkopoint" 
-import { useAppDispatch } from "@/lib/hooks"
+import AuthCheckPoint from "@/components/auth/auth-checkopoint"
+import { useAppDispatch, useAppSelector } from "@/lib/hooks"
 import { useEffect } from "react"
-import { setUserImage } from "@/lib/features/userSlice"
+import { selectUnreadCount, setUnreadCount, setUserImage } from "@/lib/features/userSlice"
+import { getUnreadCount } from "../action"
 
 const MessagesNavIcon = ({ className }: { className?: string }) => (
   <Image
@@ -72,12 +73,7 @@ export default function ParentDashboardLayout({
         title: "Programs",
         url: "/parent/programs",
         icon: FaGraduationCap,
-      },
-      // {
-      //   title: "Upcoming events",
-      //   url: "/parent/upcoming-events",
-      //   icon: Calendars,
-      // },
+      }, 
       {
         title: "Search & Explore",
         url: "/parent/search-explore",
@@ -104,10 +100,28 @@ export default function ParentDashboardLayout({
   const pathname = usePathname()
   const router = useRouter()
   const dispatch = useAppDispatch()
-  
+  const unread = useAppSelector(selectUnreadCount)
+
   useEffect(() => {
-    dispatch(setUserImage("")) 
-  } ,  [])
+    dispatch(setUserImage(""))
+  }, [])
+
+  useEffect(() => {
+    const getUnreadData = async () => {
+      try {
+        const res = await getUnreadCount()
+
+        console.log("unread count", res)
+
+        if (res && res.status) {
+          dispatch(setUnreadCount(res.data))
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    getUnreadData()
+  }, [dispatch])
 
   return (
     <AuthCheckPoint role="parent">
@@ -177,11 +191,16 @@ export default function ParentDashboardLayout({
                             }
                           />
                         )}
-                        <span
-                          className={`${pathname == item.url ? "text-bold text-white" : ""}`}
+                        <p
+                          className={`${pathname == item.url ? "text-bold text-white" : ""} w-full  flex items-center justify-between`}
                         >
-                          {item.title}
-                        </span>
+                          <span>{item.title}</span>
+                          {item.title === "Messages" && unread > 0 && (
+                            <span className="h-5! w-5! grid place-items-center rounded-full bg-brand  px-1.5 text-xs text-primary ml-auto  ">
+                              {unread}
+                            </span>
+                          )}
+                        </p>
                       </SidebarMenuButton>
                     </Link>
                   </SidebarMenuItem>

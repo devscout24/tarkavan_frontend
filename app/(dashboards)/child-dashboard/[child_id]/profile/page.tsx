@@ -211,7 +211,12 @@ export default function ChildProfile() {
           />
           <Bio description={String(playerData?.basic_info?.biography)} />
           <Achievements achievements={playerData?.achievements} />
-          <SocialLinks />
+          <SocialLinks
+            profileUrl="profile/player"
+            facebookUrl={playerData?.basic_info?.facebook_link}
+            twitterUrl={playerData?.basic_info?.twitter_link}
+            whatsappUrl={playerData?.basic_info?.whatsapp_link}
+          />
         </div>
         <div className="flex-7">
           {/* position mapping */}

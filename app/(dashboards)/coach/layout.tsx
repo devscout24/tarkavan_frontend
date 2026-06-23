@@ -36,9 +36,15 @@ import Link from "next/link"
 import AuthCheckPoint from "@/components/auth/auth-checkopoint"
 import { getApiBaseUrl } from "@/lib/url-utils"
 import { useEffect } from "react"
-import { useAppDispatch } from "@/lib/hooks"
-import { setIssubscription_active, setUserImage } from "@/lib/features/userSlice"
+import { useAppDispatch, useAppSelector } from "@/lib/hooks"
+import {
+  selectUnreadCount,
+  setIssubscription_active,
+  setUnreadCount,
+  setUserImage,
+} from "@/lib/features/userSlice"
 import { CiCreditCard2 } from "react-icons/ci"
+import { getUnreadCount } from "../action"
 
 const EarningsNavIcon = ({ className }: { className?: string }) => (
   <Image
@@ -63,6 +69,56 @@ const MessagesNavIcon = ({ className }: { className?: string }) => (
 export default function ParentDashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const pathname = usePathname()
+  const dispatch = useAppDispatch()
+
+  const unread = useAppSelector(selectUnreadCount)
+
+  useEffect(() => {
+    const fetchExperienceData = async () => {
+      try {
+        const token = localStorage.getItem("go_elite_token")
+        const baseUrl = getApiBaseUrl()
+
+        const response = await fetch(`${baseUrl}/coach/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })
+
+        if (response.ok) {
+          const result = await response.json()
+          dispatch(setUserImage(result?.data?.profile?.profile_image))
+          dispatch(
+            setIssubscription_active(result?.data?.is_subscription_active)
+          )
+        }
+      } catch (error) {
+        console.error("Error fetching experience data:", error)
+      }
+    }
+
+    fetchExperienceData()
+  }, [])
+
+  useEffect(() => {
+    const getUnreadData = async () => {
+      try {
+        const res = await getUnreadCount()
+
+        console.log("unread count", res)
+
+        if (res && res.status) {
+          dispatch(setUnreadCount(res.data))
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    getUnreadData()
+  }, [dispatch])
+
   const DATA = {
     user: {
       name: "Skyleen",
@@ -107,7 +163,7 @@ export default function ParentDashboardLayout({
         icon: CiCreditCard2,
       },
       {
-        title: "Messages",
+        title: `Messages`,
         url: "/coach/messages",
         icon: MessagesNavIcon,
       },
@@ -119,40 +175,14 @@ export default function ParentDashboardLayout({
     ],
   }
 
-  const pathname = usePathname()
-  const dispatch = useAppDispatch()
-
-  useEffect(() => {
-    const fetchExperienceData = async () => {
-      try {
-        const token = localStorage.getItem("go_elite_token")
-        const baseUrl = getApiBaseUrl()
-
-        const response = await fetch(`${baseUrl}/coach/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        })
-
-        if (response.ok) {
-          const result = await response.json()
-          dispatch(setUserImage(result?.data?.profile?.profile_image))
-          dispatch(setIssubscription_active(result?.data?.is_subscription_active))
-        }
-      } catch (error) {
-        console.error("Error fetching experience data:", error)
-      }
-    }
-
-    fetchExperienceData()
-  }, [])
-
   return (
     <AuthCheckPoint role="coach">
       <SidebarProvider className={` `}>
         <Modals />
-        <Sidebar collapsible="icon" className="relative border-secondary bg-primary  ">
+        <Sidebar
+          collapsible="icon"
+          className="relative border-secondary bg-primary"
+        >
           <Image
             width={1000}
             height={1000}
@@ -191,10 +221,6 @@ export default function ParentDashboardLayout({
           </SidebarHeader>
 
           <SidebarContent className=" ">
-            {/* Sidebar Search */}
-            {/* <SidebarSearch /> */}
-            {/* Sidebar Search */}
-
             {/* navs */}
             <SidebarGroup>
               <SidebarMenu>
@@ -217,11 +243,16 @@ export default function ParentDashboardLayout({
                             }
                           />
                         )}
-                        <span
-                          className={`${pathname == item.url ? "text-bold text-white" : ""}`}
+                        <p
+                          className={`${pathname == item.url ? "text-bold text-white" : ""} w-full  flex items-center justify-between`}
                         >
-                          {item.title}
-                        </span>
+                          <span>{item.title}</span>
+                          {item.title === "Messages" && unread > 0 && (
+                            <span className="h-5! w-5! grid place-items-center rounded-full bg-brand  px-1.5 text-xs text-primary ml-auto  ">
+                              {unread}
+                            </span>
+                          )}
+                        </p>
                       </SidebarMenuButton>
                     </Link>
                   </SidebarMenuItem>

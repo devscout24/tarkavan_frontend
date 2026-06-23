@@ -261,6 +261,24 @@ export async function deleteAccount() {
   }
 }
 
+export async function getUnreadCount() {
+  try {
+
+    const res = await api.get(`total/messege/unread`)
+    return res.data
+
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+
 
 
 

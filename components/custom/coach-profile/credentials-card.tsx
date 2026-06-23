@@ -63,6 +63,7 @@ export default function CredentialsCard(
                   width={100}
                   height={100}
                   className="rounded-md"
+                  unoptimized
                 />
               </div>
             ))
@@ -102,6 +103,7 @@ export default function CredentialsCard(
               alt="preview"
               width={700}
               height={700}
+              unoptimized
               className="max-h-[75vh] w-auto object-contain rounded-lg transition-all duration-300"
             />
           </div>
@@ -126,6 +128,7 @@ export default function CredentialsCard(
                 alt="thumb"
                 width={60}
                 height={60}
+                unoptimized
                 onClick={(e) => {
                   e.stopPropagation()
                   setActiveIndex(index)

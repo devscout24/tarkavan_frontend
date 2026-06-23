@@ -137,8 +137,9 @@ export default function PlayerDashboardPage() {
           </div>
 
           {dashData && dashData?.upcoming_program_reminders && dashData?.upcoming_program_reminders.length > 0 && 
-            dashData?.upcoming_program_reminders.map((reminder)=> ( 
-              <TrainingReminderCard
+            dashData?.upcoming_program_reminders.map((reminder , idx )=> ( 
+              <TrainingReminderCard 
+                key={idx}
                 reminder={reminder as TProgramBookingRemiender}
               />
             )) 

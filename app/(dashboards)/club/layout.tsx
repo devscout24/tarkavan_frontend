@@ -45,12 +45,55 @@ import Modals from "@/components/common/modal"
 import AuthCheckPoint from "@/components/auth/auth-checkopoint"
 import { useEffect } from "react"
 import { getClubProfile } from "./action"
-import { useAppDispatch } from "@/lib/hooks"
-import { setUserImage } from "@/lib/features/userSlice"
+import { useAppDispatch, useAppSelector } from "@/lib/hooks"
+import { selectUnreadCount, setUnreadCount, setUserImage } from "@/lib/features/userSlice"
+import { getUnreadCount } from "../action"
 
 export default function PlayerDashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const pathname = usePathname()
+  const dispatch = useAppDispatch()
+  const unread = useAppSelector(selectUnreadCount)
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const res = await getClubProfile()
+
+        if (
+          res &&
+          typeof res === "object" &&
+          "success" in res &&
+          res.success &&
+          "data" in res
+        ) {
+          dispatch(setUserImage(res?.data?.data?.club_logo_url))
+        }
+      } catch (err) {
+        console.error("Error fetching club profile:", err)
+      }
+    }
+    getData()
+  }, [])
+
+  useEffect(() => {
+    const getUnreadData = async () => {
+      try {
+        const res = await getUnreadCount()
+
+        console.log("unread count", res)
+
+        if (res && res.status) {
+          dispatch(setUnreadCount(res.data))
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    getUnreadData()
+  }, [dispatch])
+
   const DATA = {
     user: {
       name: "Skyleen",
@@ -117,33 +160,6 @@ export default function PlayerDashboardLayout({
     ],
   }
 
-  const pathname = usePathname()
-  const dispatch = useAppDispatch()
-
-  useEffect(() => {
-
-    const getData = async () => {
-      try {
-          const res = await getClubProfile() 
-      
-          if (
-            res &&
-            typeof res === "object" &&
-            "success" in res &&
-            res.success &&
-            "data" in res
-          ) { 
-            dispatch(setUserImage(res?.data?.data?.club_logo_url))
-          }
-        } catch (err) {
-          console.error("Error fetching club profile:", err)
-        }
-    }
-    getData()
-
-  } ,  [])
-
-
   return (
     <AuthCheckPoint role="club">
       <SidebarProvider className="h-screen overflow-hidden">
@@ -208,11 +224,16 @@ export default function PlayerDashboardLayout({
                                 className={`text-[#999999] ${pathname == item.url ? "text-brand" : ""}`}
                               />
                             )}
-                            <span
-                              className={`${pathname == item.url ? "text-bold text-white" : ""}`}
+                            <p
+                              className={`${pathname == item.url ? "text-bold text-white" : ""} flex w-full items-center justify-between`}
                             >
-                              {item.title}
-                            </span>
+                              <span>{item.title}</span>
+                              {item.title === "Messages" && unread > 0 && (
+                                <span className="ml-auto grid h-5! w-5! place-items-center rounded-full bg-brand px-1.5 text-xs text-primary">
+                                  {unread}
+                                </span>
+                              )}
+                            </p>
                           </SidebarMenuButton>
                         </Link>
                       </CollapsibleTrigger>

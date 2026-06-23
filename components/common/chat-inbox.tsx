@@ -94,7 +94,7 @@ export default function ChatInbox({
         <Image
           width={1000}
           height={1000}
-          src={encodeURI(chat?.user_image as string) || "/images/coach.png"}
+          src={chat?.user_image || "/images/coach.png"}
           alt={chat?.user_name || "Chat avatar"}
           className="h-10 w-10 rounded-lg object-cover"
         />

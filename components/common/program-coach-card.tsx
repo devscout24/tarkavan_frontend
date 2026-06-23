@@ -93,7 +93,8 @@ export default function ProgramCoachCard({
           height={1000}
           src={resolveAssetUrl(imageUrl) || "/images/bannerbg.png"}
           alt={imageAlt}
-          className="min-h-100 w-full object-cover object-center"
+          className="min-h-100 w-full object-cover object-center" 
+          unoptimized
         />
 
         <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/95 via-black/40 to-black/20" />

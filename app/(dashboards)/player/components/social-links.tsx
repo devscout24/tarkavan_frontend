@@ -7,6 +7,8 @@ import { FaWhatsapp } from "react-icons/fa6"
 import CommonBtn from "@/components/common/common-btn"
 import ShareModal from "@/components/common/modal/all-modals/share-modal"
 import { useEffect, useState } from "react"
+import { useParams } from "next/navigation"
+
 
 
 interface SocialLinksProps {
@@ -39,14 +41,17 @@ export default function SocialLinks({
 
   const [openShareModal, setOpenShareModal] = useState(false)
   const [profileId, setProfileId] = useState<string | null>(null);
-
+  const params = useParams()
+ 
   useEffect(() => {
     const data = localStorage.getItem("go_elite_user");
     if (data) {
       const parsed = JSON.parse(data);
-      setProfileId(parsed?.profile_id);
+      setProfileId(parsed?.profile_id || params.child_id);
     }
   }, []);
+
+  console.log(openShareModal)
 
 
  

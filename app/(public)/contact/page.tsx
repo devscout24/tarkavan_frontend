@@ -1,7 +1,7 @@
 "use client"
 import Footer from "@/components/common/footer"
 import Nav from "@/components/common/nav"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { FaFacebookF } from "react-icons/fa"
 import { FaXTwitter } from "react-icons/fa6"
@@ -10,26 +10,34 @@ import { IoLogoWhatsapp } from "react-icons/io5"
 import { RiTiktokFill } from "react-icons/ri"
 import { submitContact } from "@/app/action"
 import CommonBtn from "@/components/common/common-btn"
+import { getWebsiteData } from "../action"
 
-
-export type TContactMessageResponse = {
-  success: boolean;
-  data: {
-    status: boolean;
-    message: string;
-    data: {
-      id: number;
-      name: string;
-      email: string;
-      phone: string;
-      subject: string;
-      message: string;
-      created_at: string;
-      updated_at: string;
-    };
-  };
+export type TWebsiteData = {
+  id: number
+  group_name: string
+  key: string
+  value: string
+  created_at: string
+  updated_at: string
 }
 
+export type TContactMessageResponse = {
+  success: boolean
+  data: {
+    status: boolean
+    message: string
+    data: {
+      id: number
+      name: string
+      email: string
+      phone: string
+      subject: string
+      message: string
+      created_at: string
+      updated_at: string
+    }
+  }
+}
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -39,7 +47,7 @@ export default function ContactForm() {
     subject: "",
     message: "",
   })
-  const [loading , setLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const handleMessage = async () => {
     if (
@@ -55,8 +63,7 @@ export default function ContactForm() {
 
     setLoading(true)
 
-    try{
-
+    try {
       const form = new FormData()
       form.append("name", formData.name)
       form.append("email", formData.email)
@@ -65,23 +72,47 @@ export default function ContactForm() {
       form.append("message", formData.message)
 
       const res = await submitContact(form)
- 
 
       const response = res as TContactMessageResponse
 
-      if(response.data.status){
+      if (response.data.status) {
         toast.success(response.data.message || "Message sent successfully")
         setLoading(false)
-      }else{
+      } else {
         setLoading(false)
-        toast.error(response.data.message || "Failed to send message. Please try again later.")
+        toast.error(
+          response.data.message ||
+            "Failed to send message. Please try again later."
+        )
       }
- 
     } catch (error) {
       toast.error("Failed to send message. Please try again later.")
       setLoading(false)
-    } 
+    }
   }
+
+  const [socialLinks, setSocialLinks] = useState<TWebsiteData[]>([])
+  useEffect(() => {
+    const getContactData = async () => {
+      try {
+        const res = await getWebsiteData()
+        if (res && "data" in res && res.data?.data) { 
+          setSocialLinks(res.data.data)
+        }
+      } catch (error) {
+        console.error("Error fetching contact data:", error)
+      }
+    }
+
+    getContactData()
+  }, [])
+
+const allData = Object.fromEntries(
+  socialLinks.map((item) => [item.key, item.value])
+);
+
+console.log(allData)
+ 
 
   return (
     <>
@@ -96,8 +127,7 @@ export default function ContactForm() {
                 Let's Talk
               </h2>
               <p className="text-base leading-relaxed text-secondary!">
-                Have some big idea or brand to develop and need help? Then reach
-                out we'd love to hear about your project and provide help.
+                {allData?.lets_talk }
               </p>
             </div>
 
@@ -136,10 +166,10 @@ export default function ContactForm() {
                       </g>
                     </svg>
                   </div>
-                  <a href="#" className="ml-4 text-sm">
+                  <a href={`mailto:${allData.site_email || ""}`} className="ml-4 text-sm">
                     <small className="block text-slate-900">Mail</small>
                     <span className="font-semibold text-secondary">
-                      example@example.com
+                      {allData.site_email || "example@example.com"}
                     </span>
                   </a>
                 </li>
@@ -153,7 +183,7 @@ export default function ContactForm() {
               <ul className="mt-4 flex flex-wrap gap-4">
                 <li>
                   <a
-                    href="#"
+                    href={allData.facebook_link || "#"}
                     className="flex h-8 w-8 items-center rounded-full bg-slate-200 p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                     aria-label="Facebook"
                   >
@@ -162,7 +192,7 @@ export default function ContactForm() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href={allData.twitter_link || "#"}
                     className="flex h-8 w-8 items-center rounded-full bg-slate-200 p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                     aria-label="LinkedIn"
                   >
@@ -171,7 +201,7 @@ export default function ContactForm() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href={allData.instagram_link || "#"}
                     className="flex h-8 w-8 items-center rounded-full bg-slate-200 p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                     aria-label="X"
                   >
@@ -180,7 +210,7 @@ export default function ContactForm() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href={allData.whatsapp || "#"}
                     className="flex h-8 w-8 items-center rounded-full bg-slate-200 p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                     aria-label="X"
                   >
@@ -189,7 +219,7 @@ export default function ContactForm() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href={allData.tiktok_link || "#"}
                     className="flex h-8 w-8 items-center rounded-full bg-slate-200 p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                     aria-label="X"
                   >
@@ -292,14 +322,13 @@ export default function ContactForm() {
               ></textarea>
             </div>
 
- 
             <CommonBtn
               text="Send message"
               onClick={handleMessage}
               isLoading={loading}
               size={"default"}
               variant={"default"}
-              className="cursor-pointer rounded-md border border-brand bg-brand px-4 py-2.5 text-sm font-semibold text-secondary transition-all hover:bg-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-brand w-full     "
+              className="w-full cursor-pointer rounded-md border border-brand bg-brand px-4 py-2.5 text-sm font-semibold text-secondary transition-all hover:bg-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             />
           </form>
         </div>

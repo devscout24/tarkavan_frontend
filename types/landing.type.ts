@@ -91,6 +91,18 @@ export type TReviewLanding = {
   updated_at: string;
 };
 
+
+export type TCoachAndClub = {
+  user_id: number
+  name: string
+  last_name: string | null
+  role: "coach" | "club"
+  profile_id: number
+  image: string
+  min_price: number
+  max_price: number
+}
+
 export type TLandingPageData = {
     hero: THeroData
     stats: TLandingStats
@@ -98,4 +110,6 @@ export type TLandingPageData = {
     how_it_works: TStepsResponse;
     features: TFeaturesLanding;
     reviews: { items: TReviewLanding[] };
+    coach_and_club: TCoachAndClub[];
+
 }

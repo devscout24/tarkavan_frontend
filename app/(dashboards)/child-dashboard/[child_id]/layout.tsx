@@ -173,7 +173,7 @@ export default function PlayerDashboardLayout({
                 <BreadcrumbCustom />
 
                 <div className="flex items-center gap-4">
-                  <Notification />
+                  {/* <Notification /> */}
                   <ChildProfileDropdown />
                 </div>
               </div>

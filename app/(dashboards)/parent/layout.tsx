@@ -226,7 +226,7 @@ export default function ParentDashboardLayout({
               <BreadcrumbCustom />
 
               <div className="flex items-center gap-4">
-                <Notification />
+                {/* <Notification /> */}
                 <ProfileDropdown />
               </div>
             </div>

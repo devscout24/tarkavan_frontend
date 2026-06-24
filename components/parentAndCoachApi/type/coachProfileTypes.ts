@@ -30,6 +30,7 @@ export interface CoachProfileFormData {
   instagram_link?: string
   tiktok_link?: string
   whatsapp_link?: string
+  
 }
 
 export interface CurrentRole {

@@ -52,9 +52,7 @@ export async function createOrUpdateCoachProfile(
   }
 }
 
-/**
- * Helper function to convert CoachProfileFormData to FormData
- */
+ 
 export function convertToFormData(data: CoachProfileFormData): FormData {
   const formData = new FormData()
 
@@ -104,6 +102,7 @@ export function convertToFormData(data: CoachProfileFormData): FormData {
   formData.append("nationality", data.nationality || "")
   formData.append("email", data.email || "")
   formData.append("sports", data.sports || "")
+
 
   // Profile picture
   if (data.coach_profile_pic) {

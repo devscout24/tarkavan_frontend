@@ -259,7 +259,7 @@ export default function CoachProfileSetup({
   const [editData, setEditData] = useState<CoachEditPayload | null>(null)
   const [isEditDataLoaded, setIsEditDataLoaded] = useState(false)
 
-  // ── Effects ──────────────────────────────────────────────────────────────
+  // ── Effects ───
 
   // Sync dateOfBirth from formData
   useEffect(() => {
@@ -513,7 +513,7 @@ export default function CoachProfileSetup({
     [formData, router]
   )
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // ── Render ───
 
   return (
     <section className="bg-primary">

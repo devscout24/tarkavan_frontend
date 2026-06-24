@@ -33,6 +33,7 @@ type TStripeErrorResponse = {
   data: {
     connected: boolean;
   };
+  error?: string;
 };
 
 export default function ConnectStripe({}: {}) {
@@ -73,7 +74,15 @@ export default function ConnectStripe({}: {}) {
  
       const response = res as TStripeAccountResponse
 
-      if (response.data.status) {
+      const errorRes = res as TStripeErrorResponse
+      console.log(errorRes)
+ 
+      if(errorRes?.status === false){
+        setLoading(false)
+        toast.error(errorRes?.error || "Failed to connect stripe account")
+      }
+
+      if (response?.data?.status) {
         setLoading(false)
 
         // Redirect to onboarding URL

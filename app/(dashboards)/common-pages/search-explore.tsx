@@ -92,13 +92,15 @@ export default function SearchExplore() {
   }, [filters, currentPage])
 
   const router = useRouter()
-  let user = null
+  const [user, setUser] = useState<{ id: string; role: string } | null>(null)
 
-  if (typeof window !== "undefined") {
+  useEffect(() => {
     const storedUser = localStorage.getItem("go_elite_user")
-    user = storedUser ? JSON.parse(storedUser) : null
-  }
- 
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
+    }
+  }, [])
 
   return (
     <section>
@@ -113,17 +115,19 @@ export default function SearchExplore() {
       {/* coach type card  */}
       {searchResults.length > 0 || upcommingEvents?.length > 0 ? (
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {upcommingEvents?.length > 0 &&
+          {upcommingEvents?.length > 0 &&
             upcommingEvents.map((item, index) => {
               return (
-                 <Advertisement
+                <Advertisement
                   imageUrl={item.club_logo}
                   positions={item.position}
                   teamName={item.club_name}
-                  ageGroup={item?.from_age && item.upto_age ? `U${item.from_age} - U${item.upto_age}` : `U${item?.from_age || ''}`   }
-                  tryoutDate={moment(item.tryout_date).format(
-                    "MMM Do YY"
-                  )}
+                  ageGroup={
+                    item?.from_age && item.upto_age
+                      ? `U${item.from_age} - U${item.upto_age}`
+                      : `U${item?.from_age || ""}`
+                  }
+                  tryoutDate={moment(item.tryout_date).format("MMM Do YY")}
                   description={item.description}
                   recruitId={String(item.recruitment_id)}
                   is_applied={item.application_status === "applied"}
@@ -149,7 +153,7 @@ export default function SearchExplore() {
                     calender={moment(item?.start_date).format("MMM Do YY")}
                     btnText="View Program"
                     onClick={() =>
-                      router.push(`/${user.role}/programs/${item?.program_id}`)
+                      router.push(`/${user?.role}/programs/${item?.program_id}`)
                     }
                   />
                 )
@@ -219,8 +223,6 @@ export default function SearchExplore() {
                 )
               }
             })}
-
-
         </div>
       ) : loading ? (
         <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">

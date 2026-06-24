@@ -62,16 +62,7 @@ export default function Page() {
   if (loading) {
     return <div>Loading...</div>
   } else if (!loading && data) {
-    let user = null;
-
-    if (typeof window !== "undefined") {
-      const storedUser = localStorage.getItem("go_elite_user");
-      user = storedUser ? JSON.parse(storedUser) : null;
-    }
-    const token = typeof window !== "undefined" ? localStorage.getItem("go_elite_token") : null;
-
- 
- 
+  
 
     return (
       <section>
@@ -165,7 +156,7 @@ export default function Page() {
 
                 <div className="h-2 overflow-hidden rounded-full bg-zinc-800">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-brand to-brand transition-all duration-500"
+                    className="h-full rounded-full bg-linear-to-r from-brand to-brand transition-all duration-500"
                     style={{ width: `${((data?.profile?.overall_avg_rating || 0) / 5) * 100}%` }}
                   />
                 </div>

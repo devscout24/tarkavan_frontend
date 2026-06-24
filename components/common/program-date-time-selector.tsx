@@ -241,6 +241,8 @@ export default function ProgramDateTimeSelector({
               booking_date,
               booking_time_ids,
             })),
+    success_url : `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programid}?success=true`,
+    cancel_url : `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programid}?cancel=true`,
   })
 
   // ─── Booking handlers ─────────────────────────────────────────────────────────

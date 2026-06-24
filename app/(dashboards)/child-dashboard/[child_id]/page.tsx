@@ -117,7 +117,7 @@ export default function ChildDashboard() {
               key={String(child_id)}
               open={openShareModal}
               onOpenChange={setOpenShareModal}
-              url={`${typeof window !== "undefined" ? window.location.origin : ""}/profile/${child_id}`}
+              url={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/profile/${child_id}`}
               title="Watch my Player Card"
             />
 

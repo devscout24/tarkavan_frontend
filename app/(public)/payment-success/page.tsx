@@ -64,12 +64,12 @@ export default function PaymentSuccess() {
         </div>
         <div className="text-center">
           <h3 className="text-center text-base font-semibold text-gray-900 md:text-2xl">
-            Payment Done!
+            Successfully Done!
           </h3>
-          <p className="my-2 text-gray-600">
+          <p className="my-2 text-primary!">
             Thank you for completing your secure online payment.
           </p>
-          <p> Have a great day! </p>
+          <p className="text-primary!"> Have a great day! </p>
           <div className="py-10 text-center">
             <Link
               href={`/${user?.role}`}

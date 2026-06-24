@@ -25,15 +25,17 @@ export default function ProgramDetailsPage() {
   const id = params.detailsID
   const [details, setDetails] = useState<TProgramDetailsParentAndPlayer | null>(
     null
-  ) 
+  )
 
-  const currentUser =
-    typeof window !== "undefined"
-      ? (() => {
-          const storedUser = localStorage.getItem("go_elite_user")
-          return storedUser ? JSON.parse(storedUser) : null
-        })()
-      : null
+  const [currentUser, setCurrentUser] = useState<{ id: string; role: string } | null>(null)
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("go_elite_user")
+
+    if (storedUser) {
+      setCurrentUser(JSON.parse(storedUser))
+    }
+  }, [])
 
   useEffect(() => {
     const getDetailsOfProgram = async () => {
@@ -74,9 +76,6 @@ export default function ProgramDetailsPage() {
       window.removeEventListener("programevent", getUpdatedData)
     }
   }, [id])
-
- 
-
 
   return (
     <section className="text-white">

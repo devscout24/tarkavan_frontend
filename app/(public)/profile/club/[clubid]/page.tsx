@@ -40,18 +40,19 @@ export default function page() {
   }, [])
 
   const router = useRouter()
-  const user =
-    typeof window !== "undefined"
-      ? (() => {
-          const storedUser = localStorage.getItem("go_elite_user")
-          return storedUser ? JSON.parse(storedUser) : null
-        })()
-      : null
-  const token =
-    typeof window !== "undefined"
-      ? localStorage.getItem("go_elite_token")
-      : null
- 
+  const [user, setUser] = useState<{ id: string; role: string } | null>(null)
+  const [token, setToken] = useState<string | null>(null)
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("go_elite_user")
+    const storedToken = localStorage.getItem("go_elite_token")
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
+    }
+
+    setToken(storedToken)
+  }, [])
 
   return (
     <>
@@ -117,19 +118,25 @@ export default function page() {
                     title={program.program_name}
                     type={`Age U${program?.age_limit == program?.from_age || program?.from_age == null ? program?.age_limit : `${program?.from_age} - U${program?.age_limit}`}`}
                     schedule={program.location}
-                    duration={`${moment(program.start_date || program.times[0].slot_date).format(
+                    duration={`${moment(
+                      program.start_date || program.times[0].slot_date
+                    ).format(
                       "MMM Do YY"
                     )} - ${moment(program.end_date || program.times[program.times.length - 1].slot_date).format("MMM Do YY")}`}
-                    currentPrice={program.price ? `${Number(program.price) - program.discount_price  }` : `$${program.program_price}`}
-                    previousPrice={String(Number(program.discount_price) + Number(program.price) )}
+                    currentPrice={
+                      program.price
+                        ? `${Number(program.price) - program.discount_price}`
+                        : `$${program.program_price}`
+                    }
+                    previousPrice={String(
+                      Number(program.discount_price) + Number(program.price)
+                    )}
                     imageSrc={program.photo}
                     imageAlt={program.program_name}
-                    buttonLabel="View Details" 
+                    buttonLabel="View Details"
                     editLink={`/details/program/${program.id}?`}
                     viewOnly={true}
                   />
-
-
                 </div>
               ))}
             </div>

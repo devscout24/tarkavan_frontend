@@ -53,7 +53,7 @@ export default function Footer() {
       </div>
 
       {/* Glow Effect */}
-      <div className="pointer-events-none absolute top-0 right-0 left-0 h-37.5 bg-[url('/images/footerGlow.svg')] bg-size-[720px_150px] bg-top bg-no-repeat opacity-100" />
+      <div className="pointer-events-none absolute top-0 right-0 left-0 h-37.5   bg-size-[720px_150px] bg-top bg-no-repeat opacity-100" />
 
       <div className="relative z-10 mx-auto max-w-340  lg:pt-16">
         <div className="mx-auto max-w-7xl ">

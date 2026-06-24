@@ -83,10 +83,11 @@ export default function BrowseCoaches({ data }: { data: TCoachAndClub[] }) {
                       {/* image */}
                       <div className="relative h-65 w-full">
                         <Image
-                          src={encodeURI(item.image)}
-                          alt={item.name}
-                          fill
+                          src={item.image || "/images/bannerbg.png"}
+                          alt={item.name} 
                           className="object-cover"
+                          width={500}
+                          height={260}
                         />
                       </div>
 

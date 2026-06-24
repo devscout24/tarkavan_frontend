@@ -5,12 +5,14 @@ import VisibilityEdit from "@/components/common/visibility-edit"
 import { Card } from "@/components/ui/card"
 import { captureAndSave } from "@/lib/captureAndSave"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { useState } from "react"
 import { BsDownload } from "react-icons/bs"
 
 export default function ProfileHeaderBar() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const [loading , setLoading] = useState(false)
 
   const handleEditProfile = () => {
     const nextParams = new URLSearchParams(searchParams.toString())
@@ -35,8 +37,11 @@ export default function ProfileHeaderBar() {
               elementId: "coach_og_image",
               fileName: "coach-profile-card.png",
               userId: user?.profile_id,
+              setLoading: setLoading
             })
           }
+          isLoading={loading}
+          disabled={loading}
           text="Get Profile Card"
           icon={<BsDownload />}
           className="w-fit border border-secondary bg-transparent px-3 text-white hover:bg-transparent"

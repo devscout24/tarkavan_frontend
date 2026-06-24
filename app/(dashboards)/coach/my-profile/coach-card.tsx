@@ -25,6 +25,7 @@ export default function CoachShareCard({
           <CoachLeftColumn
             profileData={profileData?.profile as TCoachProfileData}
             coaching_titles={profileData?.coaching_titles || []}
+            is_socials={false}
           />
         </div>
         <div className="space-y-2  flex-3 ">

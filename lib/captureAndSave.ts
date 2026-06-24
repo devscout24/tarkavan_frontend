@@ -5,18 +5,29 @@ type CaptureProps = {
   elementId: string
   fileName?: string
   userId?: string
+  setLoading?: (loading: boolean) => void
 }
 
 export async function captureAndSave({
   elementId,
   fileName = "image.png",
   userId,
+  setLoading,
 }: CaptureProps) {
+  if (setLoading) setLoading(true)
   const node = document.getElementById(elementId)
 
-  if (!node) throw new Error("Element not found")
+  if (!node) {
+    throw new Error("Element not found")
+  }
 
   await new Promise((r) => requestAnimationFrame(r))
+
+  // images load
+  await waitForImages(node)
+
+  // chart render finish
+  await waitForChartRender()
 
   const dataUrl = await toPng(node, {
     cacheBust: true,
@@ -24,17 +35,23 @@ export async function captureAndSave({
     backgroundColor: "#000",
   })
 
- 
   const link = document.createElement("a")
+
+  if (!link) setLoading?.(false)
+
   link.href = dataUrl
   link.download = fileName
   link.click()
 
   const blob = await (await fetch(dataUrl)).blob()
 
+  if (!blob) setLoading?.(false)
+
   const file = new File([blob], fileName, {
     type: "image/png",
   })
+
+  if(!file) setLoading?.(false)
 
   const formData = new FormData()
   formData.append("preview", file)
@@ -48,16 +65,33 @@ export async function captureAndSave({
       })
     } catch (err) {
       console.error("Failed to upload OG image:", err)
+    } finally {
+      setLoading?.(false)
     }
   }
 }
 
+async function waitForImages(node: HTMLElement) {
+  const images = Array.from(node.querySelectorAll("img"))
 
+  await Promise.all(
+    images.map((img) => {
+      if (img.complete) return Promise.resolve()
 
+      return new Promise<void>((resolve) => {
+        img.onload = () => resolve()
+        img.onerror = () => resolve()
+      })
+    })
+  )
+}
 
-
-
-
+async function waitForChartRender() {
+  // 2-3 frame wait করলে chart animation/render complete হয়
+  await new Promise((r) => requestAnimationFrame(r))
+  await new Promise((r) => requestAnimationFrame(r))
+  await new Promise((r) => setTimeout(r, 500))
+}
 
 // v2
 // import { setPlayerOG } from "@/app/(dashboards)/action"

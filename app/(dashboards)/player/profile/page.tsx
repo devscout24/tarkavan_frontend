@@ -169,6 +169,8 @@ export default function PlayerProfile() {
       })
       .filter((item): item is NonNullable<typeof item> => Boolean(item)),
   ]
+
+  const [loading, setLoading] = useState(false)
  
 
   return (
@@ -193,11 +195,14 @@ export default function PlayerProfile() {
                   elementId: "og_image",
                   fileName: "go-elite-player-profile-card.png",
                   userId: user?.profile_id || playerData?.basic_info?.id,
+                  setLoading: setLoading
                 })
               }
               text="Get Profile Card"
               icon={<BsDownload />}
               className="w-fit border border-secondary bg-transparent px-3 text-white hover:bg-transparent"
+              isLoading={loading}
+              disabled={loading}
             />
 
             <CommonBtn

@@ -62,23 +62,14 @@ export default function PlayerCard({
           </div>
           <div className="-mt-4">
             <Achievements achievements={playerData?.achievements} />
-          </div>
-
-          {/* <div className="-my-4">
-            <SocialLinks
-              profileUrl="profile/player"
-              facebookUrl={playerData?.basic_info?.facebook_link}
-              twitterUrl={playerData?.basic_info?.twitter_link}
-              whatsappUrl={playerData?.basic_info?.whatsapp_link}
-            />
-          </div> */}
+          </div> 
         </div>
 
         {/* right */}
         <div className="flex-3">
           {/* player details */}
           <div className="w-full">
-            <div className="overflow-hidden rounded-xl! border border-secondary! text-white">
+            <div className="overflow-hidden rounded-xl! border border-secondary! text-white!">
               <Table className="w-full">
                 <TableBody>
                   <TableRow className="border-secondary!">
@@ -159,8 +150,8 @@ export default function PlayerCard({
         </div>
       </div>
 
-      <div className="mx-auto mt-2 max-w-[95vw] [&>div]:rounded-lg [&>div]:border">
-        <Table>
+      <div className="mx-auto mt-2 max-w-[95vw] [&>div]:rounded-lg [&>div]:border border-brand!  ">
+        <Table className="border border-brand!   ">
           <TableHeader>
             <TableRow className="bg-brand hover:bg-brand">
               <TableHead
@@ -190,32 +181,32 @@ export default function PlayerCard({
                 className="border-t border-white/20 hover:bg-transparent"
               >
                 <TableCell
-                  className={`sticky left-0 bg-background font-medium ${columnBorderClass}`}
+                  className={`sticky left-0 bg-background font-medium ${columnBorderClass} text-white! `}
                 >
                   {stat.season_year}
                 </TableCell>
-                <TableCell className={columnBorderClass}>
+                <TableCell className={`${columnBorderClass} text-white!`}>
                   {stat.total_played_games}
                 </TableCell>
-                <TableCell className={columnBorderClass}>
+                <TableCell className={`${columnBorderClass} text-white!`}>
                   {stat.goals}
                 </TableCell>
-                <TableCell className={columnBorderClass}>
+                <TableCell className={`${columnBorderClass} text-white!`}>
                   {stat.assist}
                 </TableCell>
-                <TableCell className={columnBorderClass}>
+                <TableCell className={`${columnBorderClass} text-white!`}>
                   {stat.yellow_cards}
                 </TableCell>
-                <TableCell className={columnBorderClass}>
+                <TableCell className={`${columnBorderClass} text-white!`}>
                   {stat.red_cards}
                 </TableCell>
                 {Number(playerData?.player_stats?.clean_sheets) > 0 && (
-                  <TableCell className={columnBorderClass}>
+                  <TableCell className={`${columnBorderClass} text-white!`}>
                     {stat.clean_sheets}
                   </TableCell>
                 )}
                 {Number(playerData?.player_stats?.total_saves) > 0 && (
-                  <TableCell className={columnBorderClass}>
+                  <TableCell className={`${columnBorderClass} text-white!`}>
                     {stat.total_saves}
                   </TableCell>
                 )}

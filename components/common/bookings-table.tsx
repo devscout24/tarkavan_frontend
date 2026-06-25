@@ -25,6 +25,8 @@ import { PiDotsThreeOutline } from "react-icons/pi"
 import { useRouter } from "next/navigation"
 import { ChangeBookingStatus } from "@/app/(dashboards)/club/bookings/action"
 import { toast } from "sonner"
+import { AiOutlineUser } from "react-icons/ai";
+import { LuUserRound } from "react-icons/lu"
 
 type BookingsTableProps = {
   bookings: TClubBookingData[]
@@ -54,7 +56,7 @@ export default function BookingsTable({ bookings }: BookingsTableProps) {
 
   return (
     <> 
-      <div className="hidden w-full max-w-full min-w-0 overflow-x-auto overflow-y-hidden rounded-2xl border border-secondary/40 [scrollbar-color:rgba(198,245,122,0.75)_transparent] [scrollbar-width:thin] lg:block [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-brand/75 [&::-webkit-scrollbar-track]:bg-transparent">
+      <div className="  w-full max-w-full min-w-0 overflow-x-auto overflow-y-hidden rounded-2xl border border-secondary/40 [scrollbar-color:rgba(198,245,122,0.75)_transparent] [scrollbar-width:thin] lg:block [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-brand/75 [&::-webkit-scrollbar-track]:bg-transparent">
         <Table className="w-full min-w-full table-fixed">
           <TableHeader>
             <TableRow className="bg-[#ECEEEA] hover:bg-[#ECEEEA]">
@@ -114,13 +116,16 @@ export default function BookingsTable({ bookings }: BookingsTableProps) {
                   {booking.status}
                 </TableCell>
                 <TableCell className="h-16 px-3 whitespace-normal xl:px-4 2xl:h-19 2xl:px-5">
-                  <div className="flex items-center justify-center gap-4">
-                    <FiEye
+                  <div className="flex items-center justify-center gap-4"> 
+                    <LuUserRound
                       onClick={() =>
                         handleViewDetails(booking.athlete_profile_id)
                       }
                       className="transition-color cursor-pointer text-2xl duration-300 hover:text-brand!"
                     />
+                    {/* <FiEye
+                      className="transition-color cursor-pointer text-2xl duration-300 hover:text-brand!"
+                    /> */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="outline">

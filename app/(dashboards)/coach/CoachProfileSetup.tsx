@@ -1139,13 +1139,8 @@ export default function CoachProfileSetup({
           </div>
 
           <div className="mt-5 h-px w-full bg-white/10" />
-        </section>
-
-        {/* stripe account credentials */}
-        <ConnectStripe/>
-
- 
-
+        </section> 
+        
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
           <CommonBtn
             variant="outline"

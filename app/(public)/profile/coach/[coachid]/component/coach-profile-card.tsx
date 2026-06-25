@@ -47,9 +47,9 @@ export default function CoachProfileCard({
 
           <div className="mt-2 flex items-center gap-2 text-lg leading-tight text-white/92">
             <MapPin className="size-5 text-white/88" />
-
+  
             <span>
-              {basic_info?.city} , {basic_info?.country}{" "}
+              {basic_info?.country ? `${basic_info?.country} ,` : null } {basic_info?.province ? `${basic_info?.province} ,` : null } {basic_info?.city ? `${basic_info?.city}` : null } 
             </span> 
           </div>
 
@@ -57,15 +57,22 @@ export default function CoachProfileCard({
             <span className="rounded-lg border border-white/20 bg-white/8 px-3 py-2 text-base leading-none font-medium text-white/92">
               <IoIosFootball />
             </span>
+            {basic_info?.gender ? 
             <span className="rounded-lg border border-white/20 bg-white/8 px-4 py-2 text-base font-medium text-white/92 uppercase">
               {basic_info?.gender}
             </span>
+            : null }
+            {basic_info?.age ? 
             <span className="rounded-lg border border-white/20 bg-white/8 px-4 py-2 text-base font-medium text-white/92">
               UNDER-{basic_info?.age}
             </span>
+            : null }
+            {position_info?.dominant_foot ? 
             <span className="rounded-lg border border-white/20 bg-white/8 px-4 py-2 text-base font-medium text-white/92 uppercase">
               {position_info?.dominant_foot}
             </span>
+           : null  
+          }
           </div>
         </div>
       </div>

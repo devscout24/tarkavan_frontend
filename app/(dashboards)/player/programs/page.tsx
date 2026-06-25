@@ -21,7 +21,8 @@ export default function PLayerProgramPage({ child_id }: { child_id: string }) {
   
       const getPrograms = async () => {
         try{ 
-          const res = await getAvailablePlayerParentProgram(selectedFilter)    
+          const res = await getAvailablePlayerParentProgram(selectedFilter)   
+          console.log("Available Programs Response:", res) 
           if(res && "success" in res && res.success && res.data && "data" in res.data && res.data.data ) {
               setPrograms(res.data.data.programs)
             } 

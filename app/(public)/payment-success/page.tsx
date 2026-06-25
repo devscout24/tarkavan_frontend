@@ -54,6 +54,7 @@ export default function PaymentSuccess() {
     } catch {
       setUser(null)
     }
+    
   }, [])
 
   return (

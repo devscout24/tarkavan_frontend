@@ -86,10 +86,11 @@ export default function MyProfilePage() {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        })
+        }) 
 
         if (response.ok) {
           const result = await response.json() 
+          console.log("Coach Profile Response:", result)
           if (result.status) {
             setProfileData(result.data)
           }

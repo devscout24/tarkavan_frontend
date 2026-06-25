@@ -62,6 +62,8 @@ export default function Page() {
   if (loading) {
     return <div>Loading...</div>
   } else if (!loading && data) {
+
+    console.log("Coach Profile Data:", data)
   
 
     return (
@@ -110,17 +112,17 @@ export default function Page() {
                 jersey_number: 10,
                 primary_position: {
                   id: 1,
-                  name: "Forward",
-                  type: "attacker",
+                  name: data?.profile?.current_role?.name,
+                  type: "",
                 },
                 secondary_position: {
                   id: 2,
-                  name: "Winger",
-                  type: "attacker",
+                  name: "",
+                  type: "",
                 },
-                sports_selection: "football",
-                club_team: "FC Example",
-                dominant_foot: "right",
+                sports_selection: "",
+                club_team: data?.profile?.highest_education,
+                dominant_foot: "",
               }} 
               jersey_shown={false}
             />
@@ -167,7 +169,7 @@ export default function Page() {
           </div>
 
           {/* right side */}
-          <div className="space-y-4">
+          <div className="space-y-4 bg-primary! relative z-10   ">
             {/* bio */}
             <CoachingBio bio={data?.profile?.bio} />
             <CoachingExperienceEducation data={data?.experience_education} />

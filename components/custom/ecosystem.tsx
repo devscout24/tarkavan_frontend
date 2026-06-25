@@ -52,9 +52,9 @@ function EcosystemCard({
   ctaLabel,
 }: EcosystemCardProps) {
   return (
-    <Card className="h-full rounded-2xl border border-white/15 bg-white/10 px-3 md:px-6 py-3 md:py-7.5 backdrop-blur-sm">
+    <Card className="h-full rounded-2xl border border-white/15 bg-white/10 px-3 py-3 backdrop-blur-sm md:px-6 md:py-7.5">
       <CardHeader className="pb-2">
-        <CardTitle className=" text-lg md:text-[24px] font-medium md:font-bold text-white">
+        <CardTitle className="text-lg font-medium text-white md:text-[24px] md:font-bold">
           {title}
         </CardTitle>
       </CardHeader>
@@ -67,7 +67,7 @@ function EcosystemCard({
         <Button
           asChild
           size="lg"
-          className="h-12 rounded-full bg-brand px-7 text-base md:text-lg font-medium text-black hover:bg-brand/90!"
+          className="h-12 rounded-full bg-brand px-7 text-base font-medium text-black hover:bg-brand/90! md:text-lg"
         >
           <Link href={href} aria-label={`${ctaLabel} for ${title}`}>
             {ctaLabel}
@@ -79,28 +79,37 @@ function EcosystemCard({
   )
 }
 
-export default function Ecosystem({ data }: { data: EcosystemSection | undefined }) {
-
+export default function Ecosystem({
+  data,
+}: {
+  data: EcosystemSection | undefined
+}) {
   const ecosystemItems: EcosystemCardProps[] = [
-  {
-    title:  data?.cards[0]?.title || "For Players",
-    description:  data?.cards[0]?.description || "Build your sports profile, upload highlight videos, track your stats, and connect with professional coaches to accelerate your career.",
-    href: "auth?auth-tab=register?role=player",
-    ctaLabel: "Get Started",
-  },
-  {
-    title:  data?.cards[1]?.title || "For Coaches",
-    description:  data?.cards[1]?.description || "Create a coaching profile, offer training services, manage bookings, and earn revenue - all from one powerful dashboard.",
-    href: "auth?auth-tab=register?role=coach",
-    ctaLabel: "Get Started",
-  },
-  {
-    title:  data?.cards[2]?.title || "For Teams",
-    description:  data?.cards[2]?.description || "Discover talented players, connect with certified coaches, manage your roster, and schedule matches with other teams.",
-    href: "auth?auth-tab=register?role=club",
-    ctaLabel: "Get Started",
-  },
-]
+    {
+      title: data?.cards[0]?.title || "For Players",
+      description:
+        data?.cards[0]?.description ||
+        "Build your sports profile, upload highlight videos, track your stats, and connect with professional coaches to accelerate your career.",
+      href: "auth?auth-tab=register?role=player",
+      ctaLabel: "Get Started",
+    },
+    {
+      title: data?.cards[1]?.title || "For Coaches",
+      description:
+        data?.cards[1]?.description ||
+        "Create a coaching profile, offer training services, manage bookings, and earn revenue - all from one powerful dashboard.",
+      href: "auth?auth-tab=register?role=coach",
+      ctaLabel: "Get Started",
+    },
+    {
+      title: data?.cards[2]?.title || "For Teams",
+      description:
+        data?.cards[2]?.description ||
+        "Discover talented players, connect with certified coaches, manage your roster, and schedule matches with other teams.",
+      href: "auth?auth-tab=register?role=club",
+      ctaLabel: "Get Started",
+    },
+  ]
 
   return (
     <section
@@ -112,35 +121,35 @@ export default function Ecosystem({ data }: { data: EcosystemSection | undefined
       }}
     >
       <Container>
-        <div className="sm:p-12 px-2 py-10 lg:p-16">
-          <div className="md:flex items-center justify-between">
+        <div className="px-2 py-10 sm:p-12 lg:p-16">
+          <div className="items-center justify-between md:flex">
             <div className="space-y-6">
               <p className="text-lg font-medium text-[#3EE4C2]">
                 Built For Everyone
               </p>
-              
+
               {data?.header?.title && (
                 <h2
                   id="ecosystem-heading"
-                  className=" text-xl md:text-2xl lg:text-4xl xl:text-[64px] leading-tight tracking-tight text-white"
+                  className="text-xl leading-tight tracking-tight text-white md:text-2xl lg:text-4xl xl:text-[64px]"
                 >
                   {data.header.title}
                 </h2>
-              )} 
-              
+              )}
+
               {data?.header?.description && (
-                 <p className="max-w-2xl text-base md:text-2xl leading-relaxed text-secondary">
+                <p className="max-w-2xl text-base leading-relaxed text-secondary md:text-2xl">
                   {data.header.description}
                 </p>
               )}
             </div>
 
             <Image
-              src="/images/ecosysimg.png"
+              src="/images/ecosysimg.jpg"
               alt="Athlete training on field"
-              width={220}
-              height={260}
-              className="min-w-85 object-cover"
+              width={500}
+              height={500}
+              className="min-w-85 object-cover rounded-lg   "
             />
           </div>
 

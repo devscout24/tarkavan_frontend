@@ -19,8 +19,7 @@ import {
 import { clubProfileSetup } from "@/app/(dashboards)/club/action"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import CountryCitySelector from "../../country-city-selector"
-import ConnectStripe from "../../connect-stripe"
+import CountryCitySelector from "../../country-city-selector" 
 
 const maxDescriptionLength = 300
 
@@ -274,10 +273,7 @@ export default function ClubProfileSetup() {
             </p>
           </div> 
         </div>
-
-        {/* connect stripe */}
-        <ConnectStripe/>
-
+ 
             <div className="flex items-center justify-end gap-4">
               <button
                 type="button"

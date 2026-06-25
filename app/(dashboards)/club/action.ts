@@ -240,9 +240,9 @@ export async function updateProgram({ program_id, data}: {program_id: string, da
   }
 }
 
-export async function getProgramList(filter: { program_type?: string, status?: string }) {
+export async function getProgramList(filter: { program_type?: string, status?: string, page?: number }) {
     try {
-    const res = await api.get(`/club/program/list?program_type=${filter.program_type || ""}&filter=${filter.status || ""}`)
+    const res = await api.get(`/club/program/list?program_type=${filter.program_type || ""}&filter=${filter.status || ""}&page=${filter.page || 1}`)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {

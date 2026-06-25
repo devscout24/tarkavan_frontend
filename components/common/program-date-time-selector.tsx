@@ -245,7 +245,7 @@ export default function ProgramDateTimeSelector({
     cancel_url : `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programid}?cancel=true`,
   })
 
-  // ─── Booking handlers ─────────────────────────────────────────────────────────
+  // ─── Booking handlers ──── 
 
   const token = localStorage.getItem("go_elite_token")
 

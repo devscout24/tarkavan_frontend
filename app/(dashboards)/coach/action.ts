@@ -55,15 +55,14 @@ export async function createCoachProgram(data: FormData) {
   }
 }
 
-export async function getCoachProgramList(filter: { program_type?: string, status?: string }) {
+export async function getCoachProgramList(filter: { program_type?: string, status?: string , page?: number }) {
   try {
-    const res = await api.get(`/coach/program/list?program_type=${filter.program_type}&filter=${filter.status}`)
+    const res = await api.get(`/coach/program/list?program_type=${filter.program_type}&filter=${filter.status}&page=${filter.page}`)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {
       return err?.response?.data
     }
-  
     return {
       success: false,
       message: "Unexpected error",
@@ -144,6 +143,23 @@ export async function getCoachEditData() {
 export async function submitStripeData(data: FormData) {
   try {
     const res = await api.post(`/stripe/account/set`, data)
+    return { success: true, data: res.data }
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) { 
+      return err?.response?.data
+    }
+  
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+
+export async function getStripeData() {
+  try {
+    const res = await api.post(`/stripe/data/get`)
     return { success: true, data: res.data }
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) { 

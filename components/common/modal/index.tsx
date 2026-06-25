@@ -12,6 +12,7 @@ import Agreement from "@/app/(dashboards)/parent/component/aggrement"
 import CoachProfileSetup from "@/app/(dashboards)/coach/CoachProfileSetup"
 import ClubProfileSetup from "./all-modals/club-profile-setup"
 import EditCoachProfileModal from "./all-modals/edit-coach-profile-modal" 
+import ConnectStripe from "../connect-stripe"
 
 export default function Modals() {
   const { Modal } = useModal()
@@ -134,6 +135,15 @@ export default function Modals() {
       >
         <ScrollArea className="max-h-[90vh]">
           <ClubProfileSetup />
+        </ScrollArea>
+      </Modal>
+      <Modal
+        modalId="setup"
+        openId="stripe"
+        className="max-w-full overflow-hidden! border border-brand/50 p-0! md:max-w-2xl"
+      >
+        <ScrollArea className="max-h-[90vh] bg-primary   ">
+          <ConnectStripe />
         </ScrollArea>
       </Modal>
 

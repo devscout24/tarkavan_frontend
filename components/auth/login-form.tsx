@@ -16,13 +16,15 @@ export default function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const router = useRouter()
-  const dispatch = useAppDispatch()
+  // const dispatch = useAppDispatch()
 
   const handleLogin = async () => {
     setLoading(true)
     try {
-      const res = await loginUser({ email, password })   
+      const res = await loginUser({ email, password })  
+      
       if (res?.data?.status) {
+        
         toast.success("Login successful! Welcome back.")
         await setAuthCookie(res.data.data.token)
         localStorage.setItem("go_elite_token", res.data.data.token)
@@ -115,16 +117,8 @@ export default function LoginForm() {
           <div className="h-px flex-1 bg-[#2D313A]" />
           <span className="text-lg text-[#8D93A1]">Or</span>
           <div className="h-px flex-1 bg-[#2D313A]" />
-        </div>
-
-        {/* <CommonBtn
-          size={"lg"}
-          text={"Login with Google"}
-          variant={"default"}
-          icon={<FcGoogle />}
-          className="w-full bg-secondary/40 text-base md:text-lg font-semibold text-white transition hover:bg-secondary/38"
-        /> */}
-
+        </div> 
+        
         <p className="text-center text-sm font-medium text-[#8D93A1]">
           Don&apos;t have an account?{" "}
           <Link

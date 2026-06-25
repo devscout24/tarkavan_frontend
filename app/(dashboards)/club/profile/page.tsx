@@ -7,8 +7,7 @@ import Link from "next/link"
 export default async function page() {
   let clubProfile = null
   try {
-    const res = await getClubProfile() 
-
+    const res = await getClubProfile()  
     if (
       res &&
       typeof res === "object" &&

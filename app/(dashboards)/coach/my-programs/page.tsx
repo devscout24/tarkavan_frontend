@@ -20,36 +20,10 @@ import moment from "moment"
 import { useAppSelector } from "@/lib/hooks"
 import { selectIsSubscriptionActive } from "@/lib/features/userSlice"
 import ClubDashboardSubscription from "@/components/custom/club-dashboard-subscription"
-import { CiCalendarDate } from "react-icons/ci";
+import { CiCalendarDate } from "react-icons/ci"
+import CommonPagination from "@/components/common/common-pagination"
 
-const formatWeekdaySchedule = (startDate?: string, endDate?: string) => {
-  if (!startDate || !endDate) return "N/A"
-
-  const days = eachDayOfInterval({
-    start: parseISO(startDate),
-    end: parseISO(endDate),
-  })
-
-  return days.map((day) => format(day, "EEE")).join(", ")
-}
-
-const formatStartTime = (time?: string) => {
-  if (!time) return "N/A"
-
-  const startTime = time.includes("-")
-    ? time.split("-")[0]?.trim()
-    : time.trim()
-  if (!startTime) return "N/A"
-
-  const parsedTime = moment(
-    startTime,
-    ["h:mm A", "h:mm a", "hh:mm A", "HH:mm", "H:mm"],
-    true
-  )
-  return parsedTime.isValid() ? parsedTime.format("h:mm A") : startTime
-}
  
-
 const formatDuration = (startDate?: string, endDate?: string) => {
   if (!startDate || !endDate) return "N/A"
 
@@ -98,19 +72,22 @@ export default function UpcomingEventPage() {
   const [filter, setFilter] = useState({
     program_type: "",
     status: "",
+    page: 1,
   })
+  const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
     const fetchPrograms = async () => {
       try {
         setIsLoading(true)
-        const response = await getCoachProgramList(filter) 
-        const res = response as any
+        const response = await getCoachProgramList(filter)
+        const res = response as any 
         if (res && res.success && res.data?.data) {
           setPrograms(res.data.data.programs || [])
           setLatestUpcomingProgram(
             res.data.data.latest_upcoming_program || null
           )
+          setTotalPages(res.data.data.pagination.last_page || 1) 
         }
       } catch (error) {
         console.error("Error fetching programs:", error)
@@ -198,25 +175,27 @@ export default function UpcomingEventPage() {
                       Coach: {latestUpcomingProgram.provider?.name || "N/A"}
                     </p>
 
-                    <div className="mt-4 space-y-4  ">
-                      <div className="flex ">
+                    <div className="mt-4 space-y-4">
+                      <div className="flex">
                         <p className="flex items-center gap-2 text-sm font-normal text-gray-500! sm:text-base">
-                         <CiCalendarDate />  Schedule : 
+                          <CiCalendarDate /> Schedule :
                         </p>
-                        <p className="text-sm font-normal text-black! sm:text-base lg:text-lg ml-1 ">
-                          {moment(latestUpcomingProgram.start_date).format("MMM Do YY")}
-                        </p> 
+                        <p className="ml-1 text-sm font-normal text-black! sm:text-base lg:text-lg">
+                          {moment(latestUpcomingProgram.start_date).format(
+                            "MMM Do YY"
+                          )}
+                        </p>
                       </div>
-                      <div className="flex ">
+                      <div className="flex">
                         <p className="flex items-center gap-2 text-sm font-normal text-gray-500! sm:text-base">
-                         <Hourglass className="size-5" /> Duration : 
+                          <Hourglass className="size-5" /> Duration :
                         </p>
- 
-                        <p className="text-sm font-normal text-black!  sm:text-base lg:text-lg">
+
+                        <p className="text-sm font-normal text-black! sm:text-base lg:text-lg">
                           {formatDuration(
                             latestUpcomingProgram.start_date,
                             latestUpcomingProgram.end_date
-                          )} 
+                          )}
                         </p>
                       </div>
                     </div>
@@ -276,7 +255,7 @@ export default function UpcomingEventPage() {
                       title={program.program_name}
                       type={`Age U${program?.age_limit == program?.from_age || program?.from_age == null ? program?.age_limit : `${program?.from_age} - U${program?.age_limit}`}`}
                       schedule={program.location}
-                      duration={`${moment(program.start_date || program.times[0]?.slot_date   ).format("MMM Do YY")} - ${moment(program.end_date || program.times[program.times?.length - 1]?.slot_date   ).format("MMM Do YY")}`}
+                      duration={`${moment(program.start_date || program.times[0]?.slot_date).format("MMM Do YY")} - ${moment(program.end_date || program.times[program.times?.length - 1]?.slot_date).format("MMM Do YY")}`}
                       currentPrice={
                         program.price
                           ? `${program.price - program.discount_price}`
@@ -300,6 +279,18 @@ export default function UpcomingEventPage() {
                   No programs found.
                 </div>
               )
+            )}
+
+            {  programs.length > 0 && (
+              <div className="sticky bottom-0 left-0 flex w-full items-center justify-center py-2 backdrop-blur-sm">
+                <CommonPagination
+                  currentPage={filter.page}
+                  totalPages={totalPages}
+                  onPageChange={(page: number) => {
+                    setFilter((prevFilter) => ({ ...prevFilter, page }))
+                  }}
+                />
+              </div>
             )}
           </>
         )}

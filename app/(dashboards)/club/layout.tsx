@@ -48,6 +48,7 @@ import { getClubProfile } from "./action"
 import { useAppDispatch, useAppSelector } from "@/lib/hooks"
 import { selectUnreadCount, setUnreadCount, setUserImage } from "@/lib/features/userSlice"
 import { getUnreadCount } from "../action"
+import StripeAuth from "@/components/auth/stripe-auth"
 
 export default function PlayerDashboardLayout({
   children,
@@ -81,8 +82,6 @@ export default function PlayerDashboardLayout({
     const getUnreadData = async () => {
       try {
         const res = await getUnreadCount()
-
-        console.log("unread count", res)
 
         if (res && res.status) {
           dispatch(setUnreadCount(res.data))
@@ -162,115 +161,117 @@ export default function PlayerDashboardLayout({
 
   return (
     <AuthCheckPoint role="club">
-      <SidebarProvider className="h-screen overflow-hidden">
-        <Modals />
-        <Sidebar collapsible="icon" className="relative border-secondary">
-          <Image
-            src={"/images/sidebarbg.png"}
-            width={1000}
-            height={1000}
-            alt="side-bar-bg"
-            loading="eager"
-            className="absolute top-100 left-0 w-full"
-          />
-          <SidebarHeader className="border-b border-secondary py-4.5">
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <div className="flex items-center justify-between">
-                  <div className="group-data-[collapsible=icon]:hidden">
-                    <Logo className="w-21.25" />
-                  </div>
-                  <Link
-                    href="/"
-                    className="hidden size-10 items-center justify-center rounded-md group-data-[collapsible=icon]:inline-flex"
-                  >
-                    <Image
-                      width={32}
-                      height={32}
-                      src="/images/logo.png"
-                      alt="Tarkavan Logo"
-                      className="h-8 w-8 object-contain"
-                    />
-                  </Link>
-                  <MenuBtn>
-                    <SidebarTrigger className="-ml-1 cursor-pointer" />
-                  </MenuBtn>
-                </div>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarHeader>
-
-          <SidebarContent className=" ">
-            {/* <SidebarSearch /> */}
-
-            <SidebarGroup>
+      <StripeAuth> 
+        <SidebarProvider className="h-screen overflow-hidden">
+          <Modals />
+          <Sidebar collapsible="icon" className="relative border-secondary">
+            <Image
+              src={"/images/sidebarbg.png"}
+              width={1000}
+              height={1000}
+              alt="side-bar-bg"
+              loading="eager"
+              className="absolute top-100 left-0 w-full"
+            />
+            <SidebarHeader className="border-b border-secondary py-4.5">
               <SidebarMenu>
-                {DATA.navMain.map((item) => (
-                  <Collapsible
-                    key={item.title}
-                    asChild
-                    defaultOpen={item.isActive}
-                    className="group/collapsible"
-                  >
-                    <SidebarMenuItem>
-                      <CollapsibleTrigger asChild>
-                        <Link href={item.url} className="">
-                          <SidebarMenuButton
-                            tooltip={item.title}
-                            className={`border-2 py-4.5 text-[#999999] ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
-                          >
-                            {item.icon && (
-                              <item.icon
-                                className={`text-[#999999] ${pathname == item.url ? "text-brand" : ""}`}
-                              />
-                            )}
-                            <p
-                              className={`${pathname == item.url ? "text-bold text-white" : ""} flex w-full items-center justify-between`}
-                            >
-                              <span>{item.title}</span>
-                              {item.title === "Messages" && unread > 0 && (
-                                <span className="ml-auto grid h-5! w-5! place-items-center rounded-full bg-brand px-1.5 text-xs text-primary">
-                                  {unread}
-                                </span>
-                              )}
-                            </p>
-                          </SidebarMenuButton>
-                        </Link>
-                      </CollapsibleTrigger>
-                    </SidebarMenuItem>
-                  </Collapsible>
-                ))}
+                <SidebarMenuItem>
+                  <div className="flex items-center justify-between">
+                    <div className="group-data-[collapsible=icon]:hidden">
+                      <Logo className="w-21.25" />
+                    </div>
+                    <Link
+                      href="/"
+                      className="hidden size-10 items-center justify-center rounded-md group-data-[collapsible=icon]:inline-flex"
+                    >
+                      <Image
+                        width={32}
+                        height={32}
+                        src="/images/logo.png"
+                        alt="Tarkavan Logo"
+                        className="h-8 w-8 object-contain"
+                      />
+                    </Link>
+                    <MenuBtn>
+                      <SidebarTrigger className="-ml-1 cursor-pointer" />
+                    </MenuBtn>
+                  </div>
+                </SidebarMenuItem>
               </SidebarMenu>
-            </SidebarGroup>
-          </SidebarContent>
-          <SidebarFooter>
-            <SidebarMenuButton className={`py-4.5 text-red-500`}>
-              <RiLogoutCircleRLine />
-              <span className={` `}>Log out</span>
-            </SidebarMenuButton>
-          </SidebarFooter>
-          <SidebarRail />
-        </Sidebar>
+            </SidebarHeader>
 
-        <SidebarInset className="flex h-screen min-h-0 flex-col">
-          <header className="flex shrink-0 items-center gap-2 border-b border-secondary py-2.5 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-            <div className="flex w-full items-center justify-between gap-2 px-4">
-              <BreadcrumbCustom />
-              <div className="flex items-center gap-4">
-                {/* <Notification /> */}
-                <ProfileDropdown />
+            <SidebarContent className=" ">
+              {/* <SidebarSearch /> */}
+
+              <SidebarGroup>
+                <SidebarMenu>
+                  {DATA.navMain.map((item) => (
+                    <Collapsible
+                      key={item.title}
+                      asChild
+                      defaultOpen={item.isActive}
+                      className="group/collapsible"
+                    >
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                          <Link href={item.url} className="">
+                            <SidebarMenuButton
+                              tooltip={item.title}
+                              className={`border-2 py-4.5 text-[#999999] ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
+                            >
+                              {item.icon && (
+                                <item.icon
+                                  className={`text-[#999999] ${pathname == item.url ? "text-brand" : ""}`}
+                                />
+                              )}
+                              <p
+                                className={`${pathname == item.url ? "text-bold text-white" : ""} flex w-full items-center justify-between`}
+                              >
+                                <span>{item.title}</span>
+                                {item.title === "Messages" && unread > 0 && (
+                                  <span className="ml-auto grid h-5! w-5! place-items-center rounded-full bg-brand px-1.5 text-xs text-primary">
+                                    {unread}
+                                  </span>
+                                )}
+                              </p>
+                            </SidebarMenuButton>
+                          </Link>
+                        </CollapsibleTrigger>
+                      </SidebarMenuItem>
+                    </Collapsible>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroup>
+            </SidebarContent>
+            <SidebarFooter>
+              <SidebarMenuButton className={`py-4.5 text-red-500`}>
+                <RiLogoutCircleRLine />
+                <span className={` `}>Log out</span>
+              </SidebarMenuButton>
+            </SidebarFooter>
+            <SidebarRail />
+          </Sidebar>
+
+          <SidebarInset className="flex h-screen min-h-0 flex-col">
+            <header className="flex shrink-0 items-center gap-2 border-b border-secondary py-2.5 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+              <div className="flex w-full items-center justify-between gap-2 px-4">
+                <BreadcrumbCustom />
+                <div className="flex items-center gap-4">
+                  {/* <Notification /> */}
+                  <ProfileDropdown />
+                </div>
               </div>
-            </div>
-          </header>
-          {pathname.includes("/player/messages") ? (
-            children
-          ) : (
-            <ScrollArea className="min-h-0 flex-1 border">
-              <div className="px-8 py-6">{children}</div>
-            </ScrollArea>
-          )}
-        </SidebarInset>
-      </SidebarProvider>
+            </header>
+            {pathname.includes("/player/messages") ? (
+              children
+            ) : (
+              <ScrollArea className="min-h-0 flex-1 border">
+                <div className="px-8 py-6">{children}</div>
+              </ScrollArea>
+            )}
+          </SidebarInset>
+        </SidebarProvider>
+      </StripeAuth>
     </AuthCheckPoint>
   )
 }

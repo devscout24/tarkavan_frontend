@@ -45,6 +45,7 @@ import {
 } from "@/lib/features/userSlice"
 import { CiCreditCard2 } from "react-icons/ci"
 import { getUnreadCount } from "../action"
+import StripeAuth from "@/components/auth/stripe-auth"
 
 const EarningsNavIcon = ({ className }: { className?: string }) => (
   <Image
@@ -106,8 +107,7 @@ export default function ParentDashboardLayout({
     const getUnreadData = async () => {
       try {
         const res = await getUnreadCount()
-
-        console.log("unread count", res)
+ 
 
         if (res && res.status) {
           dispatch(setUnreadCount(res.data))
@@ -177,114 +177,116 @@ export default function ParentDashboardLayout({
 
   return (
     <AuthCheckPoint role="coach">
-      <SidebarProvider className={` `}>
-        <Modals />
-        <Sidebar
-          collapsible="icon"
-          className="relative border-secondary bg-primary"
-        >
-          <Image
-            width={1000}
-            height={1000}
-            src={"/images/sidebarbg.png"}
-            alt="side-bar-bg"
-            loading="eager"
-            className="absolute top-1/2 left-0 w-full -translate-y-1/2"
-          />
-          <SidebarHeader className="border-b border-secondary py-4.5">
-            {/* Team Switcher */}
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <div className="flex items-center justify-between">
-                  <div className="group-data-[collapsible=icon]:hidden">
-                    <Logo className="w-21.25" />
-                  </div>
-                  <Link
-                    href="/"
-                    className="hidden size-10 items-center justify-center rounded-md group-data-[collapsible=icon]:inline-flex"
-                  >
-                    <Image
-                      width={32}
-                      height={32}
-                      src="/images/logo.png"
-                      alt="Tarkavan Logo"
-                      className="h-8 w-8 object-contain"
-                    />
-                  </Link>
-                  <MenuBtn>
-                    <SidebarTrigger className="-ml-1 cursor-pointer" />
-                  </MenuBtn>
-                </div>
-              </SidebarMenuItem>
-            </SidebarMenu>
-            {/* Team Switcher */}
-          </SidebarHeader>
-
-          <SidebarContent className=" ">
-            {/* navs */}
-            <SidebarGroup>
+      <StripeAuth> 
+        <SidebarProvider className={` `}>
+          <Modals />
+          <Sidebar
+            collapsible="icon"
+            className="relative border-secondary bg-primary"
+          >
+            <Image
+              width={1000}
+              height={1000}
+              src={"/images/sidebarbg.png"}
+              alt="side-bar-bg"
+              loading="eager"
+              className="absolute top-1/2 left-0 w-full -translate-y-1/2"
+            />
+            <SidebarHeader className="border-b border-secondary py-4.5">
+              {/* Team Switcher */}
               <SidebarMenu>
-                {DATA.navMain.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <Link href={item.url} className="">
-                      <SidebarMenuButton
-                        tooltip={item.title}
-                        className={`border-2 py-4.5 ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
-                      >
-                        {item.icon && (
-                          <item.icon
-                            className={
-                              item.title === "My Programs" ||
-                              item.title === "Bookings" ||
-                              item.title === "Earnings" ||
-                              item.title === "Messages"
-                                ? "text-white"
-                                : undefined
-                            }
-                          />
-                        )}
-                        <p
-                          className={`${pathname == item.url ? "text-bold text-white" : ""} w-full  flex items-center justify-between`}
-                        >
-                          <span>{item.title}</span>
-                          {item.title === "Messages" && unread > 0 && (
-                            <span className="h-5! w-5! grid place-items-center rounded-full bg-brand  px-1.5 text-xs text-primary ml-auto  ">
-                              {unread}
-                            </span>
-                          )}
-                        </p>
-                      </SidebarMenuButton>
+                <SidebarMenuItem>
+                  <div className="flex items-center justify-between">
+                    <div className="group-data-[collapsible=icon]:hidden">
+                      <Logo className="w-21.25" />
+                    </div>
+                    <Link
+                      href="/"
+                      className="hidden size-10 items-center justify-center rounded-md group-data-[collapsible=icon]:inline-flex"
+                    >
+                      <Image
+                        width={32}
+                        height={32}
+                        src="/images/logo.png"
+                        alt="Tarkavan Logo"
+                        className="h-8 w-8 object-contain"
+                      />
                     </Link>
-                  </SidebarMenuItem>
-                ))}
+                    <MenuBtn>
+                      <SidebarTrigger className="-ml-1 cursor-pointer" />
+                    </MenuBtn>
+                  </div>
+                </SidebarMenuItem>
               </SidebarMenu>
-            </SidebarGroup>
-          </SidebarContent>
-          <SidebarFooter>
-            <SidebarMenuButton className={`py-4.5 text-red-500`}>
-              <RiLogoutCircleRLine />
-              <span className={` `}>Log out</span>
-            </SidebarMenuButton>
-          </SidebarFooter>
-          <SidebarRail />
-        </Sidebar>
+              {/* Team Switcher */}
+            </SidebarHeader>
 
-        <SidebarInset>
-          <header className="flex shrink-0 items-center gap-2 border-b border-secondary py-2.5 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-            <div className="flex w-full items-center justify-between gap-2 px-4">
-              <BreadcrumbCustom />
+            <SidebarContent className=" ">
+              {/* navs */}
+              <SidebarGroup>
+                <SidebarMenu>
+                  {DATA.navMain.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <Link href={item.url} className="">
+                        <SidebarMenuButton
+                          tooltip={item.title}
+                          className={`border-2 py-4.5 ${pathname == item.url ? "rounded-[12px] border-brand bg-brand/20" : "border-transparent"}`}
+                        >
+                          {item.icon && (
+                            <item.icon
+                              className={
+                                item.title === "My Programs" ||
+                                item.title === "Bookings" ||
+                                item.title === "Earnings" ||
+                                item.title === "Messages"
+                                  ? "text-white"
+                                  : undefined
+                              }
+                            />
+                          )}
+                          <p
+                            className={`${pathname == item.url ? "text-bold text-white" : ""} w-full  flex items-center justify-between`}
+                          >
+                            <span>{item.title}</span>
+                            {item.title === "Messages" && unread > 0 && (
+                              <span className="h-5! w-5! grid place-items-center rounded-full bg-brand  px-1.5 text-xs text-primary ml-auto  ">
+                                {unread}
+                              </span>
+                            )}
+                          </p>
+                        </SidebarMenuButton>
+                      </Link>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroup>
+            </SidebarContent>
+            <SidebarFooter>
+              <SidebarMenuButton className={`py-4.5 text-red-500`}>
+                <RiLogoutCircleRLine />
+                <span className={` `}>Log out</span>
+              </SidebarMenuButton>
+            </SidebarFooter>
+            <SidebarRail />
+          </Sidebar>
 
-              <div className="flex items-center gap-4">
-                {/* <Notification /> */}
-                <ProfileDropdown />
+          <SidebarInset>
+            <header className="flex shrink-0 items-center gap-2 border-b border-secondary py-2.5 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+              <div className="flex w-full items-center justify-between gap-2 px-4">
+                <BreadcrumbCustom />
+
+                <div className="flex items-center gap-4">
+                  {/* <Notification /> */}
+                  <ProfileDropdown />
+                </div>
               </div>
-            </div>
-          </header>
-          <ScrollArea className="h-[92vh]">
-            <div className="px-1 py-6 md:px-8">{children}</div>
-          </ScrollArea>
-        </SidebarInset>
-      </SidebarProvider>
+            </header>
+            <ScrollArea className="h-[92vh]">
+              <div className="px-1 py-6 md:px-8">{children}</div>
+            </ScrollArea>
+          </SidebarInset>
+        </SidebarProvider>
+      </StripeAuth>
     </AuthCheckPoint>
   )
 }

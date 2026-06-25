@@ -110,8 +110,7 @@ export default function ParentDashboardLayout({
     const getUnreadData = async () => {
       try {
         const res = await getUnreadCount()
-
-        console.log("unread count", res)
+ 
 
         if (res && res.status) {
           dispatch(setUnreadCount(res.data))

@@ -15,6 +15,7 @@ import { MdOutlineCleaningServices } from "react-icons/md";
 type FilterType = {
   program_type: string
   status: string
+  page: number
 }
 
 const ProgramFilterDropdown = ({
@@ -115,7 +116,7 @@ const ProgramFilterDropdown = ({
       <CommonBtn
         size="sm"
         variant="outline"
-        onClick={() => setFilter({ program_type: "", status: "" })}
+        onClick={() => setFilter({ program_type: "", status: "", page: 1 })}
         className=" border border-secondary bg-transparent px-3 py-4.5  text-white hover:bg-brand/90 hover:text-primary" 
         icon={<MdOutlineCleaningServices />}
       />

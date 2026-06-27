@@ -78,9 +78,10 @@ export default function MessagePage() {
   )
   const [messages, setMessages] = React.useState<TChatMessage[]>([])
 
-  // --- refs so handlers always read latest values without stale closures ---
+  // refs so handlers always read latest values without stale closures
   const conversationIDRef = React.useRef(conversationID)
   const activeChatIdRef = React.useRef(activeChatId)
+  const chatListRef = React.useRef(chatList)
 
   React.useEffect(() => {
     conversationIDRef.current = conversationID
@@ -89,39 +90,44 @@ export default function MessagePage() {
   React.useEffect(() => {
     activeChatIdRef.current = activeChatId
   }, [activeChatId])
-  // ------------------------------------------------------------------------
 
-  // Sync conversationID when activeChatId or chatList changes
   React.useEffect(() => {
-    if (!activeChatId) return
+    chatListRef.current = chatList
+  }, [chatList])
 
-    const activeChat = chatList.find(
-      (chat) => getChatIdentity(chat) === activeChatId
-    )
+  // FIX: Chat select handler — set both activeChatId AND conversationID
+  // synchronously at the same time so there is zero gap between the two.
+  // Previously only activeChatId was set here; conversationID was derived
+  // in a separate useEffect which fires AFTER the render, causing production
+  // to miss the first getConversation() call (conversationID still "" when
+  // the effect ran).
+  const handleSelectChat = React.useCallback(
+    (chatId: string) => {
+      setActiveChatId(chatId)
+      setMessages([]) // clear immediately so old messages don't flash
 
-    if (
-      activeChat?.conversation_id &&
-      activeChat.conversation_id !== conversationIDRef.current
-    ) {
-      setConversationID(activeChat.conversation_id)
-    }
-  }, [activeChatId, chatList])
+      const chat = chatListRef.current.find(
+        (c) => getChatIdentity(c) === chatId
+      )
+      if (chat?.conversation_id) {
+        setConversationID(chat.conversation_id)
+      } else {
+        // No conversation yet (new chat) — clear so inbox shows empty state
+        setConversationID("")
+      }
+    },
+    [] // reads chatList via ref — never stale
+  )
 
   // Listen for deleted messages
   React.useEffect(() => {
     const handleMessageDeleted = (event: Event) => {
       const customEvent = event as CustomEvent<{ messageId?: string }>
       const messageId = customEvent.detail?.messageId
-
       if (!messageId) return
-
-      setMessages((currentMessages) =>
-        currentMessages.filter((message) => message.id !== messageId)
-      )
+      setMessages((prev) => prev.filter((m) => m.id !== messageId))
     }
-
     window.addEventListener("chat-message-deleted", handleMessageDeleted)
-
     return () => {
       window.removeEventListener("chat-message-deleted", handleMessageDeleted)
     }
@@ -129,12 +135,6 @@ export default function MessagePage() {
 
   const handleRealTimeMessage = React.useCallback(
     (message: TChatMessage) => {
-      const msg = message.message
-
-      setMessages((currentMessages) => {
-        return [...currentMessages, msg as unknown as TChatMessage]
-      })
-
       const currentConversationID = conversationIDRef.current
       const currentActiveChatId = activeChatIdRef.current
 
@@ -156,7 +156,6 @@ export default function MessagePage() {
               }
             : chat
         })
-
         return dedupeChats(nextChats)
       })
 
@@ -191,13 +190,9 @@ export default function MessagePage() {
   // Sync activeChatId to URL
   React.useEffect(() => {
     if (!activeChatId) return
-
     const params = new URLSearchParams(searchParams.toString())
-
     if (params.get("receiver_chatId") === activeChatId) return
-
     params.set("receiver_chatId", activeChatId)
-
     router.replace(`?${params.toString()}`)
   }, [activeChatId, router, searchParams])
 
@@ -225,11 +220,8 @@ export default function MessagePage() {
     loadConversation()
   }, [conversationID])
 
-  // Load chat list on mount
-  // FIX: After getChatList resolves, immediately set conversationID for the
-  // active chat. On production, network latency means chatList arrives AFTER
-  // the conversationID useEffect has already fired with an empty chatList,
-  // so we must re-derive conversationID here as soon as the data is available.
+  // Load chat list on mount — after resolving, immediately set conversationID
+  // for the active chat so production (high latency) doesn't miss the first load.
   React.useEffect(() => {
     const loadChatList = async () => {
       try {
@@ -245,16 +237,14 @@ export default function MessagePage() {
               ...prev.filter(
                 (chat) =>
                   !fetchedChats.some(
-                    (fetchedChat) =>
-                      getChatIdentity(fetchedChat) === getChatIdentity(chat)
+                    (fc) => getChatIdentity(fc) === getChatIdentity(chat)
                   )
               ),
             ])
           )
 
-          // FIX: Production race condition — set conversationID immediately
-          // from the freshly fetched list without waiting for another render cycle.
-          // activeChatIdRef always holds the latest value so no stale closure risk.
+          // Set conversationID right away without waiting for the chatList
+          // state update to propagate through a useEffect cycle.
           const currentActiveChatId = activeChatIdRef.current
           if (currentActiveChatId && !conversationIDRef.current) {
             const activeChat = fetchedChats.find(
@@ -272,8 +262,6 @@ export default function MessagePage() {
 
     loadChatList()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
-  // Intentionally empty — reads activeChatId and conversationID via refs.
-  // Adding them as deps would re-fetch the chat list on every chat switch.
 
   // Keep initialReceiver in chat list if not already present
   React.useEffect(() => {
@@ -300,7 +288,7 @@ export default function MessagePage() {
         <ChatHead
           chats={chatList}
           activeChatId={activeChatId}
-          onSelectChat={setActiveChatId}
+          onSelectChat={handleSelectChat}
           setConversationID={setConversationID}
         />
         <ChatInbox
@@ -318,6 +306,28 @@ export default function MessagePage() {
     </section>
   )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

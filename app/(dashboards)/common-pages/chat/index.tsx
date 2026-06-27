@@ -95,12 +95,7 @@ export default function MessagePage() {
     chatListRef.current = chatList
   }, [chatList])
 
-  // FIX: Chat select handler — set both activeChatId AND conversationID
-  // synchronously at the same time so there is zero gap between the two.
-  // Previously only activeChatId was set here; conversationID was derived
-  // in a separate useEffect which fires AFTER the render, causing production
-  // to miss the first getConversation() call (conversationID still "" when
-  // the effect ran).
+ 
   const handleSelectChat = React.useCallback(
     (chatId: string) => {
       setActiveChatId(chatId)
@@ -218,7 +213,7 @@ export default function MessagePage() {
     }
 
     loadConversation()
-  }, [conversationID])
+  }, [conversationID , receiver_chatId])
 
   // Load chat list on mount — after resolving, immediately set conversationID
   // for the active chat so production (high latency) doesn't miss the first load.

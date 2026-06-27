@@ -189,7 +189,7 @@ export default function MessagePage() {
     if (params.get("receiver_chatId") === activeChatId) return
     params.set("receiver_chatId", activeChatId)
     router.replace(`?${params.toString()}`)
-  }, [activeChatId, router, searchParams])
+  }, [activeChatId, router, searchParams , ])
 
   // Load conversation when conversationID changes
   React.useEffect(() => {
@@ -213,7 +213,7 @@ export default function MessagePage() {
     }
 
     loadConversation()
-  }, [conversationID , receiver_chatId])
+  }, [conversationID])
 
   // Load chat list on mount — after resolving, immediately set conversationID
   // for the active chat so production (high latency) doesn't miss the first load.
@@ -276,6 +276,17 @@ export default function MessagePage() {
       )
     }
   }, [chatList, conversationID, initialReceiver])
+
+
+  React.useEffect(()=> {
+
+    if(!receiver_chatId) return
+
+    router.refresh();
+ 
+  
+  } ,  [receiver_chatId])
+
 
   return (
     <section className="flex h-[90dvh] min-h-0 flex-col p-3">

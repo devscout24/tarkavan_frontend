@@ -78,7 +78,7 @@ export default function MessagePage() {
   )
   const [messages, setMessages] = React.useState<TChatMessage[]>([])
 
-  // --- refs so handleRealTimeMessage always reads latest values ---
+  // --- refs so handlers always read latest values without stale closures ---
   const conversationIDRef = React.useRef(conversationID)
   const activeChatIdRef = React.useRef(activeChatId)
 
@@ -89,11 +89,9 @@ export default function MessagePage() {
   React.useEffect(() => {
     activeChatIdRef.current = activeChatId
   }, [activeChatId])
-  // ---------------------------------------------------------------
+  // ------------------------------------------------------------------------
 
-  // FIX: added `chatList` as a dependency so this re-runs after getChatList() resolves.
-  // Previously missing `chatList` meant conversationID was never set when chatList
-  // populated asynchronously (e.g. after page load on a hosted server).
+  // Sync conversationID when activeChatId or chatList changes
   React.useEffect(() => {
     if (!activeChatId) return
 
@@ -107,8 +105,9 @@ export default function MessagePage() {
     ) {
       setConversationID(activeChat.conversation_id)
     }
-  }, [activeChatId, chatList]) // FIX: chatList added here
+  }, [activeChatId, chatList])
 
+  // Listen for deleted messages
   React.useEffect(() => {
     const handleMessageDeleted = (event: Event) => {
       const customEvent = event as CustomEvent<{ messageId?: string }>
@@ -136,7 +135,6 @@ export default function MessagePage() {
         return [...currentMessages, msg as unknown as TChatMessage]
       })
 
-      // Read latest values from refs — never stale
       const currentConversationID = conversationIDRef.current
       const currentActiveChatId = activeChatIdRef.current
 
@@ -162,7 +160,6 @@ export default function MessagePage() {
         return dedupeChats(nextChats)
       })
 
-      // If we don't have a conversationID yet, grab it from the incoming message
       if (message.conversation_id && !conversationIDRef.current) {
         setConversationID(message.conversation_id)
       }
@@ -182,16 +179,16 @@ export default function MessagePage() {
         return [...currentMessages, message]
       })
     },
-    [] // empty deps — reads latest state via refs, never goes stale
+    []
   )
 
-  // FIX: only subscribe when conversationID is a valid non-empty string
   const listenerChannels = React.useMemo(
     () => (conversationID ? [`chat-conversation.${conversationID}`] : []),
     [conversationID]
   )
   useChatListener(listenerChannels, handleRealTimeMessage)
 
+  // Sync activeChatId to URL
   React.useEffect(() => {
     if (!activeChatId) return
 
@@ -229,6 +226,10 @@ export default function MessagePage() {
   }, [conversationID])
 
   // Load chat list on mount
+  // FIX: After getChatList resolves, immediately set conversationID for the
+  // active chat. On production, network latency means chatList arrives AFTER
+  // the conversationID useEffect has already fired with an empty chatList,
+  // so we must re-derive conversationID here as soon as the data is available.
   React.useEffect(() => {
     const loadChatList = async () => {
       try {
@@ -236,6 +237,7 @@ export default function MessagePage() {
 
         if (res && "success" in res && res.success && res.data?.data) {
           const fetchedChats = res.data.data as TChatItem[]
+
           setChatList((prev) =>
             dedupeChats([
               ...(initialReceiver ? [initialReceiver] : []),
@@ -249,6 +251,19 @@ export default function MessagePage() {
               ),
             ])
           )
+
+          // FIX: Production race condition — set conversationID immediately
+          // from the freshly fetched list without waiting for another render cycle.
+          // activeChatIdRef always holds the latest value so no stale closure risk.
+          const currentActiveChatId = activeChatIdRef.current
+          if (currentActiveChatId && !conversationIDRef.current) {
+            const activeChat = fetchedChats.find(
+              (chat) => getChatIdentity(chat) === currentActiveChatId
+            )
+            if (activeChat?.conversation_id) {
+              setConversationID(activeChat.conversation_id)
+            }
+          }
         }
       } catch (err) {
         console.error("Error fetching chat list:", err)
@@ -256,7 +271,9 @@ export default function MessagePage() {
     }
 
     loadChatList()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  // Intentionally empty — reads activeChatId and conversationID via refs.
+  // Adding them as deps would re-fetch the chat list on every chat switch.
 
   // Keep initialReceiver in chat list if not already present
   React.useEffect(() => {
@@ -301,8 +318,6 @@ export default function MessagePage() {
     </section>
   )
 }
-
-
 
 
 

@@ -2,636 +2,121 @@
 
 import ChatHead from "@/components/common/chat-head"
 import ChatInbox from "@/components/common/chat-inbox"
-import { TChatItem, TChatMessage } from "@/types"
-import { useRouter, useSearchParams } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import * as React from "react"
 import { useChatListener } from "@/lib/useChatListener"
 import { getChatList, getConversation, sendMessage } from "./action"
-
-const getChatIdentity = (chat: TChatItem) =>
-  String(chat.receiver_id || chat.chat_id)
-
-const dedupeChats = (items: TChatItem[]) => {
-  const chatsById = new Map<string, TChatItem>()
-
-  for (const chat of items) {
-    const identity = getChatIdentity(chat)
-    const existingChat = chatsById.get(identity)
-
-    if (!existingChat) {
-      chatsById.set(identity, chat)
-      continue
-    }
-
-    const existingHasConversation = Boolean(existingChat.conversation_id)
-    const currentHasConversation = Boolean(chat.conversation_id)
-
-    if (!existingHasConversation && currentHasConversation) {
-      chatsById.set(identity, chat)
-      continue
-    }
-
-    if (existingChat.latest_time < chat.latest_time) {
-      chatsById.set(identity, chat)
-    }
-  }
-
-  return Array.from(chatsById.values())
-}
+import { TChatHeadItem, TChatMessage } from "@/types"
 
 export default function MessagePage() {
-  const user = localStorage.getItem("go_elite_user")
-    ? JSON.parse(localStorage.getItem("go_elite_user") as string)
-    : null
-
+  const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
   const receiver_chatId = searchParams.get("receiver_chatId")
-
-  const initialReceiverData = localStorage.getItem("go_elite_message_receiver")
-    ? JSON.parse(localStorage.getItem("go_elite_message_receiver") as string)
-    : null
-
-  const initialReceiver = React.useMemo(() => {
-    if (!initialReceiverData) return null
-    return {
-      chat_id: Number(initialReceiverData.user_id) || 0,
-      conversation_id: "",
-      latest_time: "",
-      message: "",
-      user_name: String(initialReceiverData.name || ""),
-      receiver_id: Number(initialReceiverData.user_id) || 0,
-      user_image: String(initialReceiverData.image || ""),
-      my_image: "",
-      chat_image: "",
-      image_id: "",
-      unread_count: 0,
-    }
-  }, [initialReceiverData])
-
-  const [activeChatId, setActiveChatId] = React.useState<string>(
-    receiver_chatId ?? String(initialReceiver?.receiver_id ?? "")
-  )
-  const router = useRouter()
-  const [conversationID, setConversationID] = React.useState<string>("")
-  const [chatList, setChatList] = React.useState<TChatItem[]>(() =>
-    initialReceiver ? [initialReceiver] : []
-  )
+  const [chatHeads, setChatHeads] = React.useState<TChatHeadItem[]>([]) 
   const [messages, setMessages] = React.useState<TChatMessage[]>([])
-
-  // refs so handlers always read latest values without stale closures
-  const conversationIDRef = React.useRef(conversationID)
-  const activeChatIdRef = React.useRef(activeChatId)
-  const chatListRef = React.useRef(chatList)
-
-  React.useEffect(() => {
-    conversationIDRef.current = conversationID
-  }, [conversationID])
-
-  React.useEffect(() => {
-    activeChatIdRef.current = activeChatId
-  }, [activeChatId])
-
-  React.useEffect(() => {
-    chatListRef.current = chatList
-  }, [chatList])
-
+  const [activeConvId, setActiveConvId] = React.useState<string>(
+    chatHeads.find((chat) => String(chat.receiver_id) === receiver_chatId)?.conversation_id || ""
+  )
  
-  const handleSelectChat = React.useCallback(
-    (chatId: string) => {
-      setActiveChatId(chatId)
-      setMessages([]) // clear immediately so old messages don't flash
-
-      const chat = chatListRef.current.find(
-        (c) => getChatIdentity(c) === chatId
-      )
-      if (chat?.conversation_id) {
-        setConversationID(chat.conversation_id)
-      } else {
-        // No conversation yet (new chat) — clear so inbox shows empty state
-        setConversationID("")
-      }
-    },
-    [] // reads chatList via ref — never stale
-  )
-
-  // Listen for deleted messages
+  // get chat heads
   React.useEffect(() => {
-    const handleMessageDeleted = (event: Event) => {
-      const customEvent = event as CustomEvent<{ messageId?: string }>
-      const messageId = customEvent.detail?.messageId
-      if (!messageId) return
-      setMessages((prev) => prev.filter((m) => m.id !== messageId))
-    }
-    window.addEventListener("chat-message-deleted", handleMessageDeleted)
-    return () => {
-      window.removeEventListener("chat-message-deleted", handleMessageDeleted)
-    }
-  }, [])
-
-  const handleRealTimeMessage = React.useCallback(
-    (message: TChatMessage) => {
-      const currentConversationID = conversationIDRef.current
-      const currentActiveChatId = activeChatIdRef.current
-
-      setChatList((currentChats) => {
-        const nextChats = currentChats.map((chat) => {
-          const matchesChat =
-            (message.conversation_id &&
-              chat.conversation_id === message.conversation_id) ||
-            String(chat.receiver_id) === String(message.sender_id) ||
-            String(chat.receiver_id) === String(message.receiver_id)
-
-          return matchesChat
-            ? {
-                ...chat,
-                conversation_id:
-                  message.conversation_id || chat.conversation_id,
-                message: message.message,
-                latest_time: message.created_at,
-              }
-            : chat
-        })
-        return dedupeChats(nextChats)
-      })
-
-      if (message.conversation_id && !conversationIDRef.current) {
-        setConversationID(message.conversation_id)
-      }
-
-      const belongsToActiveChat =
-        (message.conversation_id &&
-          message.conversation_id === currentConversationID) ||
-        String(message.sender_id) === currentActiveChatId ||
-        String(message.receiver_id) === currentActiveChatId
-
-      if (!belongsToActiveChat) return
-
-      setMessages((currentMessages) => {
-        if (currentMessages.some((existing) => existing.id === message.id)) {
-          return currentMessages
-        }
-        return [...currentMessages, message]
-      })
-    },
-    []
-  )
-
-  const listenerChannels = React.useMemo(
-    () => (conversationID ? [`chat-conversation.${conversationID}`] : []),
-    [conversationID]
-  )
-  useChatListener(listenerChannels, handleRealTimeMessage)
-
-  // Sync activeChatId to URL
-  React.useEffect(() => {
-    if (!activeChatId) return
-    const params = new URLSearchParams(searchParams.toString())
-    if (params.get("receiver_chatId") === activeChatId) return
-    params.set("receiver_chatId", activeChatId)
-    router.replace(`?${params.toString()}`)
-  }, [activeChatId, router, searchParams , ])
-
-  // Load conversation when conversationID changes
-  React.useEffect(() => {
-    if (!conversationID) return
-
-    setMessages([])
-
-    const loadConversation = async () => {
-      try {
-        const res = await getConversation(conversationID)
-        if (res && "success" in res && res.success && res.data?.data) {
-          const msgs = (res.data.data ?? []) as TChatMessage[]
-          setMessages(msgs)
-        } else {
-          setMessages([])
-        }
-      } catch (err) {
-        console.error("Error fetching conversation:", err)
-        setMessages([])
-      }
-    }
-
-    loadConversation()
-  }, [conversationID])
-
-  // Load chat list on mount — after resolving, immediately set conversationID
-  // for the active chat so production (high latency) doesn't miss the first load.
-  React.useEffect(() => {
-    const loadChatList = async () => {
+    const getChatHead = async () => {
       try {
         const res = await getChatList()
-
-        if (res && "success" in res && res.success && res.data?.data) {
-          const fetchedChats = res.data.data as TChatItem[]
-
-          setChatList((prev) =>
-            dedupeChats([
-              ...(initialReceiver ? [initialReceiver] : []),
-              ...fetchedChats,
-              ...prev.filter(
-                (chat) =>
-                  !fetchedChats.some(
-                    (fc) => getChatIdentity(fc) === getChatIdentity(chat)
-                  )
-              ),
-            ])
-          )
-
-          // Set conversationID right away without waiting for the chatList
-          // state update to propagate through a useEffect cycle.
-          const currentActiveChatId = activeChatIdRef.current
-          if (currentActiveChatId && !conversationIDRef.current) {
-            const activeChat = fetchedChats.find(
-              (chat) => getChatIdentity(chat) === currentActiveChatId
-            )
-            if (activeChat?.conversation_id) {
-              setConversationID(activeChat.conversation_id)
-            }
-          }
+        if (
+          res &&
+          "success" in res &&
+          res.success &&
+          res.data &&
+          "data" in res.data &&
+          res.data.data
+        ) {
+          setChatHeads(res.data.data)
         }
       } catch (err) {
-        console.error("Error fetching chat list:", err)
+        console.error(err)
       }
     }
 
-    loadChatList()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    getChatHead()
+  }, [receiver_chatId])
 
-  // Keep initialReceiver in chat list if not already present
   React.useEffect(() => {
-    if (!initialReceiver) return
 
-    const receiverIdentity = getChatIdentity(initialReceiver)
-    const exists = chatList.some(
-      (chat) => getChatIdentity(chat) === receiverIdentity
-    )
+    if(!activeConvId) return
 
-    if (!exists) {
-      setChatList((prev) =>
-        dedupeChats([
-          ...prev,
-          { ...initialReceiver, conversation_id: conversationID },
-        ])
-      )
+    const getConv = async () => {
+      try {
+        const res = await getConversation(activeConvId)   
+        if(res && "success" in res && res.success && res.data && "data" in res.data && res.data.data) {
+          setMessages(res.data.data)
+        }
+
+      } catch (err) {
+        console.error(err)
+      }
     }
-  }, [chatList, conversationID, initialReceiver])
 
+    getConv()
+  } , [activeConvId])
 
-  React.useEffect(()=> {
-
-    if(!receiver_chatId) return
-
-    router.refresh();
+  // set conv id when receiver_chatId changes
+  React.useEffect(() => {
+    const newConvId = chatHeads.find((chat) => String(chat.receiver_id) === receiver_chatId)?.conversation_id || ""
+    setActiveConvId(newConvId)
+  }, [receiver_chatId, chatHeads])
  
-  
-  } ,  [receiver_chatId])
+ 
+  const handleRealTimeMessage = React.useCallback(
+    (message: TChatMessage ) => { 
 
+      const msg: any  = message.message 
+ 
+      const newMessage = {
+        id: msg?.id,
+        sender_id: msg?.sender_id,
+        receiver_id: msg?.receiver_id, 
+        conversation_id: msg?.conversation_id,
+        message: msg?.message,
+        image_id: msg?.image_id,
+        image_url: msg?.image_url,
+        sender_image: msg?.sender_image,
+        receiver_image: msg?.receiver_image, 
+        sender: {id: msg?.sender_id , name: msg?.sender_name , image: msg?.sender_image } ,
+        receiver: {id: msg?.receiver_id , name: msg?.receiver_name , image: msg?.receiver_image }
+      } 
+
+      setMessages((currentMessages) => {
+        return [...currentMessages, newMessage as unknown as TChatMessage]
+      })  
+    },
+    [] // empty deps — reads latest state via refs, never goes stale
+  )
+
+  // Static channel list — no re-subscribe on conversationID change
+  const listenerChannels = [`chat-conversation.${activeConvId}`]
+  useChatListener(listenerChannels, handleRealTimeMessage)
 
   return (
     <section className="flex h-[90dvh] min-h-0 flex-col p-3">
       <div className="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">
         <ChatHead
-          chats={chatList}
-          activeChatId={activeChatId}
-          onSelectChat={handleSelectChat}
-          setConversationID={setConversationID}
+          chats={chatHeads} 
+          onSelectChat={(chatId: string) => { 
+            const params = new URLSearchParams(searchParams.toString())
+            params.set("receiver_chatId", chatId) 
+            router.replace(`${pathname}?${params.toString()}`)
+          }}
+          setConversationID={setActiveConvId}
         />
-        <ChatInbox
-          chat={
-            chatList.find(
-              (chat) => String(chat.receiver_id) === activeChatId
-            ) ?? chatList[0]
-          }
+
+        <ChatInbox 
           messages={messages}
-          setConversationID={setConversationID}
-          activeChatId={activeChatId}
-          userId={String(user?.id)}
+          chatHead={chatHeads.find((chat) => String(chat.receiver_id) === receiver_chatId) as TChatHeadItem }
+ 
         />
       </div>
     </section>
   )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// "use client"
-
-// import ChatHead from "@/components/common/chat-head"
-// import ChatInbox from "@/components/common/chat-inbox"
-// import { TChatItem, TChatMessage } from "@/types"
-// import { useRouter, useSearchParams } from "next/navigation"
-// import * as React from "react"
-// import { useChatListener } from "@/lib/useChatListener"
-// import { getChatList, getConversation, sendMessage } from "./action"
-
-// const getChatIdentity = (chat: TChatItem) =>
-//   String(chat.receiver_id || chat.chat_id)
-
-// const dedupeChats = (items: TChatItem[]) => {
-//   const chatsById = new Map<string, TChatItem>()
-
-//   for (const chat of items) {
-//     const identity = getChatIdentity(chat)
-//     const existingChat = chatsById.get(identity)
-
-//     if (!existingChat) {
-//       chatsById.set(identity, chat)
-//       continue
-//     }
-
-//     const existingHasConversation = Boolean(existingChat.conversation_id)
-//     const currentHasConversation = Boolean(chat.conversation_id)
-
-//     if (!existingHasConversation && currentHasConversation) {
-//       chatsById.set(identity, chat)
-//       continue
-//     }
-
-//     if (existingChat.latest_time < chat.latest_time) {
-//       chatsById.set(identity, chat)
-//     }
-//   }
-
-//   return Array.from(chatsById.values())
-// }
-
-// export default function MessagePage() {
-//   const user = localStorage.getItem("go_elite_user")
-//     ? JSON.parse(localStorage.getItem("go_elite_user") as string)
-//     : null
-//   const searchParams = useSearchParams()
-//   const receiver_chatId = searchParams.get("receiver_chatId")
-//   const initialReceiverData = localStorage.getItem("go_elite_message_receiver")
-//     ? JSON.parse(localStorage.getItem("go_elite_message_receiver") as string)
-//     : null
-//   const initialReceiver = React.useMemo(() => {
-//     if (!initialReceiverData) return null
-//     return {
-//       chat_id: Number(initialReceiverData.user_id) || 0,
-//       conversation_id: "",
-//       latest_time: "",
-//       message: "",
-//       user_name: String(initialReceiverData.name || ""),
-//       receiver_id: Number(initialReceiverData.user_id) || 0,
-//       user_image: String(initialReceiverData.image || ""),
-//       my_image: "",
-//       chat_image: "",
-//       image_id: "",
-//       unread_count: 0,
-//     }
-//   }, [initialReceiverData])
-
-//   const [activeChatId, setActiveChatId] = React.useState<string>(
-//     receiver_chatId ?? String(initialReceiver?.receiver_id ?? "")
-//   )
-//   const router = useRouter()
-//   const [conversationID, setConversationID] = React.useState<string>("")
-//   const [chatList, setChatList] = React.useState<TChatItem[]>(() =>
-//     initialReceiver ? [initialReceiver] : []
-//   )
-//   const [messages, setMessages] = React.useState<TChatMessage[]>([])
- 
-//   // --- FIX: refs so handleRealTimeMessage always reads latest values ---
-//   const conversationIDRef = React.useRef(conversationID)
-//   const activeChatIdRef = React.useRef(activeChatId)
-
-//   React.useEffect(() => {
-//     conversationIDRef.current = conversationID
-//   }, [conversationID])
-
-//   React.useEffect(() => {
-//     activeChatIdRef.current = activeChatId
-//   }, [activeChatId])
-//   // ---------------------------------------------------------------------
-
-//   React.useEffect(() => {
-//     if (!activeChatId || conversationIDRef.current) return
-
-//     const activeChat = chatList.find(
-//       (chat) => getChatIdentity(chat) === activeChatId
-//     )
-
-//     if (activeChat?.conversation_id) {
-//       setConversationID(activeChat.conversation_id)
-//     }
-//   }, [activeChatId, chatList])
-
-//   React.useEffect(() => {
-//     const handleMessageDeleted = (event: Event) => {
-//       const customEvent = event as CustomEvent<{ messageId?: string }>
-//       const messageId = customEvent.detail?.messageId
-
-//       if (!messageId) return
-
-//       setMessages((currentMessages) =>
-//         currentMessages.filter((message) => message.id !== messageId)
-//       )
-//     }
-
-//     window.addEventListener("chat-message-deleted", handleMessageDeleted)
-
-//     return () => {
-//       window.removeEventListener("chat-message-deleted", handleMessageDeleted)
-//     }
-//   }, [])
-
-//   const handleRealTimeMessage = React.useCallback(
-//     (message: TChatMessage) => {
-//       const msg = message.message
-
-//       setMessages((currentMessages) => {
-//         return [...currentMessages, msg as unknown as TChatMessage]
-//       })
-
-//       // Read latest values from refs — never stale
-//       const currentConversationID = conversationIDRef.current
-//       const currentActiveChatId = activeChatIdRef.current
-
-//       setChatList((currentChats) => {
-//         const nextChats = currentChats.map((chat) => {
-//           const matchesChat =
-//             (message.conversation_id &&
-//               chat.conversation_id === message.conversation_id) ||
-//             String(chat.receiver_id) === String(message.sender_id) ||
-//             String(chat.receiver_id) === String(message.receiver_id)
-
-//           return matchesChat
-//             ? {
-//                 ...chat,
-//                 conversation_id:
-//                   message.conversation_id || chat.conversation_id,
-//                 message: message.message,
-//                 latest_time: message.created_at,
-//               }
-//             : chat
-//         })
-
-//         return dedupeChats(nextChats)
-//       })
-
-//       // If we don't have a conversationID yet, grab it from the incoming message
-//       if (message.conversation_id && !conversationIDRef.current) {
-//         setConversationID(message.conversation_id)
-//       }
-
-//       const belongsToActiveChat =
-//         (message.conversation_id &&
-//           message.conversation_id === currentConversationID) ||
-//         String(message.sender_id) === currentActiveChatId ||
-//         String(message.receiver_id) === currentActiveChatId
-
-//       if (!belongsToActiveChat) return
-
-//       setMessages((currentMessages) => {
-//         if (currentMessages.some((existing) => existing.id === message.id)) {
-//           return currentMessages
-//         }
-//         return [...currentMessages, message]
-//       })
-//     },
-//     [] // empty deps — reads latest state via refs, never goes stale
-//   )
-
-//   // Static channel list — no re-subscribe on conversationID change
-//   const listenerChannels = [`chat-conversation.${conversationID}`]
-//   useChatListener(listenerChannels, handleRealTimeMessage)
-
-//   React.useEffect(() => {
-//     if (!activeChatId) return
-
-//     const params = new URLSearchParams(searchParams.toString())
-
-//     if (params.get("receiver_chatId") === activeChatId) return
-
-//     params.set("receiver_chatId", activeChatId)
-
-//     router.replace(`?${params.toString()}`)
-//   }, [activeChatId, router, searchParams])
-
-//   // Load conversation when conversationID changes
-//   React.useEffect(() => {
-//     if (!conversationID) return
-
-//     setMessages([])
-
-//     const loadConversation = async () => {
-//       try {
-//         const res = await getConversation(conversationID)
-//         if (res && "success" in res && res.success && res.data?.data) {
-//           const msgs = (res.data.data ?? []) as TChatMessage[]
-//           setMessages(msgs)
-//         } else {
-//           setMessages([])
-//         }
-//       } catch (err) {
-//         console.error("Error fetching conversation:", err)
-//         setMessages([])
-//       }
-//     }
-
-//     loadConversation()
-//   }, [conversationID])
-
-//   // Load chat list on mount
-//   React.useEffect(() => {
-//     const loadChatList = async () => {
-//       try {
-//         const res = await getChatList()
-
-//         if (res && "success" in res && res.success && res.data?.data) {
-//           const fetchedChats = res.data.data as TChatItem[]
-//           setChatList((prev) =>
-//             dedupeChats([
-//               ...(initialReceiver ? [initialReceiver] : []),
-//               ...fetchedChats,
-//               ...prev.filter(
-//                 (chat) =>
-//                   !fetchedChats.some(
-//                     (fetchedChat) =>
-//                       getChatIdentity(fetchedChat) === getChatIdentity(chat)
-//                   )
-//               ),
-//             ])
-//           )
-//         }
-//       } catch (err) {
-//         console.error("Error fetching chat list:", err)
-//       }
-//     }
-
-//     loadChatList()
-//   }, [])
-
-//   // Keep initialReceiver in chat list if not already present
-//   React.useEffect(() => {
-//     if (!initialReceiver) return
-
-//     const receiverIdentity = getChatIdentity(initialReceiver)
-//     const exists = chatList.some(
-//       (chat) => getChatIdentity(chat) === receiverIdentity
-//     )
-
-//     if (!exists) {
-//       setChatList((prev) =>
-//         dedupeChats([
-//           ...prev,
-//           { ...initialReceiver, conversation_id: conversationID },
-//         ])
-//       )
-//     }
-//   }, [chatList, conversationID, initialReceiver])
-
-  
-
-//   return (
-//     <section className="flex h-[90dvh] min-h-0 flex-col p-3">
-//       <div className="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">
-//         <ChatHead
-//           chats={chatList}
-//           activeChatId={activeChatId}
-//           onSelectChat={setActiveChatId}
-//           setConversationID={setConversationID}
-//         />
-//         <ChatInbox
-//           chat={
-//             chatList.find(
-//               (chat) => String(chat.receiver_id) === activeChatId
-//             ) ?? chatList[0]
-//           }
-//           messages={messages}
-//           setConversationID={setConversationID}
-//           activeChatId={activeChatId}
-//           userId={String(user?.id)}
-//         />
-//       </div>
-//     </section>
-//   )
-// }

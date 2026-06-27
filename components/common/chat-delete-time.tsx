@@ -48,7 +48,7 @@ export default function ChatDeleteTime({
           {loading ? (
             <AiOutlineLoading3Quarters className="animate-spin" />
           ) : (
-            <CiTrash onClick={() => handleDeleteMessage(message.id)} />
+            <CiTrash onClick={() => handleDeleteMessage(String(message.id))} />
           )}
         </div>
       )}

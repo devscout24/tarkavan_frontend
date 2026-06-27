@@ -1,33 +1,25 @@
-"use client" 
+"use client"
 
 import * as React from "react"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
-import { cn } from "@/lib/utils" 
+import { cn } from "@/lib/utils"
 import moment from "moment"
 import { markAsRead } from "@/app/(dashboards)/common-pages/chat/action"
 import { TChatHeadItem } from "@/types"
 
-
- 
- 
-
 type ChatHeadProps = {
-  chats: TChatHeadItem[] 
+  chats: TChatHeadItem[]
   onSelectChat: (chatId: string) => void
   setConversationID: (conversationId: string) => void
 }
 
 export default function ChatHead({
-  chats, 
+  chats,
   onSelectChat,
   setConversationID,
-}: ChatHeadProps) { 
-
-  const [selectedHeadID , setSelectedHeadID] = React.useState<string>("")
-
-
- 
+}: ChatHeadProps) {
+  const [selectedHeadID, setSelectedHeadID] = React.useState<string>("")
 
   return (
     <div className="h-fit overflow-hidden rounded-2xl border border-white/15 text-white lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
@@ -42,101 +34,111 @@ export default function ChatHead({
 
       <ScrollArea className="hidden lg:block lg:min-h-0 lg:flex-1">
         <div className="flex flex-col">
-          {chats && chats.length > 0 && chats.map((chat , index) => (
-            <article
-              key={index}
-              className={cn(
-                "relative cursor-pointer border-b border-white/8 px-6 py-5 transition-colors",
-                selectedHeadID === String(chat.receiver_id)
-                  ? "bg-white/8"
-                  : "bg-transparent hover:bg-white/5"
-              )}
-              onClick={async () => {
-                onSelectChat(String(chat?.receiver_id))
-                setSelectedHeadID(String(chat?.receiver_id))
-                setConversationID(String(chat.conversation_id))
-                // await markAsRead(chat.conversation_id) 
-              }}
-            >
-              {selectedHeadID === String(chat?.receiver_id) ? (
-                <span className="absolute inset-y-0 left-0 w-1 bg-[#B8F66A]" />
-              ) : null}
+          {chats &&
+            chats.length > 0 &&
+            chats.map((chat, index) => (
+              <article
+                key={index}
+                className={cn(
+                  "relative cursor-pointer border-b border-white/8 px-6 py-5 transition-colors",
+                  selectedHeadID === String(chat.receiver_id)
+                    ? "bg-white/8"
+                    : "bg-transparent hover:bg-white/5"
+                )}
+                onClick={async () => {
+                  onSelectChat(String(chat?.receiver_id))
+                  setSelectedHeadID(String(chat?.receiver_id))
+                  setConversationID(String(chat.conversation_id))
+                  await markAsRead(String(chat.conversation_id))
+                }}
+              >
+                {selectedHeadID === String(chat?.receiver_id) ? (
+                  <span className="absolute inset-y-0 left-0 w-1 bg-[#B8F66A]" />
+                ) : null}
 
-              <div className="flex items-start gap-4">
-                <div className="relative shrink-0">
-                  <img
-                    src={chat.user_image}
-                    alt={chat.user_name}
-                    className="size-14 rounded-md object-cover"
-                  />
-                  {chat.unread_count > 0 ? (
-                    <span className="absolute -right-1 -bottom-1 size-3.5 rounded-full border-2 border-[#1E2230] bg-[#C8FA6A]" />
-                  ) : null}
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-start justify-between gap-3">
-                    <h3
-                      className={cn(
-                        "truncate text-base font-medium",
-                        // activeChatId === getChatIdentity(chat)
-                        //   ? "text-[#C8FA6A]"
-                        //   : "text-white/90"
-                      )}
-                    >
-                      {chat.user_name}
-                    </h3>
-                    <span className="shrink-0 text-base text-white/60">
-                      {moment.utc(chat.latest_time).local().fromNow()}
-                    </span>
+                <div className="flex items-start gap-4">
+                  <div className="relative shrink-0">
+                    <img
+                      src={chat.user_image}
+                      alt={chat.user_name}
+                      className="size-14 rounded-md object-cover"
+                    />
+                    {chat.unread_count > 0 ? (
+                      <span className="absolute -right-1 -bottom-1 size-3.5 rounded-full border-2 border-[#1E2230] bg-[#C8FA6A]" />
+                    ) : null}
                   </div>
 
-                  <p
-                    className={cn("mt-1 truncate text-[12px] text-secondary! flex items-center justify-between   ")}
-                  >
-                    {chat.message}
-                    {chat.unread_count > 0 ? <span className="w-2 h-2 bg-brand rounded-full block "  /> : null}
-                  </p>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-3">
+                      <h3
+                        className={cn(
+                          "truncate text-base font-medium"
+                          // activeChatId === getChatIdentity(chat)
+                          //   ? "text-[#C8FA6A]"
+                          //   : "text-white/90"
+                        )}
+                      >
+                        {chat.user_name}
+                      </h3>
+                      <span className="shrink-0 text-base text-white/60">
+                        {moment.utc(chat.latest_time).local().fromNow()}
+                      </span>
+                    </div>
+
+                    <p
+                      className={cn(
+                        "mt-1 flex items-center justify-between truncate text-[12px] text-secondary!"
+                      )}
+                    >
+                      {chat.message}
+                      {chat.unread_count > 0 ? (
+                        <span className="block h-2 w-2 rounded-full bg-brand" />
+                      ) : null}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </article>
-          ))}
+              </article>
+            ))}
         </div>
       </ScrollArea>
 
       <div className="h-fit lg:hidden">
         <ScrollArea className="w-full">
           <div className="flex w-max gap-3 px-4 py-4">
-            {chats && chats.length > 0 && chats.map((chat , index) => (
-              <button
-                key={index}
-                type="button"
-                onClick={() => {
-                  // onSelectChat(getChatIdentity(chat))
-                  // setConversationID(chat.conversation_id)
-                }}
-                className={cn(
-                  "w-25 shrink-0 rounded-xl border p-2.5 text-left transition-colors",
-                  // activeChatId === getChatIdentity(chat)
-                  //   ? "border-[#C8FA6A]/70 bg-white/8"
-                  //   : "border-white/10 bg-transparent"
-                )}
-              >
-                <div className="relative w-fit">
-                  <img
-                    src={chat.user_image}
-                    alt={chat.user_name}
-                    className="size-14 rounded-full object-cover"
-                  />
-                  {chat.unread_count > 0 ? (
-                    <span className="absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2 border-[#050614] bg-[#C8FA6A]" />
-                  ) : null}
-                </div>
-                <p className="mt-2 truncate text-sm font-medium text-white/90">
-                  {chat.user_name}
-                </p>
-              </button>
-            ))}
+            {chats &&
+              chats.length > 0 &&
+              chats.map((chat, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={async () => {
+                    onSelectChat(String(chat?.receiver_id))
+                    setSelectedHeadID(String(chat?.receiver_id))
+                    setConversationID(String(chat.conversation_id))
+                    await markAsRead(String(chat.conversation_id))
+                  }}
+                  className={cn(
+                    "w-25 shrink-0 rounded-xl border p-2.5 text-left transition-colors"
+                    // activeChatId === getChatIdentity(chat)
+                    //   ? "border-[#C8FA6A]/70 bg-white/8"
+                    //   : "border-white/10 bg-transparent"
+                  )}
+                >
+                  <div className="relative w-fit">
+                    <img
+                      src={chat.user_image}
+                      alt={chat.user_name}
+                      className="size-14 rounded-full object-cover"
+                    />
+                    {chat.unread_count > 0 ? (
+                      <span className="absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2 border-[#050614] bg-[#C8FA6A]" />
+                    ) : null}
+                  </div>
+                  <p className="mt-2 truncate text-sm font-medium text-white/90">
+                    {chat.user_name}
+                  </p>
+                </button>
+              ))}
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>

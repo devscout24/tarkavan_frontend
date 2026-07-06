@@ -247,6 +247,7 @@ export interface Provider {
   user_mail: string | null;
   city: string;
   is_verified: boolean;
+  
 }
 
 export interface ProgramTime {

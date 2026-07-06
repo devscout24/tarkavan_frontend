@@ -15,6 +15,8 @@ export default function CoachLeftColumn({
   coaching_titles: string[]
   is_socials?: boolean
 }) {
+ 
+
   return (
     <aside className="space-y-2">
       <ProgramCoachCard
@@ -23,7 +25,7 @@ export default function CoachLeftColumn({
         highlightedName={profileData?.last_name}
         role={profileData?.current_role?.name || ""}
         location={`${profileData?.city ? `${profileData.city} ,` : ""}${profileData?.province ? `${profileData.province},` : ""}${profileData?.country || ""}`}
-        tags={["tag"]}
+        tags={[]}
         imageUrl={profileData?.profile_image || "/images/bannerbg.png"}
         showMessageButton={false}
       />

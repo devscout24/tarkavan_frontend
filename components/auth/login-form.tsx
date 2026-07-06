@@ -60,9 +60,11 @@ export default function LoginForm() {
         const isPending = newUserData.status === "pending"
  
         if (isPending && (normalizedRole === "coach" || normalizedRole === "club")) {
-          router.replace(`/${normalizedRole}?${normalizedRole}=profile-setup`)
+          router.replace(`/${normalizedRole}?${normalizedRole}=profile-setup`) 
+          window.location.replace(`/${normalizedRole}`)
         } else {
-          router.replace(`/${normalizedRole}`)
+          // router.replace(`/${normalizedRole}`) 
+          window.location.replace(`/${normalizedRole}`)
         }
       } else {
         setLoading(false)

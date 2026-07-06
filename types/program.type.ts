@@ -29,6 +29,7 @@ export type TProgramDetailsParentAndPlayer = {
     is_verified: boolean;
     email: string;
     is_program_maker: boolean;
+    updated_at: string; // ISO date string
   };
   times: {
     id: number;

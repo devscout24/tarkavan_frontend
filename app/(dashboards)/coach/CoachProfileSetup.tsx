@@ -326,8 +326,8 @@ export default function CoachProfileSetup({
           setEditData(d)
           if (d.coach_profile_pic) {
             try {
-              const { resolveAssetUrl } = await import("@/lib/url-utils")
-              const preview = resolveAssetUrl(d.coach_profile_pic)
+              // const { resolveAssetUrl } = await import("@/lib/url-utils")
+              const preview = d.coach_profile_pic
               setPreviewUrl(preview)
               setFileName(preview.split("/").pop() || "")
             } catch {

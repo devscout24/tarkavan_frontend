@@ -160,7 +160,7 @@ export async function submitStripeData(data: FormData) {
 export async function getStripeData() {
   try {
     const res = await api.post(`/stripe/data/get`)
-    return { success: true, data: res.data }
+    return res.data
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) { 
       return err?.response?.data

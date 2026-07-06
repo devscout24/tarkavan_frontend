@@ -1,13 +1,15 @@
 import CommonBtn from "@/components/common/common-btn"
 import ProgramCoachCard from "@/components/common/program-coach-card"
 import { Card } from "@/components/ui/card"
-import { Globe, Lock, Shield } from "lucide-react" 
+import { Globe, Lock, Shield } from "lucide-react"
 import { getClubProfile } from "../action"
-import Link from "next/link"  
+import Link from "next/link" 
+
+
 export default async function page() {
   let clubProfile = null
   try {
-    const res = await getClubProfile()  
+    const res = await getClubProfile()
     if (
       res &&
       typeof res === "object" &&
@@ -48,8 +50,8 @@ export default async function page() {
       : privacySetting === "public"
         ? Globe
         : Shield
- 
- 
+
+
 
   return (
     <section>
@@ -93,8 +95,6 @@ export default async function page() {
             imageUrl={clubProfile?.club_logo_url}
             role={clubProfile?.sports_name || "Sports Club"}
           />
-
-           
         </div>
         <div className="flex-2">
           {/* bio */}
@@ -110,8 +110,6 @@ export default async function page() {
                 : "Sport specialization not specified."}
             </p>
           </Card>
-
- 
         </div>
       </div>
     </section>

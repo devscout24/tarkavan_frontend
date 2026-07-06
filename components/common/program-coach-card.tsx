@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { resolveAssetUrl } from "@/lib/url-utils"
+// import { resolveAssetUrl } from "@/lib/url-utils"
 import { MapPin } from "lucide-react"
 import Image from "next/image"
 import { BiMessageSquareDetail } from "react-icons/bi"
@@ -36,6 +36,7 @@ type ProgramCoachCardProps = {
     is_verified: boolean
     email: string
     is_program_maker: boolean
+    updated_at: string
   }
 }
 
@@ -91,7 +92,8 @@ export default function ProgramCoachCard({
         <Image
           width={1000}
           height={1000}
-          src={resolveAssetUrl(imageUrl) || "/images/bannerbg.png"}
+          // src={ encodeURI(imageUrl) || "/images/bannerbg.png"}
+          src={`${imageUrl}?v=${provider?.updated_at}` || "/images/bannerbg.png"}
           alt={imageAlt}
           className="min-h-100 w-full object-cover object-center" 
           unoptimized

@@ -139,6 +139,7 @@ export type TPlayerBasicInfo = {
   overall_avg_rating: number
   years_of_experience: string
   total_reviews: number
+  updated_at: string
 }
 
 // ================= POSITION INFO =================

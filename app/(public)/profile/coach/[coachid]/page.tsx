@@ -107,6 +107,7 @@ export default function Page() {
                 overall_avg_rating: data?.profile?.overall_avg_rating,
                 years_of_experience: data?.profile?.years_of_experience,
                 total_reviews: data?.profile?.total_reviews,
+                updated_at:  "",
               }}
               position_info={{
                 jersey_number: 10,

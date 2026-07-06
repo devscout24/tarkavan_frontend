@@ -23,13 +23,14 @@ export default function ProspectCard({
   return (
     <div className="relative rounded-lg border-2 border-secondary min-w-50  ">
       {/* overlay box */}
-      <div className="absolute bottom-0 left-0 z-2 h-full w-full rounded-lg bg-gradient-to-b from-transparent via-transparent to-black" />
+      <div className="absolute bottom-0 left-0 z-2 h-full w-full rounded-lg bg-linear-to-b from-transparent via-transparent to-black" />
 
       {basic_info?.image ? (
         <Image
           width={500}
           height={1000}
-          src={encodeURI(basic_info?.image)}
+          // src={encodeURI(basic_info?.image)}
+          src={ `${basic_info?.image}?v=${basic_info?.updated_at}` }
           alt="playerimage"
           className="h-full min-h-140 max-h-140 w-full rounded-lg object-cover"
         />
@@ -39,7 +40,7 @@ export default function ProspectCard({
 
       <Badge
         variant="default"
-        className="absolute top-3 left-3 rotate-10 -skew-10 rounded-[4px] bg-brand text-[14px] font-bold text-primary"
+        className="absolute top-3 left-3 rotate-10 -skew-10 rounded-lg bg-brand text-[14px] font-bold text-primary"
       >
         JERSEY #{position_info?.jersey_number}
       </Badge>

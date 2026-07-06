@@ -49,6 +49,18 @@ export default function PlayerProfile() {
     : null
   const [playerData, setPlayerData] = useState<TPlayerProfile>()
   const router = useRouter()
+
+  // useEffect(() => {
+  //   const alreadyReloaded = sessionStorage.getItem("og-reloaded")
+
+  //   if (!alreadyReloaded) {
+  //     sessionStorage.setItem("og-reloaded", "true")
+  //     window.location.reload()
+  //   } else {
+  //     sessionStorage.removeItem("og-reloaded")  
+  //   }
+  // }, [])
+
   useEffect(() => {
     const profileData = async () => {
       try {
@@ -171,7 +183,6 @@ export default function PlayerProfile() {
   ]
 
   const [loading, setLoading] = useState(false)
- 
 
   return (
     <>
@@ -195,7 +206,7 @@ export default function PlayerProfile() {
                   elementId: "og_image",
                   fileName: "go-elite-player-profile-card.png",
                   userId: user?.profile_id || playerData?.basic_info?.id,
-                  setLoading: setLoading
+                  setLoading: setLoading,
                 })
               }
               text="Get Profile Card"
@@ -342,7 +353,7 @@ export default function PlayerProfile() {
                               Team :
                             </TableCell>
                             <TableCell className="text-right capitalize">
-                              {playerData?.position_info?.club_team }
+                              {playerData?.position_info?.club_team}
                             </TableCell>
                           </TableRow>
                         )}

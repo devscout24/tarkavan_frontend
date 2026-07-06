@@ -74,8 +74,7 @@ export default function ConnectStripe({}: {}) {
  
       const response = res as TStripeAccountResponse
 
-      const errorRes = res as TStripeErrorResponse
-      console.log(errorRes)
+      const errorRes = res as TStripeErrorResponse 
  
       if(errorRes?.status === false){
         setLoading(false)

@@ -312,7 +312,7 @@ export default function CoachProfileSetup({
   useEffect(() => {
     const fetchEditData = async () => {
       try {
-        const res = await getCoachEditData() 
+        const res = await getCoachEditData()  
         if (
           res &&
           typeof res === "object" &&
@@ -322,7 +322,7 @@ export default function CoachProfileSetup({
           "data" in res.data &&
           res.data.data
         ) {
-          const d = res.data.data as CoachEditPayload
+          const d = res.data.data as CoachEditPayload 
           setEditData(d)
           if (d.coach_profile_pic) {
             try {
@@ -513,7 +513,7 @@ export default function CoachProfileSetup({
     [formData, router]
   )
 
-  // ── Render ───
+ 
 
   return (
     <section className="bg-primary">
@@ -571,11 +571,11 @@ export default function CoachProfileSetup({
                       style={{ width: 120, height: 120 }}
                     >
                       <Image
-                        src={encodeURI(previewUrl)}
-                        alt="Selected coach profile"
-                        fill
-                        className="object-cover transition-transform duration-200 group-hover:scale-105"
-                        sizes="120px"
+                        src={previewUrl}
+                        alt="Selected coach profile" 
+                        width={120}
+                        height={120}
+                        className="object-cover transition-transform duration-200 group-hover:scale-105" 
                         priority
                       />
                     </div>
@@ -842,9 +842,9 @@ export default function CoachProfileSetup({
               </label>
               {formData.coaching_title?.length > 0 && (
                 <div className="flex flex-wrap gap-2">
-                  {formData.coaching_title.map((title) => (
+                  {formData.coaching_title.map((title , i) => (
                     <button
-                      key={title}
+                      key={i}
                       type="button"
                       onClick={() => removeTitle(title)}
                       className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-2.5 py-1 text-xs text-white transition-colors hover:bg-white/20"

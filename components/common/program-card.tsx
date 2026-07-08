@@ -1,23 +1,17 @@
 "use client"
-import {
-  Calendar,
-  Clock3,
-  Edit2, 
-  Trash2,
-  UserRound,
-} from "lucide-react"
+import { Calendar, Clock3, Edit2, Trash2, UserRound } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
-import CommonBtn from "./common-btn" 
+import CommonBtn from "./common-btn"
 import Image, { StaticImageData } from "next/image"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem, 
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { BsThreeDots } from "react-icons/bs"
@@ -25,7 +19,8 @@ import { deleteProgram } from "@/app/(dashboards)/club/action"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { deleteCoachProgram } from "@/app/(dashboards)/coach/my-programs/action"
-import { RiMapPin2Line } from "react-icons/ri";
+import { RiMapPin2Line } from "react-icons/ri"
+import { BsCopy } from "react-icons/bs";
 
 type ProgramCardProps = {
   title?: string
@@ -40,8 +35,8 @@ type ProgramCardProps = {
   imageSrc: string | StaticImageData
   imageAlt: string
   buttonLabel?: string
-  className?: string 
-  showThreeDotsMenu?: boolean 
+  className?: string
+  showThreeDotsMenu?: boolean
   id?: string | number
   editLink: string
   viewOnly: boolean
@@ -50,7 +45,7 @@ type ProgramCardProps = {
 export default function ProgramCard({
   title,
   sport,
-  type, 
+  type,
   schedule,
   duration,
   currentPrice,
@@ -59,23 +54,21 @@ export default function ProgramCard({
   imageSrc,
   imageAlt,
   buttonLabel,
-  className, 
+  className,
   viewOnly = false,
   id,
   editLink,
 }: ProgramCardProps) {
-
   const router = useRouter()
 
-  const currentUser = localStorage.getItem("go_elite_user") ? JSON.parse(localStorage.getItem("go_elite_user") || "{}")
-  : null
-
+  const currentUser = localStorage.getItem("go_elite_user")
+    ? JSON.parse(localStorage.getItem("go_elite_user") || "{}")
+    : null
 
   const handleDelete = async () => {
-
-    if(currentUser && currentUser.role === "club"){ 
+    if (currentUser && currentUser.role === "club") {
       try {
-        const res = await deleteProgram(id as string) 
+        const res = await deleteProgram(id as string)
         if (res && "success" in res && res.success) {
           toast.success("Program deleted successfully")
           window.dispatchEvent(new Event("programDeleted"))
@@ -85,9 +78,9 @@ export default function ProgramCard({
       }
     }
 
-    if(currentUser && currentUser.role === "coach"){ 
+    if (currentUser && currentUser.role === "coach") {
       try {
-        const res = await deleteCoachProgram({ program_id: String(id) }) 
+        const res = await deleteCoachProgram({ program_id: String(id) })
         if (res && "success" in res && res.success) {
           toast.success("Program deleted successfully")
           window.dispatchEvent(new Event("programDeleted"))
@@ -111,7 +104,7 @@ export default function ProgramCard({
           height={1000}
           src={imageSrc || "/images/bannerbg.png"}
           alt={imageAlt}
-          className="h-60 max-h-60  w-full object-contain"
+          className="h-60 max-h-60 w-full object-contain"
         />
 
         {discountLabel && (
@@ -121,7 +114,7 @@ export default function ProgramCard({
         )}
       </div>
 
-      <CardContent className="flex h-fit flex-col gap-y-10  justify-between p-4">
+      <CardContent className="flex h-fit flex-col justify-between gap-y-10 p-4">
         <div className="flex items-start justify-between gap-4">
           <div className="max-w-[70%]">
             <h3 className="line-clamp-2 overflow-hidden text-lg leading-tight font-semibold text-ellipsis">
@@ -135,23 +128,21 @@ export default function ProgramCard({
             <p className="text-lg leading-none font-bold text-brand!">
               ${currentPrice}
             </p>
-            {Number(previousPrice) === Number(currentPrice) ? null : 
-            <p className="mt-1 text-lg text-white/70 line-through">
-              ${previousPrice}
-            </p>
-            }
+            {Number(previousPrice) === Number(currentPrice) ? null : (
+              <p className="mt-1 text-lg text-white/70 line-through">
+                ${previousPrice}
+              </p>
+            )}
           </div>
         </div>
 
         <div className="space-y-2 text-[14px] font-light text-white/80">
           <div className="flex items-center gap-2">
             <UserRound className="size-4" />
-            <span>
-              {type}
-            </span>
+            <span>{type}</span>
           </div>
           <div className="flex items-center gap-2">
-            <RiMapPin2Line  className="size-5" /> 
+            <RiMapPin2Line className="size-5" />
             <span>{schedule}</span>
           </div>
           <div className="flex items-center gap-2">
@@ -164,7 +155,7 @@ export default function ProgramCard({
             text={buttonLabel}
             className="h-11 flex-1 rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90"
             size={"lg"}
-            variant={"default"} 
+            variant={"default"}
             onClick={() => router.push(editLink)}
           />
           {!viewOnly && (
@@ -187,6 +178,31 @@ export default function ProgramCard({
                     className="justify-between hover:bg-brand!"
                   >
                     Delete <Trash2 />
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      if (!id) {
+                        toast.error(
+                          "Program ID not found. Please try again later."
+                        )
+                        return
+                      }
+
+                      try {
+                        await navigator.clipboard.writeText(
+                          `${process.env.NEXT_PUBLIC_FRONTEND_URL}/details/program/${id}`
+                        )
+                        toast.success("Program link copied to clipboard!")
+                      } catch (error) {
+                        console.error("Failed to copy:", error)
+                        toast.error(
+                          "Failed to copy the link. Please try again."
+                        )
+                      }
+                    }}
+                    className="justify-between hover:bg-brand!"
+                  >
+                    Copy Link <BsCopy />
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
               </DropdownMenuContent>

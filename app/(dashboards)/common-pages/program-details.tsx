@@ -18,6 +18,8 @@ import ProgramDateTimeSelector from "@/components/common/program-date-time-selec
 import { getAvailablePlayerParentProgramDetails } from "../player/programs/action"
 import CommonBtn from "@/components/common/common-btn"
 import { WriteReviewDialog } from "@/components/common/review-write"
+import { BsCopy } from "react-icons/bs";
+import Loader from "@/components/common/loader"
 
 export default function ProgramDetailsPage() {
   const router = useRouter()
@@ -26,8 +28,12 @@ export default function ProgramDetailsPage() {
   const [details, setDetails] = useState<TProgramDetailsParentAndPlayer | null>(
     null
   )
+  const [loading, setLoading] = useState<boolean>(false)
 
-  const [currentUser, setCurrentUser] = useState<{ id: string; role: string } | null>(null)
+  const [currentUser, setCurrentUser] = useState<{
+    id: string
+    role: string
+  } | null>(null)
 
   useEffect(() => {
     const storedUser = localStorage.getItem("go_elite_user")
@@ -46,6 +52,7 @@ export default function ProgramDetailsPage() {
         }, 1000)
         return
       }
+      setLoading(true)
       try {
         const res = await getAvailablePlayerParentProgramDetails(String(id))
 
@@ -57,10 +64,12 @@ export default function ProgramDetailsPage() {
           "data" in res.data &&
           res.data.data
         ) {
+          setLoading(false)
           setDetails(res.data.data.program)
         }
       } catch (err) {
         console.error("Error fetching program details:", err)
+        setLoading(false)
       }
     }
 
@@ -77,7 +86,8 @@ export default function ProgramDetailsPage() {
     }
   }, [id])
 
-  return (
+  return ( 
+    loading ? <Loader/> :
     <section className="text-white">
       {/* BACK BUTTON */}
       <div className="mb-5 flex items-center justify-between px-2 py-2">
@@ -88,18 +98,44 @@ export default function ProgramDetailsPage() {
           <ArrowLeftIcon />
           <span>Back to Programs</span>
         </Button>
-        {currentUser?.id === details?.provider?.user_id && (
+
+        <div className="flex">
           <CommonBtn
-            text="Edit Program"
-            className="h-10 w-fit rounded-[8px] bg-brand px-4 font-medium text-primary hover:bg-brand xl:h-11 xl:px-5 xl:text-base 2xl:h-12 2xl:px-6 2xl:text-lg"
+            text="Copy Link"
+            icon={<BsCopy className="mr-2" />}
+            className="h-10 w-fit rounded-[8px] bg-transparent border border-brand px-4 font-medium text-white hover:bg-transparent cursor-pointer xl:h-11 xl:px-5 xl:text-base 2xl:h-12 2xl:px-6 2xl:text-lg"
             size="sm"
             variant="default"
-            onClick={() => {
-              localStorage.setItem("edit_program_id", String(id))
-              router.push(`?add-new=program`)
+            onClick={async () => {
+              if (!id) {
+                toast.error("Program ID not found. Please try again later.")
+                return
+              }
+
+              try {
+                await navigator.clipboard.writeText(
+                  `${process.env.NEXT_PUBLIC_FRONTEND_URL}/details/program/${id}`
+                )
+                toast.success("Program link copied to clipboard!")
+              } catch (error) {
+                console.error("Failed to copy:", error)
+                toast.error("Failed to copy the link. Please try again.")
+              }
             }}
           />
-        )}
+          {currentUser?.id === details?.provider?.user_id && (
+            <CommonBtn
+              text="Edit Program"
+              className="h-10 w-fit rounded-[8px] bg-brand px-4 font-medium text-primary hover:bg-brand xl:h-11 xl:px-5 xl:text-base 2xl:h-12 2xl:px-6 2xl:text-lg"
+              size="sm"
+              variant="default"
+              onClick={() => {
+                localStorage.setItem("edit_program_id", String(id))
+                router.push(`?add-new=program`)
+              }}
+            />
+          )}
+        </div>
       </div>
 
       {/* program details banner */}

@@ -17,11 +17,13 @@ import { toast } from "sonner"
 type ChatInboxProps = { 
   messages: TChatMessage[]  
   chatHead: TChatHeadItem
+  receiver_chatId: string | null
 }
 
 export default function ChatInbox({ 
   chatHead ,
   messages, 
+  receiver_chatId
 }: ChatInboxProps) {
   const [text, setText] = React.useState("")
   const [files, setFiles] = React.useState<{ name: string; url: string }[]>([])
@@ -38,6 +40,11 @@ export default function ChatInbox({
     message: string
     files: { name: string; url: string }[]
   }) => {
+
+    if(!receiver_chatId){
+      toast.error("Receiver chat ID is missing.Please select a chat head to send message.")
+      return
+    }
 
  
     try {

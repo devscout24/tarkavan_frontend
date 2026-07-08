@@ -9,6 +9,8 @@ import Image from "next/image"
 import { BiMessageSquareDetail } from "react-icons/bi"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { useEffect, useState } from "react"
+import isValidToken from "@/lib/isValid-token"
 
 type ProgramCoachCardProps = {
   name?: string
@@ -63,13 +65,20 @@ export default function ProgramCoachCard({
   const user = localStorage.getItem("go_elite_user")
     ? JSON.parse(localStorage.getItem("go_elite_user") as string)
     : null
+  const [token, setToken] = useState<string>("")
+  useEffect(() => {
+    const storedToken = localStorage.getItem("go_elite_token")
+    if (storedToken) {
+      setToken(storedToken)
+    }
+  }, [])
 
   const handleMessageRedirect = async () => {
-    if (!user) {
-      router.push("/login")
-      toast.error("Session expired. Please login to send a message")
+    if (!token || !isValidToken(token) || !user || user.role === undefined) {
+      toast.error("You must be logged in to message.")
+      router.push("/auth")
       return
-    }
+    } 
 
     if (!chatId) {
       toast.error("Chat ID is missing. Cannot redirect to messaging.")
@@ -93,9 +102,11 @@ export default function ProgramCoachCard({
           width={1000}
           height={1000}
           // src={ encodeURI(imageUrl) || "/images/bannerbg.png"}
-          src={`${imageUrl}?v=${provider?.updated_at}` || "/images/bannerbg.png"}
+          src={
+            `${imageUrl}?v=${provider?.updated_at}` || "/images/bannerbg.png"
+          }
           alt={imageAlt}
-          className="min-h-100 w-full object-cover object-center" 
+          className="min-h-100 w-full object-cover object-center"
           unoptimized
         />
 
@@ -109,8 +120,11 @@ export default function ProgramCoachCard({
 
         <div className="absolute inset-x-0 bottom-0 p-4">
           <h3 className="text-[32px]! leading-[0.95] font-extrabold text-white">
-            {name}<br/> 
-            <p className="text-[32px]! leading-[0.95] font-extrabold! text-brand! ">{highlightedName}</p>
+            {name}
+            <br />
+            <p className="text-[32px]! leading-[0.95] font-extrabold! text-brand!">
+              {highlightedName}
+            </p>
           </h3>
 
           <p className="mt-1 text-base font-medium text-white">{role}</p>

@@ -145,9 +145,10 @@ function AmPmTimePicker({
 }) {
   const hours = Array.from({ length: 12 }, (_, i) => String(i + 1))
 
-  const minutes = Array.from({ length: 60 }, (_, i) =>
-    String(i).padStart(2, "0")
-  )
+  // const minutes = Array.from({ length: 60 }, (_, i) =>
+  //   String(i).padStart(2, "0")
+  // )
+  const minutes = ["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"]
 
   const selectCls =
     "border-neutral-700 bg-neutral-800 text-white h-9 px-2 rounded-md border text-sm focus:outline-none focus:ring-1 focus:ring-brand"

@@ -1,27 +1,40 @@
+"use client"
 import CommonBtn from "@/components/common/common-btn"
 import ProgramCoachCard from "@/components/common/program-coach-card"
 import { Card } from "@/components/ui/card"
 import { Globe, Lock, Shield } from "lucide-react"
 import { getClubProfile } from "../action"
-import Link from "next/link" 
+import Link from "next/link"
+import { useAppSelector } from "@/lib/hooks"
+import { selectProfileID } from "@/lib/features/userSlice"
+import { toast } from "sonner"
+import { useEffect, useState } from "react"
+import { BsCopy } from "react-icons/bs";
 
+export default function page() { 
 
-export default async function page() {
-  let clubProfile = null
-  try {
-    const res = await getClubProfile()
-    if (
-      res &&
-      typeof res === "object" &&
-      "success" in res &&
-      res.success &&
-      "data" in res
-    ) {
-      clubProfile = res.data.data
+  const [clubProfile , setClubProfile] = useState<any>(null)
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const res = await getClubProfile()
+        if (
+          res &&
+          typeof res === "object" &&
+          "success" in res &&
+          res.success &&
+          "data" in res
+        ) {
+          setClubProfile(res.data.data)
+        }
+      } catch (err) {
+        console.error("Error fetching club profile:", err)
+      }
     }
-  } catch (err) {
-    console.error("Error fetching club profile:", err)
-  }
+
+    getData()
+  }, [])
 
   const privacySetting = (clubProfile?.privacy_settings || "public")
     .toString()
@@ -50,8 +63,7 @@ export default async function page() {
       : privacySetting === "public"
         ? Globe
         : Shield
-
-
+  const profile_id = useAppSelector(selectProfileID)
 
   return (
     <section>
@@ -63,14 +75,40 @@ export default async function page() {
             Profile Visibility: {privacyText}
           </span>
         </div>
-        <Link href="/club/profile-settings">
+
+        <div className="flex gap-2 ">
           <CommonBtn
             text="Edit Profile"
-            className="w-fit bg-brand px-2 font-medium text-primary hover:bg-brand"
+            className="w-fit bg-transparent px-2 font-medium text-white hover:bg-transparent border border-brand   "
             size={"sm"}
             variant={"default"}
+            icon={<BsCopy className="h-4 w-4" />}
+            onClick={async () => {
+              if (!profile_id) {
+                toast.error("Profile ID not found. Please try again later.")
+                return
+              }
+
+              try {
+                await navigator.clipboard.writeText(
+                  `${process.env.NEXT_PUBLIC_FRONTEND_URL}/profile/coach/${profile_id}`
+                )
+                toast.success("Profile link copied to clipboard!")
+              } catch (error) {
+                console.error("Failed to copy:", error)
+                toast.error("Failed to copy the link. Please try again.")
+              }
+            }}
           />
-        </Link>
+          <Link href="/club/profile-settings">
+            <CommonBtn
+              text="Edit Profile"
+              className="w-fit bg-brand px-2 font-medium text-primary hover:bg-brand"
+              size={"sm"}
+              variant={"default"}
+            />
+          </Link>
+        </div>
       </Card>
 
       {/* profile details */}

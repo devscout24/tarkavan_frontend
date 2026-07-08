@@ -61,7 +61,7 @@ export default function ProfileHeaderBar() {
           />
 
           <div
-            className={`absolute top-15 border border-brand/30 transition-all duration-300 ${isOpen ? "right-0" : "-right-50"} space-y-2 rounded-md bg-secondary/90 p-2`}
+            className={`absolute z-2 top-15 border border-brand/30 transition-all duration-300 ${isOpen ? "right-0" : "-right-50"} space-y-2 rounded-md bg-secondary/90 p-2`}
           >
             <CommonBtn
               text="Edit Profile"

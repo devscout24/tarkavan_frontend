@@ -250,10 +250,7 @@ export default function ProgramDateTimeSelector({
   const token = localStorage.getItem("go_elite_token")
 
   const handleBooking = async (bookBy: "parent" | "player") => {
-    // if (totalSelected === 0) {
-    //   toast.error("Please select at least one time slot.")
-    //   return
-    // }
+ 
 
     if (!token || !isValidToken(token) || !user || user.role === undefined  ) {
       toast.error("You must be logged in to book a program.")

@@ -121,23 +121,7 @@ export default function ParentDashboardLayout({
     }
     getUnreadData()
   }, [dispatch])
-
-  const router = useRouter()
-
-  useEffect(() => {
-    const getStripeAuth = async () => {
-      try {
-        const res = await getStripeData()
-
-        if (res?.data?.payouts_enabled) {
-          return
-        } else {
-          router.push("?setup=stripe")
-        }
-      } catch (err) {}
-    }
-    getStripeAuth()
-  }, [])
+ 
 
   const DATA = {
     user: {

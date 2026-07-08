@@ -169,21 +169,7 @@ export default function PlayerDashboardLayout({
     ],
   }
 
-  const router = useRouter()
-
-  useEffect(() => {
-    const getStripeAuth = async () => {
-      try {
-        const res = await getStripeData() 
-        if (res?.data?.payouts_enabled) { 
-          return
-        }  else  {
-          router.push("?setup=stripe")
-        }
-      } catch (err) {}
-    }
-    getStripeAuth()
-  }, [])
+ 
 
   return (
     <AuthCheckPoint role="club">

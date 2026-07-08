@@ -1,4 +1,4 @@
- 
+"use client"
 
 import * as React from "react"
 import { Link2, Send, Archive } from "lucide-react"
@@ -49,7 +49,7 @@ export default function ChatInbox({
  
     try {
       const formData = new FormData()
-      formData.append("receiver_id", String(chatHead?.receiver_id))
+      formData.append("receiver_id", String(chatHead?.receiver_id || receiver_chatId))
       formData.append("message", payload.message)
       formData.append("image", payload.files[0]?.url || "")
 
@@ -65,6 +65,7 @@ export default function ChatInbox({
         setText("")
         setFiles([])
         if (fileInputRef.current) fileInputRef.current.value = "" 
+        window.dispatchEvent(new Event("reloadChats"))
       }
 
       if (res?.message) {

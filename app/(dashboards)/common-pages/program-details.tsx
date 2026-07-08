@@ -86,6 +86,8 @@ export default function ProgramDetailsPage() {
     }
   }, [id])
 
+  console.log(details?.provider)
+
   return ( 
     loading ? <Loader/> :
     <section className="text-white">

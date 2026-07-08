@@ -43,6 +43,17 @@ export default function MessagePage() {
     }
 
     getChatHead()
+
+    const reloadData = ()=> {
+      getChatHead()
+    }
+
+    window.addEventListener("reloadChats", reloadData)
+    
+    return () => {
+      window.removeEventListener("reloadChats", reloadData)
+    }
+
   }, [receiver_chatId])
 
   React.useEffect(() => {

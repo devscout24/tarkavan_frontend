@@ -19,6 +19,7 @@ export default function page() {
     const getData = async () => {
       try {
         const res = await getClubProfile()
+        console.log("Club Profile Response:", res) // Log the response for debugging
         if (
           res &&
           typeof res === "object" &&
@@ -78,7 +79,7 @@ export default function page() {
 
         <div className="flex gap-2 ">
           <CommonBtn
-            text="Edit Profile"
+            text="Copy Link"
             className="w-fit bg-transparent px-2 font-medium text-white hover:bg-transparent border border-brand   "
             size={"sm"}
             variant={"default"}
@@ -91,7 +92,7 @@ export default function page() {
 
               try {
                 await navigator.clipboard.writeText(
-                  `${process.env.NEXT_PUBLIC_FRONTEND_URL}/profile/coach/${profile_id}`
+                  `${process.env.NEXT_PUBLIC_FRONTEND_URL}/profile/club/${profile_id}`
                 )
                 toast.success("Profile link copied to clipboard!")
               } catch (error) {

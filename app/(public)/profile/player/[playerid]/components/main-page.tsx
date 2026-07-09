@@ -55,6 +55,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { AnimatedTestimonials } from "./image-card"
 
 // Inline type definitions for profile data
 
@@ -112,7 +113,7 @@ export default function ProfilePage({ data }: ProfilePageProps) {
   const handleVoteCick = async (
     type: string,
     setOpen: (open: boolean) => void
-  ) => { 
+  ) => {
     if (user?.role === "club") {
       toast.error("Clubs are not allowed to vote.")
       return
@@ -165,7 +166,9 @@ export default function ProfilePage({ data }: ProfilePageProps) {
     }
   }
 
-  const router = useRouter() 
+  const router = useRouter()
+
+  console.log(data)
 
   return (
     <>
@@ -191,9 +194,9 @@ export default function ProfilePage({ data }: ProfilePageProps) {
           {/* <Logo className="w-full max-w-111.25!" />
           <div className="mt-15 h-1 w-full bg-brand" /> */}
 
-          <div className="mt-8 flex w-full flex-col gap-6 lg:flex-row">
+          <div className="relative mt-8 flex w-full flex-col gap-6 lg:flex-row">
             {/* left */}
-            <div className="w-full flex-3 lg:flex-3">
+            <div className="top-22 left-0 w-full flex-3 self-start lg:sticky lg:flex-3">
               <ProfileCard
                 academyVotes={data?.professional_votes || 0}
                 provincialVotes={data?.provencial_votes || 0}
@@ -245,7 +248,7 @@ export default function ProfilePage({ data }: ProfilePageProps) {
             {/* right */}
             <div className="w-full flex-7 lg:flex-7">
               <div className="gap-5 xl:flex">
-                <div className="w-full">
+                <div className="flex-1">
                   <h2 className="mb-4 text-left text-base font-semibold text-white">
                     Player Details Table
                   </h2>
@@ -332,12 +335,15 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                     </Table>
                   </div>
                 </div>
-                <div className="">
+                <div className="flex-1">
                   <h2 className="mb-4 text-right text-base font-semibold text-white">
                     Player positions
                   </h2>
                   <div className="mt-2 min-w-fit">
-                    <PositionMap data={mapPosition as TPlayerPosition[]} />
+                    <PositionMap
+                      data={mapPosition as TPlayerPosition[]}
+                      size="responsive"
+                    />
                   </div>
                 </div>
               </div>
@@ -496,24 +502,60 @@ export default function ProfilePage({ data }: ProfilePageProps) {
                   </Table>
                 </div>
               </div>
+
+              {/* profile images */}
+              <div className="relative z-1">
+                <AnimatedTestimonials testimonials={data?.gallery} />
+              </div>
+
+              {/* video showing */}
+              <div className="">
+                <h2 className="mb-4 text-left text-base font-semibold text-white select-none  ">
+                  Player Videos
+                </h2>
+
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
+                  {data?.videos?.map((video, index) => (
+                    <div key={index} className="mb-4">
+                      <video
+                        controls
+                        className="w-full rounded-lg border border-secondary"
+                      >
+                        <source src={video.video_url} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="sticky bottom-0 mt-10 flex w-full flex-wrap justify-center gap-10 py-5 backdrop-blur-md">
+          {/* Fixed Vote Buttons - Right Side */}
+          <div className="fixed top-6/7 right-4 z-30 flex -translate-y-1/2 flex-col gap-4 sm:right-6">
+            {/* Provincial Vote */}
             <Dialog
               open={provincialModalOpen}
               onOpenChange={setProvincialModalOpen}
             >
-              <CommonBtn
-                size={"lg"}
-                variant={"default"}
-                text={"Provincial Team Votes"}
-                className="w-fit cursor-pointer bg-yellow-500 px-10 text-primary hover:bg-yellow-500/80 hover:text-primary"
-                onClick={() =>
-                  handleVoteCick("provencial", setProvincialModalOpen)
-                }
-                isLoading={loadVoteType === "provencial"}
-              />
+              <DialogTrigger asChild>
+                <button
+                  onClick={() =>
+                    handleVoteCick("provencial", setProvincialModalOpen)
+                  }
+                  disabled={loadVoteType === "provencial"}
+                  className="group relative flex cursor-pointer items-center gap-3 overflow-hidden rounded-full border border-yellow-400/40 bg-yellow-500/10 py-3 pr-5 pl-3 shadow-lg shadow-yellow-500/20 backdrop-blur-md transition-all duration-300 hover:gap-4 hover:border-yellow-400 hover:bg-yellow-500 hover:pl-4 hover:shadow-xl hover:shadow-yellow-500/40 disabled:opacity-70"
+                >
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-yellow-500 text-primary shadow-inner transition-transform duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:text-yellow-400">
+                    <FaStar className="text-lg" />
+                  </span>
+                  <span className="hidden text-sm font-semibold whitespace-nowrap text-white transition-colors duration-300 group-hover:text-primary sm:block">
+                    {loadVoteType === "provencial"
+                      ? "Voting..."
+                      : "Provincial Team Votes"}
+                  </span>
+                </button>
+              </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Select a child to vote.</DialogTitle>
@@ -557,20 +599,29 @@ export default function ProfilePage({ data }: ProfilePageProps) {
               </DialogContent>
             </Dialog>
 
+            {/* Professional Vote */}
             <Dialog
               open={professionalModalOpen}
               onOpenChange={setProfessionalModalOpen}
             >
-                <CommonBtn
-                  size={"lg"}
-                  variant={"default"}
-                  text={"Professional Academy Votes"}
-                  className="w-fit cursor-pointer bg-red-500 px-10 text-primary hover:bg-red-500/80 hover:text-primary"
+              <DialogTrigger asChild>
+                <button
                   onClick={() =>
                     handleVoteCick("professional", setProfessionalModalOpen)
                   }
-                  isLoading={loadVoteType === "professional"}
-                /> 
+                  disabled={loadVoteType === "professional"}
+                  className="group relative flex cursor-pointer items-center gap-3 overflow-hidden rounded-full border border-red-400/40 bg-red-500/10 py-3 pr-5 pl-3 shadow-lg shadow-red-500/20 backdrop-blur-md transition-all duration-300 hover:gap-4 hover:border-red-400 hover:bg-red-500 hover:pl-4 hover:shadow-xl hover:shadow-red-500/40 disabled:opacity-70"
+                >
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-500 text-white shadow-inner transition-transform duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:text-red-400">
+                    <FaStar className="text-lg" />
+                  </span>
+                  <span className="hidden text-sm font-semibold whitespace-nowrap text-white transition-colors duration-300 group-hover:text-primary sm:block">
+                    {loadVoteType === "professional"
+                      ? "Voting..."
+                      : "Professional Academy Votes"}
+                  </span>
+                </button>
+              </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Select a child to vote.</DialogTitle>

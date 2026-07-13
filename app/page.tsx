@@ -12,38 +12,38 @@ import ToComplite from "@/components/custom/to-complite"
 import AthletesAndCoaches from "@/components/custom/trusted"
 import { useEffect, useState } from "react"
 import { getLandingPageData } from "./action"
-import {  TCoachAndClub, TLandingPageData } from "@/types/landing.type"
+import { TCoachAndClub, TLandingPageData } from "@/types/landing.type"
+import PLayerSetup from "@/components/common/modal/all-modals/player-setup"
 
 export default function Page() {
-
   const [allData, setAllData] = useState<TLandingPageData | null>(null)
-   console.log(allData)
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const res = await getLandingPageData()
-         
-        if (
-          res &&
-          typeof res === "object" &&
-          "success" in res &&
-          res.success &&
-          "data" in res
-        ) {
-          setAllData(res.data.data)
-        }
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    getData()
-  }, [])
+ 
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     try {
+  //       const res = await getLandingPageData()
+
+  //       if (
+  //         res &&
+  //         typeof res === "object" &&
+  //         "success" in res &&
+  //         res.success &&
+  //         "data" in res
+  //       ) {
+  //         setAllData(res.data.data)
+  //       }
+  //     } catch (error) {
+  //       console.error(error)
+  //     }
+  //   }
+  //   getData()
+  // }, [])
 
   return (
     <>
       <Nav />
 
-      <Banner data={allData?.hero} />
+      {/* <Banner data={allData?.hero} />
 
       <Counter data={allData?.stats} />
 
@@ -53,11 +53,13 @@ export default function Page() {
 
       <ToComplite data={allData?.features} />
 
-      <BrowseCoaches data={allData?.coach_and_club as TCoachAndClub[] } />
+      <BrowseCoaches data={allData?.coach_and_club as TCoachAndClub[]} />
 
       <AthletesAndCoaches data={allData?.reviews?.items} />
 
-      <StartJourney />
+      <StartJourney /> */}
+
+      <PLayerSetup/>
 
       <Footer />
     </>

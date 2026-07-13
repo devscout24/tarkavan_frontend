@@ -194,13 +194,8 @@ export default function PlayerAddModal() {
 
   const { close } = useModal() 
 
-  useEffect(() => {
-    // if (!isUpdatePlayer ) {
-    //   setExistingProfilePhotoUrl(null)
-    //   setWizardState(defaultWizardState)
-    //   return
-    // }
-
+  useEffect(() => { 
+    
     if (!isUpdatePlayer && !isUpdateChild) {
       setExistingProfilePhotoUrl(null)
       setWizardState(defaultWizardState)

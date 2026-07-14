@@ -142,6 +142,10 @@ export default function PLayerSetup() {
         close("player")
         close("update")
       }
+      else{ 
+        toast.error(res.message)
+        setLoading(false)
+      }
 
     } catch (error) {
       setLoading(false)
@@ -167,7 +171,7 @@ export default function PLayerSetup() {
             localStorage.removeItem("go_elitr_player_setup_progress")
           } else {
             setLoading(false)
-            toast.error("Something went wrong")
+            toast.error(res?.message || "Something went wrong")
           }
         } catch (error) {
           setLoading(false)
@@ -194,7 +198,7 @@ export default function PLayerSetup() {
             close("update")
           } else {
             setLoading(false)
-            console.log(res)
+            toast.error(res?.message || "Something went wrong") 
           }
         } catch (error) {
           setLoading(false)

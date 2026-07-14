@@ -50,17 +50,22 @@ export function UploadAvatar({
   })
 
   const currentFile = files[0]
-  const previewUrl = useMemo(() => {
-    if (payload.profilePhoto instanceof File) {
-      return URL.createObjectURL(payload.profilePhoto)
-    }
+  // const previewUrl = useMemo(() => {
+  //   if (payload.profilePhoto instanceof File) {
+  //     return URL.createObjectURL(payload.profilePhoto)
+  //   }
 
-    if (typeof payload.profilePhoto === "string") {
-      return payload.profilePhoto
-    }
+  //   if (typeof payload.profilePhoto === "string") {
+  //     return payload.profilePhoto
+  //   }
 
-    return ""
-  }, [payload.profilePhoto])
+  //   return ""
+  // }, [payload.profilePhoto])
+  const previewUrl =
+  payload.profilePhotoPreview ||
+  (typeof payload.profilePhoto === "string"
+    ? payload.profilePhoto
+    : "");
 
   const handleRemove = () => {
     if (currentFile) {
@@ -74,21 +79,46 @@ export function UploadAvatar({
     }
   }
 
+  // useEffect(() => {
+  //   if (!currentFile) return
+
+  //   if (!(currentFile.file instanceof File)) return
+
+  //   const preview = URL.createObjectURL(currentFile.file)
+
+  //   setPayload((prev) => ({
+  //     ...prev,
+  //     profilePhoto: currentFile.file,
+  //     profilePhotoPreview: preview,
+  //   }))
+
+  //   return () => URL.revokeObjectURL(preview)
+  // }, [currentFile])
+
   useEffect(() => {
-    if (!currentFile) return
+  if (!currentFile?.file) return;
 
-    if (!(currentFile.file instanceof File)) return
+  if (!(currentFile.file instanceof File)) return;
 
-    const preview = URL.createObjectURL(currentFile.file)
+  const preview = URL.createObjectURL(currentFile.file);
 
-    setPayload((prev) => ({
+  setPayload((prev) => {
+    if (
+      prev.profilePhoto === currentFile.file &&
+      prev.profilePhotoPreview === preview
+    ) {
+      return prev;
+    }
+
+    return {
       ...prev,
       profilePhoto: currentFile.file,
       profilePhotoPreview: preview,
-    }))
+    };
+  });
 
-    return () => URL.revokeObjectURL(preview)
-  }, [currentFile])
+  return () => URL.revokeObjectURL(preview);
+}, [currentFile]);
 
   return (
     <div

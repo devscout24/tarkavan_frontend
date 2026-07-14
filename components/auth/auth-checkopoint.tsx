@@ -4,7 +4,7 @@ import Loader from "@/components/common/loader"
 import isValidToken from "@/lib/isValid-token"
 import { TUser } from "@/types"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 type Props = {
   children: React.ReactNode
@@ -18,91 +18,86 @@ export default function AuthCheckPoint({ children, role }: Props) {
 
   const [isChecking, setIsChecking] = useState(true)
 
+  const search = searchParams.toString()
+
   useEffect(() => {
-    const checkAuth = () => {
-      try {
-        const token = localStorage.getItem("go_elite_token")
-        const rawUser = localStorage.getItem("go_elite_user")
+    if (typeof window === "undefined") return
 
-        // No token or user → auth
-        if (!token || !rawUser) {
-          router.replace("/auth")
-          return
-        }
+    const token = localStorage.getItem("go_elite_token")
+    const rawUser = localStorage.getItem("go_elite_user")
 
-        const user: TUser = JSON.parse(rawUser)
-
-        const requiredRole = role.trim().toLowerCase()
-        const userRole = user?.role?.trim().toLowerCase()
-
-        // invalid token
-        if (!isValidToken(token)) {
-          router.replace("/auth")
-          return
-        }
-
-        // invalid user data
-        if (!user || !user.email || !userRole) {
-          router.replace("/auth")
-          return
-        }
-
-        // role mismatch → redirect to correct dashboard
-        if (userRole !== requiredRole) {
-          if (pathname !== `/${userRole}`) {
-            router.replace(`/${userRole}`)
-          }
-          return
-        }
-
-        // Pending profile setup handling
-        if (user.status === "pending") {
-          let expectedQueryKey = ""
-          let expectedQueryValue = ""
-
-          if (requiredRole === "player") {
-            expectedQueryKey = "add-new"
-            expectedQueryValue = "player"
-          } else {
-            expectedQueryKey = requiredRole
-            expectedQueryValue = "profile-setup"
-          }
-
-          const currentValue = searchParams.get(expectedQueryKey)
-
-          // More flexible check for setup page - allow if on correct path with any query
-          const isAlreadyOnSetupPage =
-            pathname === `/${requiredRole}` &&
-            currentValue === expectedQueryValue
-
-           
-
-          // Only redirect if not already on the correct setup page
-          if (!isAlreadyOnSetupPage) {
-            const redirectUrl =
-              requiredRole === "player"
-                ? "/player?player=setup"
-                : `/${requiredRole}?${requiredRole}=profile-setup`
- 
-            router.replace(redirectUrl)
-            return
-          } else { 
-            setIsChecking(false)
-            return
-          }
-        }
- 
-        setIsChecking(false)
-      } catch (err) {
-        console.error("Auth error:", err)
+    if (!token || !rawUser) {
+      if (pathname !== "/auth") {
         router.replace("/auth")
       }
+      return
     }
 
-    // small delay prevents hydration/localStorage glitch
-    const timer = setTimeout(checkAuth, 50)
-    return () => clearTimeout(timer)
-  }, [pathname, role, router, searchParams])
+    let user: TUser
+
+    try {
+      user = JSON.parse(rawUser)
+    } catch {
+      router.replace("/auth")
+      return
+    }
+
+    if (!isValidToken(token)) {
+      router.replace("/auth")
+      return
+    }
+
+    const userRole = user?.role?.trim().toLowerCase()
+    const requiredRole = role.trim().toLowerCase()
+
+    if (!userRole || !user.email) {
+      router.replace("/auth")
+      return
+    }
+
+    // Wrong dashboard
+    if (userRole !== requiredRole) {
+      const target = `/${userRole}`
+
+      if (pathname !== target) {
+        router.replace(target)
+        return
+      }
+
+      setIsChecking(false)
+      return
+    }
+
+    // Pending profile setup
+    if (user.status === "pending") {
+      let redirectUrl = ""
+      let isAlreadyOnSetupPage = false
+
+      if (requiredRole === "player") {
+        redirectUrl = "/player?player=setup"
+
+        isAlreadyOnSetupPage =
+          pathname === "/player" &&
+          searchParams.get("player") === "setup"
+      } else {
+        redirectUrl = `/${requiredRole}?${requiredRole}=profile-setup`
+
+        isAlreadyOnSetupPage =
+          pathname === `/${requiredRole}` &&
+          searchParams.get(requiredRole) === "profile-setup"
+      }
+
+      if (!isAlreadyOnSetupPage) {
+        router.replace(redirectUrl)
+        return
+      }
+
+      setIsChecking(false)
+      return
+    }
+
+    setIsChecking(false)
+  }, [pathname, search, role, router, searchParams])
 
   if (isChecking) {
     return <Loader />

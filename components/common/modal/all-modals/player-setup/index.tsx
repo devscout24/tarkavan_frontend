@@ -30,9 +30,15 @@ export default function PLayerSetup() {
     "information"
   )
   const { close } = useModal()
-  const user = localStorage.getItem("go_elite_user")
-    ? JSON.parse(localStorage.getItem("go_elite_user")!)
-    : null
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const data = localStorage.getItem("go_elite_user");
+    if (data) {
+      setUser(JSON.parse(data));
+    }
+  }, []);
+
   const searchParams = useSearchParams()
   // const router = useRouter()
   // const pathname = usePathname()
@@ -145,13 +151,13 @@ export default function PLayerSetup() {
   }
 
   const hanldeUpdate = async () => {
-    setLoading(true) 
+    setLoading(true)
     try {
 
       if (user?.role === "player") {
         try {
 
-          const res = await updatePlayer(payload) 
+          const res = await updatePlayer(payload)
 
           if (res.status) {
             setLoading(false)
@@ -160,7 +166,7 @@ export default function PLayerSetup() {
             close("update")
             localStorage.removeItem("go_elitr_player_setup_progress")
           } else {
-            setLoading(false) 
+            setLoading(false)
             toast.error("Something went wrong")
           }
         } catch (error) {
@@ -208,14 +214,14 @@ export default function PLayerSetup() {
     toast.success("Player setup progress saved successfully!")
   }
 
-  
+
 
   useEffect(() => {
     const savedProgress = window.localStorage.getItem("go_elitr_player_setup_progress")
     if (savedProgress) {
       setPayload(JSON.parse(savedProgress))
     }
-  }, []) 
+  }, [])
 
 
 
@@ -267,7 +273,7 @@ export default function PLayerSetup() {
       </div>
 
       <div className="flex justify-between border-t border-brand/20 px-5 py-2">
- 
+
         <CommonBtn
           size={"lg"}
           variant={"default"}

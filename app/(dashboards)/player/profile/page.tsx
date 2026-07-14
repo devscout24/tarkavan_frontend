@@ -41,6 +41,7 @@ import {
 import { BsDownload } from "react-icons/bs"
 import PlayerCard from "./player-card"
 import { captureAndSave } from "@/lib/captureAndSave"
+import { formatProgressData } from "@/lib/progress-data-formater"
 
 export default function PlayerProfile() {
   const columnBorderClass = "border-r border-white/15 last:border-r-0"
@@ -49,17 +50,7 @@ export default function PlayerProfile() {
     : null
   const [playerData, setPlayerData] = useState<TPlayerProfile>()
   const router = useRouter()
-
-  // useEffect(() => {
-  //   const alreadyReloaded = sessionStorage.getItem("og-reloaded")
-
-  //   if (!alreadyReloaded) {
-  //     sessionStorage.setItem("og-reloaded", "true")
-  //     window.location.reload()
-  //   } else {
-  //     sessionStorage.removeItem("og-reloaded")  
-  //   }
-  // }, [])
+  console.log("Player Data:", playerData)
 
   useEffect(() => {
     const profileData = async () => {
@@ -110,14 +101,12 @@ export default function PlayerProfile() {
   const Icon = iconMap[privacy] ?? FiGlobe
 
   const handleEditPlayer = () => {
-    if (playerData) {
-      sessionStorage.setItem(
-        "go_elite_player_edit_data",
-        JSON.stringify(playerData)
-      )
-    }
-
-    router.push(`?update=player`)
+    const formattedData = formatProgressData(playerData as TPlayerProfile)
+    window.localStorage.setItem(
+      "go_elitr_player_setup_progress",
+      JSON.stringify(formattedData)
+    )
+    router.push(`?player=setup&update=true`)
   }
 
   const toYouTubeEmbedUrl = (url: string) => {
@@ -229,7 +218,7 @@ export default function PlayerProfile() {
 
         {/* profile info */}
         <div className="mt-6 gap-10 xl:flex">
-          <div className="top-5 flex-[3] self-start xl:sticky">
+          <div className="top-5 flex-3 self-start xl:sticky">
             <ProspectCard
               academyVotes={playerData?.professional_votes}
               provincialVotes={playerData?.provencial_votes}

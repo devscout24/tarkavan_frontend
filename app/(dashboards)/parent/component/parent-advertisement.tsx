@@ -225,7 +225,7 @@ export default function AdvertisementParent({
                         size="default"
                         text="add child"
                         className="w-full bg-brand hover:bg-brand text-primary border-0 cursor-pointer     "
-                        onClick={()=> router.push("?add-new=player") }
+                        onClick={()=> router.push("?player=setup") }
                         />
                     </div>
                   </div>

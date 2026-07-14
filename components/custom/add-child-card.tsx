@@ -37,7 +37,7 @@ export default function AddChildCard({
   const router = useRouter()
 
   const handleNavigation = () => {
-    router.push("?add-new=player")
+    router.push("?player=setup")
     
     // Call the original onGetStarted if provided
     if (onGetStarted) {

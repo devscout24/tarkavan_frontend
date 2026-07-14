@@ -491,7 +491,7 @@ export default function ProgramDateTimeSelector({
                           size="default"
                           text="add child"
                           className="w-full cursor-pointer border-0 bg-brand text-primary hover:bg-brand"
-                          onClick={() => router.push("?add-new=player")}
+                          onClick={() => router.push("?player=setup")}
                         />
                       </div>
                     </div>

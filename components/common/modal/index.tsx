@@ -13,6 +13,7 @@ import CoachProfileSetup from "@/app/(dashboards)/coach/CoachProfileSetup"
 import ClubProfileSetup from "./all-modals/club-profile-setup"
 import EditCoachProfileModal from "./all-modals/edit-coach-profile-modal" 
 import ConnectStripe from "../connect-stripe"
+import PLayerSetup from "./all-modals/player-setup"
 
 export default function Modals() {
   const { Modal } = useModal()
@@ -20,13 +21,11 @@ export default function Modals() {
   return (
     <>
       <Modal
-        modalId="add-new"
-        openId="player"
+        modalId="player"
+        openId="setup"
         className="max-w-full overflow-hidden! border border-brand/50 p-0! lg:max-w-[62%]! 2xl:max-w-[56%]!"
-      >
-        <ScrollArea className="max-h-[90vh]">
-          <PlayerAddModal />
-        </ScrollArea>
+      > 
+          <PLayerSetup /> 
       </Modal>
       <Modal
         modalId="update"

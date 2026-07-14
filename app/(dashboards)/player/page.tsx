@@ -26,8 +26,7 @@ export default function PlayerDashboardPage() {
     
     const getDashboard  = async () => {
       try {
-        const res = await getPlayerDashboard()
-        console.log("player dashboard res", res)
+        const res = await getPlayerDashboard() 
 
         if(res && 'success' in res && res.success && res.data && 'data' in res.data && res.data.data){
           setDashData(res.data.data)

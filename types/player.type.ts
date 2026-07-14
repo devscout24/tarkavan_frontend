@@ -123,11 +123,11 @@ export type TPlayerBasicInfo = {
   city: string
   province: string
   dob: string
-  age: number
+  age: number 
   gender: "male" | "female" | "other" | string
   nationality: string
   email: string
-  image: string | null
+  image: string | null 
   biography: string
   privacy_settings: "public" | "private" | string
   sports: string
@@ -141,7 +141,7 @@ export type TPlayerBasicInfo = {
   total_reviews: number
   updated_at: string
 }
-
+  
 // ================= POSITION INFO =================
 export type TPlayerPosition = {
   id: number

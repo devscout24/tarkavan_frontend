@@ -32,7 +32,7 @@ export default function UiInput({
 
   return (
     <Field>
-      {label &&  <FieldLabel htmlFor={label || "" } className={labelClass}>{label}</FieldLabel>} 
+      {label &&  <FieldLabel htmlFor={label || "" } className={`text-white ${labelClass}`}>{label}</FieldLabel>} 
       <div className="relative"> 
         {icon && 
         <div className="absolute top-1/2 left-1 -translate-y-1/2 text-secondary ">{icon}</div>

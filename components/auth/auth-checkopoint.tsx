@@ -81,7 +81,7 @@ export default function AuthCheckPoint({ children, role }: Props) {
           if (!isAlreadyOnSetupPage) {
             const redirectUrl =
               requiredRole === "player"
-                ? "/player?add-new=player"
+                ? "/player?player=setup"
                 : `/${requiredRole}?${requiredRole}=profile-setup`
  
             router.replace(redirectUrl)

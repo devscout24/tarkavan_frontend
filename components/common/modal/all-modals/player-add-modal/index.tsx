@@ -575,7 +575,7 @@ export default function PlayerAddModal() {
       appendText("jersey_number", completeData.jerseyNumber)
       appendText("dominant_foot", completeData.dominantFoot)
       appendText("club_team", completeData.clubTeam)
-      appendText("primary_position", completeData.primaryPosition)
+      appendText("primary_position", completeData.primaryPosition)  
       appendText("secondary_position", completeData.secondaryPosition)
       appendText("athlete_biography", completeData.biography)
       appendText("privacy_settings", completeData.privacySettings.visibility)

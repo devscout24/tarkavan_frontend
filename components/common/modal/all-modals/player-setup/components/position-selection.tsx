@@ -29,6 +29,13 @@ export default function PositionSelection({
     secondary: payload.secondaryPosition || "",
   })
 
+useEffect(() => {
+  setSelectedPositions((prev) => ({
+    primary: String(payload?.primaryPosition) || prev.primary,
+    secondary: String(payload?.secondaryPosition ) || prev.secondary,
+  }))
+}, [payload?.primaryPosition, payload?.secondaryPosition]) // dependency যোগ করা হলো
+
   useEffect(() => {
     const getPositions = async () => {
       try {

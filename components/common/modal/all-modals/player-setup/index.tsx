@@ -19,14 +19,28 @@ import { IoHandRightOutline } from "react-icons/io5"
 import Media from "./components/media"
 import AchievementDetailsForm from "./components/achivement"
 import { TPlayerProfilePayload } from "./type"
-import { addPlayer } from "../player-add-modal/action"
+import { addPlayer, convertToFormData, updatePlayer } from "../player-add-modal/action"
 import { toast } from "sonner"
+import useModal from "../../useModal"
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation"
+import { updateChildProfile } from "@/app/(dashboards)/parent/action"
 
 export default function PLayerSetup() {
   const [activeTab, setActiveTab] = useState<"information" | "media">(
     "information"
   )
-
+  const { close } = useModal()
+  const user = localStorage.getItem("go_elite_user")
+    ? JSON.parse(localStorage.getItem("go_elite_user")!)
+    : null
+  const searchParams = useSearchParams()
+  // const router = useRouter()
+  // const pathname = usePathname()
+  const isUpdatePlayer = searchParams.get("update") === "player"
+  const isUpdateChild = searchParams.get("update") === "child"
+  const params = useParams()
+  const edit_child_id = params.id
+  const child_id = params.child_id
   const [payload, setPayload] = useState<TPlayerProfilePayload>({
     // Core Identity
     firstName: "",
@@ -97,7 +111,7 @@ export default function PLayerSetup() {
         name: "",
         type: "image",
         file: undefined,
-        
+
       },
     },
 
@@ -108,36 +122,103 @@ export default function PLayerSetup() {
 
   })
 
- 
+  const [loading, setLoading] = useState<boolean>(false)
   const handleAddPlayer = async () => {
-    try{
-
+    setLoading(true)
+    try {
       const res = await addPlayer(payload)
-      console.log("Player added successfully:", res)
+      if (res.status) {
+        const user = JSON.parse(localStorage.getItem("go_elite_user") || "{}")
+        user.status = "approve"
+        user.profile_id = res.data.data.id
+        localStorage.setItem("go_elite_user", JSON.stringify(user))
+        setLoading(false)
+        close("player")
+        close("update")
+      }
 
-    }catch(error){
+    } catch (error) {
+      setLoading(false)
+      toast.error("Failed to add player")
       console.error("Error adding player:", error)
     }
   }
 
-  const handleSaveProgress = async () => {
-     
-    window.localStorage.setItem("go_elitr_player_setup_progress", JSON.stringify(payload)) 
+  const hanldeUpdate = async () => {
+    setLoading(true) 
+    try {
 
-    toast.success("Player setup progress saved successfully!")
- 
+      if (user?.role === "player") {
+        try {
+
+          const res = await updatePlayer(payload) 
+
+          if (res.status) {
+            setLoading(false)
+            toast.success(res.message || "Updated success")
+            window.dispatchEvent(new CustomEvent("player_profile_updated"))
+            close("update")
+            localStorage.removeItem("go_elitr_player_setup_progress")
+          } else {
+            setLoading(false) 
+            toast.error("Something went wrong")
+          }
+        } catch (error) {
+          setLoading(false)
+          toast.error("Failed to add player")
+          console.error("Error saving player profile:", error)
+        }
+      }
+
+      if (isUpdateChild && user?.role === "parent") {
+        try {
+
+          const formData = await convertToFormData(payload)
+          const res = await updateChildProfile({
+            data: formData,
+            child_id: String(edit_child_id || child_id),
+          })
+
+
+          if (res?.status) {
+            setLoading(false)
+            toast.success("Child profile updated successfully")
+            window.dispatchEvent(new CustomEvent("player_profile_updated"))
+            localStorage.removeItem("go_elitr_player_setup_progress")
+            close("update")
+          } else {
+            setLoading(false)
+            console.log(res)
+          }
+        } catch (error) {
+          setLoading(false)
+          toast.error("Failed to add player")
+          console.error("Error saving player profile:", error)
+        }
+      }
+
+    } catch (err) {
+      console.error(err)
+      setLoading(false)
+    }
   }
 
-  useEffect(()=> {
+  const handleSaveProgress = async () => {
+    window.localStorage.setItem("go_elitr_player_setup_progress", JSON.stringify(payload))
+    toast.success("Player setup progress saved successfully!")
+  }
+
+  
+
+  useEffect(() => {
     const savedProgress = window.localStorage.getItem("go_elitr_player_setup_progress")
-    if(savedProgress){
+    if (savedProgress) {
       setPayload(JSON.parse(savedProgress))
-    } 
-  } , [])
-  console.log("Payload:", payload)
+    }
+  }, []) 
 
 
- 
+
 
   return (
     <div className="rounded-3xl border border-white/10 bg-[#090B10]">
@@ -186,12 +267,7 @@ export default function PLayerSetup() {
       </div>
 
       <div className="flex justify-between border-t border-brand/20 px-5 py-2">
-        <CommonBtn
-          size={"lg"}
-          variant={"default"}
-          text="Cancel"
-          className="w-fit rounded-lg border border-white/10 px-10"
-        />
+ 
         <CommonBtn
           size={"lg"}
           variant={"default"}
@@ -199,13 +275,28 @@ export default function PLayerSetup() {
           onClick={handleSaveProgress}
           className="w-fit rounded-lg border border-white/10 px-10"
         />
-        <CommonBtn
-          size={"lg"}
-          variant={"default"}
-          text="Upload"
-          onClick={handleAddPlayer} 
-          className="w-fit rounded-lg border border-white/10 bg-brand px-10 text-primary hover:bg-brand"
-        />
+        {isUpdatePlayer || isUpdateChild ?
+          <CommonBtn
+            size={"lg"}
+            variant={"default"}
+            text="Update"
+            onClick={hanldeUpdate}
+            disabled={loading}
+            isLoading={loading}
+            className="w-fit rounded-lg border border-white/10 bg-brand px-10 text-primary hover:bg-brand"
+          />
+          :
+          <CommonBtn
+            size={"lg"}
+            variant={"default"}
+            text="Done"
+            onClick={handleAddPlayer}
+            disabled={loading}
+            isLoading={loading}
+            className="w-fit rounded-lg border border-white/10 bg-brand px-10 text-primary hover:bg-brand"
+          />
+        }
+
       </div>
     </div>
   )

@@ -12,38 +12,37 @@ import ToComplite from "@/components/custom/to-complite"
 import AthletesAndCoaches from "@/components/custom/trusted"
 import { useEffect, useState } from "react"
 import { getLandingPageData } from "./action"
-import { TCoachAndClub, TLandingPageData } from "@/types/landing.type"
-import PLayerSetup from "@/components/common/modal/all-modals/player-setup"
+import { TCoachAndClub, TLandingPageData } from "@/types/landing.type" 
 
 export default function Page() {
   const [allData, setAllData] = useState<TLandingPageData | null>(null)
  
-  // useEffect(() => {
-  //   const getData = async () => {
-  //     try {
-  //       const res = await getLandingPageData()
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const res = await getLandingPageData()
 
-  //       if (
-  //         res &&
-  //         typeof res === "object" &&
-  //         "success" in res &&
-  //         res.success &&
-  //         "data" in res
-  //       ) {
-  //         setAllData(res.data.data)
-  //       }
-  //     } catch (error) {
-  //       console.error(error)
-  //     }
-  //   }
-  //   getData()
-  // }, [])
+        if (
+          res &&
+          typeof res === "object" &&
+          "success" in res &&
+          res.success &&
+          "data" in res
+        ) {
+          setAllData(res.data.data)
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    getData()
+  }, [])
 
   return (
     <>
       <Nav />
 
-      {/* <Banner data={allData?.hero} />
+      <Banner data={allData?.hero} />
 
       <Counter data={allData?.stats} />
 
@@ -57,9 +56,8 @@ export default function Page() {
 
       <AthletesAndCoaches data={allData?.reviews?.items} />
 
-      <StartJourney /> */}
-
-      <PLayerSetup/>
+      <StartJourney />  
+ 
 
       <Footer />
     </>

@@ -162,7 +162,7 @@ export default function CoreIdentity({
             Sport Selection
           </label>
           <Select
-            value={payload.sport || ""}
+            value={String(payload.sport) || ""}
             onValueChange={(value) =>
               setPayload((prev) => ({
                 ...prev,
@@ -178,9 +178,9 @@ export default function CoreIdentity({
             </SelectTrigger>
             <SelectContent position="popper">
               <SelectGroup>
-                {sportsOptions.map((sport) => (
+                {sportsOptions.map((sport , i) => (
                   <SelectItem
-                    key={sport.id}
+                    key={i}
                     value={String(sport.id)}
                     className="hover:bg-brand!"
                   >

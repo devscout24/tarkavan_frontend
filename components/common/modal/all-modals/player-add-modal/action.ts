@@ -24,9 +24,32 @@ export async function addPlayer(data: TPlayerProfilePayload) {
 }
 
 
+export async function updatePlayer(data: TPlayerProfilePayload) {
+
+  const formData = await convertToFormData(data)
+ 
+  try {
+    const res = await api.post(`/player/profile/update`, formData )
+    return res.data
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
 
 
-function convertToFormData(data: TPlayerProfilePayload) {
+
+
+
+export async function convertToFormData(data: TPlayerProfilePayload) {
+   
+
   const formData = new FormData()
 
   formData.append("name", data.firstName || "")

@@ -34,6 +34,7 @@ import { toast } from "sonner"
 import PlayerCard from "@/app/(dashboards)/player/profile/player-card"
 import { captureAndSave } from "@/lib/captureAndSave"
 import { BsDownload } from "react-icons/bs"
+import { formatProgressData } from "@/lib/progress-data-formater"
 
 export default function ChildProfile() {
   const router = useRouter()
@@ -183,13 +184,15 @@ export default function ChildProfile() {
             size={"lg"}
             variant={"default"}
             onClick={() => {
-              if (child_id) {
-                sessionStorage.setItem(
-                  "go_elite_player_edit_data",
-                  JSON.stringify(playerData)
-                )
+              const progresData = localStorage.getItem("go_elitr_player_setup_progress")
+              if (child_id && progresData) {
                 router.push(`?update=child`)
               } else {
+                const formattedData = formatProgressData(playerData as TPlayerProfile)
+                window.localStorage.setItem(
+                  "go_elitr_player_setup_progress",
+                  JSON.stringify(formattedData)
+                )
                 toast.error("Child ID is missing. Cannot edit profile.")
               }
             }}

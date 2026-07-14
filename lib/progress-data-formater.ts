@@ -22,6 +22,9 @@ export const formatProgressData = (data: TPlayerProfile) => {
     primaryPosition: data.position_info.primary_position.id,
     secondaryPosition: data.position_info.secondary_position.id,
     biography: data.basic_info.biography,
+    privacySettings: {
+      visibility: data?.basic_info?.privacy_settings || "public"
+    },
     seasonStats: {
       activeTab: "outfield",
       values: {

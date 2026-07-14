@@ -50,7 +50,6 @@ export default function PlayerProfile() {
     : null
   const [playerData, setPlayerData] = useState<TPlayerProfile>()
   const router = useRouter()
-  console.log("Player Data:", playerData)
 
   useEffect(() => {
     const profileData = async () => {
@@ -101,12 +100,19 @@ export default function PlayerProfile() {
   const Icon = iconMap[privacy] ?? FiGlobe
 
   const handleEditPlayer = () => {
-    const formattedData = formatProgressData(playerData as TPlayerProfile)
-    window.localStorage.setItem(
-      "go_elitr_player_setup_progress",
-      JSON.stringify(formattedData)
-    )
-    router.push(`?player=setup&update=true`)
+
+    const progresData = localStorage.getItem("go_elitr_player_setup_progress")
+
+    if (progresData) {
+      router.push(`?update=player`)
+    } else {
+      const formattedData = formatProgressData(playerData as TPlayerProfile)
+      window.localStorage.setItem(
+        "go_elitr_player_setup_progress",
+        JSON.stringify(formattedData)
+      )
+      router.push(`?update=player`)
+    }
   }
 
   const toYouTubeEmbedUrl = (url: string) => {
@@ -466,9 +472,9 @@ export default function PlayerProfile() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {playerData?.season_stats_last_five_years?.map((stat) => (
+                    {playerData?.season_stats_last_five_years?.map((stat, i) => (
                       <TableRow
-                        key={stat.season_year}
+                        key={i}
                         className="border-t border-white/20 hover:bg-transparent"
                       >
                         <TableCell

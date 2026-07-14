@@ -198,9 +198,9 @@ export default function Media({
         {/* Selected files — with preview */}
         {items.length > 0 && (
           <ul className="relative mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {items.map((item) => (
+            {items.map((item  , i) => (
               <li
-                key={item.id}
+                key={i}
                 className="flex items-center gap-3 rounded-xl border border-white/6 bg-white/2 p-2.5"
               >
                 <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-black ring-1 ring-white/8">

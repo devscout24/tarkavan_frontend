@@ -102,9 +102,9 @@ export default function StrengthsDesign({
       <div className="mt-2 grid gap-6 lg:grid-cols-[220px_1fr]">
         {/* Sidebar */}
         <div className="space-y-2">
-          {categories.map((category) => (
+          {categories.map((category , i) => (
             <button
-              key={category.id}
+              key={i}
               onClick={() => setActiveTab(category.id)}
               className={`flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition-all duration-300 ${
                 activeTab === category.id

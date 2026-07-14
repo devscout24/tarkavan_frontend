@@ -112,7 +112,7 @@ export async function bookProgram(data: FormData) {
 export async function updateChildProfile({data , child_id}: { data: FormData, child_id: string }) {
   try {
     const res = await api.post(`/parent/child/update/${child_id}`, data) 
-    return { success: true, data: res.data }
+    return res.data
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {
       return err?.response?.data

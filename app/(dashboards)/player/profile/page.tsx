@@ -179,6 +179,16 @@ export default function PlayerProfile() {
 
   const [loading, setLoading] = useState(false)
 
+  // if (!playerData) {
+  //   return (
+  //     <div>
+  //       <p className="mt-6 rounded-xl border border-white/5 bg-amber-100/5 py-10 text-center text-white">
+  //         Something went wrong. Please try again later.
+  //       </p>
+  //     </div>
+  //   )
+  // }
+
   return (
     <>
       <PlayerCard playerData={playerData} />

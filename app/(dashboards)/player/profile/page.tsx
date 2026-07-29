@@ -50,17 +50,6 @@ export default function PlayerProfile() {
   const [playerData, setPlayerData] = useState<TPlayerProfile>()
   const router = useRouter()
 
-  // useEffect(() => {
-  //   const alreadyReloaded = sessionStorage.getItem("og-reloaded")
-
-  //   if (!alreadyReloaded) {
-  //     sessionStorage.setItem("og-reloaded", "true")
-  //     window.location.reload()
-  //   } else {
-  //     sessionStorage.removeItem("og-reloaded")  
-  //   }
-  // }, [])
-
   useEffect(() => {
     const profileData = async () => {
       try {
@@ -184,6 +173,16 @@ export default function PlayerProfile() {
 
   const [loading, setLoading] = useState(false)
 
+  // if (!playerData) {
+  //   return (
+  //     <div>
+  //       <p className="mt-6 rounded-xl border border-white/5 bg-amber-100/5 py-10 text-center text-white">
+  //         Something went wrong. Please try again later.
+  //       </p>
+  //     </div>
+  //   )
+  // }
+
   return (
     <>
       <PlayerCard playerData={playerData} />
@@ -229,7 +228,7 @@ export default function PlayerProfile() {
 
         {/* profile info */}
         <div className="mt-6 gap-10 xl:flex">
-          <div className="top-5 flex-[3] self-start xl:sticky">
+          <div className="top-5 flex-3 self-start xl:sticky">
             <ProspectCard
               academyVotes={playerData?.professional_votes}
               provincialVotes={playerData?.provencial_votes}

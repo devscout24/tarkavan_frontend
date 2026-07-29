@@ -37,13 +37,12 @@ export default function ProfileTop({
   editProfileModalOpen: boolean
   setEditProfileModalOpen: (open: boolean) => void
 }) {
-
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const handleDeleteAccount = async () => {
     try {
       setLoading(true)
-      const res = await deleteAccount() 
+      const res = await deleteAccount()
       if (res.status) {
         toast.success("Account deleted successfully")
         setLoading(false)
@@ -56,14 +55,13 @@ export default function ProfileTop({
   }
   const userImage = useAppSelector(selectUserImage)
 
-
   return (
     <div className="rounded-2xl border border-white/12 bg-primary p-4 text-white md:p-6">
       <h2 className="text-xl font-semibold tracking-tight">Profile</h2>
 
       <div className="mt-4 flex flex-col items-start justify-between gap-4 rounded-xl bg-white/10 p-4 sm:flex-row sm:items-center md:p-5">
         <div className="flex items-center gap-4">
-          <div className="relative border border-brand rounded-full overflow-hidden">
+          <div className="relative overflow-hidden rounded-full border border-brand">
             <Image
               src={userImage || "/images/bannerbg.png"}
               alt={profileTopInfo?.name}
@@ -82,9 +80,8 @@ export default function ProfileTop({
                   }
                 }}
               />
-              <div className="bg-primary/50 w-full h-1/3 absolute bottom-0 left-0 flex items-center justify-center ">
-
-                <MdPhotoCamera className="   text-2xl   " />
+              <div className="absolute bottom-0 left-0 flex h-1/3 w-full items-center justify-center bg-primary/50">
+                <MdPhotoCamera className="text-2xl" />
               </div>
             </div>
           </div>
@@ -99,53 +96,55 @@ export default function ProfileTop({
           </div>
         </div>
 
-        <div className="  ">
-          <EditProfileModal profileTopInfo={profileTopInfo} handleEditProfileModdal={(name) => handleEditProfileModdal(name)} editProfileModalOpen={editProfileModalOpen} setEditProfileModalOpen={setEditProfileModalOpen} />
+        <div className=" ">
+          <EditProfileModal
+            profileTopInfo={profileTopInfo}
+            handleEditProfileModdal={(name) => handleEditProfileModdal(name)}
+            editProfileModalOpen={editProfileModalOpen}
+            setEditProfileModalOpen={setEditProfileModalOpen}
+          />
 
           <Dialog>
             <DialogTrigger>
-              <CommonBtn
-                variant="outline"
-                size="sm"
-                className=" rounded-lg border-red-500  bg-transparent px-3 text-white hover:bg-white/5 w-fit px-5 bg-red-500/10 mt-2 hover:text-white! hover:bg-red-500/20      "
-                text="Delete Account"
-              />
+              <div className="mt-2 w-fit rounded-lg border-red-500 bg-red-500/10! py-2 px-5 text-white hover:bg-red-500/20 cursor-pointer hover:text-white!">
+                Delete Account
+              </div>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle className="text-xl text-red-500 ">Are you absolutely sure?</DialogTitle>
+                <DialogTitle className="text-xl text-red-500">
+                  Are you absolutely sure?
+                </DialogTitle>
                 <DialogDescription>
-                  <p className="text-secondary! text-xs">
-                    Deleting your account is permanent and cannot be undone. All data will be removed from our servers and cannot be recovered.
+                  <p className="text-xs text-secondary!">
+                    Deleting your account is permanent and cannot be undone. All
+                    data will be removed from our servers and cannot be
+                    recovered.
                   </p>
                 </DialogDescription>
               </DialogHeader>
 
               {/* actions buttons */}
-              <div className="flex items-center justify-between gap-2 mt-6">
+              <div className="mt-6 flex items-center justify-between gap-2">
                 <CommonBtn
                   variant="outline"
                   size="sm"
-                  className="ml-2 w-fit px-2  rounded-lg border-secondary  bg-transparent px-3 text-primary      "
+                  className="ml-2 w-fit rounded-lg border-secondary bg-transparent px-2 px-3 text-primary"
                   text="Cancel"
                 />
                 <CommonBtn
                   variant="outline"
                   size="sm"
-                  className=" rounded-lg border-red-500  bg-transparent px-3 text-primary  w-fit border-red-500 bg-red-500/10 hover:bg-red-500/20       "
+                  className="w-fit rounded-lg border-red-500 bg-red-500/10 bg-transparent px-3 text-primary hover:bg-red-500/20"
                   text="Confirm Delete"
                   onClick={handleDeleteAccount}
                   disabled={loading}
                   isLoading={loading}
                 />
-
               </div>
             </DialogContent>
           </Dialog>
-
-
         </div>
-
       </div>
     </div>
   )

@@ -59,9 +59,9 @@ export default function RadarStrength({
       </h3>
 
       <ul className=" ">
-        {strengths?.map((item) => (
+        {strengths?.map((item , i) => (
           <li
-            key={item.strength_name}
+            key={i}
             className="flex items-center justify-between border-b border-secondary/70 bg-secondary/30 px-4 py-2 text-lg font-medium text-white"
           >
             <span className="  text-white/70">

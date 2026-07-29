@@ -10,30 +10,44 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai"
 import Loader from "@/components/common/loader"
 
 export default function StripePage({}: {}) {
-  const router = useRouter()
+  // const router = useRouter()
   const [isConnected, setIsConnected] = useState(true)
   const [loaded, setLoaded] = useState(false)
+  
+  useEffect(()=> {
+    
+    console.log("isConnected", isConnected)
+  } , [isConnected])
 
   useEffect(() => {
     const getStripeAuth = async () => {
       try {
         const res = await getStripeData()
+        console.log("stripe data", res)
+
+        if (res?.status) {
+          setIsConnected(res?.data?.connected)
+          setLoaded(true)
+          return
+        }
+
         if (res?.data?.payouts_enabled) {
           setIsConnected(true)
           setLoaded(true)
           return
-        } else {
-          setIsConnected(false)
-          setLoaded(true) 
         }
       } catch (err) {}
     }
     getStripeAuth()
   }, [])
 
+
+
   return (
-    <div className="mx-auto lg:max-w-1/2  h-dvh   ">
-      {loaded === false ? <Loader/> : !isConnected ? (
+    <div className="mx-auto h-dvh lg:max-w-1/2">
+      {loaded === false ? (
+        <Loader />
+      ) : !isConnected ? (
         <ConnectStripe />
       ) : (
         <div className="rounded-2xl border border-white/8 bg-secondary/20 p-5 text-white md:p-6">

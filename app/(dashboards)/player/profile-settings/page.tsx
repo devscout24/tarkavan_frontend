@@ -37,16 +37,7 @@ export default function ProfileSettingPage() {
     }
 
     getPlayerProfileInfo()
-
-    // const getData = () => {
-    //   getPlayerProfileInfo();
-    // };
-
-    //   window.addEventListener("profile_update", getData);
-
-    //   return () => {
-    //     window.removeEventListener("profile_update", getData);
-    //   };
+ 
   }, [])
 
   const [profileImage, setProfileImage] = useState<string | File>("")
@@ -180,23 +171,7 @@ export default function ProfileSettingPage() {
       value: "players",
       title: "Athletes Only",
       description: "Visible to verified athletes only",
-    },
-    // {
-    //   value: "coach_and_players",
-    //   title: "Coaches & Athletes",
-    //   description: "Visible to verified coaches and athletes",
-    // },
-    // {
-    //   value: "players_and_teams",
-    //   title: "Coaches & Teams",
-    //   description: "Visible to coaches and team members only",
-    // },
-
-    // {
-    //   value: "only_player",
-    //   title: "Athlete Only",
-    //   description: "Fully private professional view for the athlete only",
-    // },
+    }, 
   ]
   const [currentPrivacy, setCurrentPrivacy] = useState<string>("public")
   const handlePlayerPrivacyChange = async (value: string) => {

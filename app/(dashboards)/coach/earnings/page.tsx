@@ -40,43 +40,6 @@ export default function EarningsPage() {
   const [exporting, setExporting] = useState(false)
   const isUbscriber = useAppSelector(selectIsSubscriptionActive)
 
-  const fetchEarnings = async (filterValue: string) => {
-    try {
-      setLoading(true)
-      const token =
-        localStorage.getItem("go_elite_token") ||
-        sessionStorage.getItem("go_elite_token")
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/coach/earnings/view?filter=${filterValue}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const result = await response.json()
-
-      if (result.status && result.data) {
-        setEarningsData(result.data)
-      } else {
-        console.warn("Invalid response structure:", result)
-      }
-    } catch (error) {
-      console.error("Error fetching earnings:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const handleExport = async () => {
     try {
       setExporting(true)
@@ -144,9 +107,47 @@ export default function EarningsPage() {
   }
 
   useEffect(() => {
-    fetchEarnings(filter)
-  }, [filter])
+    const fetchEarnings = async ( ) => {
+      try {
+        setLoading(true)
+        const token =
+          localStorage.getItem("go_elite_token") ||
+          sessionStorage.getItem("go_elite_token")
 
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/coach/earnings/view?filter=${filter}`,
+          { 
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        const result = await response.json() 
+
+        if (result.status && result.data) {
+          setEarningsData(result.data)
+        } else {
+          console.warn("Invalid response structure:", result)
+        }
+      } catch (error) {
+        console.error("Error fetching earnings:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchEarnings()
+
+  }, [filter])
+ 
   const stats = [
     {
       icon: <ActiveProgramsIcon />,
@@ -184,6 +185,8 @@ export default function EarningsPage() {
         : "$--.--",
     },
   ]
+
+  console.log("Earnings data:", earningsData)
 
   if (isUbscriber) {
     return (

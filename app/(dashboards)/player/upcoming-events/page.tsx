@@ -11,6 +11,7 @@ export default async function UpcomingEventPage() {
 
   try {
     const res = await getUpcomingEvents()
+    console.log("Upcoming events response:", res)
     if (
       res &&
       "success" in res &&

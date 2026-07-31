@@ -22,12 +22,14 @@ export default function PaymentPage() {
   })
   const [payments, setPayments] = useState<ParentPaymentItem[]>([])
 
+
   useEffect(() => {
     const loadPayments = async () => {
       try {
         const response = await fetchParentPayments()
+        console.log("Parent payments response:", response)
 
-        if (response.status) {
+        if (response?.status) {
           setSummary(response.data.summary)
           setPayments(response.data.payments)
         }

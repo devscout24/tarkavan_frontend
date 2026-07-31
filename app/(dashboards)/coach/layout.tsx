@@ -45,8 +45,7 @@ import {
   setUserImage,
 } from "@/lib/features/userSlice"
 import { CiCreditCard2 } from "react-icons/ci"
-import { getUnreadCount } from "../action"
-import { getStripeData } from "./action"
+import { getUnreadCount } from "../action" 
 
 const EarningsNavIcon = ({ className }: { className?: string }) => (
   <Image
@@ -90,8 +89,7 @@ export default function ParentDashboardLayout({
         })
 
         if (response.ok) {
-          const result = await response.json()
-          console.log(result)
+          const result = await response.json() 
           dispatch(setUserImage(result?.data?.profile?.profile_image))
           dispatch(setProfileID(result?.data?.coach_id))
           dispatch(

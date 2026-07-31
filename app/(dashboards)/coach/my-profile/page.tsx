@@ -9,10 +9,7 @@ import { toPng } from "html-to-image"
 import { useEffect, useState } from "react"
 import { getApiBaseUrl } from "@/lib/url-utils"
 import { TCoachProfile, TCoachProfileData } from "@/types"
-import CoachShareCard from "./coach-card"
-import { useRouter } from "next/navigation"
-import { selectProfileID } from "@/lib/features/userSlice"
-import { useAppSelector } from "@/lib/hooks"
+import CoachShareCard from "./coach-card" 
 
 export default function MyProfilePage() {
   const [shouldCapture, setShouldCapture] = useState(false)

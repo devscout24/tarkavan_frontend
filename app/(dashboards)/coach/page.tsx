@@ -152,7 +152,7 @@ export default function CoachDashboardPage() {
     },
     {
       icon: <PlatformFeeIcon />,
-      title: `${dashboardData?.summary?.platform_fee_rate || 0}% Platform Fee (Month)`,
+      title: `${dashboardData?.summary?.platform_fee_rate || 0}% Platform Fee`,
       text: `$${dashboardData?.summary?.platform_fee_month?.toFixed(2) || "0.00"}`,
     },
   ]

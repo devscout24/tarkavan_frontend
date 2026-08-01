@@ -49,7 +49,7 @@ export default async function UpcomingEventPage() {
           status={TopUpcommingEvent?.status || ""}
           btnText={"View Details"}
           programImage={
-            TopUpcommingEvent?.program_photo || "/images/player1.png"
+            TopUpcommingEvent?.program_photo 
           }
         />
       ) : (

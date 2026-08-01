@@ -37,7 +37,7 @@ export default function PlayerActivePrograms({
             <Image
               width={1000}
               height={1000}
-              src={"/images/player1.png"}
+              src={programImage}
               alt={programName}
               className="h-full max-h-55 w-full object-fill lg:max-w-[288px]"
             />

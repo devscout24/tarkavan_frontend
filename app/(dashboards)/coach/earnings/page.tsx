@@ -25,6 +25,9 @@ interface EarningsData {
     platform_fee: number
     net_earnings_month: number
     platform_fee_month: number
+    platformFee_coach: number
+    platformFee_club: number
+
   }
   earnings: EarningsRow[]
   monthly_growth: {
@@ -131,6 +134,7 @@ export default function EarningsPage() {
         }
 
         const result = await response.json() 
+        console.log("Fetched earnings data:", result)
 
         if (result.status && result.data) {
           setEarningsData(result.data)
@@ -174,19 +178,11 @@ export default function EarningsPage() {
     },
     {
       icon: <PlatformFeeIcon />,
-      title:
-        filter === "year"
-          ? "10% Platform Fee (Year)"
-          : "10% Platform Fee (Month)",
-      text: earningsData
-        ? filter === "year"
-          ? `$${earningsData.summary.platform_fee.toFixed(2)}`
-          : `$${earningsData.summary.platform_fee_month.toFixed(2)}`
-        : "$--.--",
+      title: `${earningsData?.summary?.platformFee_coach}% Platform Fee`,
+      text: ""
     },
   ]
-
-  console.log("Earnings data:", earningsData)
+ 
 
   if (isUbscriber) {
     return (

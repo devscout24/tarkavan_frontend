@@ -271,8 +271,10 @@ export default function ProgramDateTimeSelector({
     const payload = buildPayload(athleteId as string)
 
     try {
-      setLoading(true)
+      setLoading(false)
       const res = await bookProgram(payload as any)
+ 
+
       if (res?.status === false && res?.message) {
         toast.error(res.message)
         setLoading(false)

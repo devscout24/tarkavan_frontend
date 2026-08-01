@@ -147,13 +147,13 @@ export default function CoachDashboardPage() {
     },
     {
       icon: <NetEarningsIcon />,
-      title: "Net Earnings (Month)",
+      title: "Net Earnings",
       text: `$${dashboardData?.summary?.net_earnings_month?.toFixed(2) || "0.00"}`,
     },
     {
       icon: <PlatformFeeIcon />,
       title: `${dashboardData?.summary?.platform_fee_rate || 0}% Platform Fee`,
-      text: `$${dashboardData?.summary?.platform_fee_month?.toFixed(2) || "0.00"}`,
+      text: ``,
     },
   ]
   if (isUbscriber) {

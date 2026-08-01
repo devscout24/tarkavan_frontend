@@ -85,8 +85,7 @@ export default function ProgramDetailsPage() {
       window.removeEventListener("programevent", getUpdatedData)
     }
   }, [id])
-
-  console.log(details?.provider)
+ 
 
   return ( 
     loading ? <Loader/> :

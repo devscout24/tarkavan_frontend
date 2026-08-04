@@ -37,9 +37,8 @@ export default function BookingsPage() {
     const fetchBookings = async () => {
       try {
         setLoading(true)
-        const response = await api.get("/coach/program/bookings")
-        console.log("Bookings response:", response)
-        if (response?.data?.data) {
+        const response = await api.get("/coach/program/bookings") 
+        if (response?.data?.data) { 
           setBookings(response?.data?.data)
         }
       } catch (error) {

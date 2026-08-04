@@ -54,6 +54,8 @@ export default function BookingsTable({ bookings }: BookingsTableProps) {
     }
   }
 
+  console.log("Bookings in table:", bookings)
+
   return (
     <> 
       <div className="  w-full max-w-full min-w-0 overflow-x-auto overflow-y-hidden rounded-2xl border border-secondary/40 [scrollbar-color:rgba(198,245,122,0.75)_transparent] [scrollbar-width:thin] lg:block [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-brand/75 [&::-webkit-scrollbar-track]:bg-transparent">
@@ -70,7 +72,10 @@ export default function BookingsTable({ bookings }: BookingsTableProps) {
                 Amount
               </TableHead>
               <TableHead className="h-10 w-[14%] border-r border-black/20 px-3 text-xs font-medium whitespace-normal text-black xl:px-4 xl:text-sm 2xl:h-11 2xl:px-5">
-                Date
+                Booking Date
+              </TableHead>
+              <TableHead className="h-10 w-[14%] border-r border-black/20 px-3 text-xs font-medium whitespace-normal text-black xl:px-4 xl:text-sm 2xl:h-11 2xl:px-5">
+                Program Date
               </TableHead>
               <TableHead className="h-10 w-[13%] border-r border-black/20 px-3 text-xs font-medium whitespace-normal text-black xl:px-4 xl:text-sm 2xl:h-11 2xl:px-5">
                 Status
@@ -90,9 +95,7 @@ export default function BookingsTable({ bookings }: BookingsTableProps) {
                 <TableCell className="h-16 border-r border-white/15 px-3 whitespace-normal xl:px-4 2xl:h-19 2xl:px-5">
                   <div className="flex min-w-0 items-center gap-2 xl:gap-3">
                     <Image
-                      src={
-                        booking?.athlete?.profile_image?.startsWith("http") ? encodeURI(booking?.athlete?.profile_image) : booking?.athlete?.image?.startsWith("http") ? encodeURI(booking?.athlete?.image) : "/images/bannerbg.png"
-                      }
+                      src={ booking?.athlete?.profile_image || `https://admin.goelitesport.com/${booking?.athlete?.image}` }
                       alt={booking.athlete.name}
                       width={40} 
                       height={40}
@@ -110,7 +113,10 @@ export default function BookingsTable({ bookings }: BookingsTableProps) {
                   {booking.amount}
                 </TableCell>
                 <TableCell className="h-16 border-r border-white/15 px-3 text-sm leading-[150%] font-normal whitespace-normal text-white xl:px-4 xl:text-base 2xl:h-19 2xl:px-5">
-                  {moment(booking.booking_date).format("MMM Do YY")}
+                  {moment(booking.created_at).format("MMM Do YYYY")}
+                </TableCell>
+                <TableCell className="h-16 border-r border-white/15 px-3 text-sm leading-[150%] font-normal whitespace-normal text-white xl:px-4 xl:text-base 2xl:h-19 2xl:px-5">
+                  {moment(booking.booking_date).format("MMM Do YYYY")}
                 </TableCell>
                 <TableCell className="h-16 border-r border-white/15 px-3 whitespace-normal xl:px-4 2xl:h-19 2xl:px-5 capitalize   ">
                   {booking.status}

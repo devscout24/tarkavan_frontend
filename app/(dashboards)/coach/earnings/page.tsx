@@ -37,8 +37,7 @@ interface EarningsData {
 }
 
 export default function EarningsPage() {
-  const [earningsData, setEarningsData] = useState<EarningsData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [earningsData, setEarningsData] = useState<EarningsData | null>(null) 
   const [filter, setFilter] = useState("month")
   const [exporting, setExporting] = useState(false)
   const isUbscriber = useAppSelector(selectIsSubscriptionActive)
@@ -111,8 +110,7 @@ export default function EarningsPage() {
 
   useEffect(() => {
     const fetchEarnings = async ( ) => {
-      try {
-        setLoading(true)
+      try { 
         const token =
           localStorage.getItem("go_elite_token") ||
           sessionStorage.getItem("go_elite_token")
@@ -133,19 +131,16 @@ export default function EarningsPage() {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
 
-        const result = await response.json() 
-        console.log("Fetched earnings data:", result)
+        const result = await response.json()  
 
-        if (result.status && result.data) {
+        if (result.status && result.data) { 
           setEarningsData(result.data)
         } else {
           console.warn("Invalid response structure:", result)
         }
       } catch (error) {
         console.error("Error fetching earnings:", error)
-      } finally {
-        setLoading(false)
-      }
+      }  
     }
 
     fetchEarnings()
@@ -169,7 +164,7 @@ export default function EarningsPage() {
     },
     {
       icon: <NetEarningsIcon />,
-      title: filter === "year" ? "Net Earnings (Year)" : "Net Earnings (Month)",
+      title: "Net Earnings",
       text: earningsData
         ? filter === "year"
           ? `$${earningsData.summary.net_earnings.toFixed(2)}`

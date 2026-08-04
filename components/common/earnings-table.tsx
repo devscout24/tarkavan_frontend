@@ -10,11 +10,14 @@ import {
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 import Image, { StaticImageData } from "next/image"
+import moment from "moment"
 
 export type EarningsRow = {
   id: string
   clientName: string
+  client_name?: string
   programName: string
+  program_name?: string
   date: string
   amount: string
   hst: string
@@ -35,6 +38,7 @@ export default function EarningsTable({ earnings }: EarningsTableProps) {
       </div>
     )
   }
+ 
 
   return (
     <>
@@ -126,24 +130,17 @@ export default function EarningsTable({ earnings }: EarningsTableProps) {
                 className="border-b border-white/15 bg-transparent hover:bg-transparent"
               >
                 <TableCell className="h-16 border-r border-white/15 px-3 whitespace-normal xl:px-4 2xl:h-19 2xl:px-5">
-                  <div className="flex min-w-0 items-center gap-2 xl:gap-3">
-                    <Image
-                      src={earning.avatar}
-                      alt={earning.clientName}
-                      width={40}
-                      height={40}
-                      className="h-8 w-8 rounded-full object-cover xl:h-9 xl:w-9 2xl:h-10 2xl:w-10"
-                    />
+                  <div className="flex min-w-0 items-center gap-2 xl:gap-3"> 
                     <p className="truncate text-sm leading-[150%] font-normal text-white xl:text-base">
-                      {earning.clientName}
+                      {earning.clientName || earning.client_name || "--"}
                     </p>
                   </div>
                 </TableCell>
                 <TableCell className="h-16 border-r border-white/15 px-3 text-sm leading-[150%] font-normal whitespace-normal text-white xl:px-4 xl:text-base 2xl:h-19 2xl:px-5">
-                  {earning.programName}
+                  {earning.programName || earning.program_name || "--"}
                 </TableCell>
                 <TableCell className="h-16 border-r border-white/15 px-3 text-sm leading-[150%] font-normal whitespace-normal text-white xl:px-4 xl:text-base 2xl:h-19 2xl:px-5">
-                  {earning.date}
+                  {moment(earning.date).format("MMM Do YYYY")}
                 </TableCell>
                 <TableCell className="h-16 border-r border-white/15 px-3 text-sm leading-[150%] font-normal whitespace-normal text-white xl:px-4 xl:text-base 2xl:h-19 2xl:px-5">
                   {earning.amount}

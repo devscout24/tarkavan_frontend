@@ -21,8 +21,7 @@ import { useMemo, useState } from "react"
 import moment from "moment" 
 import CommonBtn from "./common-btn"
 import { ImDownload } from "react-icons/im";
-import { getPaymentExport } from "@/app/(dashboards)/common-pages/paument-page/action"
-import { downloadPdf } from "@/lib/downloadPdf"
+import { getPaymentExport } from "@/app/(dashboards)/common-pages/paument-page/action" 
  
 
 
@@ -125,8 +124,8 @@ export default function PaymentTable({ payments = [] }: PaymentTableProps) {
       console.error("Export failed:", err)
     }
   }
- 
 
+ 
 
   return (
     <div className="mx-1 mt-6 text-white">
@@ -172,7 +171,8 @@ export default function PaymentTable({ payments = [] }: PaymentTableProps) {
               <TableHead className={"text-primary!"}>HST</TableHead>
               <TableHead className={"text-primary!"}>Discount</TableHead>
               <TableHead className={"text-primary!"}>Total</TableHead>
-              <TableHead className={"text-primary!"}>Date</TableHead>
+              <TableHead className={"text-primary!"}>Book Date</TableHead>
+              <TableHead className={"text-primary!"}>Program Date</TableHead>
               <TableHead className={"text-primary!"}>Status</TableHead>
             </TableRow>
           </TableHeader>
@@ -204,7 +204,10 @@ export default function PaymentTable({ payments = [] }: PaymentTableProps) {
                     {formatCurrency(payment.total ?? payment.total_amount)}
                   </TableCell>
                   <TableCell className={columnBorderClass}>
-                    {moment(formatDate(payment.date ?? payment.payment_date)).format("MMM Do YY")}
+                    {moment(formatDate(payment.date ?? payment.payment_date)).format("MMM Do YYYY")}
+                  </TableCell>
+                  <TableCell className={columnBorderClass}>
+                    {"Janina"}
                   </TableCell>
                   <TableCell className={`${columnBorderClass} flex items-center justify-between  `}>
                     {getPaymentStatus(payment)}

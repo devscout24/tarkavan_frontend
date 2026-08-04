@@ -27,6 +27,8 @@ export default async function UpcomingEventPage() {
     console.error("Error fetching upcoming events:", err)
   }
 
+  // console.log("Top upcoming event:", UpcomingEvents)
+
   return (
     <section>
       <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
@@ -75,7 +77,7 @@ export default async function UpcomingEventPage() {
               imageSrc={event.program_photo || "/images/player1.png"}
               imageAlt={event.title || "Upcoming Event"}
               buttonLabel={`Start On ${moment(event.start_date).format("MMM Do YY")}`}
-              schedule={event.start_date_display || ""}
+              schedule={event.session_time || ""}
               duration={`${moment.duration(moment(event.end_date).diff(moment(event.start_date))).asDays()} days`}
               editLink=""
             />

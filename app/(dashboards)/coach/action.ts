@@ -173,3 +173,20 @@ export async function getStripeData() {
     }
   }
 }
+
+export async function resetStripeData() {
+  try{
+    const res = await api.post(`/stripe/data/get` , { reset: true })
+    return res.data
+  }catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) { 
+      return err?.response?.data
+    }
+  
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}

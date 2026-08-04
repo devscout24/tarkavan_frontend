@@ -1,24 +1,24 @@
 "use client"
 import ConnectStripe from "@/components/common/connect-stripe"
 import { useEffect, useState } from "react"
-import { getStripeData } from "../../coach/action"
-import { useRouter } from "next/navigation"
-import { Link } from "lucide-react"
+import { getStripeData, resetStripeData } from "../../coach/action" 
 import Lottie from "lottie-react"
-import success from "../../../../public/success.json"
-import { AiOutlineLoading3Quarters } from "react-icons/ai"
+import success from "../../../../public/success.json" 
 import Loader from "@/components/common/loader"
+import { Button } from "@/components/ui/button"
+import { VscDebugDisconnect } from "react-icons/vsc";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { toast } from "sonner"
+
+
 
 export default function StripePage({}: {}) {
   // const router = useRouter()
   const [isConnected, setIsConnected] = useState(true)
-  const [loaded, setLoaded] = useState(false)
+  const [loaded, setLoaded] = useState(true)
+  const [disconnectLoading, setDisconnectLoading] = useState(false)
   
-  useEffect(()=> {
-    
-    console.log("isConnected", isConnected)
-  } , [isConnected])
-
+ 
   useEffect(() => {
     const getStripeAuth = async () => {
       try {
@@ -41,6 +41,26 @@ export default function StripePage({}: {}) {
     getStripeAuth()
   }, [])
 
+  const handleDisconnectStripe = async () =>  {
+    setDisconnectLoading(true)
+    try{
+      const res = await resetStripeData()
+      if(res?.status) { 
+        setIsConnected(false)
+        setDisconnectLoading(false)
+        toast.success( res?.message  || "Stripe account disconnected successfully")
+      }else{
+        setDisconnectLoading(false)
+        toast.error(res?.message || "Failed to disconnect stripe account")
+      }
+ 
+    }catch(err){
+
+    }finally{
+      setDisconnectLoading(false)
+    }
+  }
+
 
 
   return (
@@ -55,13 +75,26 @@ export default function StripePage({}: {}) {
             <Lottie animationData={success} loop={false} />
           </div>
           <div className="text-center">
-            <h3 className="text-center text-base font-semibold text-green-500 md:text-2xl">
+            <h3 className="text-center text-base font-semibold text-brand md:text-2xl">
               Account Connected
             </h3>
             <p className="my-2 text-white!">
               Thank you for your secure online payment connection.
             </p>
             <p className="text-white!"> Have a great day! </p>
+
+           
+           <Button 
+             disabled={disconnectLoading}
+             className=" mt-10 bg-brand text-primary py-5 w-full text-lg font-medium cursor-pointer     "
+             onClick={handleDisconnectStripe}
+           >  
+            {disconnectLoading ? <AiOutlineLoading3Quarters className="animate-spin" /> : 
+              <VscDebugDisconnect   />
+            }
+              Disconnect Stripe
+           </Button>
+
           </div>
         </div>
       )}

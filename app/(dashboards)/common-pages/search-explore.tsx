@@ -109,8 +109,7 @@ export default function SearchExplore() {
         setFilters={setFilters}
         initialState={initialState}
       />
-
-      {/* programs cards */}
+ 
 
       {/* coach type card  */}
       {searchResults.length > 0 || upcommingEvents?.length > 0 ? (
@@ -119,6 +118,7 @@ export default function SearchExplore() {
             upcommingEvents.map((item, index) => {
               return (
                 <Advertisement
+                  key={index}
                   imageUrl={item.club_logo}
                   positions={item.position}
                   teamName={item.club_name}

@@ -6,25 +6,25 @@ import { cn } from "@/lib/utils"
 import Toasting from "@/components/custom/toasting"
 import StoreProvider from "./StoreProvider"
 
-// export const metadata: Metadata = {
-//   metadataBase: new URL("https://tarkavan.thenightowl.team"),
-//   title: "GoElite",
-//   description: "Best football player app",
-//   openGraph: {
-//     title: "Go Elite",
-//     description: "Best football player app",
-//     url: "https://tarkavan.thenightowl.team/",
-//     siteName: "Go Elite",
-//     images: [
-//       {
-//         url: "https://tarkavan.thenightowl.team/uploads/preview/1779134260.png",
-//         width: 1200,
-//         height: 630,
-//       },
-//     ],
-//     type: "website",
-//   },
-// }
+export const metadata: Metadata = {
+  metadataBase: new URL("https://goelitesport.com/"),
+  title: "GoElite",
+  description: "Best football(soccer) player website",
+  openGraph: {
+    title: "Go Elite",
+    description: "Best football(soccer) player website",
+    url: "https://goelitesport.com",
+    siteName: "Go Elite",
+    images: [
+      {
+        url: "https://tarkavan.thenightowl.team/uploads/preview/1779134260.png",
+        width: 1200,
+        height: 630,
+      },
+    ],
+    type: "website",
+  },
+}
 
 export default function RootLayout({
   children,

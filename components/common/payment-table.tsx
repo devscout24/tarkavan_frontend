@@ -47,18 +47,7 @@ const formatCurrency = (value: unknown) => {
   return `$${numericValue.toFixed(2)}`
 }
 
-const formatDate = (value: unknown) => {
-  if (!value) {
-    return "--"
-  }
-
-  const date = new Date(String(value))
-  if (Number.isNaN(date.getTime())) {
-    return String(value)
-  }
-
-  return date.toISOString().split("T")[0]
-}
+ 
 
 const getPaymentStatus = (payment: ParentPaymentItem) =>
   String(payment.status ?? payment.payment_status ?? "unknown").toLowerCase()
@@ -204,10 +193,10 @@ export default function PaymentTable({ payments = [] }: PaymentTableProps) {
                     {formatCurrency(payment.total ?? payment.total_amount)}
                   </TableCell>
                   <TableCell className={columnBorderClass}>
-                    {moment(formatDate(payment.date ?? payment.payment_date)).format("MMM Do YYYY")}
+                    {moment(payment.date ?? payment.payment_date).format("MMM Do YYYY")}
                   </TableCell>
-                  <TableCell className={columnBorderClass}>
-                    {"Janina"}
+                  <TableCell className={columnBorderClass}> 
+                    {moment(payment.program_start_date).format("MMM Do YYYY")}
                   </TableCell>
                   <TableCell className={`${columnBorderClass} flex items-center justify-between  `}>
                     {getPaymentStatus(payment)}

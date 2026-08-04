@@ -29,6 +29,7 @@ export interface ParentPaymentItem {
   status?: string | number
   payment_status?: string
   [key: string]: unknown
+  program_start_date?: string
 }
 
 export interface ParentPaymentsData {

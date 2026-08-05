@@ -167,8 +167,7 @@ export default function ProfilePage({ data }: ProfilePageProps) {
   }
 
   const router = useRouter()
-
-  console.log(data)
+ 
 
   return (
     <>

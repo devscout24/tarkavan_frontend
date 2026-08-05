@@ -54,8 +54,7 @@ export default function ProgramDetailsPage() {
       }
       setLoading(true)
       try {
-        const res = await getAvailablePlayerParentProgramDetails(String(id))
-        console.log("Program details response:", res)
+        const res = await getAvailablePlayerParentProgramDetails(String(id)) 
         if (
           res &&
           "success" in res &&

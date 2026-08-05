@@ -18,8 +18,7 @@ export default function UpcomingEventPage() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const res = await getUpcomingEvents()
-        console.log("Upcoming events response:", res)
+        const res = await getUpcomingEvents() 
         if (
           res &&
           "success" in res &&
@@ -37,6 +36,9 @@ export default function UpcomingEventPage() {
     }
     getData()
   }, [])
+ 
+
+ 
  
 
   return (
@@ -57,7 +59,7 @@ export default function UpcomingEventPage() {
           }
           nextSession={topUpcommingEvent?.start_date || ""}
           focusLabel={"Current Focus"}
-          focusValue={"Speed & Agility"}
+          focusValue={topUpcommingEvent?.program_goal[0]?.goal || ""}
           status={topUpcommingEvent?.status || ""}
           btnText={"View Details"}
           programImage={topUpcommingEvent?.program_photo}

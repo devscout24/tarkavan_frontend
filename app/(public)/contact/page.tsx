@@ -110,8 +110,7 @@ export default function ContactForm() {
 const allData = Object.fromEntries(
   socialLinks.map((item) => [item.key, item.value])
 );
-
-console.log(allData)
+ 
  
 
   return (

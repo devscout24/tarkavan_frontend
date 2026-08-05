@@ -92,8 +92,7 @@ export default function MyProfilePage() {
         })
 
         if (response.ok) {
-          const result = await response.json()
-          console.log("Coach Profile Response:", result)
+          const result = await response.json() 
           if (result.status) {
             setProfileData(result.data)
           }

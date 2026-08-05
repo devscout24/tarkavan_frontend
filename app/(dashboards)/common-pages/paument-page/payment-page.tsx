@@ -26,8 +26,7 @@ export default function PaymentPage() {
   useEffect(() => {
     const loadPayments = async () => {
       try {
-        const response = await fetchParentPayments()
-        console.log("Parent payments response:", response)
+        const response = await fetchParentPayments() 
 
         if (response?.status) {
           setSummary(response.data.summary)

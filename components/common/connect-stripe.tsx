@@ -70,8 +70,7 @@ export default function ConnectStripe({}: {}) {
       formData.append("account_email", stripeData.accountEmail)
       formData.append("country", stripeData.country)
       
-      const res = await submitStripeData(formData) 
-      console.log("stripe response", res)
+      const res = await submitStripeData(formData)  
  
       const response = res as TStripeAccountResponse
 

@@ -50,8 +50,7 @@ export default function SocialLinks({
       setProfileId(parsed?.profile_id || params.child_id);
     }
   }, []);
-
-  console.log(openShareModal)
+ 
 
 
  

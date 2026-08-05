@@ -16,4 +16,5 @@ export type TUpcomingEvent = {
   program_photo: string;
   booking_type: string
   program_id: number
+  program_goal: {id: number, goal: string}[]
 }

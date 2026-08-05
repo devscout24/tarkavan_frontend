@@ -62,8 +62,7 @@ export default function Page() {
   if (loading) {
     return <div>Loading...</div>
   } else if (!loading && data) {
-
-    console.log("Coach Profile Data:", data)
+ 
   
 
     return (

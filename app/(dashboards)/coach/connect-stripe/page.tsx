@@ -22,8 +22,7 @@ export default function StripePage({}: {}) {
   useEffect(() => {
     const getStripeAuth = async () => {
       try {
-        const res = await getStripeData()
-        console.log("stripe data", res)
+        const res = await getStripeData() 
 
         if (res?.status) {
           setIsConnected(res?.data?.connected)

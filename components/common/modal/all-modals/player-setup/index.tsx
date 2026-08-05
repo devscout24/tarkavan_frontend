@@ -174,8 +174,7 @@ export default function PLayerSetup() {
 
     if (user.role === "parent") {
       try {
-        const res = await addChild(payload)
-        console.log("addChild response:", res) // Log the response for debugging
+        const res = await addChild(payload) 
         if (res.status) {
           const user = JSON.parse(localStorage.getItem("go_elite_user") || "{}")
           user.status = "approve"

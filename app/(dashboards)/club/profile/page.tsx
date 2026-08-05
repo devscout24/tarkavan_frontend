@@ -18,8 +18,7 @@ export default function page() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const res = await getClubProfile()
-        console.log("Club Profile Response:", res) // Log the response for debugging
+        const res = await getClubProfile() 
         if (
           res &&
           typeof res === "object" &&

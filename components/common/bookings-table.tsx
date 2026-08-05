@@ -53,8 +53,7 @@ export default function BookingsTable({ bookings }: BookingsTableProps) {
       toast.error("Failed to update booking status")
     }
   }
-
-  console.log("Bookings in table:", bookings)
+ 
 
   return (
     <> 

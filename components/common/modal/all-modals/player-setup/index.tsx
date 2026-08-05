@@ -19,25 +19,36 @@ import { IoHandRightOutline } from "react-icons/io5"
 import Media from "./components/media"
 import AchievementDetailsForm from "./components/achivement"
 import { TPlayerProfilePayload } from "./type"
-import { addPlayer, convertToFormData, updatePlayer } from "../player-add-modal/action"
+import {
+  addChild,
+  addPlayer,
+  convertToFormData,
+  updatePlayer,
+} from "../player-add-modal/action"
 import { toast } from "sonner"
 import useModal from "../../useModal"
-import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation"
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation"
 import { updateChildProfile } from "@/app/(dashboards)/parent/action"
+import { validatePlayerProfilePayload } from "@/lib/player-validate"
 
 export default function PLayerSetup() {
   const [activeTab, setActiveTab] = useState<"information" | "media">(
     "information"
   )
   const { close } = useModal()
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
-    const data = localStorage.getItem("go_elite_user");
+    const data = localStorage.getItem("go_elite_user")
     if (data) {
-      setUser(JSON.parse(data));
+      setUser(JSON.parse(data))
     }
-  }, []);
+  }, [])
 
   const searchParams = useSearchParams()
   // const router = useRouter()
@@ -117,7 +128,6 @@ export default function PLayerSetup() {
         name: "",
         type: "image",
         file: undefined,
-
       },
     },
 
@@ -125,42 +135,81 @@ export default function PLayerSetup() {
     privacySettings: {
       visibility: "public",
     },
-
   })
 
   const [loading, setLoading] = useState<boolean>(false)
   const handleAddPlayer = async () => {
-    setLoading(true)
-    try {
-      const res = await addPlayer(payload)
-      if (res.status) {
-        const user = JSON.parse(localStorage.getItem("go_elite_user") || "{}")
-        user.status = "approve"
-        user.profile_id = res.data.data.id
-        localStorage.setItem("go_elite_user", JSON.stringify(user))
-        setLoading(false)
-        close("player")
-        close("update")
-      }
-      else{ 
-        toast.error(res.message)
-        setLoading(false)
-      }
+    if (validatePlayerProfilePayload(payload) === false) return
 
-    } catch (error) {
-      setLoading(false)
-      toast.error("Failed to add player")
-      console.error("Error adding player:", error)
+    setLoading(true)
+    if (user.role === "player") {
+      try {
+        const res = await addPlayer(payload)
+        if (res.status) {
+          const user = JSON.parse(localStorage.getItem("go_elite_user") || "{}")
+          user.status = "approve"
+          user.profile_id = res.data.id
+          localStorage.setItem("go_elite_user", JSON.stringify(user))
+          setLoading(false)
+          close("player")
+          close("update")
+          toast.success(res.message || "Player profile added successfully")
+          // remove all parameters from the URL
+          const url = new URL(window.location.href)
+          url.search = ""
+          window.history.replaceState({}, document.title, url.toString())
+          return
+        } else {
+          toast.error(res.message)
+          setLoading(false)
+          return
+        }
+      } catch (error) {
+        setLoading(false)
+        toast.error("Failed to add player")
+        console.error("Error adding player:", error)
+        return
+      }
+    }
+
+    if (user.role === "parent") {
+      try {
+        const res = await addChild(payload)
+        console.log("addChild response:", res) // Log the response for debugging
+        if (res.status) {
+          const user = JSON.parse(localStorage.getItem("go_elite_user") || "{}")
+          user.status = "approve"
+          user.profile_id = res.data.id
+          localStorage.setItem("go_elite_user", JSON.stringify(user))
+          setLoading(false)
+          close("player")
+          close("update")
+          toast.success(res.message || "Child profile added successfully")
+          // remove all parameters from the URL
+          const url = new URL(window.location.href)
+          url.search = ""
+          window.history.replaceState({}, document.title, url.toString())
+          window.dispatchEvent(new CustomEvent("child_added"))
+          return
+        } else {
+          toast.error(res.message)
+          setLoading(false)
+          return
+        }
+      } catch (error) {
+        setLoading(false)
+        toast.error("Failed to add player")
+        console.error("Error adding player:", error)
+        return
+      }
     }
   }
 
   const hanldeUpdate = async () => {
     setLoading(true)
     try {
-
       if (user?.role === "player") {
         try {
-
           const res = await updatePlayer(payload)
 
           if (res.status) {
@@ -182,13 +231,11 @@ export default function PLayerSetup() {
 
       if (isUpdateChild && user?.role === "parent") {
         try {
-
           const formData = await convertToFormData(payload)
           const res = await updateChildProfile({
             data: formData,
             child_id: String(edit_child_id || child_id),
           })
-
 
           if (res?.status) {
             setLoading(false)
@@ -198,7 +245,7 @@ export default function PLayerSetup() {
             close("update")
           } else {
             setLoading(false)
-            toast.error(res?.message || "Something went wrong") 
+            toast.error(res?.message || "Something went wrong")
           }
         } catch (error) {
           setLoading(false)
@@ -206,7 +253,6 @@ export default function PLayerSetup() {
           console.error("Error saving player profile:", error)
         }
       }
-
     } catch (err) {
       console.error(err)
       setLoading(false)
@@ -214,21 +260,21 @@ export default function PLayerSetup() {
   }
 
   const handleSaveProgress = async () => {
-    window.localStorage.setItem("go_elitr_player_setup_progress", JSON.stringify(payload))
+    window.localStorage.setItem(
+      "go_elitr_player_setup_progress",
+      JSON.stringify(payload)
+    )
     toast.success("Player setup progress saved successfully!")
   }
 
-
-
   useEffect(() => {
-    const savedProgress = window.localStorage.getItem("go_elitr_player_setup_progress")
+    const savedProgress = window.localStorage.getItem(
+      "go_elitr_player_setup_progress"
+    )
     if (savedProgress) {
       setPayload(JSON.parse(savedProgress))
     }
   }, [])
-
-
-
 
   return (
     <div className="rounded-3xl border border-white/10 bg-[#090B10]">
@@ -277,7 +323,6 @@ export default function PLayerSetup() {
       </div>
 
       <div className="flex justify-between border-t border-brand/20 px-5 py-2">
-
         <CommonBtn
           size={"lg"}
           variant={"default"}
@@ -285,7 +330,7 @@ export default function PLayerSetup() {
           onClick={handleSaveProgress}
           className="w-fit rounded-lg border border-white/10 px-10"
         />
-        {isUpdatePlayer || isUpdateChild ?
+        {isUpdatePlayer || isUpdateChild ? (
           <CommonBtn
             size={"lg"}
             variant={"default"}
@@ -295,7 +340,7 @@ export default function PLayerSetup() {
             isLoading={loading}
             className="w-fit rounded-lg border border-white/10 bg-brand px-10 text-primary hover:bg-brand"
           />
-          :
+        ) : (
           <CommonBtn
             size={"lg"}
             variant={"default"}
@@ -305,8 +350,7 @@ export default function PLayerSetup() {
             isLoading={loading}
             className="w-fit rounded-lg border border-white/10 bg-brand px-10 text-primary hover:bg-brand"
           />
-        }
-
+        )}
       </div>
     </div>
   )

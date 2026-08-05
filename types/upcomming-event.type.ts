@@ -14,5 +14,6 @@ export type TUpcomingEvent = {
   provider_name: string;
   provider_image: string;
   program_photo: string;
-  
+  booking_type: string
+  program_id: number
 }

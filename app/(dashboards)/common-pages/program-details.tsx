@@ -18,7 +18,7 @@ import ProgramDateTimeSelector from "@/components/common/program-date-time-selec
 import { getAvailablePlayerParentProgramDetails } from "../player/programs/action"
 import CommonBtn from "@/components/common/common-btn"
 import { WriteReviewDialog } from "@/components/common/review-write"
-import { BsCopy } from "react-icons/bs";
+import { BsCopy } from "react-icons/bs"
 import Loader from "@/components/common/loader"
 
 export default function ProgramDetailsPage() {
@@ -48,14 +48,14 @@ export default function ProgramDetailsPage() {
       if (!id) {
         toast.error("Program ID is missing.")
         setTimeout(() => {
-          router.push(`/${currentUser?.role}/programs`)
+          router.back()
         }, 1000)
         return
       }
       setLoading(true)
       try {
         const res = await getAvailablePlayerParentProgramDetails(String(id))
-
+        console.log("Program details response:", res)
         if (
           res &&
           "success" in res &&
@@ -66,7 +66,7 @@ export default function ProgramDetailsPage() {
         ) {
           setLoading(false)
           setDetails(res.data.data.program)
-        }
+        } 
       } catch (err) {
         console.error("Error fetching program details:", err)
         setLoading(false)
@@ -85,10 +85,10 @@ export default function ProgramDetailsPage() {
       window.removeEventListener("programevent", getUpdatedData)
     }
   }, [id])
- 
 
-  return ( 
-    loading ? <Loader/> :
+  return loading ? (
+    <Loader />
+  ) : (
     <section className="text-white">
       {/* BACK BUTTON */}
       <div className="mb-5 flex items-center justify-between px-2 py-2">
@@ -104,7 +104,7 @@ export default function ProgramDetailsPage() {
           <CommonBtn
             text="Copy Link"
             icon={<BsCopy className="mr-2" />}
-            className="h-10 w-fit rounded-[8px] bg-transparent border border-brand px-4 font-medium text-white hover:bg-transparent cursor-pointer xl:h-11 xl:px-5 xl:text-base 2xl:h-12 2xl:px-6 2xl:text-lg"
+            className="h-10 w-fit cursor-pointer rounded-[8px] border border-brand bg-transparent px-4 font-medium text-white hover:bg-transparent xl:h-11 xl:px-5 xl:text-base 2xl:h-12 2xl:px-6 2xl:text-lg"
             size="sm"
             variant="default"
             onClick={async () => {

@@ -1,33 +1,43 @@
+"use client"
 import PlayerActivePrograms from "@/components/common/player-active-programs"
 import { getUpcomingEvents } from "./action"
 import { TUpcomingEvent } from "@/types"
 import moment from "moment"
 import ProgramCard from "./component/program-card"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 // import ProgramCard from "@/components/common/program-card"
 
-export default async function UpcomingEventPage() {
-  let TopUpcommingEvent: TUpcomingEvent | null = null
-  let UpcomingEvents: TUpcomingEvent[] = []
+export default function UpcomingEventPage() {
+  const [topUpcommingEvent, settopUpcommingEvent] =
+    useState<TUpcomingEvent | null>(null)
+  const [upcomingEvents, setUpcomingEvents] = useState<TUpcomingEvent[]>([])
+  const router = useRouter()
 
-  try {
-    const res = await getUpcomingEvents()
-    console.log("Upcoming events response:", res)
-    if (
-      res &&
-      "success" in res &&
-      res.success &&
-      res.data &&
-      "data" in res.data &&
-      res.data.data
-    ) {
-      TopUpcommingEvent = res.data.data.top_upcoming || null
-      UpcomingEvents = res.data.data.upcoming_events
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const res = await getUpcomingEvents()
+        console.log("Upcoming events response:", res)
+        if (
+          res &&
+          "success" in res &&
+          res.success &&
+          res.data &&
+          "data" in res.data &&
+          res.data.data
+        ) {
+          settopUpcommingEvent(res.data.data.top_upcoming || null)
+          setUpcomingEvents(res.data.data.upcoming_events || [])
+        }
+      } catch (err) {
+        console.error("Error fetching upcoming events:", err)
+      }
     }
-  } catch (err) {
-    console.error("Error fetching upcoming events:", err)
-  }
-
-  // console.log("Top upcoming event:", UpcomingEvents)
+    getData()
+  }, [])
+ 
 
   return (
     <section>
@@ -37,22 +47,28 @@ export default async function UpcomingEventPage() {
         </h2>
       </div>
 
-      {TopUpcommingEvent ? (
+      {topUpcommingEvent ? (
         <PlayerActivePrograms
-          title={TopUpcommingEvent?.title || ""}
-          programName={TopUpcommingEvent?.title || ""}
-          coachName={TopUpcommingEvent?.provider_name || ""}
+          title={topUpcommingEvent?.title || ""}
+          programName={topUpcommingEvent?.title || ""}
+          coachName={topUpcommingEvent?.provider_name || ""}
           schedule={
-            moment(TopUpcommingEvent?.start_date).format("MMM Do YY") || ""
+            moment(topUpcommingEvent?.start_date).format("MMM Do YY") || ""
           }
-          nextSession={TopUpcommingEvent?.start_date || ""}
+          nextSession={topUpcommingEvent?.start_date || ""}
           focusLabel={"Current Focus"}
           focusValue={"Speed & Agility"}
-          status={TopUpcommingEvent?.status || ""}
+          status={topUpcommingEvent?.status || ""}
           btnText={"View Details"}
-          programImage={
-            TopUpcommingEvent?.program_photo 
-          }
+          programImage={topUpcommingEvent?.program_photo}
+          onViewDetails={() => {
+            if(!topUpcommingEvent.program_id){
+              toast.error("Program ID is missing. Cannot navigate to program details.")
+              return
+            }
+
+            router.push(`/details/program/${topUpcommingEvent.program_id}`) 
+          }}
         />
       ) : (
         <div>
@@ -68,9 +84,9 @@ export default async function UpcomingEventPage() {
         Upcoming Events
       </h2>
       {/* programs cards */}
-      {TopUpcommingEvent ? (
+      {topUpcommingEvent ? (
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {UpcomingEvents.map((event, index) => (
+          {upcomingEvents.map((event, index) => (
             <ProgramCard
               key={index}
               {...event}
@@ -80,6 +96,7 @@ export default async function UpcomingEventPage() {
               schedule={event.session_time || ""}
               duration={`${moment.duration(moment(event.end_date).diff(moment(event.start_date))).asDays()} days`}
               editLink=""
+              type={event.booking_type || ""}
             />
           ))}
         </div>

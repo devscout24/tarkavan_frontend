@@ -485,7 +485,12 @@ const OneonOneProgram: React.FC<{
       toast.error("Please enter a program name")
       return false
     }
-    if (!form.price || Number(form.price) <= 0) {
+    if (
+      form.price === "" ||
+      form.price === null ||
+      form.price === undefined ||
+      Number(form.price) < 0
+    ) {
       toast.error("Please enter a valid program price")
       return false
     }

@@ -7,9 +7,25 @@ import axios from "axios"
 import { TPlayerProfilePayload } from "../player-setup/type"
 
 export async function addPlayer(data: TPlayerProfilePayload) {
-  const formData = convertToFormData(data)
+  const formData = await convertToFormData(data)
   try {
     const res = await api.post(`/player/profile/add`, formData)
+    return res.data
+  } catch (err: unknown) {
+    if (axios.isAxiosError<TApiError>(err)) {
+      return err?.response?.data
+    }
+    return {
+      success: false,
+      message: "Unexpected error",
+      status: 500,
+    }
+  }
+}
+export async function addChild(data: TPlayerProfilePayload) {
+  const formData = await convertToFormData(data)
+  try {
+    const res = await api.post(`/parent/child/add`, formData)
     return res.data
   } catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {

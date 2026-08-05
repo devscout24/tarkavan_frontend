@@ -29,8 +29,7 @@ import CommonBtn from "@/components/common/common-btn"
 type ProgramCardProps = {
   title?: string
   sport?: string
-  type?: string
-  coachName?: string
+  type?: string 
   schedule?: string
   duration?: string
   currentPrice?: string
@@ -48,8 +47,7 @@ type ProgramCardProps = {
 export default function ProgramCard({
   title,
   sport,
-  type,
-  coachName,
+  type, 
   schedule,
   duration,
   currentPrice,
@@ -65,37 +63,7 @@ export default function ProgramCard({
 
   const router = useRouter()
 
-  const currentUser = localStorage.getItem("go_elite_user") ? JSON.parse(localStorage.getItem("go_elite_user") || "{}")
-  : null
-
-
-  const handleDelete = async () => {
-
-    if(currentUser && currentUser.role === "club"){ 
-      try {
-        const res = await deleteProgram(id as string) 
-        if (res && "success" in res && res.success) {
-          toast.success("Program deleted successfully")
-          window.dispatchEvent(new Event("programDeleted"))
-        }
-      } catch (err) {
-        toast.error("Failed to delete program")
-      }
-    }
-
-    if(currentUser && currentUser.role === "coach"){ 
-      try {
-        const res = await deleteCoachProgram({ program_id: String(id) }) 
-        if (res && "success" in res && res.success) {
-          toast.success("Program deleted successfully")
-          window.dispatchEvent(new Event("programDeleted"))
-        }
-      } catch (err) {
-        toast.error("Failed to delete program")
-      }
-    }
-
-  }
+ 
 
   return (
     <Card
@@ -123,7 +91,7 @@ export default function ProgramCard({
       <CardContent className="flex h-fit flex-col gap-y-10  justify-between p-4">
         <div className="flex items-start justify-between gap-4">
           <div className="max-w-[70%]">
-            <h3 className="line-clamp-2 overflow-hidden text-lg leading-tight font-semibold text-ellipsis">
+            <h3 className="line-clamp-1 overflow-hidden text-lg leading-tight font-semibold text-ellipsis">
               {title}
             </h3>
 
@@ -144,9 +112,7 @@ export default function ProgramCard({
           <div className="flex items-center gap-2">
             <UserRound className="size-4" />
             <span>
-              {coachName
-                ? `Coach: ${coachName}`
-                : `Type: ${type === "one_one" ? "Single" : "Group"}`}
+              {`Type: ${type}`}
             </span>
           </div>
           <div className="flex items-center gap-2">

@@ -117,7 +117,7 @@
 
 :root {
   /* custom */
-  --brand: oklab(91.155% -0.09527 0.12803);
+  --brand: oklch(91.155% 0.15959 126.654);
   --primary: oklch(20.105% 0.00397 285.961);
   --secondary: oklab(54.896% -0.00443 -0.01105);
 
@@ -197,7 +197,7 @@ p{
   width: fit-content !important;
 }
 
-.dark {
+/* .dark {
   --destructive-foreground: var(--color-red-600);
   --success: var(--color-emerald-500);
   --success-foreground: var(--color-emerald-600);
@@ -207,7 +207,7 @@ p{
   --warning-foreground: var(--color-yellow-600);
   --invert: var(--color-zinc-700);
   --invert-foreground: var(--color-zinc-50);
-}
+} */
 
 
   .no-scrollbar {

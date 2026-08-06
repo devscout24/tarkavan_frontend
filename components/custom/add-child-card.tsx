@@ -3,8 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Icon } from "./Icon"
 
-interface AddChildCardProps {
-  onGetStarted?: () => void
+interface AddChildCardProps { 
   title?: string
   text?: string
 }
@@ -29,20 +28,18 @@ const ArrowIcon = () => (
   </Icon>
 )
 
-export default function AddChildCard({
-  onGetStarted,
+export default function AddChildCard({ 
   title,
   text,
 }: AddChildCardProps) {
   const router = useRouter()
 
   const handleNavigation = () => {
-    router.push("?player=setup")
-    
-    // Call the original onGetStarted if provided
-    if (onGetStarted) {
-      onGetStarted()
-    }
+
+    window.localStorage.removeItem("go_elitr_player_setup_progress")
+
+    router.push("?player=setup") 
+
   }
 
   return (

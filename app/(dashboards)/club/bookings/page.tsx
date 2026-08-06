@@ -82,7 +82,7 @@ export default function BookingsPage() {
       ) : filteredBookings.length === 0 ? (
         <p className="py-8 text-center text-white/70">No Bookings yet</p>
       ) : (
-        <BookingsTable bookings={filteredBookings} />
+        <BookingsTable bookings={filteredBookings} loading={loading}/>
       )}
     </section>
   )

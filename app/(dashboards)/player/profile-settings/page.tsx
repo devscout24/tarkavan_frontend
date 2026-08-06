@@ -13,6 +13,7 @@ import { useEffect, useState } from "react"
 import { getPlayerProfileSetting } from "./action"
 import { playerSettingUpdate } from "../profile/action"
 import { toast } from "sonner"
+import { motion } from 'framer-motion'
 
 export default function ProfileSettingPage() {
   const [playerProfile, setPlayerProfile] = useState<TPlayerProfileSetting>()
@@ -195,33 +196,58 @@ export default function ProfileSettingPage() {
   }
 
   return (
-    <section className="text-white">
-      <ProfileTop
-        profileTopInfo={{
-          name: playerProfile?.name || "",
-          email: playerProfile?.email || "",
-          image: playerProfile?.profile_image || "",
-        }}
-        setProfileImage={setProfileImage}
-        handleEditProfileModdal={(name) => handleEditProfileModdal(name)}
-        editProfileModalOpen={editProfileModalOpen}
-        setEditProfileModalOpen={setEditProfileModalOpen}
-      />
+    <section className="text-white"> 
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <ProfileTop
+          profileTopInfo={{
+            name: playerProfile?.name || "",
+            email: playerProfile?.email || "",
+            image: playerProfile?.profile_image || "",
+          }}
+          setProfileImage={setProfileImage}
+          handleEditProfileModdal={(name) => handleEditProfileModdal(name)}
+          editProfileModalOpen={editProfileModalOpen}
+          setEditProfileModalOpen={setEditProfileModalOpen}
+        />
+      </motion.div>
+ 
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <ChangePassword
+          passwordFormData={passwordFormData}
+          setPasswordFormData={setPasswordFormData}
+          onSave={handlePasswordChangeSave}
+          changePasswordLoading={changePasswordLoading}
+        />
+      </motion.div>
+ 
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
+        <PrivacySetting
+          privacyOptions={PRIVACY_OPTIONS}
+          initialValue={currentPrivacy}
+          onChange={(value) => handlePlayerPrivacyChange(value)}
+        />
+      </motion.div>
 
-      <ChangePassword
-        passwordFormData={passwordFormData}
-        setPasswordFormData={setPasswordFormData}
-        onSave={handlePasswordChangeSave}
-        changePasswordLoading={changePasswordLoading}
-      />
-
-      <PrivacySetting
-        privacyOptions={PRIVACY_OPTIONS}
-        initialValue={currentPrivacy}
-        onChange={(value) => handlePlayerPrivacyChange(value)}
-      />
-
-      {/* <NotificationSetting /> */}
+      {/* NotificationSetting যদি uncomment করতে চান */}
+      {/* <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
+      >
+        <NotificationSetting />
+      </motion.div> */}
     </section>
   )
 }

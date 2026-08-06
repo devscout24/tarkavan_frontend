@@ -184,17 +184,19 @@ export default function ChildProfile() {
             size={"lg"}
             variant={"default"}
             onClick={() => {
-              const progresData = localStorage.getItem("go_elitr_player_setup_progress")
-              if (child_id && progresData) {
-                router.push(`?update=child`)
-              } else {
-                const formattedData = formatProgressData(playerData as TPlayerProfile)
-                window.localStorage.setItem(
-                  "go_elitr_player_setup_progress",
-                  JSON.stringify(formattedData)
-                )
+              const formattedData = formatProgressData(
+                playerData as TPlayerProfile
+              )
+              window.localStorage.setItem(
+                "go_elitr_player_setup_progress",
+                JSON.stringify(formattedData)
+              )
+
+              if(!child_id){
                 toast.error("Child ID is missing. Cannot edit profile.")
-              }
+                return
+              } 
+              router.push(`?update=child`) 
             }}
             text="Edit"
             icon={<Edit className="h-5 w-5" />}

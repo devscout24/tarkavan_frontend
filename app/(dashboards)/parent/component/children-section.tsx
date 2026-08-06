@@ -90,7 +90,7 @@ export default function ChildrenSection({
             parentalControl={child?.parent_control}
           />
         ))}
-        <AddChildCard onGetStarted={onGetStarted} />
+        <AddChildCard   />
       </div>
     </section>
   )

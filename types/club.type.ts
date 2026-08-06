@@ -321,11 +321,13 @@ export type TClubBookingData = {
     image: string;
     primary_position: string | null;
     secondary_position: string | null;
+    email: string;
   };
 
   booking_time: {
     id: number;
     er_program_id: number;
+    booking_date: string;
 
     time: string | null;
 

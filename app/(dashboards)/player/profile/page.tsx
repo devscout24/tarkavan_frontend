@@ -13,7 +13,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableCaption,
   TableHead,
   TableHeader,
   TableRow,
@@ -42,6 +41,27 @@ import { BsDownload } from "react-icons/bs"
 import PlayerCard from "./player-card"
 import { captureAndSave } from "@/lib/captureAndSave"
 import { formatProgressData } from "@/lib/progress-data-formater"
+import { SkeletonBoundary } from "@shakhawat.dev/skeleton"
+import { motion } from "framer-motion"
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0 },
+}
+
+const fadeIn = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+}
+
+const staggerContainer = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.12,
+    },
+  },
+}
 
 export default function PlayerProfile() {
   const columnBorderClass = "border-r border-white/15 last:border-r-0"
@@ -50,16 +70,22 @@ export default function PlayerProfile() {
     : null
   const [playerData, setPlayerData] = useState<TPlayerProfile>()
   const router = useRouter()
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const profileData = async () => {
       try {
+        setLoading(true)
         const res = await getPlayerProfile(user?.profile_id)
         if (res && "success" in res && res.data && res.data.data) {
           setPlayerData(res.data.data)
+          setLoading(false)
+        } else {
+          setLoading(false)
         }
       } catch (error) {
         console.error(error)
+        setLoading(false)
       }
     }
 
@@ -100,7 +126,6 @@ export default function PlayerProfile() {
   const Icon = iconMap[privacy] ?? FiGlobe
 
   const handleEditPlayer = () => {
-
     const progresData = localStorage.getItem("go_elitr_player_setup_progress")
 
     if (progresData) {
@@ -177,389 +202,459 @@ export default function PlayerProfile() {
       .filter((item): item is NonNullable<typeof item> => Boolean(item)),
   ]
 
-  const [loading, setLoading] = useState(false)
-
-  // if (!playerData) {
-  //   return (
-  //     <div>
-  //       <p className="mt-6 rounded-xl border border-white/5 bg-amber-100/5 py-10 text-center text-white">
-  //         Something went wrong. Please try again later.
-  //       </p>
-  //     </div>
-  //   )
-  // }
-
   return (
     <>
       <PlayerCard playerData={playerData} />
-      <section className="text-white">
-        {/* visibility and customization options */}
-        <Card className="flex-row items-center justify-between bg-secondary/40 px-5">
-          <div className="flex items-center gap-2 rounded-lg bg-brand/90 px-4 py-2 text-primary">
-            <Icon className="h-4 w-4" />
-            <span className="text-sm font-medium">
-              Profile Visibility: {playerData?.basic_info?.privacy_settings}
-            </span>
-          </div>
+      <SkeletonBoundary loading={loading}>
+        <section className="text-white">
+          {/* visibility and customization options */}
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          >
+            <Card className="flex-row items-center justify-between bg-secondary/40 px-5">
+              <div className="flex items-center gap-2 rounded-lg bg-brand/90 px-4 py-2 text-primary">
+                <Icon className="h-4 w-4" />
+                <span className="text-sm font-medium">
+                  Profile Visibility: {playerData?.basic_info?.privacy_settings}
+                </span>
+              </div>
 
-          <div className="flex items-center gap-4">
-            <CommonBtn
-              size={"lg"}
-              variant={"default"}
-              onClick={() =>
-                captureAndSave({
-                  elementId: "og_image",
-                  fileName: "go-elite-player-profile-card.png",
-                  userId: user?.profile_id || playerData?.basic_info?.id,
-                  setLoading: setLoading,
-                })
-              }
-              text="Get Profile Card"
-              icon={<BsDownload />}
-              className="w-fit border border-secondary bg-transparent px-3 text-white hover:bg-transparent"
-              isLoading={loading}
-              disabled={loading}
-            />
+              <div className="flex items-center gap-4">
+                <CommonBtn
+                  size={"lg"}
+                  variant={"default"}
+                  onClick={() =>
+                    captureAndSave({
+                      elementId: "og_image",
+                      fileName: "go-elite-player-profile-card.png",
+                      userId: user?.profile_id || playerData?.basic_info?.id,
+                      setLoading: setLoading,
+                    })
+                  }
+                  text="Get Profile Card"
+                  icon={<BsDownload />}
+                  className="w-fit border border-secondary bg-transparent px-3 text-white hover:bg-transparent"
+                  isLoading={loading}
+                  disabled={loading}
+                />
 
-            <CommonBtn
-              size={"lg"}
-              variant={"default"}
-              onClick={handleEditPlayer}
-              text="Edit"
-              icon={<Edit className="h-5 w-5" />}
-              className="w-fit bg-brand px-3 text-primary hover:bg-brand/80"
-            />
-          </div>
-        </Card>
+                <CommonBtn
+                  size={"lg"}
+                  variant={"default"}
+                  onClick={handleEditPlayer}
+                  text="Edit"
+                  icon={<Edit className="h-5 w-5" />}
+                  className="w-fit bg-brand px-3 text-primary hover:bg-brand/80"
+                />
+              </div>
+            </Card>
+          </motion.div>
 
-        {/* profile info */}
-        <div className="mt-6 gap-10 xl:flex">
-          <div className="top-5 flex-3 self-start xl:sticky">
-            <ProspectCard
-              academyVotes={playerData?.professional_votes}
-              provincialVotes={playerData?.provencial_votes}
-              basic_info={playerData?.basic_info}
-              position_info={playerData?.position_info}
-            />
-            <Bio description={String(playerData?.basic_info?.biography)} />
-            <Achievements achievements={playerData?.achievements} />
-            <SocialLinks
-              profileUrl="profile/player"
-              facebookUrl={playerData?.basic_info?.facebook_link}
-              twitterUrl={playerData?.basic_info?.twitter_link}
-              whatsappUrl={playerData?.basic_info?.whatsapp_link}
-            />
-          </div>
-          <div className="flex-7">
-            {/* position mapping */}
-            <div className="">
-              <div className="w-full gap-2 xl:flex">
-                <div className="w-full">
-                  <h2 className="mt-5 mb-4 text-base font-semibold text-white xl:mt-0">
-                    Player Details Table
-                  </h2>
-                  <div className="overflow-hidden rounded-xl! border border-secondary!">
-                    <Table className="w-full">
-                      <TableBody>
-                        <TableRow className="border-secondary!">
-                          <TableCell className="font-semibold">
-                            Name :
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {playerData?.basic_info?.full_name}
-                          </TableCell>
-                        </TableRow>
-                        {playerData?.position_info?.primary_position?.name && (
+          {/* profile info */}
+          <div className="mt-6 gap-10 xl:flex">
+            <motion.div
+              className="top-5 flex-3 self-start xl:sticky"
+              initial="hidden"
+              animate="visible"
+              variants={staggerContainer}
+            >
+              <motion.div
+                variants={fadeUp}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
+                <ProspectCard
+                  academyVotes={playerData?.professional_votes}
+                  provincialVotes={playerData?.provencial_votes}
+                  basic_info={playerData?.basic_info}
+                  position_info={playerData?.position_info}
+                />
+              </motion.div>
+              <motion.div
+                variants={fadeUp}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
+                <Bio description={String(playerData?.basic_info?.biography)} />
+              </motion.div>
+              <motion.div
+                variants={fadeUp}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
+                <Achievements achievements={playerData?.achievements} />
+              </motion.div>
+              <motion.div
+                variants={fadeUp}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
+                <SocialLinks
+                  profileUrl="profile/player"
+                  facebookUrl={playerData?.basic_info?.facebook_link}
+                  twitterUrl={playerData?.basic_info?.twitter_link}
+                  whatsappUrl={playerData?.basic_info?.whatsapp_link}
+                />
+              </motion.div>
+            </motion.div>
+            <div className="flex-7">
+              {/* position mapping */}
+              <div className="">
+                <div className="w-full gap-2 xl:flex">
+                  <motion.div
+                    className="w-full"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.2 }}
+                    variants={fadeUp}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                  >
+                    <h2 className="mt-5 mb-4 text-base font-semibold text-white xl:mt-0">
+                      Player Details Table
+                    </h2>
+                    <div className="overflow-hidden rounded-xl! border border-secondary!">
+                      <Table className="w-full">
+                        <TableBody>
                           <TableRow className="border-secondary!">
                             <TableCell className="font-semibold">
-                              Position :
+                              Name :
                             </TableCell>
                             <TableCell className="text-right">
-                              {
-                                playerData?.position_info?.primary_position
-                                  ?.name
-                              }
+                              {playerData?.basic_info?.full_name}
                             </TableCell>
                           </TableRow>
-                        )}
-                        {playerData?.basic_info?.age && (
-                          <TableRow className="border-secondary!">
-                            <TableCell className="font-semibold">
-                              Age :
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {playerData?.basic_info?.age}
-                            </TableCell>
-                          </TableRow>
-                        )}
-                        {playerData?.basic_info?.gender && (
-                          <TableRow className="border-secondary!">
-                            <TableCell className="font-semibold">
-                              Gender :
-                            </TableCell>
-                            <TableCell className="text-right capitalize">
-                              {playerData?.basic_info?.gender}
-                            </TableCell>
-                          </TableRow>
-                        )}
-                        {playerData?.basic_info?.country && (
-                          <TableRow className="border-secondary!">
-                            <TableCell className="font-semibold">
-                              Country :
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {playerData?.basic_info?.country}
-                            </TableCell>
-                          </TableRow>
-                        )}
-                        {playerData?.basic_info?.province && (
-                          <TableRow className="border-secondary!">
-                            <TableCell className="font-semibold">
-                              Province :
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {playerData?.basic_info?.province}
-                            </TableCell>
-                          </TableRow>
-                        )}
-                        {playerData?.basic_info?.city && (
-                          <TableRow className="border-secondary!">
-                            <TableCell className="font-semibold">
-                              City :
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {playerData?.basic_info?.city}
-                            </TableCell>
-                          </TableRow>
-                        )}
-                        {playerData?.position_info?.dominant_foot && (
-                          <TableRow className="border-secondary!">
-                            <TableCell className="font-semibold">
-                              Dominant Foot :
-                            </TableCell>
-                            <TableCell className="text-right capitalize">
-                              {playerData?.position_info?.dominant_foot}
-                            </TableCell>
-                          </TableRow>
-                        )}
-                        {playerData?.basic_info?.privacy_settings && (
-                          <TableRow className="border-secondary!">
-                            <TableCell className="font-semibold">
-                              Privacy :
-                            </TableCell>
-                            <TableCell className="text-right capitalize">
-                              {playerData?.basic_info?.privacy_settings}
-                            </TableCell>
-                          </TableRow>
-                        )}
-                        {playerData?.position_info?.club_team && (
-                          <TableRow className="border-secondary!">
-                            <TableCell className="font-semibold">
-                              Team :
-                            </TableCell>
-                            <TableCell className="text-right capitalize">
-                              {playerData?.position_info?.club_team}
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </div>
-                <div className="min-w-fit">
-                  <h2 className="mt-5 mb-4 text-base font-semibold text-white xl:mt-0 xl:text-right">
-                    Player Position On Map
-                  </h2>
-                  <div className="overflow-hidden rounded-xl">
-                    <PositionMap data={mapPosition as TPlayerPosition[]} />
-                  </div>
+                          {playerData?.position_info?.primary_position
+                            ?.name && (
+                            <TableRow className="border-secondary!">
+                              <TableCell className="font-semibold">
+                                Position :
+                              </TableCell>
+                              <TableCell className="text-right">
+                                {
+                                  playerData?.position_info?.primary_position
+                                    ?.name
+                                }
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {playerData?.basic_info?.age && (
+                            <TableRow className="border-secondary!">
+                              <TableCell className="font-semibold">
+                                Age :
+                              </TableCell>
+                              <TableCell className="text-right">
+                                {playerData?.basic_info?.age}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {playerData?.basic_info?.gender && (
+                            <TableRow className="border-secondary!">
+                              <TableCell className="font-semibold">
+                                Gender :
+                              </TableCell>
+                              <TableCell className="text-right capitalize">
+                                {playerData?.basic_info?.gender}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {playerData?.basic_info?.country && (
+                            <TableRow className="border-secondary!">
+                              <TableCell className="font-semibold">
+                                Country :
+                              </TableCell>
+                              <TableCell className="text-right">
+                                {playerData?.basic_info?.country}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {playerData?.basic_info?.province && (
+                            <TableRow className="border-secondary!">
+                              <TableCell className="font-semibold">
+                                Province :
+                              </TableCell>
+                              <TableCell className="text-right">
+                                {playerData?.basic_info?.province}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {playerData?.basic_info?.city && (
+                            <TableRow className="border-secondary!">
+                              <TableCell className="font-semibold">
+                                City :
+                              </TableCell>
+                              <TableCell className="text-right">
+                                {playerData?.basic_info?.city}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {playerData?.position_info?.dominant_foot && (
+                            <TableRow className="border-secondary!">
+                              <TableCell className="font-semibold">
+                                Dominant Foot :
+                              </TableCell>
+                              <TableCell className="text-right capitalize">
+                                {playerData?.position_info?.dominant_foot}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {playerData?.basic_info?.privacy_settings && (
+                            <TableRow className="border-secondary!">
+                              <TableCell className="font-semibold">
+                                Privacy :
+                              </TableCell>
+                              <TableCell className="text-right capitalize">
+                                {playerData?.basic_info?.privacy_settings}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {playerData?.position_info?.club_team && (
+                            <TableRow className="border-secondary!">
+                              <TableCell className="font-semibold">
+                                Team :
+                              </TableCell>
+                              <TableCell className="text-right capitalize">
+                                {playerData?.position_info?.club_team}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </motion.div>
+                  <motion.div
+                    className="min-w-fit"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.2 }}
+                    variants={fadeUp}
+                    transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
+                  >
+                    <h2 className="mt-5 mb-4 text-base font-semibold text-white xl:mt-0 xl:text-right">
+                      Player Position On Map
+                    </h2>
+                    <div className="overflow-hidden rounded-xl">
+                      <PositionMap data={mapPosition as TPlayerPosition[]} />
+                    </div>
+                  </motion.div>
                 </div>
               </div>
-            </div>
 
-            {/* Player Attributes */}
-            <div className="mt-6">
-              {/* stats */}
-              <h2 className="mb-4 text-base font-semibold text-white">
-                Player Attributes
-              </h2>
+              {/* Player Attributes */}
+              <motion.div
+                className="mt-6"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+                variants={fadeUp}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
+                {/* stats */}
+                <h2 className="mb-4 text-base font-semibold text-white">
+                  Player Attributes
+                </h2>
 
-              <div className="relative grid grid-cols-1 items-center gap-4 rounded-xl bg-secondary/30 py-1 xl:grid-cols-2">
-                <RadarChart strengths={playerData?.strengths} />
+                <div className="relative grid grid-cols-1 items-center gap-4 rounded-xl bg-secondary/30 py-1 xl:grid-cols-2">
+                  <RadarChart strengths={playerData?.strengths} />
 
-                <div className="px-6 py-4">
-                  <RadarStrength
-                    strengths={playerData?.strengths as TPlayerStrength[]}
-                  />
+                  <div className="px-6 py-4">
+                    <RadarStrength
+                      strengths={playerData?.strengths as TPlayerStrength[]}
+                    />
 
-                  {/* stars */}
-                  <div className="mt-4">
-                    <h2 className="text-lg font-bold text-white">
-                      Player Ratings
-                    </h2>
-                    <div className="w-full gap-2">
-                      {/* provincial votes */}
-                      <div className="grid grid-cols-2">
-                        <HoverCard openDelay={0}>
-                          <HoverCardTrigger className="relative w-fit">
-                            <FaStar className="text-7xl text-yellow-500" />
-                            <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
-                              {playerData?.provencial_votes}
-                            </span>
-                          </HoverCardTrigger>
-                          <HoverCardContent>
-                            Provincial Team Votes:{" "}
-                            {playerData?.provencial_votes} votes
-                          </HoverCardContent>
-                        </HoverCard>
-                        <div className="flex items-center gap-2">
-                          <span className="block h-2 w-2 rounded-full bg-yellow-500" />
-                          <p className="text-white">Provincial Team Votes</p>
+                    {/* stars */}
+                    <div className="mt-4">
+                      <h2 className="text-lg font-bold text-white">
+                        Player Ratings
+                      </h2>
+                      <div className="w-full gap-2">
+                        {/* provincial votes */}
+                        <div className="grid grid-cols-2">
+                          <HoverCard openDelay={0}>
+                            <HoverCardTrigger className="relative w-fit">
+                              <FaStar className="text-7xl text-yellow-500" />
+                              <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
+                                {playerData?.provencial_votes}
+                              </span>
+                            </HoverCardTrigger>
+                            <HoverCardContent>
+                              Provincial Team Votes:{" "}
+                              {playerData?.provencial_votes} votes
+                            </HoverCardContent>
+                          </HoverCard>
+                          <div className="flex items-center gap-2">
+                            <span className="block h-2 w-2 rounded-full bg-yellow-500" />
+                            <p className="text-white">Provincial Team Votes</p>
+                          </div>
                         </div>
-                      </div>
 
-                      {/* Professional Academy Votess */}
-                      <div className="grid grid-cols-2">
-                        <HoverCard openDelay={0}>
-                          <HoverCardTrigger className="relative w-fit">
-                            <FaStar className="text-7xl text-red-500" />
-                            <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
-                              {playerData?.professional_votes}
-                            </span>
-                          </HoverCardTrigger>
-                          <HoverCardContent>
-                            Professional Academy Votes:{" "}
-                            {playerData?.professional_votes} votes
-                          </HoverCardContent>
-                        </HoverCard>
-                        <div className="flex items-center gap-2">
-                          <span className="block h-2 w-2 rounded-full bg-red-500" />
-                          <p className="text-white">
-                            Professional Academy Votes
-                          </p>
+                        {/* Professional Academy Votess */}
+                        <div className="grid grid-cols-2">
+                          <HoverCard openDelay={0}>
+                            <HoverCardTrigger className="relative w-fit">
+                              <FaStar className="text-7xl text-red-500" />
+                              <span className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
+                                {playerData?.professional_votes}
+                              </span>
+                            </HoverCardTrigger>
+                            <HoverCardContent>
+                              Professional Academy Votes:{" "}
+                              {playerData?.professional_votes} votes
+                            </HoverCardContent>
+                          </HoverCard>
+                          <div className="flex items-center gap-2">
+                            <span className="block h-2 w-2 rounded-full bg-red-500" />
+                            <p className="text-white">
+                              Professional Academy Votes
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </motion.div>
 
-            {/* player stats */}
-            <div className="mt-6">
-              <h2 className="mb-4 text-base font-semibold text-white">
-                Player Stats
-              </h2>
+              {/* player stats */}
+              <motion.div
+                className="mt-6"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+                variants={fadeUp}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
+                <h2 className="mb-4 text-base font-semibold text-white">
+                  Player Stats
+                </h2>
 
-              <div className="mx-auto mt-4 max-w-[95vw] [&>div]:rounded-lg [&>div]:border">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-brand hover:bg-brand">
-                      <TableHead
-                        className={`sticky left-0 z-10 bg-brand ${columnBorderClass} text-primary!`}
-                      >
-                        Year
-                      </TableHead>
-                      <TableHead className={"text-primary!"}>Games</TableHead>
-                      <TableHead className={"text-primary!"}>Goals</TableHead>
-                      <TableHead className={"text-primary!"}>Assists</TableHead>
-                      <TableHead className={"text-primary!"}>
-                        Yellow Cards
-                      </TableHead>
-                      <TableHead className={"text-primary!"}>
-                        Red Cards
-                      </TableHead>
-                      {Number(playerData?.player_stats?.clean_sheets) > 0 && (
-                        <TableHead className={"text-primary!"}>
-                          Clean Sheets
-                        </TableHead>
-                      )}
-                      {Number(playerData?.player_stats?.total_saves) > 0 && (
-                        <TableHead className={"text-primary!"}>
-                          Total Penalties Saved
-                        </TableHead>
-                      )}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {playerData?.season_stats_last_five_years?.map((stat, i) => (
-                      <TableRow
-                        key={i}
-                        className="border-t border-white/20 hover:bg-transparent"
-                      >
-                        <TableCell
-                          className={`sticky left-0 bg-background font-medium ${columnBorderClass}`}
+                <div className="mx-auto mt-4 max-w-[95vw] [&>div]:rounded-lg [&>div]:border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-brand hover:bg-brand">
+                        <TableHead
+                          className={`sticky left-0 z-10 bg-brand ${columnBorderClass} text-primary!`}
                         >
-                          {stat.season_year}
-                        </TableCell>
-                        <TableCell className={columnBorderClass}>
-                          {stat.total_played_games}
-                        </TableCell>
-                        <TableCell className={columnBorderClass}>
-                          {stat.goals}
-                        </TableCell>
-                        <TableCell className={columnBorderClass}>
-                          {stat.assist}
-                        </TableCell>
-                        <TableCell className={columnBorderClass}>
-                          {stat.yellow_cards}
-                        </TableCell>
-                        <TableCell className={columnBorderClass}>
-                          {stat.red_cards}
-                        </TableCell>
+                          Year
+                        </TableHead>
+                        <TableHead className={"text-primary!"}>Games</TableHead>
+                        <TableHead className={"text-primary!"}>Goals</TableHead>
+                        <TableHead className={"text-primary!"}>
+                          Assists
+                        </TableHead>
+                        <TableHead className={"text-primary!"}>
+                          Yellow Cards
+                        </TableHead>
+                        <TableHead className={"text-primary!"}>
+                          Red Cards
+                        </TableHead>
                         {Number(playerData?.player_stats?.clean_sheets) > 0 && (
-                          <TableCell className={columnBorderClass}>
-                            {stat.clean_sheets}
-                          </TableCell>
+                          <TableHead className={"text-primary!"}>
+                            Clean Sheets
+                          </TableHead>
                         )}
                         {Number(playerData?.player_stats?.total_saves) > 0 && (
-                          <TableCell className={columnBorderClass}>
-                            {stat.total_saves}
-                          </TableCell>
+                          <TableHead className={"text-primary!"}>
+                            Total Penalties Saved
+                          </TableHead>
                         )}
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
+                    </TableHeader>
+                    <TableBody>
+                      {playerData?.season_stats_last_five_years?.map(
+                        (stat, i) => (
+                          <TableRow
+                            key={i}
+                            className="border-t border-white/20 hover:bg-transparent"
+                          >
+                            <TableCell
+                              className={`sticky left-0 bg-background font-medium ${columnBorderClass}`}
+                            >
+                              {stat.season_year}
+                            </TableCell>
+                            <TableCell className={columnBorderClass}>
+                              {stat.total_played_games}
+                            </TableCell>
+                            <TableCell className={columnBorderClass}>
+                              {stat.goals}
+                            </TableCell>
+                            <TableCell className={columnBorderClass}>
+                              {stat.assist}
+                            </TableCell>
+                            <TableCell className={columnBorderClass}>
+                              {stat.yellow_cards}
+                            </TableCell>
+                            <TableCell className={columnBorderClass}>
+                              {stat.red_cards}
+                            </TableCell>
+                            {Number(playerData?.player_stats?.clean_sheets) >
+                              0 && (
+                              <TableCell className={columnBorderClass}>
+                                {stat.clean_sheets}
+                              </TableCell>
+                            )}
+                            {Number(playerData?.player_stats?.total_saves) >
+                              0 && (
+                              <TableCell className={columnBorderClass}>
+                                {stat.total_saves}
+                              </TableCell>
+                            )}
+                          </TableRow>
+                        )
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </motion.div>
 
-            <div>
-              {/* player image */}
-              <div className="">
-                <PlayerMedia
-                  uploadLabel="Upload Image"
-                  acceptType="image"
-                  items={
-                    playerData?.gallery?.map((image, index) => {
-                      const imageUrl =
-                        typeof image === "string" ? image : image.image
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+                variants={staggerContainer}
+              >
+                {/* player image */}
+                <motion.div
+                  className=""
+                  variants={fadeIn}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                >
+                  <PlayerMedia
+                    uploadLabel="Upload Image"
+                    acceptType="image"
+                    items={
+                      playerData?.gallery?.map((image, index) => {
+                        const imageUrl =
+                          typeof image === "string" ? image : image.image
 
-                      return {
-                        id: String(image.id),
-                        src: imageUrl,
-                        alt: `Image ${index + 1}`,
-                        type: "image" as const,
-                      }
-                    }) ?? []
-                  }
-                />
-              </div>
+                        return {
+                          id: String(image.id),
+                          src: imageUrl,
+                          alt: `Image ${index + 1}`,
+                          type: "image" as const,
+                        }
+                      }) ?? []
+                    }
+                  />
+                </motion.div>
 
-              {/* player video */}
-              <div className="">
-                <PlayerMedia
-                  uploadLabel="Upload Video"
-                  title="My Videos"
-                  acceptType="video"
-                  items={mergedVideoItems}
-                  linkUpload={true}
-                />
-              </div>
+                {/* player video */}
+                <motion.div
+                  className=""
+                  variants={fadeIn}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                >
+                  <PlayerMedia
+                    uploadLabel="Upload Video"
+                    title="My Videos"
+                    acceptType="video"
+                    items={mergedVideoItems}
+                    linkUpload={true}
+                  />
+                </motion.div>
+              </motion.div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </SkeletonBoundary>
     </>
   )
 }

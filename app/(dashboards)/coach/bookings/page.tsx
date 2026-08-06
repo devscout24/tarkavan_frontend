@@ -28,16 +28,16 @@ export default function BookingsPage() {
   const filteredBookings = useMemo(() => {
     if (status === "all") {
       return bookings
-    }
-
+    } 
     return bookings.filter((booking) => booking.status === status)
+
   }, [bookings, status])
 
   useEffect(() => {
     const fetchBookings = async () => {
       try {
         setLoading(true)
-        const response = await api.get("/coach/program/bookings") 
+        const response = await api.get("/coach/program/bookings")  
         if (response?.data?.data) { 
           setBookings(response?.data?.data)
         }
@@ -60,7 +60,7 @@ export default function BookingsPage() {
     return () => {
       window.removeEventListener("bookingChanged", revaliteOnBookingChange)
     }
-  }, [])
+  }, []) 
 
   if (isUbscriber) {
     return (
@@ -75,16 +75,14 @@ export default function BookingsPage() {
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader />
-          </div>
+          <BookingsTable bookings={filteredBookings} loading={loading} />
         ) : filteredBookings.length === 0 ? (
           <p className="py-8 text-center text-white/70">No Bookings yet</p>
-        ) : (
-          <BookingsTable bookings={filteredBookings} />
-        )}
+        ): 
+          <BookingsTable bookings={filteredBookings} loading={loading} />
+        }
       </section>
-    )
+    ) 
   } else {
     return (
       <ClubDashboardSubscription

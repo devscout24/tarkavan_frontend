@@ -1,21 +1,14 @@
-"use client"
+ 
 import { THeroData } from "@/types";
 import { ChevronRight } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import Link from "next/link"; 
 
 export default function Banner({ data }: { data?: THeroData | null }) {
-
-  const router = useRouter();
+ 
 
   return (
-    <section
-      //   style={{
-      //     backgroundImage: `url("/images/background.svg")`,
-      //     backgroundRepeat: "no-repeat",
-      //     backgroundPosition: "center",
-      //   }}
+    <section 
       className="bg-[#060807] pt-20 md:pt-30 lg:pt-37.5 pb-17.5 text-center"
     >
       {data?.baner_image && 

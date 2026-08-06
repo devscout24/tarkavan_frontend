@@ -21,18 +21,23 @@ export default function PaymentPage() {
     total_transactions: 0,
   })
   const [payments, setPayments] = useState<ParentPaymentItem[]>([])
-
+  const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
     const loadPayments = async () => {
       try {
+        setLoading(true)
         const response = await fetchParentPayments() 
 
         if (response?.status) {
           setSummary(response.data.summary)
           setPayments(response.data.payments)
+          setLoading(false)
+        }else{
+          setLoading(false)
         }
       } catch (error) {
+        setLoading(false)
         console.error("Failed to load parent payments:", error)
       }
     }
@@ -78,7 +83,7 @@ export default function PaymentPage() {
       </div>
 
       {/* payment table */}
-      <PaymentTable payments={payments} />
+      <PaymentTable payments={payments} loading={loading} />
     </section>
   )
 }

@@ -92,8 +92,7 @@ export default function Page() {
 
         <AddChildCard
           title="Add Team"
-          text="Add a team for  U4/U5, U6/U7, U8, U9, U10, U11, U12, U13, U14, U15, U16, U17, U18."
-          onGetStarted={() => router.push("?add-new=team")}
+          text="Add a team for  U4/U5, U6/U7, U8, U9, U10, U11, U12, U13, U14, U15, U16, U17, U18." 
         />
       </div>
     </section>

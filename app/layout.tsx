@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 import Toasting from "@/components/custom/toasting"
 import StoreProvider from "./StoreProvider"
+import OGimage from "@/public/og.png"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://goelitesport.com/"),
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
     siteName: "Go Elite",
     images: [
       {
-        url: "https://tarkavan.thenightowl.team/uploads/preview/1779134260.png",
+        url: OGimage.src,
         width: 1200,
         height: 630,
       },

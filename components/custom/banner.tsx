@@ -31,6 +31,8 @@ export default function Banner({ data }: { data?: THeroData | null }) {
 
       {/* Title */}
       {data?.baner_title &&
+
+        
         <h1 className="relative z-2  max-w-5xl mx-auto text-xl leading-tight font-bold text-white italic md:text-2xl lg:text-4xl xl:text-[70px]">
           {data?.baner_title}
         </h1>

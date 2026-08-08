@@ -57,10 +57,10 @@ export function validatePlayerProfilePayload(payload: TPlayerProfilePayload) {
     return false
   }
 
-  if (!payload.city) {
-    toast.error("City is required")
-    return false
-  }
+  // if (!payload.city) {
+  //   toast.error("City is required")
+  //   return false
+  // }
 
   if (!payload.province) {
     toast.error("Province is required")

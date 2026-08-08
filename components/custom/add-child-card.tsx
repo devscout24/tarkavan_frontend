@@ -34,12 +34,8 @@ export default function AddChildCard({
 }: AddChildCardProps) {
   const router = useRouter()
 
-  const handleNavigation = () => {
-
-    window.localStorage.removeItem("go_elitr_player_setup_progress")
-
-    router.push("?player=setup") 
-
+  const handleNavigation = () => { 
+    router.push("?player=setup")  
   }
 
   return (

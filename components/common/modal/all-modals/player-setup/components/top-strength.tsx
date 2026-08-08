@@ -1,4 +1,3 @@
-import { Check } from "lucide-react"
 import { useEffect, useState } from "react"
 import { TPlayerProfilePayload } from "../type"
 
@@ -47,28 +46,37 @@ export default function StrengthsDesign({
     },
   ]
 
-  const MAX_SELECTED = 5
+  const MAX_SELECTED = 7
 
   const [activeTab, setActiveTab] = useState(categories[0].id)
 
-  const [selected, setSelected] = useState<Record<string, string>>(payload?.strengths?.selectedByCategory || {})
+  const [selected, setSelected] = useState<Record<string, string>>(() => {
+    const initial: Record<string, string> = {}
+
+    categories.forEach((category) => {
+      initial[category.id] =
+        payload?.strengths?.selectedByCategory?.[category.id] || ""
+    })
+
+    return initial
+  })
+
+  // selected পরিবর্তন হলে শুধু payload update হবে
   useEffect(() => {
     setPayload((prev) => ({
-      ...prev, 
+      ...prev,
       strengths: {
-        activeCategoryId: "",
-        selectedByCategory: selected, 
-      }
+        ...prev.strengths,
+        activeCategoryId: activeTab,
+        selectedByCategory: selected,
+      },
     }))
-  }, [selected])
-  useEffect(() => {
-    setSelected(payload?.strengths?.selectedByCategory || {})
-  }, [payload])
-
-
+  }, [selected, activeTab, setPayload])
 
   const activeCategory =
     categories.find((item) => item.id === activeTab) ?? categories[0]
+
+  const selectedCount = Object.values(selected).filter(Boolean).length
 
   const handleSelect = (strength: string) => {
     setSelected((prev) => {
@@ -76,17 +84,18 @@ export default function StrengthsDesign({
 
       // Deselect
       if (current === strength) {
-        const next = { ...prev }
-        delete next[activeCategory.id]
-        return next
+        return {
+          ...prev,
+          [activeCategory.id]: "",
+        }
       }
 
-      // Maximum 5 categories
-      if (!current && Object.keys(prev).length >= MAX_SELECTED) {
+      // Maximum selected limit
+      if (!current && selectedCount >= MAX_SELECTED) {
         return prev
       }
 
-      // Replace selection in same category
+      // Select / replace
       return {
         ...prev,
         [activeCategory.id]: strength,
@@ -97,14 +106,15 @@ export default function StrengthsDesign({
   return (
     <>
       <h3 className="my-4 mt-10 text-[20px] leading-[120%] font-semibold text-white">
-        Select Your Top 5 Strengths
+        Select Your Top 7 Strengths
       </h3>
+
       <div className="mt-2 grid gap-6 lg:grid-cols-[220px_1fr]">
         {/* Sidebar */}
         <div className="space-y-2">
-          {categories.map((category , i) => (
+          {categories.map((category) => (
             <button
-              key={i}
+              key={category.id}
               onClick={() => setActiveTab(category.id)}
               className={`flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition-all duration-300 ${
                 activeTab === category.id
@@ -131,13 +141,14 @@ export default function StrengthsDesign({
             </h3>
 
             <span className="text-sm text-white/50">
-              {Object.keys(selected).length} / {MAX_SELECTED}
+              {selectedCount} / {MAX_SELECTED}
             </span>
           </div>
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {activeCategory.strengths.map((strength) => {
-              const checked = selected[activeCategory.id] === strength
+              const checked =
+                selected[activeCategory.id] === strength
 
               return (
                 <button
@@ -151,7 +162,9 @@ export default function StrengthsDesign({
                 >
                   <div className="flex items-center justify-between">
                     <span
-                      className={`font-medium ${checked ? "text-brand" : "text-white"}`}
+                      className={`font-medium ${
+                        checked ? "text-brand" : "text-white"
+                      }`}
                     >
                       {strength}
                     </span>

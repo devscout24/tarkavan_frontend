@@ -156,7 +156,7 @@ export default function UpcomingEventPage() {
                 </div>
 
                 <div className="flex-1 px-4 py-5 sm:px-6 md:py-6 lg:py-7">
-                  <h3 className="text-[22px] leading-tight font-bold sm:text-[24px] lg:text-[28px]">
+                  <h3 className="text-[22px] leading-tight font-bold sm:text-[24px] lg:text-[28px] text-primary  ">
                     {latestUpcomingProgram?.program_name}
                   </h3>
 

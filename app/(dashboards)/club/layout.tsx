@@ -13,8 +13,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-} from "@/components/animate-ui/components/radix/sidebar"
-import { SlCalender } from "react-icons/sl"
+} from "@/components/animate-ui/components/radix/sidebar" 
 import { DiScala } from "react-icons/di"
 import { Settings } from "lucide-react"
 import {
@@ -25,6 +24,7 @@ import Logo from "@/components/common/logo"
 import MenuBtn from "@/components/custom/menu-btn"
 import Image from "next/image"
 import { BiMessageSquareDetail } from "react-icons/bi"
+import { IoCalendarOutline } from "react-icons/io5";
 import {
   RiDashboardFill,
   RiLogoutCircleRLine,
@@ -32,7 +32,7 @@ import {
 } from "react-icons/ri"
 import { FaRegUser } from "react-icons/fa6"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import BreadcrumbCustom from "@/components/custom/breadcrumb"
 import { FaCcStripe } from "react-icons/fa6"
 import ProfileDropdown from "@/components/custom/profile-dropdown"
@@ -52,8 +52,7 @@ import {
   setUnreadCount,
   setUserImage,
 } from "@/lib/features/userSlice"
-import { getUnreadCount } from "../action"
-import { getStripeData } from "../coach/action"
+import { getUnreadCount } from "../action" 
 
 export default function PlayerDashboardLayout({
   children,
@@ -134,7 +133,7 @@ export default function PlayerDashboardLayout({
       {
         title: "Bookings",
         url: "/club/bookings",
-        icon: SlCalender,
+        icon: IoCalendarOutline,
       },
       {
         title: "Recruitment",

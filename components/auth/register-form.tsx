@@ -139,6 +139,7 @@ export default function RegisterForm() {
         setAuthCookie(token)
         localStorage.setItem("go_elite_user", JSON.stringify(user))
         toast.success("Registration successful! Welcome to GoElite.")
+        localStorage.removeItem("go_elitr_player_setup_progress")
         
         // Add a small delay to ensure localStorage is set before redirect
         setTimeout(() => {

@@ -28,6 +28,7 @@ export default function LoginForm() {
         toast.success("Login successful! Welcome back.")
         await setAuthCookie(res.data.data.token)
         localStorage.setItem("go_elite_token", res.data.data.token)
+        localStorage.removeItem("go_elitr_player_setup_progress")
         const dbUser = res.data.data.user
         const newUserData = {
           cover_image: dbUser.cover_image,

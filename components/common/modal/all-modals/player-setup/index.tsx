@@ -51,8 +51,6 @@ export default function PLayerSetup() {
   }, [])
 
   const searchParams = useSearchParams()
-  // const router = useRouter()
-  // const pathname = usePathname()
   const isUpdatePlayer = searchParams.get("update") === "player"
   const isUpdateChild = searchParams.get("update") === "child"
   const params = useParams()
@@ -102,7 +100,15 @@ export default function PLayerSetup() {
     // Strengths
     strengths: {
       activeCategoryId: "",
-      selectedByCategory: {},
+      selectedByCategory: {
+        technical: "",
+        tactical: "",
+        mental: "",
+        physical: "",
+        attacking: "",
+        defending: "",
+        aerial: "",
+      },
     },
 
     // Highlights
@@ -150,6 +156,7 @@ export default function PLayerSetup() {
           user.status = "approve"
           user.profile_id = res.data.id
           localStorage.setItem("go_elite_user", JSON.stringify(user))
+          window.localStorage.removeItem("go_elitr_player_setup_progress")
           setLoading(false)
           close("player")
           close("update")
@@ -174,12 +181,13 @@ export default function PLayerSetup() {
 
     if (user.role === "parent") {
       try {
-        const res = await addChild(payload) 
+        const res = await addChild(payload)
         if (res.status) {
           const user = JSON.parse(localStorage.getItem("go_elite_user") || "{}")
           user.status = "approve"
           user.profile_id = res.data.id
           localStorage.setItem("go_elite_user", JSON.stringify(user))
+          window.localStorage.removeItem("go_elitr_player_setup_progress")
           setLoading(false)
           close("player")
           close("update")
@@ -187,7 +195,7 @@ export default function PLayerSetup() {
           // remove all parameters from the URL
           const url = new URL(window.location.href)
           url.search = ""
-          window.history.replaceState({}, document.title, url.toString())
+          window.history.replaceState({}, document.title, url.toString()) 
           window.dispatchEvent(new CustomEvent("child_added"))
           return
         } else {
@@ -215,8 +223,8 @@ export default function PLayerSetup() {
             setLoading(false)
             toast.success(res.message || "Updated success")
             window.dispatchEvent(new CustomEvent("player_profile_updated"))
-            close("update")
-            localStorage.removeItem("go_elitr_player_setup_progress")
+            close("update") 
+            window.localStorage.removeItem("go_elitr_player_setup_progress")
           } else {
             setLoading(false)
             toast.error(res?.message || "Something went wrong")
@@ -239,8 +247,8 @@ export default function PLayerSetup() {
           if (res?.status) {
             setLoading(false)
             toast.success("Child profile updated successfully")
-            window.dispatchEvent(new CustomEvent("player_profile_updated"))
-            localStorage.removeItem("go_elitr_player_setup_progress")
+            window.dispatchEvent(new CustomEvent("player_profile_updated")) 
+            window.localStorage.removeItem("go_elitr_player_setup_progress")
             close("update")
           } else {
             setLoading(false)
@@ -258,12 +266,13 @@ export default function PLayerSetup() {
     }
   }
 
-  const handleSaveProgress = async () => {
+  const handleSaveProgress = async () => { 
     window.localStorage.setItem(
       "go_elitr_player_setup_progress",
       JSON.stringify(payload)
     )
     toast.success("Player setup progress saved successfully!")
+    
   }
 
   useEffect(() => {
@@ -276,7 +285,7 @@ export default function PLayerSetup() {
   }, [])
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-[#090B10]">
+    <div className="rounded-3xl border border-white/10 bg-[#090B10]  relative     ">
       <div className="bg-[#161B22]!">
         <PlayerSetupHeader />
         <Tabs
@@ -302,7 +311,7 @@ export default function PLayerSetup() {
           </TabsList>
         </Tabs>
       </div>
-      <div className="no-scrollbar h-[70dvh] overflow-y-scroll px-4 py-2">
+      <div className="no-scrollbar h-[70dvh] overflow-y-scroll px-4 py-2 pb-20 ">
         {activeTab === "information" && (
           <>
             <UploadAvatar payload={payload} setPayload={setPayload} />
@@ -321,7 +330,7 @@ export default function PLayerSetup() {
         )}
       </div>
 
-      <div className="flex justify-between border-t border-brand/20 px-5 py-2">
+      <div className="flex justify-between border-t border-brand/20 px-5 py-2 absolute bottom-0 left-0 w-full bg-[#090B10]    ">
         <CommonBtn
           size={"lg"}
           variant={"default"}

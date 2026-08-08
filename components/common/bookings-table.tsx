@@ -156,8 +156,7 @@ export default function BookingsTable({
             </MotionTableBody>
           </Table>
         </motion.div>
-      </SkeletonBoundary>
-      ;
+      </SkeletonBoundary> 
     </>
   )
 }

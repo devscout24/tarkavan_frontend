@@ -96,11 +96,9 @@ const ThreeDotsIcon = () => (
 
 export default function ChildCard({
   imageUrl,
-  id,
-  user_id,
+  id, 
   name,
-  block_status ,
-  invitation_status,
+  block_status , 
   age,
   position,
   jerseyNumber,

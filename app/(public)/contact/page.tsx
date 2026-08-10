@@ -183,7 +183,7 @@ const allData = Object.fromEntries(
                 <li>
                   <a
                     href={allData.facebook_link || "#"}
-                    className="flex h-8 w-8 items-center rounded-full bg-slate-200 p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                    className="flex h-8 w-8 items-center rounded-full bg-slate-200 p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand text-[#0862F7]  "
                     aria-label="Facebook"
                   >
                     <FaFacebookF />
@@ -192,7 +192,7 @@ const allData = Object.fromEntries(
                 <li>
                   <a
                     href={allData.twitter_link || "#"}
-                    className="flex h-8 w-8 items-center rounded-full bg-slate-200 p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                    className="flex h-8 w-8 items-center rounded-full bg-slate-200 p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand text-black  "
                     aria-label="LinkedIn"
                   >
                     <FaXTwitter />
@@ -201,7 +201,7 @@ const allData = Object.fromEntries(
                 <li>
                   <a
                     href={allData.instagram_link || "#"}
-                    className="flex h-8 w-8 items-center rounded-full bg-slate-200 p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                    className="flex h-8 w-8 items-center rounded-full bg-slate-200 p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand text-[#D00059] "
                     aria-label="X"
                   >
                     <PiInstagramLogo />
@@ -210,7 +210,7 @@ const allData = Object.fromEntries(
                 <li>
                   <a
                     href={allData.whatsapp || "#"}
-                    className="flex h-8 w-8 items-center rounded-full bg-slate-200 p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                    className="flex h-8 w-8 items-center rounded-full bg-slate-200 p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand text-[#25CC64] "
                     aria-label="X"
                   >
                     <IoLogoWhatsapp />
@@ -219,10 +219,10 @@ const allData = Object.fromEntries(
                 <li>
                   <a
                     href={allData.tiktok_link || "#"}
-                    className="flex h-8 w-8 items-center rounded-full bg-slate-200 p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                    className="flex h-8 w-8 items-center rounded-full bg-slate-200 p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand text-[#F62B52] "
                     aria-label="X"
-                  >
-                    <RiTiktokFill />
+                  > 
+                    <RiTiktokFill  />
                   </a>
                 </li>
               </ul>
@@ -327,7 +327,7 @@ const allData = Object.fromEntries(
               isLoading={loading}
               size={"default"}
               variant={"default"}
-              className="w-full cursor-pointer rounded-md border border-brand bg-brand px-4 py-2.5 text-sm font-semibold text-secondary transition-all hover:bg-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              className="w-full cursor-pointer rounded-md border border-brand bg-brand px-4 py-2.5 text-sm font-semibold text-black  transition-all hover:bg-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             />
           </form>
         </div>

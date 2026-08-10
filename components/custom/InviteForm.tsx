@@ -19,6 +19,8 @@ export default function InviteForm({
   const [password, setPassword] = useState("")
 
   const handleSubmit = async () => {
+
+ 
     // Validate form
     if (!email || !password) {
       toast.error("Please fill in all fields")

@@ -41,7 +41,7 @@ export default function Nav({className}:{className?:string}) {
             </li>
             <li>
               <a
-                href="#how_to_work"
+                href="/#how_to_work"
                 className="text-heading hover:bg-neutral-tertiary md:hover:text-fg-brand block rounded px-3 py-2 transition-all duration-300 hover:text-brand md:border-0 md:p-0 md:hover:bg-transparent md:dark:hover:bg-transparent"
               >
                 How It Works

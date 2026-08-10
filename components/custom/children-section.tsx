@@ -27,6 +27,8 @@ export default function ChildrenSection({
   emptyText = "No children found.",
 }: ChildrenSectionProps) {
   const router = useRouter()
+
+  console.log("ChildrenSection items:", items) // Debugging line
   
 
  

@@ -22,6 +22,7 @@ export default function LoginForm() {
     setLoading(true)
     try {
       const res = await loginUser({ email, password })  
+      console.log("Login response:", res) // Log the entire response for debugging
       
       if (res?.data?.status) {
         

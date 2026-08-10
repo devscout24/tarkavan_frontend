@@ -23,18 +23,16 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
-import { FaStar, FaUser, FaUsers } from "react-icons/fa"
-import PositionMap from "@/components/common/position-map"
-import PlayerMedia from "@/app/(dashboards)/player/components/player-media"
+import { FaStar } from "react-icons/fa"
+import PositionMap from "@/components/common/position-map" 
 import { useEffect, useState } from "react"
-import { getPlayerProfile } from "@/app/(public)/action"
-import { IconType } from "react-icons"
-import { FiGlobe, FiLock } from "react-icons/fi"
+import { getChildProfile } from "@/app/(public)/action"
 import { toast } from "sonner"
 import PlayerCard from "@/app/(dashboards)/player/profile/player-card"
 import { captureAndSave } from "@/lib/captureAndSave"
 import { BsDownload } from "react-icons/bs"
 import { formatProgressData } from "@/lib/progress-data-formater"
+import VisiblityDropdown from "@/components/common/chenge-visiblity"
 
 export default function ChildProfile() {
   const router = useRouter()
@@ -42,6 +40,7 @@ export default function ChildProfile() {
   const [playerData, setPlayerData] = useState<TPlayerProfile>()
   const params = useParams()
   const child_id = params.child_id
+ 
 
   useEffect(() => {
     if (!child_id) {
@@ -50,9 +49,9 @@ export default function ChildProfile() {
 
     const profileData = async () => {
       try {
-        const res = await getPlayerProfile(String(child_id))
-        if (res && "success" in res && res.data && res.data.data) {
-          setPlayerData(res.data.data)
+        const res = await getChildProfile(String(child_id)) 
+        if (res && "success" in res && res.data && res.data.data) { 
+          setPlayerData(res?.data?.data)
         }
       } catch (error) {
         console.error(error)
@@ -79,77 +78,67 @@ export default function ChildProfile() {
     ? JSON.parse(localStorage.getItem("go_elite_user")!)
     : null
 
-  const privacy = playerData?.basic_info?.privacy_settings ?? "public"
+  // const toYouTubeEmbedUrl = (url: string) => {
+  //   try {
+  //     const parsed = new URL(url)
 
-  const iconMap: Record<string, IconType> = {
-    public: FiGlobe,
-    coach_and_team: FaUsers,
-    private: FiLock,
-    only_player: FaUser,
-  }
+  //     if (parsed.hostname.includes("youtu.be")) {
+  //       const id = parsed.pathname.replace("/", "")
+  //       return id ? `https://www.youtube.com/embed/${id}` : null
+  //     }
 
-  const toYouTubeEmbedUrl = (url: string) => {
-    try {
-      const parsed = new URL(url)
+  //     if (parsed.hostname.includes("youtube.com")) {
+  //       const id = parsed.searchParams.get("v")
+  //       if (id) return `https://www.youtube.com/embed/${id}`
 
-      if (parsed.hostname.includes("youtu.be")) {
-        const id = parsed.pathname.replace("/", "")
-        return id ? `https://www.youtube.com/embed/${id}` : null
-      }
+  //       const shortsMatch = parsed.pathname.match(/\/shorts\/([^/?]+)/)
+  //       if (shortsMatch?.[1]) {
+  //         return `https://www.youtube.com/embed/${shortsMatch[1]}`
+  //       }
+  //     }
+  //   } catch {
+  //     return null
+  //   }
 
-      if (parsed.hostname.includes("youtube.com")) {
-        const id = parsed.searchParams.get("v")
-        if (id) return `https://www.youtube.com/embed/${id}`
+  //   return null
+  // }
 
-        const shortsMatch = parsed.pathname.match(/\/shorts\/([^/?]+)/)
-        if (shortsMatch?.[1]) {
-          return `https://www.youtube.com/embed/${shortsMatch[1]}`
-        }
-      }
-    } catch {
-      return null
-    }
+  // const mergedVideoItems = [
+  //   ...(playerData?.videos?.map((video, index) => {
+  //     const videoUrl = typeof video === "string" ? video : video.video_url
 
-    return null
-  }
+  //     return {
+  //       id: String(video.id),
+  //       src: videoUrl,
+  //       alt: `Video ${index + 1}`,
+  //       type: "video" as const,
+  //     }
+  //   }) ?? []),
+  //   ...(
+  //     (playerData?.media_links ?? []) as Array<
+  //       string | { id?: number | string; link?: string }
+  //     >
+  //   )
+  //     .map((linkItem, index) => {
+  //       const rawUrl =
+  //         typeof linkItem === "string" ? linkItem : (linkItem.link ?? "")
+  //       if (!rawUrl) return null
 
-  const Icon = iconMap[privacy] ?? FiGlobe
-  const mergedVideoItems = [
-    ...(playerData?.videos?.map((video, index) => {
-      const videoUrl = typeof video === "string" ? video : video.video_url
+  //       const embedUrl = toYouTubeEmbedUrl(rawUrl)
+  //       if (!embedUrl) return null
 
-      return {
-        id: String(video.id),
-        src: videoUrl,
-        alt: `Video ${index + 1}`,
-        type: "video" as const,
-      }
-    }) ?? []),
-    ...(
-      (playerData?.media_links ?? []) as Array<
-        string | { id?: number | string; link?: string }
-      >
-    )
-      .map((linkItem, index) => {
-        const rawUrl =
-          typeof linkItem === "string" ? linkItem : (linkItem.link ?? "")
-        if (!rawUrl) return null
-
-        const embedUrl = toYouTubeEmbedUrl(rawUrl)
-        if (!embedUrl) return null
-
-        return {
-          id:
-            typeof linkItem === "string"
-              ? `media-link-${index}`
-              : String(linkItem.id ?? `media-link-${index}`),
-          src: embedUrl,
-          alt: `Media Link ${index + 1}`,
-          type: "embed" as const,
-        }
-      })
-      .filter((item): item is NonNullable<typeof item> => Boolean(item)),
-  ]
+  //       return {
+  //         id:
+  //           typeof linkItem === "string"
+  //             ? `media-link-${index}`
+  //             : String(linkItem.id ?? `media-link-${index}`),
+  //         src: embedUrl,
+  //         alt: `Media Link ${index + 1}`,
+  //         type: "embed" as const,
+  //       }
+  //     })
+  //     .filter((item): item is NonNullable<typeof item> => Boolean(item)),
+  // ]
 
   return (
     <section className="text-white">
@@ -157,12 +146,7 @@ export default function ChildProfile() {
 
       {/* visibility and customization options */}
       <Card className="flex-row items-center justify-between bg-secondary/40 px-5">
-        <div className="flex items-center gap-2 rounded-lg bg-brand/90 px-4 py-2 text-primary">
-          <Icon className="h-4 w-4" />
-          <span className="text-sm font-medium">
-            Profile Visibility: {playerData?.basic_info?.privacy_settings}
-          </span>
-        </div>
+        <VisiblityDropdown child_id={String(child_id)} bdValue={String(playerData?.basic_info?.privacy_settings)} />
 
         <div className="flex items-center gap-4">
           <CommonBtn
@@ -192,11 +176,11 @@ export default function ChildProfile() {
                 JSON.stringify(formattedData)
               )
 
-              if(!child_id){
+              if (!child_id) {
                 toast.error("Child ID is missing. Cannot edit profile.")
                 return
-              } 
-              router.push(`?update=child`) 
+              }
+              router.push(`?update=child`)
             }}
             text="Edit"
             icon={<Edit className="h-5 w-5" />}
@@ -468,8 +452,7 @@ export default function ChildProfile() {
             </div>
           </div>
 
-          <div>
-            {/* player image */}
+          {/* <div> 
             <div className="">
               <PlayerMedia
                 uploadLabel="Upload Image"
@@ -489,8 +472,7 @@ export default function ChildProfile() {
                 }
               />
             </div>
-
-            {/* player video */}
+ 
             <div className="">
               <PlayerMedia
                 uploadLabel="Upload Video"
@@ -499,7 +481,7 @@ export default function ChildProfile() {
                 items={mergedVideoItems}
               />
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

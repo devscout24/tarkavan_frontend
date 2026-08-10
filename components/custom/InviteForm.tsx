@@ -31,10 +31,16 @@ export default function InviteForm({
       formData.append("password", password)
       formData.append("child_id", id)
 
-      const res = await childInvite(formData) 
+      const res = await childInvite(formData)  
+      console.log("childInvite response:", res)
       
       if (res && !("error" in res) && "data" in res && res?.data) {
         toast.success( res?.data?.data || "Invitation sent successfully!")
+      }
+
+      if(res?.status === false) {
+        toast.error(res?.message || "Failed to send invitation. Please try again.")
+        return
       }
 
       

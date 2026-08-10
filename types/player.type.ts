@@ -124,12 +124,12 @@ export type TPlayerBasicInfo = {
   province: string
   dob: string
   age: number 
-  gender: "male" | "female" | "other" | string
+  gender:   string
   nationality: string
   email: string
   image: string | null 
   biography: string
-  privacy_settings: "public" | "private" | string
+  privacy_settings:  string
   sports: string
   sport_option_id: number
   sport_option: TPlayerSportOption
@@ -153,7 +153,7 @@ export type TPlayerPositionInfo = {
   primary_position: TPlayerPosition
   secondary_position: TPlayerPosition
   jersey_number: number
-  dominant_foot: "left" | "right" | "both" | string
+  dominant_foot:  string
   club_team: string
   sports_selection: string
 }

@@ -295,16 +295,14 @@ export default function PLayerSetup() {
       return
     }
 
-    if (source === "progress") {
+    if (source == "progress") {
       const savedProgress = window.localStorage.getItem(
         `go_elit_player_progress_${user?.email}`
       )
+      console.log("Saved progress:", savedProgress)
       if (savedProgress) {
         setPayload(JSON.parse(savedProgress))
-      }else{
-        setPayload(initialPayload)
-        toast.error("No saved progress found. Starting fresh.")
-      }
+      } 
     }
 
     if (source === "edit") {

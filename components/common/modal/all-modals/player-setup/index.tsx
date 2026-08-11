@@ -40,8 +40,9 @@ export default function PLayerSetup() {
   const [activeTab, setActiveTab] = useState<"information" | "media">(
     "information"
   )
-  const { close } = useModal()
   const [user, setUser] = useState<any>(null)
+  const source = useSearchParams().get("source")
+  const { close } = useModal()
 
   useEffect(() => {
     const data = localStorage.getItem("go_elite_user")
@@ -56,7 +57,7 @@ export default function PLayerSetup() {
   const params = useParams()
   const edit_child_id = params.id
   const child_id = params.child_id
-  const [payload, setPayload] = useState<TPlayerProfilePayload>({
+  const initialPayload: TPlayerProfilePayload = {
     // Core Identity
     firstName: "",
     lastName: "",
@@ -141,7 +142,14 @@ export default function PLayerSetup() {
     privacySettings: {
       visibility: "public",
     },
-  })
+  }
+  const [payload, setPayload] = useState<TPlayerProfilePayload>(initialPayload)
+
+  const handleClose = () => {
+    close("player", ["source", "update", "id", "child_id", "porogress"])
+    close("update", ["source", "update", "id", "child_id", "porogress"])
+    close("source", ["source", "update", "id", "child_id", "porogress"])
+  }
 
   const [loading, setLoading] = useState<boolean>(false)
   const handleAddPlayer = async () => {
@@ -158,8 +166,8 @@ export default function PLayerSetup() {
           localStorage.setItem("go_elite_user", JSON.stringify(user))
           window.localStorage.removeItem("go_elitr_player_setup_progress")
           setLoading(false)
-          close("player")
-          close("update")
+          handleClose()
+          setPayload(initialPayload)
           toast.success(res.message || "Player profile added successfully")
           // remove all parameters from the URL
           const url = new URL(window.location.href)
@@ -189,13 +197,13 @@ export default function PLayerSetup() {
           localStorage.setItem("go_elite_user", JSON.stringify(user))
           window.localStorage.removeItem("go_elitr_player_setup_progress")
           setLoading(false)
-          close("player")
-          close("update")
+          handleClose()
+          setPayload(initialPayload)
           toast.success(res.message || "Child profile added successfully")
           // remove all parameters from the URL
           const url = new URL(window.location.href)
           url.search = ""
-          window.history.replaceState({}, document.title, url.toString()) 
+          window.history.replaceState({}, document.title, url.toString())
           window.dispatchEvent(new CustomEvent("child_added"))
           return
         } else {
@@ -223,7 +231,8 @@ export default function PLayerSetup() {
             setLoading(false)
             toast.success(res.message || "Updated success")
             window.dispatchEvent(new CustomEvent("player_profile_updated"))
-            close("update") 
+            handleClose()
+            setPayload(initialPayload)
             window.localStorage.removeItem("go_elitr_player_setup_progress")
           } else {
             setLoading(false)
@@ -247,9 +256,10 @@ export default function PLayerSetup() {
           if (res?.status) {
             setLoading(false)
             toast.success("Child profile updated successfully")
-            window.dispatchEvent(new CustomEvent("player_profile_updated")) 
+            window.dispatchEvent(new CustomEvent("player_profile_updated"))
             window.localStorage.removeItem("go_elitr_player_setup_progress")
-            close("update")
+            handleClose()
+            setPayload(initialPayload)
           } else {
             setLoading(false)
             toast.error(res?.message || "Something went wrong")
@@ -266,26 +276,53 @@ export default function PLayerSetup() {
     }
   }
 
-  const handleSaveProgress = async () => { 
+  const handleSaveProgress = async () => {
+    if (!user?.email) {
+      toast.error("User not found. Please log in again.")
+      return
+    }
+
     window.localStorage.setItem(
-      "go_elitr_player_setup_progress",
+      `go_elit_player_progress_${user?.email}`,
       JSON.stringify(payload)
     )
     toast.success("Player setup progress saved successfully!")
-    
+    handleClose()
   }
 
   useEffect(() => {
-    const savedProgress = window.localStorage.getItem(
-      "go_elitr_player_setup_progress"
-    )
-    if (savedProgress) {
-      setPayload(JSON.parse(savedProgress))
+    if (!source) {
+      return
     }
-  }, [])
+
+    if (source === "progress") {
+      const savedProgress = window.localStorage.getItem(
+        `go_elit_player_progress_${user?.email}`
+      )
+      if (savedProgress) {
+        setPayload(JSON.parse(savedProgress))
+      }else{
+        setPayload(initialPayload)
+        toast.error("No saved progress found. Starting fresh.")
+      }
+    }
+
+    if (source === "edit") {
+      const savedProgress = window.localStorage.getItem(
+        `go_elit_player_edit_data_${user?.email}`
+      )
+      if (savedProgress) {
+        setPayload(JSON.parse(savedProgress))
+      }
+    }
+
+    if (source !== "progress" && source !== "edit") {
+      setPayload(initialPayload)
+    }
+  }, [user, source])
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-[#090B10]  relative     ">
+    <div className="relative rounded-3xl border border-white/10 bg-[#090B10]">
       <div className="bg-[#161B22]!">
         <PlayerSetupHeader />
         <Tabs
@@ -311,7 +348,7 @@ export default function PLayerSetup() {
           </TabsList>
         </Tabs>
       </div>
-      <div className="no-scrollbar h-[70dvh] overflow-y-scroll px-4 py-2 pb-20 ">
+      <div className="no-scrollbar h-[70dvh] overflow-y-scroll px-4 py-2 pb-20">
         {activeTab === "information" && (
           <>
             <UploadAvatar payload={payload} setPayload={setPayload} />
@@ -330,7 +367,7 @@ export default function PLayerSetup() {
         )}
       </div>
 
-      <div className="flex justify-between border-t border-brand/20 px-5 py-2 absolute bottom-0 left-0 w-full bg-[#090B10]    ">
+      <div className="absolute bottom-0 left-0 flex w-full justify-between border-t border-brand/20 bg-[#090B10] px-5 py-2">
         <CommonBtn
           size={"lg"}
           variant={"default"}

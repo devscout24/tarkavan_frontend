@@ -1,5 +1,4 @@
-import { motion, type Variants } from "framer-motion"
-import { Button } from "@/components/ui/button"
+import { motion, type Variants } from "framer-motion" 
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,8 +10,7 @@ import {
 import {
   Dialog,
   DialogClose,
-  DialogContent,
-  DialogDescription,
+  DialogContent, 
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -22,15 +20,9 @@ import { TClubBookingData } from "@/types"
 import moment from "moment"
 import Link from "next/link"
 import { ChangeBookingStatus } from "@/app/(dashboards)/club/bookings/action"
-import { toast } from "sonner"
-import { useRef } from "react"
+import { toast } from "sonner" 
 
-const weekdayLong = (iso?: string | null) => {
-  const d = iso ? new Date(iso) : null
-  return d && !isNaN(d.getTime())
-    ? d.toLocaleDateString("en-US", { weekday: "long" })
-    : "—"
-}
+ 
 
 const stagger: Variants = {
   hidden: {},
@@ -42,10 +34,7 @@ const rise: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
 }
 
-// ---------------------------------------------------------------------------
-// primitives
-// ---------------------------------------------------------------------------
-
+ 
 function SectionLabel({
   index,
   children,
@@ -109,16 +98,14 @@ function StatusPill({ label, solid }: { label: string; solid: boolean }) {
 export function BookingDetails({ data }: { data: TClubBookingData }) {
   const program = data?.program
   const bookingTime = data?.booking_time
-
-  const sessionDate = bookingTime?.slot_date ?? data?.booking_date
+ 
   const sessionTimeLabel =
     bookingTime?.time ??
     (bookingTime?.start_time && bookingTime?.end_time
       ? `${bookingTime.start_time} – ${bookingTime.end_time}`
       : "—")
 
-  const isPaid = (data?.payment_status ?? "").toLowerCase() === "paid"
-  const closeRef = useRef<HTMLButtonElement>(null)
+  const isPaid = (data?.payment_status ?? "").toLowerCase() === "paid" 
 
   const handleStatusChange = async (booking_id: number, new_status: string) => {
     try {
@@ -134,6 +121,8 @@ export function BookingDetails({ data }: { data: TClubBookingData }) {
       toast.error("Failed to update booking status")
     }
   }
+
+  console.log("BookingDetails data", data)
 
   return (
     <Dialog>
@@ -256,8 +245,8 @@ export function BookingDetails({ data }: { data: TClubBookingData }) {
                 </div>
                 <div className="w-px self-stretch bg-gray-200" />
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-secondary!">
-                    {weekdayLong(sessionDate)}
+                  <p className="text-sm font-semibold text-secondary!"> 
+                    {moment(data?.booking_time?.booking_date).format('dddd')}
                   </p>
                   <p className="mt-1 text-xs text-secondary!">
                     {sessionTimeLabel}

@@ -76,7 +76,7 @@ export default function ChildProfile() {
   mapPosition.push(playerData?.position_info?.secondary_position)
   const user = localStorage.getItem("go_elite_user")
     ? JSON.parse(localStorage.getItem("go_elite_user")!)
-    : null
+    : null 
 
   // const toYouTubeEmbedUrl = (url: string) => {
   //   try {
@@ -168,11 +168,17 @@ export default function ChildProfile() {
             size={"lg"}
             variant={"default"}
             onClick={() => {
+
+              if(!user?.email) {
+                toast.error("User is missing. Cannot edit profile.")
+                return
+              }
+ 
               const formattedData = formatProgressData(
                 playerData as TPlayerProfile
-              )
+              ) 
               window.localStorage.setItem(
-                "go_elitr_player_setup_progress",
+                `go_elit_player_edit_data_${user?.email}`,
                 JSON.stringify(formattedData)
               )
 
@@ -180,7 +186,7 @@ export default function ChildProfile() {
                 toast.error("Child ID is missing. Cannot edit profile.")
                 return
               }
-              router.push(`?update=child`)
+              router.push(`?update=child&source=edit`)
             }}
             text="Edit"
             icon={<Edit className="h-5 w-5" />}

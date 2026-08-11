@@ -43,6 +43,10 @@ import { captureAndSave } from "@/lib/captureAndSave"
 import { formatProgressData } from "@/lib/progress-data-formater"
 import { SkeletonBoundary } from "@shakhawat.dev/skeleton"
 import { motion } from "framer-motion"
+import StaggeredDropDown from "@/components/common/profile-actions"
+import { FiEdit, FiPlusSquare, FiShare, FiTrash } from "react-icons/fi"
+import { toast } from "sonner"
+import { RxClipboardCopy } from "react-icons/rx"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -125,20 +129,7 @@ export default function PlayerProfile() {
 
   const Icon = iconMap[privacy] ?? FiGlobe
 
-  const handleEditPlayer = () => {
-    const progresData = localStorage.getItem("go_elitr_player_setup_progress")
-
-    if (progresData) {
-      router.push(`?update=player`)
-    } else {
-      const formattedData = formatProgressData(playerData as TPlayerProfile)
-      window.localStorage.setItem(
-        "go_elitr_player_setup_progress",
-        JSON.stringify(formattedData)
-      )
-      router.push(`?update=player`)
-    }
-  }
+ 
 
   const toYouTubeEmbedUrl = (url: string) => {
     try {
@@ -222,34 +213,64 @@ export default function PlayerProfile() {
                 </span>
               </div>
 
-              <div className="flex items-center gap-4">
-                <CommonBtn
-                  size={"lg"}
-                  variant={"default"}
-                  onClick={() =>
-                    captureAndSave({
-                      elementId: "og_image",
-                      fileName: "go-elite-player-profile-card.png",
-                      userId: user?.profile_id || playerData?.basic_info?.id,
-                      setLoading: setLoading,
-                    })
-                  }
-                  text="Get Profile Card"
-                  icon={<BsDownload />}
-                  className="w-fit border border-secondary bg-transparent px-3 text-white hover:bg-transparent"
-                  isLoading={loading}
-                  disabled={loading}
-                />
+              <StaggeredDropDown
+                label="Profile actions"
+                items={[
+                  {
+                    text: "Edit current profile",
+                    icon: FiEdit,
+                    onClick: () => {
+                      if (!user?.email) {
+                        toast.error("User is missing. Cannot edit profile.")
+                        return
+                      }
 
-                <CommonBtn
-                  size={"lg"}
-                  variant={"default"}
-                  onClick={handleEditPlayer}
-                  text="Edit"
-                  icon={<Edit className="h-5 w-5" />}
-                  className="w-fit bg-brand px-3 text-primary hover:bg-brand/80"
-                />
-              </div>
+                      const formattedData = formatProgressData(
+                        playerData as TPlayerProfile
+                      )
+                      window.localStorage.setItem(
+                        `go_elit_player_edit_data_${user?.email}`,
+                        JSON.stringify(formattedData)
+                      )
+                      router.push(`?update=player&source=edit`)
+                    },
+                  },
+                  {
+                    text: "Continue progress",
+                    icon: FiEdit,
+                    onClick: () => {
+                      router.push("?player=setup&source=progress")
+                    },
+                  },
+                  {
+                    text: "Download Card",
+                    icon: BsDownload,
+                    onClick: () =>
+                      captureAndSave({
+                        elementId: "og_image",
+                        fileName: "go-elite-player-profile-card.png",
+                        userId: user?.profile_id || playerData?.basic_info?.id,
+                      }),
+                  },
+                  {
+                    text: "Copy link",
+                    icon: RxClipboardCopy,
+                    onClick: () => {
+
+                      if(!user?.profile_id) {
+                        toast.error("User is missing. Cannot copy link.")
+                        return
+                      }
+
+                      const profileUrl = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/profile/player/${user?.profile_id}`
+                      navigator.clipboard.writeText(profileUrl)
+                      toast.success("Profile link copied to clipboard!")
+                    },
+                  },
+                ]}
+              />
+
+ 
             </Card>
           </motion.div>
 

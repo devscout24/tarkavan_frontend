@@ -135,7 +135,98 @@ export default function UpcomingEventPage() {
           </SkeletonBoundary>
 
           {/* Upcoming Program Card */}
-          <SkeletonBoundary loading={isLoading}>
+          {isLoading && !latestUpcomingProgram && (
+            <SkeletonBoundary loading={isLoading}>
+              <article className="overflow-hidden rounded-2xl border border-white/10 bg-brand">
+                <div className="lg:flex">
+                  <div className="relative min-h-44 w-50 md:min-h-full lg:w-62.5">
+                    <Image
+                      width={1000}
+                      height={1000}
+                      src={
+                        latestUpcomingProgram?.photo || "/images/player1.png"
+                      }
+                      alt={
+                        latestUpcomingProgram?.program_name || "Program photo"
+                      }
+                      className="h-full w-full object-fill"
+                    />
+
+                    <span className="absolute bottom-3 left-3 rounded-full bg-[#16A34A] px-3 py-1 text-[10px] font-bold tracking-[0.08em] text-white uppercase">
+                      {latestUpcomingProgram?.status === "active" ||
+                      !latestUpcomingProgram?.status
+                        ? "In Progress"
+                        : latestUpcomingProgram?.status}
+                    </span>
+                  </div>
+
+                  <div className="flex-1 px-4 py-5 sm:px-6 md:py-6 lg:py-7">
+                    <h3 className="text-[22px] leading-tight font-bold text-primary sm:text-[24px] lg:text-[28px]">
+                      {latestUpcomingProgram?.program_name}
+                    </h3>
+
+                    <p className="mt-2 flex items-center gap-2 text-sm font-normal text-gray-500! sm:text-base">
+                      <UserRound className="size-4" />
+                      Coach: {latestUpcomingProgram?.provider?.name || "N/A"}
+                    </p>
+
+                    <div className="mt-4 space-y-4">
+                      <div className="flex">
+                        <p className="flex items-center gap-2 text-sm font-normal text-gray-500! sm:text-base">
+                          <CiCalendarDate /> Schedule :
+                        </p>
+                        <p className="ml-1 text-sm font-normal text-black! sm:text-base lg:text-lg">
+                          {moment(latestUpcomingProgram?.start_date).format(
+                            "MMM Do YY"
+                          )}
+                        </p>
+                      </div>
+                      <div className="flex">
+                        <p className="flex items-center gap-2 text-sm font-normal text-gray-500! sm:text-base">
+                          <Hourglass className="size-5" /> Duration :
+                        </p>
+
+                        <p className="text-sm font-normal text-black! sm:text-base lg:text-lg">
+                          {formatDuration(
+                            latestUpcomingProgram?.start_date,
+                            latestUpcomingProgram?.end_date
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-4 px-4 pb-5 sm:flex-row sm:items-end sm:justify-between sm:px-6 md:flex-col md:items-end md:justify-center md:px-6 md:py-6">
+                    <div className="w-full rounded-xl border border-primary/35 px-4 py-2 text-right text-black! sm:w-auto">
+                      <p className="text-xs font-medium text-black! opacity-75 sm:text-sm">
+                        Current Focus
+                      </p>
+                      <p className="text-[14px] font-medium text-black! sm:text-base lg:text-lg">
+                        {latestUpcomingProgram?.sport || "N/A"}
+                      </p>
+                    </div>
+
+                    <CommonBtn
+                      text="Edit Details"
+                      className="h-11 w-full rounded-xl bg-primary px-5 text-sm font-medium text-white hover:bg-primary/90 sm:w-auto md:w-full"
+                      size="sm"
+                      variant="default"
+                      onClick={() => {
+                        localStorage.setItem(
+                          "edit_program_id",
+                          String(latestUpcomingProgram?.id)
+                        )
+                        router.push(
+                          `/coach/my-programs/${latestUpcomingProgram?.id}?add-new=program`
+                        )
+                      }}
+                    />
+                  </div>
+                </div>
+              </article>
+            </SkeletonBoundary>
+          )}
+          {latestUpcomingProgram && (
             <article className="overflow-hidden rounded-2xl border border-white/10 bg-brand">
               <div className="lg:flex">
                 <div className="relative min-h-44 w-50 md:min-h-full lg:w-62.5">
@@ -156,7 +247,7 @@ export default function UpcomingEventPage() {
                 </div>
 
                 <div className="flex-1 px-4 py-5 sm:px-6 md:py-6 lg:py-7">
-                  <h3 className="text-[22px] leading-tight font-bold sm:text-[24px] lg:text-[28px] text-primary  ">
+                  <h3 className="text-[22px] leading-tight font-bold text-primary sm:text-[24px] lg:text-[28px]">
                     {latestUpcomingProgram?.program_name}
                   </h3>
 
@@ -219,7 +310,7 @@ export default function UpcomingEventPage() {
                 </div>
               </div>
             </article>
-          </SkeletonBoundary>
+          )}
 
           {/* upcoming events content */}
           <div className="flex items-center justify-between">

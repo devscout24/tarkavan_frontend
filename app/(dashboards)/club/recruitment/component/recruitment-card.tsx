@@ -9,11 +9,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem, 
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { deleteRecruitment } from "../action"
 import { toast } from "sonner"
+import { VanishBox } from "react-vanish-box"
 
 export type RecruitmentCardData = {
   id: string
@@ -34,106 +35,119 @@ export default function RecruitmentCard({
   item,
   actionLabel = "View Application",
 }: RecruitmentCardProps) {
-
   const router = useRouter()
 
-
-  const handleDeleteRecruitment = async () => { 
-    try{
+  const handleDeleteRecruitment = async (vanish: () => void) => {
+    try {
       const res = await deleteRecruitment(item.id)
-       
-      
-      if (res && 'success' in res && res.success) {
+
+      if (res && "success" in res && res.success) {
         toast.success("Recruitment deleted successfully")
         // Dispatch custom event to refresh recruitment data without page reload
-        window.dispatchEvent(new CustomEvent('recruitmentEvent'))
+        vanish()
       } else {
-        const message = 
-          typeof res === "object" && 
-          res !== null && 
-          "message" in res && 
+        const message =
+          typeof res === "object" &&
+          res !== null &&
+          "message" in res &&
           typeof res.message === "string"
             ? res.message
             : "Failed to delete recruitment"
         toast.error(message)
       }
-
-    }catch(error){
+    } catch (error) {
       console.error("Error deleting recruitment:", error)
       toast.error("Failed to delete recruitment. Please try again.")
     }
-
   }
- 
-
 
   return (
-    <Card className="max-w-86 gap-0 rounded-xl border border-white/15 bg-[#050816] p-0 text-white">
-      <div className="h-full max-h-50 bg-linear-to-r from-[#073f57] to-[#00a66f] relative   ">
-        <Image
-          width={1000}
-          height={1000}
-          src={"/images/advertisementImage.png"}
-          alt={`${item.clubName} logo`}
-          className="h-full w-full object-cover"
-        />
-        <div className="absolute top-1/2 -translate-y-1/2  left-0 w-full px-2  "> 
-          <h2 className="text-center text-white text-base font-medium    ">
-            {item.title}
-          </h2>
-          <h2 className=" w-full text-center text-white text-xl font-bold    ">
-            {item.role}
-          </h2>
-        </div>
+    <VanishBox
+      onDeleted={() =>
+        window.dispatchEvent(new CustomEvent("recruitmentEvent"))
+      }
+      speed={4}
+    >
+      {(vanish, status) => (
+        <Card className="max-w-86 gap-0 rounded-xl border border-white/15 bg-[#050816] p-0 text-white">
+          <div className="relative h-full max-h-50 bg-linear-to-r from-[#073f57] to-[#00a66f]">
+            <Image
+              width={1000}
+              height={1000}
+              src={"/images/advertisementImage.png"}
+              alt={`${item.clubName} logo`}
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 px-2">
+              <h2 className="text-center text-base font-medium text-white">
+                {item.title}
+              </h2>
+              <h2 className="w-full text-center text-xl font-bold text-white">
+                {item.role}
+              </h2>
+            </div>
+          </div>
 
-      </div>
+          <CardContent className="space-y-3 px-5 pt-4 pb-2">
+            <div className="space-y-1">
+              <h4 className="text-2xl font-medium text-white">
+                {item.clubName}
+              </h4>
+              <p className="text-sm text-white/75">{item.meta}</p>
+            </div>
 
-      <CardContent className="space-y-3 px-5 pt-4 pb-2">
-        <div className="space-y-1">
-          <h4 className="text-2xl font-medium text-white">{item.clubName}</h4>
-          <p className="text-sm text-white/75">{item.meta}</p>
-        </div>
+            <p className="mt-5 mb-3 flex items-center gap-1.5 text-sm text-white/75">
+              <Clock3 className="size-3.5" />
+              <span>{item.tryoutsText}</span>
+            </p>
 
-        <p className="mt-5 mb-3 flex items-center gap-1.5 text-sm text-white/75">
-          <Clock3 className="size-3.5" />
-          <span>{item.tryoutsText}</span>
-        </p>
+            <p className="min-h-10 text-sm text-white/75">{item.description}</p>
 
-        <p className="min-h-10 text-sm text-white/75">{item.description}</p>
-
-        <div className="mb-5 flex items-center gap-2">
-          <Button
-            onClick={() => router.push(`/club/recruitment/${item.id}`)}
-            className="h-9 flex-1 rounded-md bg-brand text-primary hover:bg-brand"
-          >
-            {actionLabel}
-          </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <div className="mb-5 flex items-center gap-2">
               <Button
-                variant="outline"
-                size="icon-sm"
-                className="h-9 w-9 rounded-md border-brand/70 bg-transparent text-brand hover:bg-brand/10 hover:text-brand"
+                onClick={() => router.push(`/club/recruitment/${item.id}`)}
+                className="h-9 flex-1 rounded-md bg-brand text-primary hover:bg-brand"
               >
-                <BsThreeDots className="size-4" />
+                {actionLabel}
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuGroup> 
-                <DropdownMenuItem onClick={()=> router.push(`/club/recruitment/?add-new=recruitment&edit-id=${item.id}`) } className=" hover:bg-brand!  justify-between ">
-                  <span>Edit</span>
-                  <Edit2/>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleDeleteRecruitment} className=" hover:bg-brand!  justify-between ">
-                  <span>Delete</span>
-                  <Trash2/>
-                </DropdownMenuItem>
-              </DropdownMenuGroup> 
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </CardContent>
-    </Card>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon-sm"
+                    className="h-9 w-9 rounded-md border-brand/70 bg-transparent text-brand hover:bg-brand/10 hover:text-brand"
+                  >
+                    <BsThreeDots className="size-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        router.push(
+                          `/club/recruitment/?add-new=recruitment&edit-id=${item.id}`
+                        )
+                      }
+                      className="justify-between hover:bg-brand!"
+                    >
+                      <span>Edit</span>
+                      <Edit2 />
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => handleDeleteRecruitment(vanish)}
+                      className="justify-between hover:bg-brand!"
+                    >
+                      <span>Delete</span>
+                      <Trash2 />
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </VanishBox>
   )
 }

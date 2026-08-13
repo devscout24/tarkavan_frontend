@@ -20,7 +20,8 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { deleteCoachProgram } from "@/app/(dashboards)/coach/my-programs/action"
 import { RiMapPin2Line } from "react-icons/ri"
-import { BsCopy } from "react-icons/bs";
+import { BsCopy } from "react-icons/bs"
+import { VanishBox } from "react-vanish-box"
 
 type ProgramCardProps = {
   title?: string
@@ -65,7 +66,9 @@ export default function ProgramCard({
     ? JSON.parse(localStorage.getItem("go_elite_user") || "{}")
     : null
 
-  const handleDelete = async () => {
+  const handleDelete = async (vanish: () => void) => {
+ 
+ 
     if (currentUser && currentUser.role === "club") {
       try {
         const res = await deleteProgram(id as string)
@@ -83,7 +86,7 @@ export default function ProgramCard({
         const res = await deleteCoachProgram({ program_id: String(id) })
         if (res && "success" in res && res.success) {
           toast.success("Program deleted successfully")
-          window.dispatchEvent(new Event("programDeleted"))
+          vanish() 
         }
       } catch (err) {
         toast.error("Failed to delete program")
@@ -92,125 +95,129 @@ export default function ProgramCard({
   }
 
   return (
-    <Card
-      className={cn(
-        "w-full overflow-hidden rounded-2xl border border-secondary/40 bg-primary py-0 text-white",
-        className
-      )}
-    >
-      <div className="relative max-h-60 w-full overflow-hidden">
-        <Image
-          width={1000}
-          height={1000}
-          src={imageSrc || "/images/bannerbg.png"}
-          alt={imageAlt}
-          className="h-60 max-h-60 w-full object-contain"
-        />
+    <VanishBox onDeleted={()=> window.dispatchEvent(new Event("programDeleted"))} speed={4} >
+      {(vanish, status) => (
+        <Card
+          className={cn(
+            "w-full overflow-hidden rounded-2xl border border-secondary/40 bg-primary py-0 text-white",
+            className
+          )}
+        >
+          <div className="relative max-h-60 w-full overflow-hidden">
+            <Image
+              width={1000}
+              height={1000}
+              src={imageSrc || "/images/bannerbg.png"}
+              alt={imageAlt}
+              className="h-60 max-h-60 w-full object-contain"
+            />
 
-        {discountLabel && (
-          <Badge className="absolute top-3 right-3 h-8 rounded-full bg-emerald-500 px-3 text-sm font-semibold text-white hover:bg-emerald-500">
-            {discountLabel}
-          </Badge>
-        )}
-      </div>
-
-      <CardContent className="flex h-fit flex-col justify-between gap-y-10 p-4">
-        <div className="flex items-start justify-between gap-4">
-          <div className="max-w-[70%]">
-            <h3 className="line-clamp-2 overflow-hidden text-lg leading-tight font-semibold text-ellipsis">
-              {title}
-            </h3>
-
-            <p className="">{sport}</p>
-          </div>
-
-          <div className="text-right">
-            <p className="text-lg leading-none font-bold text-brand!">
-              ${currentPrice}
-            </p>
-            {Number(previousPrice) === Number(currentPrice) ? null : (
-              <p className="mt-1 text-lg text-white/70 line-through">
-                ${previousPrice}
-              </p>
+            {discountLabel && (
+              <Badge className="absolute top-3 right-3 h-8 rounded-full bg-emerald-500 px-3 text-sm font-semibold text-white hover:bg-emerald-500">
+                {discountLabel}
+              </Badge>
             )}
           </div>
-        </div>
 
-        <div className="space-y-2 text-[14px] font-light text-white/80">
-          <div className="flex items-center gap-2">
-            <UserRound className="size-4" />
-            <span>{type}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <RiMapPin2Line className="size-5" />
-            <span>{schedule}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Calendar className="size-4" />
-            <span>{duration}</span>
-          </div>
-        </div>
-        <div className="flex gap-4">
-          <CommonBtn
-            text={buttonLabel}
-            className="h-11 flex-1 rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90"
-            size={"lg"}
-            variant={"default"}
-            onClick={() => router.push(editLink)}
-          />
-          {!viewOnly && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="border-brand! py-5">
-                  <BsThreeDots />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuGroup>
-                  <DropdownMenuItem
-                    onClick={() => router.push(editLink)}
-                    className="justify-between hover:bg-brand!"
-                  >
-                    Edit <Edit2 />
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={handleDelete}
-                    className="justify-between hover:bg-brand!"
-                  >
-                    Delete <Trash2 />
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={async () => {
-                      if (!id) {
-                        toast.error(
-                          "Program ID not found. Please try again later."
-                        )
-                        return
-                      }
+          <CardContent className="flex h-fit flex-col justify-between gap-y-10 p-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="max-w-[70%]">
+                <h3 className="line-clamp-2 overflow-hidden text-lg leading-tight font-semibold text-ellipsis">
+                  {title}
+                </h3>
 
-                      try {
-                        await navigator.clipboard.writeText(
-                          `${process.env.NEXT_PUBLIC_FRONTEND_URL}/details/program/${id}`
-                        )
-                        toast.success("Program link copied to clipboard!")
-                      } catch (error) {
-                        console.error("Failed to copy:", error)
-                        toast.error(
-                          "Failed to copy the link. Please try again."
-                        )
-                      }
-                    }}
-                    className="justify-between hover:bg-brand!"
-                  >
-                    Copy Link <BsCopy />
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+                <p className="">{sport}</p>
+              </div>
+
+              <div className="text-right">
+                <p className="text-lg leading-none font-bold text-brand!">
+                  ${currentPrice}
+                </p>
+                {Number(previousPrice) === Number(currentPrice) ? null : (
+                  <p className="mt-1 text-lg text-white/70 line-through">
+                    ${previousPrice}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2 text-[14px] font-light text-white/80">
+              <div className="flex items-center gap-2">
+                <UserRound className="size-4" />
+                <span>{type}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <RiMapPin2Line className="size-5" />
+                <span>{schedule}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="size-4" />
+                <span>{duration}</span>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <CommonBtn
+                text={buttonLabel}
+                className="h-11 flex-1 rounded-xl bg-brand text-base font-semibold text-primary hover:bg-brand/90"
+                size={"lg"}
+                variant={"default"}
+                onClick={() => router.push(editLink)}
+              />
+              {!viewOnly && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="border-brand! py-5">
+                      <BsThreeDots />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem
+                        onClick={() => router.push(editLink)}
+                        className="justify-between hover:bg-brand!"
+                      >
+                        Edit <Edit2 />
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={()=> handleDelete(vanish)}
+                        className="justify-between hover:bg-brand!"
+                      >
+                        Delete <Trash2 />
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={async () => {
+                          if (!id) {
+                            toast.error(
+                              "Program ID not found. Please try again later."
+                            )
+                            return
+                          }
+
+                          try {
+                            await navigator.clipboard.writeText(
+                              `${process.env.NEXT_PUBLIC_FRONTEND_URL}/details/program/${id}`
+                            )
+                            toast.success("Program link copied to clipboard!")
+                          } catch (error) {
+                            console.error("Failed to copy:", error)
+                            toast.error(
+                              "Failed to copy the link. Please try again."
+                            )
+                          }
+                        }}
+                        className="justify-between hover:bg-brand!"
+                      >
+                        Copy Link <BsCopy />
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </VanishBox>
   )
 }
 

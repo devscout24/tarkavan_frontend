@@ -3,8 +3,7 @@ import { TPlayerStrength } from "@/types"
 import CommonBtn from "./common-btn"
 import { endorseProfile } from "@/app/(public)/profile/action"
 import { useParams } from "next/navigation"
-import { useState } from "react"
-import { set } from "date-fns"
+import { useState } from "react" 
 import { toast } from "sonner"
 
 export default function RadarStrength({
@@ -55,7 +54,7 @@ export default function RadarStrength({
   return (
     <div className="overflow-hidden rounded-2xl border-2 border-white/40">
       <h3 className="bg-secondary py-3.25 text-center text-base font-semibold text-white">
-        Your Top 5 Strengths
+        Your Top {strengths?.length} Strengths
       </h3>
 
       <ul className=" ">

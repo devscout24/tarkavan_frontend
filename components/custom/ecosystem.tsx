@@ -26,21 +26,21 @@ const ecosystemItems: EcosystemCardProps[] = [
     title: "For Players",
     description:
       "Build your sports profile, upload highlight videos, track your stats, and connect with professional coaches to accelerate your career.",
-    href: "auth?auth-tab=register?role=player",
+    href: "auth?auth-tab=register&role=player",
     ctaLabel: "Get Started",
   },
   {
     title: "For Coaches",
     description:
       "Create a coaching profile, offer training services, manage bookings, and earn revenue - all from one powerful dashboard.",
-    href: "auth?auth-tab=register?role=coach",
+    href: "auth?auth-tab=register&role=coach",
     ctaLabel: "Get Started",
   },
   {
     title: "For Teams",
     description:
       "Discover talented players, connect with certified coaches, manage your roster, and schedule matches with other teams.",
-    href: "auth?auth-tab=register?role=club",
+    href: "auth?auth-tab=register&role=club",
     ctaLabel: "Get Started",
   },
 ]
@@ -90,7 +90,7 @@ export default function Ecosystem({
       description:
         data?.cards[0]?.description ||
         "Build your sports profile, upload highlight videos, track your stats, and connect with professional coaches to accelerate your career.",
-      href: "auth?auth-tab=register?role=player",
+      href: "auth?auth-tab=register&role=player",
       ctaLabel: "Get Started",
     },
     {
@@ -98,7 +98,7 @@ export default function Ecosystem({
       description:
         data?.cards[1]?.description ||
         "Create a coaching profile, offer training services, manage bookings, and earn revenue - all from one powerful dashboard.",
-      href: "auth?auth-tab=register?role=coach",
+      href: "auth?auth-tab=register&role=coach",
       ctaLabel: "Get Started",
     },
     {
@@ -106,7 +106,7 @@ export default function Ecosystem({
       description:
         data?.cards[2]?.description ||
         "Discover talented players, connect with certified coaches, manage your roster, and schedule matches with other teams.",
-      href: "auth?auth-tab=register?role=club",
+      href: "auth?auth-tab=register&role=club",
       ctaLabel: "Get Started",
     },
   ]

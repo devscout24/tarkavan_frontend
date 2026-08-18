@@ -148,7 +148,20 @@ function AmPmTimePicker({
   // const minutes = Array.from({ length: 60 }, (_, i) =>
   //   String(i).padStart(2, "0")
   // )
-  const minutes = ["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"]
+  const minutes = [
+    "00",
+    "05",
+    "10",
+    "15",
+    "20",
+    "25",
+    "30",
+    "35",
+    "40",
+    "45",
+    "50",
+    "55",
+  ]
 
   const selectCls =
     "border-neutral-700 bg-neutral-800 text-white h-9 px-2 rounded-md border text-sm focus:outline-none focus:ring-1 focus:ring-brand"
@@ -226,6 +239,7 @@ const initialForm = {
   photo: null as string | null,
   type: "one_one",
   sportOptionId: "",
+  isFree: false,
 }
 
 const fieldCls =
@@ -412,6 +426,7 @@ const OneonOneProgram: React.FC<{
           type: "one_one",
           sportOptionId: p.sport_option ? String(p.sport_option.id) : "",
           timeSlots: groupedSlots,
+          isFree: p.is_free === true || p.is_free === "1" || p.is_free === 1, 
         })
       })
       .catch(console.error)
@@ -426,15 +441,16 @@ const OneonOneProgram: React.FC<{
       sport: form.sport,
       program_type: "one_one",
       program_name: form.name,
-      program_price: form.price,
+      program_price:  form.isFree ? "0" : form.price || "0",
       program_location: form.location,
       program_start: form.start,
       program_end: form.end,
       about_program: form.about,
-      discount_price: form.discountPrice || "0",
+      discount_price: form.isFree ? "0" : form.discountPrice || "0",
       upto_age: String(getHighestNumber(form.ageGroup)),
       from_age: String(getLowestNumber(form.ageGroup)),
       sport_option_id: form.sportOptionId,
+      is_free: form.isFree ? "1" : "0",
     }
 
     Object.entries(fields).forEach(([k, v]) => formData.append(k, v))
@@ -685,35 +701,6 @@ const OneonOneProgram: React.FC<{
             />
           </div>
 
-          {/* Program Price */}
-          <div className="flex flex-col">
-            <span className="text-sm">Program Price ($)</span>
-            <Input
-              name="price"
-              value={form.price}
-              onChange={handleChange}
-              placeholder="Program Price ($)"
-              className={`mt-1 ${fieldCls}`}
-              type="number"
-            />
-          </div>
-
-          {/* Discount Price */}
-          <div className="flex flex-col">
-            <p className="text-sm">
-              Discount Price{" "}
-              <span className="ml-1 text-brand!">(Optional)</span>
-            </p>
-            <Input
-              name="discountPrice"
-              value={form.discountPrice}
-              onChange={handleChange}
-              placeholder="Program Discount Price ($)"
-              className={fieldCls}
-              type="number"
-            />
-          </div>
-
           {/* Program Location */}
           <div className="flex flex-col">
             <p className="text-sm">Program Location</p>
@@ -725,6 +712,53 @@ const OneonOneProgram: React.FC<{
               className={fieldCls}
             />
           </div>
+
+          <div className="col-span-full">
+            <ToggleSwitch
+              label="Is this a free program?"
+              checked={form.isFree}
+              onChange={(v) =>
+                setForm((p) => ({
+                  ...p,
+                  isFree: v,
+                  price: v ? "0" : p.price,
+                }))
+              }
+            />
+          </div>
+
+          {/* Program Price */}
+          {!form.isFree && (
+            <div className="flex flex-col">
+              <span className="text-sm">Program Price ($)</span>
+              <Input
+                name="price"
+                value={form.price}
+                onChange={handleChange}
+                placeholder="Program Price ($)"
+                className={`mt-1 ${fieldCls}`}
+                type="number"
+              />
+            </div>
+          )}
+
+          {/* Discount Price */}
+          {!form.isFree && (
+            <div className="flex flex-col">
+              <p className="text-sm">
+                Discount Price{" "}
+                <span className="ml-1 text-brand!">(Optional)</span>
+              </p>
+              <Input
+                name="discountPrice"
+                value={form.discountPrice}
+                onChange={handleChange}
+                placeholder="Program Discount Price ($)"
+                className={fieldCls}
+                type="number"
+              />
+            </div>
+          )}
 
           {/* Program Start */}
           <div className="flex flex-col">
@@ -952,3 +986,35 @@ const OneonOneProgram: React.FC<{
 }
 
 export default OneonOneProgram
+
+// ─── Toggle Switch Component ─────────────────────────────────────────────
+function ToggleSwitch({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean
+  onChange: (v: boolean) => void
+  label: string
+}) {
+  return (
+    <div className="flex items-center justify-between rounded-lg border border-neutral-700 bg-neutral-800 px-4 py-3">
+      <span className="text-sm text-white">{label}</span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        onClick={() => onChange(!checked)}
+        className={`relative h-6 w-11 cursor-pointer rounded-full transition-colors ${
+          checked ? "bg-brand" : "bg-neutral-600"
+        }`}
+      >
+        <span
+          className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
+            checked ? "translate-x-0" : "-translate-x-5"
+          }`}
+        />
+      </button>
+    </div>
+  )
+}

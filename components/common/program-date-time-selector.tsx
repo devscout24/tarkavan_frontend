@@ -272,8 +272,7 @@ export default function ProgramDateTimeSelector({
 
     try {
       setLoading(false)
-      const res = await bookProgram(payload as any)
- 
+      const res = await bookProgram(payload as any) 
 
       if (res?.status === false && res?.message) {
         toast.error(res.message)
@@ -293,10 +292,13 @@ export default function ProgramDateTimeSelector({
         if (checkout_url) {
           setLoading(false)
           window.location.href = checkout_url
-        } else {
-          toast.error("Checkout URL not found.")
-          setLoading(false)
+        }  
+
+        if(checkout_url === null && res?.data?.status){
+          toast.success(res?.data?.message || "Free Booking successful.")
         }
+
+
       }
     } catch (err) {
       setLoading(false)

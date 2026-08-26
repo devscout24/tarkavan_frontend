@@ -1,4 +1,4 @@
-import { motion, type Variants } from "framer-motion" 
+import { motion, type Variants } from "framer-motion"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,19 +10,18 @@ import {
 import {
   Dialog,
   DialogClose,
-  DialogContent, 
+  DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { TClubBookingData } from "@/types"
+import { TBookingTimes, TClubBookingData } from "@/types"
 import moment from "moment"
 import Link from "next/link"
 import { ChangeBookingStatus } from "@/app/(dashboards)/club/bookings/action"
-import { toast } from "sonner" 
-
- 
+import { toast } from "sonner"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
 
 const stagger: Variants = {
   hidden: {},
@@ -34,7 +33,6 @@ const rise: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
 }
 
- 
 function SectionLabel({
   index,
   children,
@@ -98,14 +96,8 @@ function StatusPill({ label, solid }: { label: string; solid: boolean }) {
 export function BookingDetails({ data }: { data: TClubBookingData }) {
   const program = data?.program
   const bookingTime = data?.booking_time
- 
-  const sessionTimeLabel =
-    bookingTime?.time ??
-    (bookingTime?.start_time && bookingTime?.end_time
-      ? `${bookingTime.start_time} – ${bookingTime.end_time}`
-      : "—")
 
-  const isPaid = (data?.payment_status ?? "").toLowerCase() === "paid" 
+  const isPaid = (data?.payment_status ?? "").toLowerCase() === "paid"
 
   const handleStatusChange = async (booking_id: number, new_status: string) => {
     try {
@@ -123,6 +115,48 @@ export function BookingDetails({ data }: { data: TClubBookingData }) {
   }
 
   console.log("BookingDetails data", data)
+  function formatBookings(bookings: TBookingTimes[]) {
+  if (!bookings.length) return []
+
+  const firstDate = bookings[0].booking_date
+
+  const isSameDate = bookings.every(
+    (booking) => booking.booking_date === firstDate
+  )
+
+  if (isSameDate) {
+    const firstBooking = bookings[0]
+
+    return [
+      {
+        id: firstBooking.id,
+        booking_time_id: firstBooking.booking_time_id, 
+        booking_date: firstBooking.booking_date,
+        booking_type: firstBooking.booking_type,
+        time: firstBooking.time,
+        times: bookings.map((booking) => ({
+          start_time: booking.start_time,
+          end_time: booking.end_time,
+        })),
+      },
+    ]
+  }
+
+  // এখানে সরাসরি `return bookings` করবে না
+  return bookings.map((booking) => ({
+    id: booking.id,
+    booking_time_id: booking.booking_time_id,
+    booking_date: booking.booking_date,
+    booking_type: booking.booking_type,
+    time: booking.time,
+    times: [
+      {
+        start_time: booking.start_time,
+        end_time: booking.end_time,
+      },
+    ],
+  }))
+}
 
   return (
     <Dialog>
@@ -141,7 +175,7 @@ export function BookingDetails({ data }: { data: TClubBookingData }) {
         {/* header */}
         <DialogHeader className="border-b border-gray-200 bg-white px-5 py-4 sm:px-8 sm:py-5">
           <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
+            <div className="w-full min-w-0">
               <DialogTitle className="truncate text-xl font-semibold text-gray-900 sm:text-2xl">
                 Booking #{String(data?.id ?? 0).padStart(6, "0")}
                 <motion.div
@@ -233,31 +267,43 @@ export function BookingDetails({ data }: { data: TClubBookingData }) {
 
             {/* 02 — session */}
             <section>
-              <SectionLabel index="02">Session</SectionLabel>
-              <motion.div
-                variants={rise}
-                className="flex items-center gap-5 rounded-xl border border-gray-900 px-5 py-4"
-              >
-                <div className="shrink-0 text-center leading-none">
-                  <p className="text-[10px] text-secondary!">
-                    {moment(data?.booking_time?.booking_date).format("LL")}
-                  </p>
-                </div>
-                <div className="w-px self-stretch bg-gray-200" />
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-secondary!"> 
-                    {moment(data?.booking_time?.booking_date).format('dddd')}
-                  </p>
-                  <p className="mt-1 text-xs text-secondary!">
-                    {sessionTimeLabel}
-                  </p>
-                </div>
-                {bookingTime?.is_available === false && (
-                  <span className="ml-auto shrink-0">
-                    <StatusPill label="Unavailable" solid={false} />
-                  </span>
-                )}
-              </motion.div>
+              <SectionLabel index="02">Session booked</SectionLabel>
+              {data?.booking_times?.length > 0
+                ? formatBookings(data.booking_times).map((b, i) => (
+                    <motion.div
+                      key={i}
+                      variants={rise}
+                      className="mt-1 flex items-center gap-5 rounded-xl border border-gray-100 px-5 py-4"
+                    >
+                      <div className="shrink-0 text-center leading-none">
+                        <p className="text-[10px] text-secondary!">
+                          {moment(b?.booking_date).format("LL")}
+                        </p>
+                      </div>
+                      <div className="w-px self-stretch bg-gray-200" />
+                      <div className="w-full min-w-0">
+                        <p className="text-sm font-semibold text-secondary!">
+                          {moment(b?.booking_date).format("dddd")}
+                        </p>
+
+                        <div className=" w-full!  ">
+                          {/* {b?.times?.map((t , i) => (
+                            <p key={i} className="mt-1 text-xs text-secondary! bg-brand/10  ">
+                              Start : {t?.start_time} <br />
+                              End : {t?.end_time}
+                            </p>
+                          ))} */}
+                          <TimeSlotTable data={b?.times} />
+                        </div>
+                      </div>
+                      {bookingTime?.is_available === false && (
+                        <span className="ml-auto shrink-0">
+                          <StatusPill label="Unavailable" solid={false} />
+                        </span>
+                      )}
+                    </motion.div>
+                  ))
+                : null}
             </section>
 
             {/* 03 — people */}
@@ -342,9 +388,9 @@ export function BookingDetails({ data }: { data: TClubBookingData }) {
         <DialogFooter className="border-t border-gray-200 bg-white px-5 py-4 sm:px-8">
           <div className="flex items-center gap-3 pb-3">
             <DialogClose asChild>
-              <div className="rounded-lg bg-secondary/5 px-5 py-1.75 cursor-pointer ">
+              <div className="cursor-pointer rounded-lg bg-secondary/5 px-5 py-1.75">
                 Close
-              </div> 
+              </div>
             </DialogClose>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -387,3 +433,41 @@ export function BookingDetails({ data }: { data: TClubBookingData }) {
     </Dialog>
   )
 }
+
+
+
+    
+
+ 
+
+export function TimeSlotTable({ data }: { data: any[] }) {
+  return (
+    <div className=" flex w-full! flex-col">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-brand"> 
+                <TableHead>Slot</TableHead> 
+                <TableHead>Start time</TableHead> 
+                <TableHead>End time</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data?.map((d , i) => (
+                <TableRow key={i} className="border-b border-gray-200 last:border-0">
+                  <TableCell>
+                    {i + 1}
+                  </TableCell>
+                  <TableCell> 
+                    {d?.start_time}
+                  </TableCell>
+                  <TableCell> 
+                    {d?.end_time}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>  
+    </div>
+  );
+}
+ 

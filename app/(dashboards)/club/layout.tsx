@@ -13,7 +13,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-} from "@/components/animate-ui/components/radix/sidebar" 
+} from "@/components/animate-ui/components/radix/sidebar"
 import { DiScala } from "react-icons/di"
 import { Settings } from "lucide-react"
 import {
@@ -24,7 +24,7 @@ import Logo from "@/components/common/logo"
 import MenuBtn from "@/components/custom/menu-btn"
 import Image from "next/image"
 import { BiMessageSquareDetail } from "react-icons/bi"
-import { IoCalendarOutline } from "react-icons/io5";
+import { IoCalendarOutline } from "react-icons/io5"
 import {
   RiDashboardFill,
   RiLogoutCircleRLine,
@@ -52,7 +52,19 @@ import {
   setUnreadCount,
   setUserImage,
 } from "@/lib/features/userSlice"
-import { getUnreadCount } from "../action" 
+import { getUnreadCount } from "../action"
+import earningsIcon from "../../../public/images/earningsIcon.svg"
+
+
+const EarningsNavIcon = ({ className }: { className?: string }) => (
+  <Image
+    width={20}
+    height={20}
+    src={earningsIcon}
+    alt="Earnings"
+    className={`h-5 w-5 brightness-0 invert ${className ?? ""}`}
+  />
+)
 
 export default function PlayerDashboardLayout({
   children,
@@ -64,7 +76,7 @@ export default function PlayerDashboardLayout({
   useEffect(() => {
     const getData = async () => {
       try {
-        const res = await getClubProfile() 
+        const res = await getClubProfile()
         if (
           res &&
           typeof res === "object" &&
@@ -73,7 +85,7 @@ export default function PlayerDashboardLayout({
           "data" in res
         ) {
           dispatch(setUserImage(res?.data?.data?.club_logo_url))
-          dispatch(setProfileID(res?.data?.data?.id)) 
+          dispatch(setProfileID(res?.data?.data?.id))
         }
       } catch (err) {
         console.error("Error fetching club profile:", err)
@@ -136,6 +148,11 @@ export default function PlayerDashboardLayout({
         icon: IoCalendarOutline,
       },
       {
+        title: "Earnings",
+        url: "/club/earnings",
+        icon: EarningsNavIcon,
+      },
+      {
         title: "Recruitment",
         url: "/club/recruitment",
         icon: AiOutlineUsergroupAdd,
@@ -167,8 +184,6 @@ export default function PlayerDashboardLayout({
       },
     ],
   }
-
- 
 
   return (
     <AuthCheckPoint role="club">

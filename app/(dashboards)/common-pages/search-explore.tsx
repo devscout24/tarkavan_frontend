@@ -27,6 +27,7 @@ type ExploreFilterState = {
   max_price: string
   min_price: string
   per_page: string
+  search : string
 }
 
 const initialState: ExploreFilterState = {
@@ -40,6 +41,7 @@ const initialState: ExploreFilterState = {
   max_price: "",
   min_price: "",
   per_page: "9",
+  search: "",
 }
 
 export default function SearchExplore() {

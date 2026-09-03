@@ -37,6 +37,7 @@ type ExploreFilterState = {
   max_price: string
   min_price: string
   per_page: string
+  search : string
 }
 
 const categories = [
@@ -136,9 +137,9 @@ function ExploreFilter({
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <UiInput
             placeholder="Search players, coaches, teams, programs..."
-            value={filters.button_type}
+            value={filters.search}
             className="w-full"
-            onChange={(e) => updateFilter("button_type", e.target.value)}
+            onChange={(e) => updateFilter("search", e.target.value)}
           />
           <CommonBtn
             variant="default"

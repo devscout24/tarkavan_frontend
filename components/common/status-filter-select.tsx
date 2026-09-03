@@ -8,6 +8,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
+import { DatePickerWithRange } from "./date-range"
+import { DateRange } from "react-day-picker"
 
 export type StatusFilterOption = {
   value: string
@@ -23,6 +25,8 @@ type StatusFilterSelectProps = {
   triggerClassName?: string
   contentClassName?: string
   itemClassName?: string
+  setDate: React.Dispatch<React.SetStateAction<DateRange | undefined>>
+  date: DateRange | undefined
 }
 
 export default function StatusFilterSelect({
@@ -34,40 +38,50 @@ export default function StatusFilterSelect({
   triggerClassName,
   contentClassName,
   itemClassName,
+  setDate,
+  date,
 }: StatusFilterSelectProps) {
   return (
-    <div className={className}>
-      <Select value={value} onValueChange={onValueChange}>
-        <SelectTrigger
-          className={cn(
-            "h-10 w-full rounded-xl border-white/20 bg-transparent px-3 text-white mr-2 ",
-            triggerClassName
-          )}
-        >
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent
-          align="end"
-          position="popper"
-          className={cn(
-            "border-white/10 bg-secondary text-white",
-            contentClassName
-          )}
-        >
-          {options.map((option) => (
-            <SelectItem
-              key={option.value}
-              value={option.value}
-              className={cn(
-                "cursor-pointer px-3 py-2 text-sm text-white data-highlighted:bg-brand data-highlighted:text-primary",
-                itemClassName
-              )}
-            >
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+    <div className={`flex items-end gap-2 ${className}`}>
+      <DatePickerWithRange
+        date={date}
+        setDate={setDate}
+      />
+
+      <div className="w-fit">
+        <p className="text-sm text-white pb-1.5 ">Filter status</p>
+        <Select value={value} onValueChange={onValueChange}>
+          <SelectTrigger
+            className={cn(
+              "mr-2 h-10 w-full rounded-md border-white/20 bg-transparent px-3 text-white",
+              triggerClassName
+            )}
+          >
+            <SelectValue placeholder={placeholder} />
+          </SelectTrigger>
+          <SelectContent
+            align="end"
+            position="popper"
+            className={cn(
+              "border-white/10 bg-secondary text-white",
+              contentClassName
+            )}
+          >
+            {options.map((option) => (
+              <SelectItem
+                key={option.value}
+                value={option.value}
+                className={cn(
+                  "cursor-pointer px-3 py-2 text-sm text-white data-highlighted:bg-brand data-highlighted:text-primary",
+                  itemClassName
+                )}
+              >
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   )
 }

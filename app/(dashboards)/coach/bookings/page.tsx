@@ -4,11 +4,14 @@ import BookingsTable from "@/components/common/bookings-table"
 import StatusFilterSelect from "@/components/common/status-filter-select"
 import Loader from "@/components/common/loader"
 import api from "@/lib/api-fetcher"
-import { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { TClubBookingData } from "@/types"
 import { useAppSelector } from "@/lib/hooks"
 import { selectIsSubscriptionActive } from "@/lib/features/userSlice"
 import ClubDashboardSubscription from "@/components/custom/club-dashboard-subscription"
+import { DateRange } from "react-day-picker"
+import { addDays } from "date-fns"
+import moment from "moment"
 
 const statusOptions = [
   { value: "all", label: "All Status" },
@@ -23,22 +26,45 @@ export default function BookingsPage() {
   const [status, setStatus] = useState("all")
   const [bookings, setBookings] = useState<TClubBookingData[]>([])
   const [loading, setLoading] = useState(true)
-  const isUbscriber = useAppSelector(selectIsSubscriptionActive)
+  const [date, setDate] = React.useState<DateRange | undefined>(
+    // {
+    // from: new Date(new Date().getFullYear(), 0, 20),
+    // to: addDays(new Date(new Date().getFullYear(), 0, 20), 20),
+    // }
+    undefined
+)
+  const [isUbscriber, setIsSubscriber] = useState(false)
+  useEffect(() => {
+    const user = localStorage.getItem("go_elite_user")
+      ? JSON.parse(localStorage.getItem("go_elite_user") || "{}")
+      : null
+
+    if (user) {
+      setIsSubscriber(user.is_subscription_active)
+    }
+  }, [])
 
   const filteredBookings = useMemo(() => {
     if (status === "all") {
       return bookings
-    } 
+    }
     return bookings.filter((booking) => booking.status === status)
-
   }, [bookings, status])
 
   useEffect(() => {
     const fetchBookings = async () => {
+      const params = {
+        from_date: date?.from ? moment(date.from).format("YYYY-MM-DD") : "",
+
+        to_date: date?.to ? moment(date.to).format("YYYY-MM-DD") : "",
+      }
+
       try {
         setLoading(true)
-        const response = await api.get("/coach/program/bookings")  
-        if (response?.data?.data) { 
+        const response = await api.get("/coach/program/bookings", {
+          params,
+        })
+        if (response?.data?.data) {
           setBookings(response?.data?.data)
         }
       } catch (error) {
@@ -60,7 +86,7 @@ export default function BookingsPage() {
     return () => {
       window.removeEventListener("bookingChanged", revaliteOnBookingChange)
     }
-  }, []) 
+  }, [date?.from, date?.to])
 
   if (isUbscriber) {
     return (
@@ -70,7 +96,8 @@ export default function BookingsPage() {
             value={status}
             onValueChange={setStatus}
             options={statusOptions}
-            className="w-full max-w-45"
+            date={date}
+            setDate={setDate}
           />
         </div>
 
@@ -78,11 +105,11 @@ export default function BookingsPage() {
           <BookingsTable bookings={filteredBookings} loading={loading} />
         ) : filteredBookings.length === 0 ? (
           <p className="py-8 text-center text-white/70">No Bookings yet</p>
-        ): 
+        ) : (
           <BookingsTable bookings={filteredBookings} loading={loading} />
-        }
+        )}
       </section>
-    ) 
+    )
   } else {
     return (
       <ClubDashboardSubscription

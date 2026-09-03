@@ -27,7 +27,6 @@ interface EarningsData {
     platform_fee_month: number
     platformFee_coach: number
     platformFee_club: number
-
   }
   earnings: EarningsRow[]
   monthly_growth: {
@@ -37,10 +36,19 @@ interface EarningsData {
 }
 
 export default function EarningsPage() {
-  const [earningsData, setEarningsData] = useState<EarningsData | null>(null) 
+  const [earningsData, setEarningsData] = useState<EarningsData | null>(null)
   const [filter, setFilter] = useState("month")
   const [exporting, setExporting] = useState(false)
-  const isUbscriber = useAppSelector(selectIsSubscriptionActive)
+  const [isUbscriber, setIsSubscriber] = useState(false)
+  useEffect(() => {
+    const user = localStorage.getItem("go_elite_user")
+      ? JSON.parse(localStorage.getItem("go_elite_user") || "{}")
+      : null
+
+    if (user) {
+      setIsSubscriber(user.is_subscription_active)
+    }
+  }, [])
 
   const handleExport = async () => {
     try {
@@ -109,15 +117,15 @@ export default function EarningsPage() {
   }
 
   useEffect(() => {
-    const fetchEarnings = async ( ) => {
-      try { 
+    const fetchEarnings = async () => {
+      try {
         const token =
           localStorage.getItem("go_elite_token") ||
           sessionStorage.getItem("go_elite_token")
 
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/coach/earnings/view?filter=${filter}`,
-          { 
+          {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -131,22 +139,21 @@ export default function EarningsPage() {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
 
-        const result = await response.json()  
+        const result = await response.json()
 
-        if (result.status && result.data) { 
+        if (result.status && result.data) {
           setEarningsData(result.data)
         } else {
           console.warn("Invalid response structure:", result)
         }
       } catch (error) {
         console.error("Error fetching earnings:", error)
-      }  
+      }
     }
 
     fetchEarnings()
-
   }, [filter])
- 
+
   const stats = [
     {
       icon: <ActiveProgramsIcon />,
@@ -174,10 +181,9 @@ export default function EarningsPage() {
     {
       icon: <PlatformFeeIcon />,
       title: `${earningsData?.summary?.platformFee_coach}% Platform Fee`,
-      text: ""
+      text: "",
     },
   ]
- 
 
   if (isUbscriber) {
     return (

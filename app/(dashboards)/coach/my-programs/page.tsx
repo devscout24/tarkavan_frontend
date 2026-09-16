@@ -2,8 +2,7 @@
 
 import ProgramCard from "@/components/common/program-card"
 import ProgramFilterDropdown from "@/components/common/ProgramFilterDropdown"
-import CommonBtn from "@/components/common/common-btn"
-import Loader from "@/components/common/loader"
+import CommonBtn from "@/components/common/common-btn" 
 import { Hourglass, UserRound } from "lucide-react"
 import Image from "next/image"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
@@ -115,7 +114,7 @@ export default function UpcomingEventPage() {
               <CommonBtn
                 text="Add Program"
                 icon={<PlusIcon />}
-                className="h-10 w-fit rounded-[8px] bg-brand px-4 font-medium text-primary hover:bg-brand xl:h-11 xl:px-5 xl:text-base 2xl:h-12 2xl:px-6 2xl:text-lg"
+                className="h-10 w-fit rounded-[8px] bg-brand px-4 font-medium text-primary hover:bg-brand xl:h-11 xl:px-5 xl:text-base 2xl:h-12 2xl:px-6 2xl:text-lg cursor-pointer  "
                 size="sm"
                 variant="default"
                 onClick={() => {

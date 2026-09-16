@@ -426,7 +426,7 @@ const OneonOneProgram: React.FC<{
           type: "one_one",
           sportOptionId: p.sport_option ? String(p.sport_option.id) : "",
           timeSlots: groupedSlots,
-          isFree: p.is_free === true || p.is_free === "1" || p.is_free === 1, 
+          isFree: p.is_free === true || p.is_free === "1" || p.is_free === 1,
         })
       })
       .catch(console.error)
@@ -441,7 +441,7 @@ const OneonOneProgram: React.FC<{
       sport: form.sport,
       program_type: "one_one",
       program_name: form.name,
-      program_price:  form.isFree ? "0" : form.price || "0",
+      program_price: form.isFree ? "0" : form.price || "0",
       program_location: form.location,
       program_start: form.start,
       program_end: form.end,
@@ -534,39 +534,157 @@ const OneonOneProgram: React.FC<{
     close("editID")
   }
 
+  const handleApiError = (error: any) => {
+    console.log("API ERROR:", error)
+
+    // API response
+    const data = error?.data || error
+
+    // Validation errors
+    if (data?.errors && typeof data.errors === "object") {
+      const firstField = Object.keys(data.errors)[0]
+
+      if (firstField) {
+        const messages = data.errors[firstField]
+
+        if (Array.isArray(messages) && messages.length > 0) {
+          toast.error(messages[0])
+          return
+        }
+
+        if (typeof messages === "string") {
+          toast.error(messages)
+          return
+        }
+      }
+    }
+
+    // Normal API message
+    if (data?.message) {
+      toast.error(data.message)
+      return
+    }
+
+    // Fallback
+    toast.error("Failed to create program.")
+  }
+
   const handleAdd = async () => {
     if (isSubmitting) return
+
     if (!validateForm()) return
+
     setIsSubmitting(true)
 
-    if (currentUser?.role === "club") {
-      try {
-        const res: any = await createProgram(await buildFormData())
-        res?.success || res?.status
-          ? onSuccess("Program created successfully!")
-          : toast.error(res?.message || "Failed to create program.")
-        close("add-new", ["program"])
-      } catch {
-        toast.error("Failed to create program. Please try again.")
-      } finally {
-        setIsSubmitting(false)
-      }
-    }
+    try {
+      const formData = await buildFormData()
 
-    if (currentUser?.role === "coach") {
-      try {
-        const res: any = await addCoachProgram(await buildFormData())
-        res?.success || res?.status
-          ? onSuccess("Program created successfully!")
-          : toast.error(res?.message || "Failed to create program.")
-        close("add-new", ["program"])
-      } catch {
-        toast.error("Failed to create program. Please try again.")
-      } finally {
-        setIsSubmitting(false)
+      let res: any
+
+      // =========================
+      // CLUB
+      // =========================
+      if (currentUser?.role === "club") {
+        res = await createProgram(formData)
       }
+
+      // =========================
+      // COACH
+      // =========================
+      else if (currentUser?.role === "coach") {
+        res = await addCoachProgram(formData)
+      }
+
+      console.log("CREATE PROGRAM RESPONSE:", res)
+
+      // =========================
+      // API VALIDATION ERROR
+      // =========================
+      if (res?.errors) {
+        const firstField = Object.keys(res.errors)[0]
+
+        if (firstField) {
+          const messages = res.errors[firstField]
+
+          if (Array.isArray(messages) && messages.length > 0) {
+            toast.error(messages[0])
+            return
+          }
+
+          if (typeof messages === "string") {
+            toast.error(messages)
+            return
+          }
+        }
+      }
+
+      // =========================
+      // API FAILED
+      // =========================
+      if (res?.status === false || res?.success === false) {
+        toast.error(res?.message || "Failed to create program.")
+        return
+      }
+
+      // =========================
+      // SUCCESS
+      // =========================
+      if (res?.success || res?.status === true) {
+        onSuccess("Program created successfully!")
+        close("add-new", ["program"])
+        return
+      }
+
+      // =========================
+      // UNKNOWN RESPONSE
+      // =========================
+      toast.error(res?.message || "Failed to create program.")
+    } catch (error: any) {
+      console.log("CREATE PROGRAM ERROR:", error)
+
+      handleApiError(error)
+    } finally {
+      setIsSubmitting(false)
     }
   }
+
+  // const handleAdd = async () => {
+  //   if (isSubmitting) return
+  //   if (!validateForm()) return
+  //   setIsSubmitting(true)
+
+  //   if (currentUser?.role === "club") {
+  //     try {
+  //       const res: any = await createProgram(await buildFormData())
+
+  //       console.log("createProgram response:", res) // Debugging line
+
+  //       res?.success || res?.status
+  //         ? onSuccess("Program created successfully!")
+  //         : toast.error(res?.message || "Failed to create program.")
+  //       close("add-new", ["program"])
+  //     } catch {
+  //       toast.error("Failed to create program. Please try again.")
+  //     } finally {
+  //       setIsSubmitting(false)
+  //     }
+  //   }
+
+  //   if (currentUser?.role === "coach") {
+  //     try {
+  //       const res: any = await addCoachProgram(await buildFormData())
+  //       console.log("createProgram response:", res) // Debugging line
+  //       res?.success || res?.status
+  //         ? onSuccess("Program created successfully!")
+  //         : toast.error(res?.message || "Failed to create program.")
+  //       close("add-new", ["program"])
+  //     } catch {
+  //       toast.error("Failed to create program. Please try again.")
+  //     } finally {
+  //       setIsSubmitting(false)
+  //     }
+  //   }
+  // }
 
   const handleUpdate = async () => {
     if (isSubmitting || !editId) return

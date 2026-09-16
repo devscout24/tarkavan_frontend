@@ -236,29 +236,29 @@ export default function ProgramDetailsPage() {
           />
           <ProgramDateTimeSelector
             programStartDate={details?.start_date}
-            programEndDate={details?.end_date}
-            price={details?.price}
+            // programEndDate={details?.end_date}
+            // price={details?.price}
             detailsID={String(id)}
             priceToShow={
               Number(details?.price) - Number(details?.discount_price)
             }
             isOwner={details?.provider?.is_program_maker}
             programid={String(id)}
-            slots={
-              details?.program_type == "group" &&
-              details.times &&
-              details.times.length > 0
-                ? details.times
-                    .filter(
-                      (time): time is typeof time & { slot_date: string } =>
-                        time.slot_date !== null
-                    )
-                    .map((time) => ({
-                      booking_date: time.slot_date,
-                      booking_time_ids: [time.id],
-                    }))
-                : undefined
-            }
+            // slots={
+            //   details?.program_type == "group" &&
+            //   details.times &&
+            //   details.times.length > 0
+            //     ? details.times
+            //         .filter(
+            //           (time): time is typeof time & { slot_date: string } =>
+            //             time.slot_date !== null
+            //         )
+            //         .map((time) => ({
+            //           booking_date: time.slot_date,
+            //           booking_time_ids: [time.id],
+            //         }))
+            //     : undefined
+            // }
           />
         </div>
       </div>

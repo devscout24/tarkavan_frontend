@@ -113,8 +113,7 @@ export function BookingDetails({ data }: { data: TClubBookingData }) {
       toast.error("Failed to update booking status")
     }
   }
-
-  console.log("BookingDetails data", data)
+ 
   function formatBookings(bookings: TBookingTimes[]) {
   if (!bookings.length) return []
 

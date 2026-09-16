@@ -1,16 +1,12 @@
 "use client"
 
 import BookingsTable from "@/components/common/bookings-table"
-import StatusFilterSelect from "@/components/common/status-filter-select"
-import Loader from "@/components/common/loader"
+import StatusFilterSelect from "@/components/common/status-filter-select" 
 import api from "@/lib/api-fetcher"
 import React, { useEffect, useMemo, useState } from "react"
-import { TClubBookingData } from "@/types"
-import { useAppSelector } from "@/lib/hooks"
-import { selectIsSubscriptionActive } from "@/lib/features/userSlice"
+import { TClubBookingData } from "@/types" 
 import ClubDashboardSubscription from "@/components/custom/club-dashboard-subscription"
-import { DateRange } from "react-day-picker"
-import { addDays } from "date-fns"
+import { DateRange } from "react-day-picker" 
 import moment from "moment"
 
 const statusOptions = [
@@ -64,6 +60,9 @@ export default function BookingsPage() {
         const response = await api.get("/coach/program/bookings", {
           params,
         })
+
+        console.log("Bookings response:", response )
+
         if (response?.data?.data) {
           setBookings(response?.data?.data)
         }

@@ -829,10 +829,7 @@
 //   )
 // }
 
-
-
 // at the top of this line is the group program component code. Bellow are newly added files. \\
-
 
 "use client"
 import React, { useEffect, useState } from "react"
@@ -1523,7 +1520,7 @@ const GroupProgram: React.FC<{
     const hasValidTime = form.timeSlots.some((slot) =>
       Boolean(
         slot.date &&
-          slot.times.some((t) => toAmPmString(t.start) && toAmPmString(t.end))
+        slot.times.some((t) => toAmPmString(t.start) && toAmPmString(t.end))
       )
     )
     if (!hasValidTime) {
@@ -1544,81 +1541,250 @@ const GroupProgram: React.FC<{
     close("editID")
   }
 
-  const handleAdd = async () => {
-    if (isSubmitting) return
-    if (!validateForm()) return
-    setIsSubmitting(true)
+  // const handleApiError = (error: any) => {
+  //   console.log("API ERROR:", error)
 
-    if (currentUser?.role === "club") {
-      try {
-        const res: any = await createProgram(await buildFormData())
-        res?.success || res?.status
-          ? onSuccess("Program created successfully!")
-          : toast.error(res?.message || "Failed to create program.")
-        close("add-new", ["program"])
-      } catch {
-        toast.error("Failed to create program. Please try again.")
-      } finally {
-        setIsSubmitting(false)
+  //   // API response
+  //   const data = error?.data || error
+
+  //   // Validation errors
+  //   if (data?.errors && typeof data.errors === "object") {
+  //     const firstField = Object.keys(data.errors)[0]
+
+  //     if (firstField) {
+  //       const messages = data.errors[firstField]
+
+  //       if (Array.isArray(messages) && messages.length > 0) {
+  //         toast.error(messages[0])
+  //         return
+  //       }
+
+  //       if (typeof messages === "string") {
+  //         toast.error(messages)
+  //         return
+  //       }
+  //     }
+  //   }
+
+  //   // Normal API message
+  //   if (data?.message) {
+  //     toast.error(data.message)
+  //     return
+  //   }
+
+  //   // Fallback
+  //   toast.error("Failed to create program.")
+  // }
+
+  // const handleAdd = async () => {
+  //   if (isSubmitting) return
+  //   if (!validateForm()) return
+  //   setIsSubmitting(true)
+
+  //   if (currentUser?.role === "club") {
+  //     try {
+  //       const res: any = await createProgram(await buildFormData())
+
+  //       console.log("createProgram response club:", res)
+
+  //       res?.success || res?.status
+  //         ? onSuccess("Program created successfully!")
+  //         : toast.error(res?.message || "Failed to create program.")
+  //       close("add-new", ["program"])
+  //     } catch(error){
+  //       handleApiError(error)
+  //     } finally {
+  //       setIsSubmitting(false)
+  //     }
+  //   }
+
+  //   if (currentUser?.role === "coach") {
+  //     try {
+  //       const res: any = await addCoachProgram(await buildFormData())
+  //       res?.success || res?.status
+  //         ? onSuccess("Program created successfully!")
+  //         : toast.error(res?.message || "Failed to create program.")
+  //       close("add-new", ["program"])
+  //     } catch(error) {
+  //       handleApiError(error)
+  //     } finally {
+  //       setIsSubmitting(false)
+  //     }
+  //   }
+  // }
+
+  // const handleUpdate = async () => {
+  //   if (isSubmitting || !editId) return
+  //   if (!validateForm()) return
+  //   setIsSubmitting(true)
+
+  //   if (currentUser?.role === "club") {
+  //     try {
+  //       const res: any = await updateProgram({
+  //         program_id: editId,
+  //         data: await buildFormData(),
+  //       }) 
+  //       res?.success || res?.status
+  //         ? onSuccess("Program updated successfully!")
+  //         : toast.error(res?.message || "Failed to update program.")
+  //       window.dispatchEvent(new CustomEvent("programevent"))
+  //       close("add-new", ["program"])
+  //     } catch(error) {
+  //       handleApiError(error)
+  //     } finally {
+  //       setIsSubmitting(false)
+  //     }
+  //   }
+
+  //   if (currentUser?.role === "coach") {
+  //     try {
+  //       const res: any = await updateCoachProgram({
+  //         program_id: editId,
+  //         data: await buildFormData(),
+  //       })
+  //       res?.success || res?.status
+  //         ? onSuccess("Program updated successfully!")
+  //         : toast.error(res?.message || "Failed to update program.")
+  //       window.dispatchEvent(new CustomEvent("programevent"))
+  //       close("add-new", ["program"])
+  //     } catch(error) {
+  //       handleApiError(error)
+  //     } finally {
+  //       setIsSubmitting(false)
+  //     }
+  //   }
+  // }
+
+ 
+const handleApiError = (error: any) => {
+  console.log("API ERROR:", error)
+
+  // API response
+  const data = error?.data || error
+
+  // Validation errors
+  if (data?.errors && typeof data.errors === "object") {
+    const firstField = Object.keys(data.errors)[0]
+
+    if (firstField) {
+      const messages = data.errors[firstField]
+
+      if (Array.isArray(messages) && messages.length > 0) {
+        toast.error(messages[0])
+        return
       }
-    }
 
-    if (currentUser?.role === "coach") {
-      try {
-        const res: any = await addCoachProgram(await buildFormData())
-        res?.success || res?.status
-          ? onSuccess("Program created successfully!")
-          : toast.error(res?.message || "Failed to create program.")
-        close("add-new", ["program"])
-      } catch {
-        toast.error("Failed to create program. Please try again.")
-      } finally {
-        setIsSubmitting(false)
+      if (typeof messages === "string") {
+        toast.error(messages)
+        return
       }
     }
   }
 
-  const handleUpdate = async () => {
-    if (isSubmitting || !editId) return
-    if (!validateForm()) return
-    setIsSubmitting(true)
+  // Normal API message
+  if (data?.message) {
+    toast.error(data.message)
+    return
+  }
+
+  // Fallback
+  toast.error("Failed to create program.")
+}
+
+
+const handleAdd = async () => {
+  if (isSubmitting) return
+  if (!validateForm()) return
+
+  setIsSubmitting(true)
+
+  try {
+    const formData = await buildFormData()
 
     if (currentUser?.role === "club") {
-      try {
-        const res: any = await updateProgram({
-          program_id: editId,
-          data: await buildFormData(),
-        })
-        res?.success || res?.status
-          ? onSuccess("Program updated successfully!")
-          : toast.error(res?.message || "Failed to update program.")
-        window.dispatchEvent(new CustomEvent("programevent"))
+      const res: any = await createProgram(formData)
+
+      console.log("createProgram response club:", res)
+
+      if (res?.success || res?.status === true) {
+        onSuccess("Program created successfully!")
         close("add-new", ["program"])
-      } catch {
-        toast.error("Failed to update program. Please try again.")
-      } finally {
-        setIsSubmitting(false)
+      } else {
+        handleApiError(res)
       }
     }
 
     if (currentUser?.role === "coach") {
-      try {
-        const res: any = await updateCoachProgram({
-          program_id: editId,
-          data: await buildFormData(),
-        })
-        res?.success || res?.status
-          ? onSuccess("Program updated successfully!")
-          : toast.error(res?.message || "Failed to update program.")
-        window.dispatchEvent(new CustomEvent("programevent"))
+      const res: any = await addCoachProgram(formData)
+
+      console.log("addCoachProgram response coach:", res)
+
+      if (res?.success || res?.status === true) {
+        onSuccess("Program created successfully!")
         close("add-new", ["program"])
-      } catch {
-        toast.error("Failed to update program. Please try again.")
-      } finally {
-        setIsSubmitting(false)
+      } else {
+        handleApiError(res)
       }
     }
+  } catch (error) {
+    handleApiError(error)
+  } finally {
+    setIsSubmitting(false)
   }
+}
+
+
+const handleUpdate = async () => {
+  if (isSubmitting || !editId) return
+  if (!validateForm()) return
+
+  setIsSubmitting(true)
+
+  try {
+    const formData = await buildFormData()
+
+    if (currentUser?.role === "club") {
+      const res: any = await updateProgram({
+        program_id: editId,
+        data: formData,
+      })
+
+      console.log("updateProgram response club:", res)
+
+      if (res?.success || res?.status === true) {
+        onSuccess("Program updated successfully!")
+
+        window.dispatchEvent(new CustomEvent("programevent"))
+        close("add-new", ["program"])
+      } else {
+        handleApiError(res)
+      }
+    }
+
+    if (currentUser?.role === "coach") {
+      const res: any = await updateCoachProgram({
+        program_id: editId,
+        data: formData,
+      })
+
+      console.log("updateCoachProgram response coach:", res)
+
+      if (res?.success || res?.status === true) {
+        onSuccess("Program updated successfully!")
+
+        window.dispatchEvent(new CustomEvent("programevent"))
+        close("add-new", ["program"])
+      } else {
+        handleApiError(res)
+      }
+    }
+  } catch (error) {
+    handleApiError(error)
+  } finally {
+    setIsSubmitting(false)
+  }
+} 
+
 
   // ─── Render ───────────────────────────────────────────────────────────────────
 

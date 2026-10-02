@@ -1,3 +1,4 @@
+"use client"
 import { useState, type ReactNode } from "react"
 
 import CommonBtn from "@/components/common/common-btn"

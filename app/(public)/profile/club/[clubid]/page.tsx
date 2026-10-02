@@ -8,9 +8,7 @@ import Footer from "@/components/common/footer"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { TClubProfile } from "@/types/club.type"
-import moment from "moment"
-import isValidToken from "@/lib/isValid-token"
-import { handleLogout } from "@/lib/helpers"
+import moment from "moment" 
 import ProgramCard from "@/components/common/program-card"
 
 export default function page() {

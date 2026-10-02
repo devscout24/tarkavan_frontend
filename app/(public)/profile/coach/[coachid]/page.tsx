@@ -14,9 +14,7 @@ import CommonBtn from "@/components/common/common-btn"
 import { Star } from "lucide-react"
 import CredentialsCard from "@/components/custom/coach-profile/credentials-card"
 import ProgramCard from "@/app/(dashboards)/components/program-card"
-import moment from "moment"
-import isValidToken from "@/lib/isValid-token"
-import { handleLogout } from "@/lib/helpers"
+import moment from "moment" 
 
 export default function Page() {
   const params = useParams()
@@ -59,12 +57,11 @@ export default function Page() {
     fetchData()
   }, [coachid])
 
+  console.log("  profile data", data)
+
   if (loading) {
     return <div>Loading...</div>
   } else if (!loading && data) {
- 
-  
-
     return (
       <section>
         <Nav />
@@ -77,12 +74,14 @@ export default function Page() {
           className="mt-30 ml-10 w-fit cursor-pointer bg-brand px-5 hover:bg-brand"
         />
 
-        <div className="my-5 grid grid-cols-1 gap-5 px-10 sm:grid-cols-2 items-start">
+        <div className="my-5 grid grid-cols-1 items-start gap-5 px-10 sm:grid-cols-2">
           {/* left side */}
           <div className="sticky top-24">
             <CoachProfileCard
               basic_info={{
-                image: encodeURI(data?.profile?.profile_image) || "/images/bannerbg.png" ,
+                image:
+                  encodeURI(data?.profile?.profile_image) ||
+                  "/images/bannerbg.png",
                 name: data?.profile?.name,
                 age: data?.profile?.age,
                 city: data?.profile?.city,
@@ -106,7 +105,7 @@ export default function Page() {
                 overall_avg_rating: data?.profile?.overall_avg_rating,
                 years_of_experience: data?.profile?.years_of_experience,
                 total_reviews: data?.profile?.total_reviews,
-                updated_at:  "",
+                updated_at: "",
               }}
               position_info={{
                 jersey_number: 10,
@@ -123,86 +122,93 @@ export default function Page() {
                 sports_selection: "",
                 club_team: data?.profile?.highest_education,
                 dominant_foot: "",
-              }} 
+              }}
               jersey_shown={false}
             />
 
-            <div className="w-full rounded-2xl border border-brand bg-[#0d0f16] p-6 shadow-xl my-3  ">
+            <CoachingTitles titles={data?.coaching_titles} />
+
+            <div className="my-3 w-full rounded-2xl border border-brand bg-[#0d0f16] p-6 shadow-xl">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold! text-sm uppercase text-white!  ">
+                  <p className="text-sm font-semibold! text-white! uppercase">
                     Average Rating
                   </p>
-                  <h3 className="mt-1 text-3xl font-bold text-white">{data?.profile?.overall_avg_rating?.toFixed(1) || "0.0"}</h3>
+                  <h3 className="mt-1 text-3xl font-bold text-white">
+                    {data?.profile?.overall_avg_rating?.toFixed(1) || "0.0"}
+                  </h3>
                 </div>
 
-                <div className="rounded-xl bg-brand/10 p-3">
-                  <Star className="h-6 w-6 fill-brand text-brand" />
+                <div className="flex items-center justify-between">
+                  <div className="rounded-xl bg-brand/10 p-3">
+                    <Star className="h-6 w-6 fill-brand text-brand" />
+                  </div>
+                  <div
+                  onClick={()=> {
+                    router.push(`?add=feedback`)
+                  }}
+                  className="rounded-xl bg-brand/10 p-3 ml-2 cursor-pointer  "> 
+                    Add Feedback
+                  </div> 
                 </div>
               </div>
 
               <div className="mt-4 flex items-center gap-1">
-                {[...Array(Math.floor(data?.profile?.overall_avg_rating || 0))].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="h-5 w-5 fill-brand text-brand"
-                  />
+                {[
+                  ...Array(Math.floor(data?.profile?.overall_avg_rating || 0)),
+                ].map((_, i) => (
+                  <Star key={i} className="h-5 w-5 fill-brand text-brand" />
                 ))}
               </div>
 
               <div className="mt-5">
                 <div className="mb-2 flex justify-between text-sm">
                   <span className="text-zinc-400">Based on reviews</span>
-                  <span className="font-medium text-white">{data?.profile?.total_reviews}</span>
+                  <span className="font-medium text-white">
+                    {data?.profile?.total_reviews}
+                  </span>
                 </div>
 
                 <div className="h-2 overflow-hidden rounded-full bg-zinc-800">
                   <div
                     className="h-full rounded-full bg-linear-to-r from-brand to-brand transition-all duration-500"
-                    style={{ width: `${((data?.profile?.overall_avg_rating || 0) / 5) * 100}%` }}
+                    style={{
+                      width: `${((data?.profile?.overall_avg_rating || 0) / 5) * 100}%`,
+                    }}
                   />
                 </div>
               </div>
             </div>
-
-            <CoachingTitles titles={data?.coaching_titles} />
           </div>
 
           {/* right side */}
-          <div className="space-y-4 bg-primary! relative z-10   ">
+          <div className="relative z-10 space-y-4 bg-primary!">
             {/* bio */}
             <CoachingBio bio={data?.profile?.bio} />
             <CoachingExperienceEducation data={data?.experience_education} />
 
-            <CredentialsCard
-              coach_media={data?.coach_media || []}
-            />
+            <CredentialsCard coach_media={data?.coach_media || []} />
 
             {/* programs */}
-            {data && data?.program && data?.program.length > 0 &&
-              <div className="grid grid-cols-1 md:grid-cols-2 mt-4 gap-2 ">
-                {
-                  data.program.map((item, index) => (
-                    <ProgramCard
-                      key={index}
-                      image={item?.photo || "/images/bannerbg.png"}
-                      name={item?.program_name}
-                      price={`CAD ${item?.price}`}
-                      user={`Age U${item?.age_limit == item?.from_age || item?.from_age == null ? item?.age_limit : `${item?.from_age} - U${item?.age_limit}`}`} 
-                      duration={`${moment(item?.start_date || item?.times[0].slot_date   ).format("MMM Do YY")} - ${moment(item?.end_date || item?.times[item.times.length - 1].slot_date ).format("MMM Do YY")}`}
-                      calender={item?.location}
-                      btnText="View Program"
-                      onClick={() => { 
-                        router.push(`/details/program/${item?.id}`)
-                      }}
-                    />
-                  ))
-                }
+            {data && data?.program && data?.program.length > 0 && (
+              <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2">
+                {data.program.map((item, index) => (
+                  <ProgramCard
+                    key={index}
+                    image={item?.photo || "/images/bannerbg.png"}
+                    name={item?.program_name}
+                    price={`CAD ${item?.price}`}
+                    user={`Age U${item?.age_limit == item?.from_age || item?.from_age == null ? item?.age_limit : `${item?.from_age} - U${item?.age_limit}`}`}
+                    duration={`${moment(item?.start_date || item?.times[0].slot_date).format("MMM Do YY")} - ${moment(item?.end_date || item?.times[item.times.length - 1].slot_date).format("MMM Do YY")}`}
+                    calender={item?.location}
+                    btnText="View Program"
+                    onClick={() => {
+                      router.push(`/details/program/${item?.id}`)
+                    }}
+                  />
+                ))}
               </div>
-
-            }
-
-
+            )}
           </div>
         </div>
 

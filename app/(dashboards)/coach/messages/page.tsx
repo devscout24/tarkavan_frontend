@@ -1,7 +1,10 @@
 import MessagePage from "../../common-pages/chat";
+import { Suspense } from "react";
 
 export default function page() {
 
-  return <MessagePage/>
+  return <Suspense >
+    <MessagePage/>
+  </Suspense>
 
 }

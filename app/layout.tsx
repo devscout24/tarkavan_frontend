@@ -1,3 +1,4 @@
+"use client"
 import type { Metadata } from "next"
 
 import "./globals.css"
@@ -6,26 +7,28 @@ import { cn } from "@/lib/utils"
 import Toasting from "@/components/custom/toasting"
 import StoreProvider from "./StoreProvider"
 import OGimage from "@/public/og.png"
+import Modals from "@/components/common/modal"
+import { Suspense } from "react"
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://goelitesport.com/"),
-  title: "GoElite",
-  description: "Best football(soccer) player website",
-  openGraph: {
-    title: "Go Elite",
-    description: "Best football(soccer) player website",
-    url: "https://goelitesport.com",
-    siteName: "Go Elite",
-    images: [
-      {
-        url: OGimage.src,
-        width: 1200,
-        height: 630,
-      },
-    ],
-    type: "website",
-  },
-}
+// export const metadata: Metadata = {
+//   metadataBase: new URL("https://goelitesport.com/"),
+//   title: "GoElite",
+//   description: "Best football(soccer) player website",
+//   openGraph: {
+//     title: "Go Elite",
+//     description: "Best football(soccer) player website",
+//     url: "https://goelitesport.com",
+//     siteName: "Go Elite",
+//     images: [
+//       {
+//         url: OGimage.src,
+//         width: 1200,
+//         height: 630,
+//       },
+//     ],
+//     type: "website",
+//   },
+// }
 
 export default function RootLayout({
   children,
@@ -45,7 +48,9 @@ export default function RootLayout({
         <Toasting />
         <ThemeProvider>
           <StoreProvider>
-
+            <Suspense fallback={null}>
+              <Modals />
+            </Suspense>
             {children}
           </StoreProvider>
         </ThemeProvider>

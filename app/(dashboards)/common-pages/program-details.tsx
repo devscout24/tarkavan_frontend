@@ -16,8 +16,7 @@ import moment from "moment"
 import { TProgramDetailsParentAndPlayer } from "@/types"
 import ProgramDateTimeSelector from "@/components/common/program-date-time-selector"
 import { getAvailablePlayerParentProgramDetails } from "../player/programs/action"
-import CommonBtn from "@/components/common/common-btn"
-import { WriteReviewDialog } from "@/components/common/review-write"
+import CommonBtn from "@/components/common/common-btn" 
 import { BsCopy } from "react-icons/bs"
 import Loader from "@/components/common/loader"
 
@@ -174,17 +173,7 @@ export default function ProgramDetailsPage() {
             <ProgramReview review_summary={details.review_summary} />
           )}
 
-          {details?.booking_status == "completed" ||
-            (details?.booking_status == "confirmed" && (
-              <WriteReviewDialog
-                program_id={String(id)}
-                trigger={
-                  <Button className="mt-4 w-full cursor-pointer bg-brand font-medium text-primary">
-                    Write a review
-                  </Button>
-                }
-              />
-            ))}
+ 
 
           {/* recent feedback */}
           {details && details?.recent_feedback?.length > 0 && (
@@ -236,30 +225,14 @@ export default function ProgramDetailsPage() {
             provider={details?.provider}
           />
           <ProgramDateTimeSelector
-            programStartDate={details?.start_date}
-            // programEndDate={details?.end_date}
-            // price={details?.price}
+            programStartDate={details?.start_date} 
             detailsID={String(id)}
             priceToShow={
               Number(details?.price) - Number(details?.discount_price)
             }
             isOwner={details?.provider?.is_program_maker}
             programid={String(id)}
-            // slots={
-            //   details?.program_type == "group" &&
-            //   details.times &&
-            //   details.times.length > 0
-            //     ? details.times
-            //         .filter(
-            //           (time): time is typeof time & { slot_date: string } =>
-            //             time.slot_date !== null
-            //         )
-            //         .map((time) => ({
-            //           booking_date: time.slot_date,
-            //           booking_time_ids: [time.id],
-            //         }))
-            //     : undefined
-            // }
+ 
           />
         </div>
       </div>

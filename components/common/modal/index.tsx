@@ -3,7 +3,7 @@ import RecruitmentForm from "./all-modals/recruite-modal"
 import TeamAddModal from "./all-modals/team-add-modal"
 import useModal from "./useModal"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import AddProgramPage from "@/components/common/add-program-modal"  
+import AddProgramPage from "@/components/common/add-program-modal"
 import ReviewModal from "./all-modals/review-modal"
 import ConfirmPayModal from "./all-modals/confirm-pay-modal"
 import AddFriendlyMatch from "./all-modals/add-friendly-match"
@@ -11,9 +11,10 @@ import LogoutComfirmation from "./all-modals/logout-comfirmation"
 import Agreement from "@/app/(dashboards)/parent/component/aggrement"
 import CoachProfileSetup from "@/app/(dashboards)/coach/CoachProfileSetup"
 import ClubProfileSetup from "./all-modals/club-profile-setup"
-import EditCoachProfileModal from "./all-modals/edit-coach-profile-modal" 
+import EditCoachProfileModal from "./all-modals/edit-coach-profile-modal"
 import ConnectStripe from "../connect-stripe"
 import PLayerSetup from "./all-modals/player-setup"
+import Rating from "../review-rating/review-rating"
 
 export default function Modals() {
   const { Modal } = useModal()
@@ -24,8 +25,8 @@ export default function Modals() {
         modalId="player"
         openId="setup"
         className="max-w-full overflow-hidden! border border-brand/50 p-0! lg:max-w-[62%]! 2xl:max-w-[56%]!"
-      > 
-          <PLayerSetup /> 
+      >
+        <PLayerSetup />
       </Modal>
       <Modal
         modalId="update"
@@ -57,11 +58,11 @@ export default function Modals() {
 
       <Modal
         modalId="add-new"
-        openId="program"  
+        openId="program"
         className="max-w-full overflow-hidden! border border-brand/50 p-0! lg:max-w-[62%]! 2xl:max-w-[56%]!"
-      > 
-          <AddProgramPage /> 
-      </Modal>  
+      >
+        <AddProgramPage />
+      </Modal>
       <Modal
         modalId="review"
         openId="program"
@@ -83,7 +84,7 @@ export default function Modals() {
 
       <Modal
         modalId="add-new"
-        openId="recruitment" 
+        openId="recruitment"
         className="max-w-full overflow-hidden! border border-brand/50 p-0! lg:max-w-[62%]! 2xl:max-w-[56%]!"
       >
         <ScrollArea className="max-h-[90vh]">
@@ -141,7 +142,7 @@ export default function Modals() {
         openId="stripe"
         className="max-w-full overflow-hidden! border border-brand/50 p-0! md:max-w-2xl"
       >
-        <ScrollArea className="max-h-[90vh] bg-primary   ">
+        <ScrollArea className="max-h-[90vh] bg-primary">
           <ConnectStripe />
         </ScrollArea>
       </Modal>
@@ -156,6 +157,13 @@ export default function Modals() {
         </ScrollArea>
       </Modal>
 
+      <Modal
+        modalId="add"
+        openId="feedback"
+        className=" w-full max-w-[30vw] overflow-x-hidden overflow-y-auto rounded-2xl border border-brand/30   bg-primary p-0 shadow-2xl    "
+      >
+          <Rating/> 
+      </Modal>
     </>
   )
 }

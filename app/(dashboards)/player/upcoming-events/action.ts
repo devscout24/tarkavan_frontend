@@ -26,9 +26,9 @@ export async function getUpcomingEvents() {
 
 
 
-export async function programReview(program_id: string , data: FormData) {
+export async function RatingReview(coach_or_club_id: string , data: FormData) {
   try {
-    const res = await api.post(`/coach/program/review/${program_id}` , data) 
+    const res = await api.post(`/coach/review/${coach_or_club_id}` , data) 
     return { success: true, data: res.data }
   }  catch (err: unknown) {
     if (axios.isAxiosError<TApiError>(err)) {

@@ -7,8 +7,8 @@ import api from "@/lib/api-fetcher"
 import React, { useEffect, useMemo, useState } from "react"
 import { TClubBookingData } from "@/types"
 import { DateRange } from "react-day-picker"
-import { addDays } from "date-fns"
 import moment from "moment"
+import { Suspense } from "react"
 
 const statusOptions = [
   { value: "all", label: "All Status" },
@@ -36,9 +36,7 @@ export default function BookingsPage() {
   useEffect(() => {
     const fetchBookings = async () => {
       const params = {
-        from_date: date?.from
-          ? moment(date.from).format("YYYY-MM-DD")
-          : "",
+        from_date: date?.from ? moment(date.from).format("YYYY-MM-DD") : "",
 
         to_date: date?.to ? moment(date.to).format("YYYY-MM-DD") : "",
       }
@@ -75,26 +73,28 @@ export default function BookingsPage() {
   }, [date?.from, date?.to])
 
   return (
-    <section className="w-full max-w-full min-w-0 overflow-x-hidden text-white">
-      <div className="mt-1 mb-4 flex w-full min-w-0 justify-start sm:justify-end">
-        <StatusFilterSelect
-          value={status}
-          onValueChange={setStatus}
-          options={statusOptions}
-          date={date}
-          setDate={setDate}
-        />
-      </div>
-
-      {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader />
+    <Suspense>
+      <section className="w-full max-w-full min-w-0 overflow-x-hidden text-white">
+        <div className="mt-1 mb-4 flex w-full min-w-0 justify-start sm:justify-end">
+          <StatusFilterSelect
+            value={status}
+            onValueChange={setStatus}
+            options={statusOptions}
+            date={date}
+            setDate={setDate}
+          />
         </div>
-      ) : filteredBookings.length === 0 ? (
-        <p className="py-8 text-center text-white/70">No Bookings yet</p>
-      ) : (
-        <BookingsTable bookings={filteredBookings} loading={loading} />
-      )}
-    </section>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader />
+          </div>
+        ) : filteredBookings.length === 0 ? (
+          <p className="py-8 text-center text-white/70">No Bookings yet</p>
+        ) : (
+          <BookingsTable bookings={filteredBookings} loading={loading} />
+        )}
+      </section>
+    </Suspense>
   )
 }

@@ -12,7 +12,7 @@ import ToComplite from "@/components/custom/to-complite"
 import AthletesAndCoaches from "@/components/custom/trusted"
 import { useEffect, useState } from "react"
 import { getLandingPageData } from "./action"
-import { TCoachAndClub, TLandingPageData } from "@/types/landing.type" 
+import { TCoachAndClub, TLandingPageData } from "@/types/landing.type"  
 
 export default function Page() {
   const [allData, setAllData] = useState<TLandingPageData | null>(null)
@@ -42,7 +42,7 @@ export default function Page() {
     <>
       <Nav />
 
-      <Banner data={allData?.hero} />
+      <Banner data={allData?.hero} /> 
 
       <Counter data={allData?.stats} />
 

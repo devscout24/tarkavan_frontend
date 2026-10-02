@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useState } from "react"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
@@ -16,8 +17,7 @@ import { toast } from "sonner"
 import useModal from "../useModal"
 import { useRouter } from "next/navigation"
 import { handleLogout } from "@/lib/helpers"
-import { getHighestNumber } from "@/lib/get-highest-number"
-import { number } from "motion/react"
+import { getHighestNumber } from "@/lib/get-highest-number" 
 
 export default function TeamAddModal() {
   const { close } = useModal()

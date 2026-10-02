@@ -1,0 +1,314 @@
+.outer {
+  display: grid;
+  place-items: center;  
+  padding: 20px 0px;  
+}
+
+.ratingsBox {
+  display: flex;
+  gap: 20px;
+  position: relative;
+}
+
+.ratingItem {
+  position: relative;
+}
+
+.label {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+.input {
+  display: none;
+}
+
+/* Rating label */
+
+.ratingLabel {
+  display: inline-block;
+  position: absolute;
+
+  left: 50%;
+  top: 100%;
+
+  margin-top: 10px;
+
+  transform: translateX(-50%);
+
+  color: #fff;
+  font-size: 18px;
+  text-transform: uppercase;
+
+  opacity: 0;
+  pointer-events: none;
+
+  white-space: nowrap;
+
+  transition: opacity 0.2s ease;
+}
+
+.showLabel {
+  opacity: 1;
+}
+
+/* Star container */
+
+.starLineBox {
+  position: relative;
+
+  width: 30px;
+  height: 30px;
+
+  transform-origin: center;
+}
+
+.selected {
+  animation: scaleAnim 0.4s linear;
+}
+
+/* Main star */
+
+.ratingStar {
+  position: relative;
+
+  display: block;
+
+  width: 30px;
+  height: 30px;
+
+  background: var(--brand);
+
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+}
+
+/* Inner star */
+
+.innerStar {
+  position: absolute;
+
+  width: 20px;
+  height: 20px;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  background: #13121a;
+
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+
+  transition: transform 0.2s ease;
+}
+
+/* Filled star */
+
+.filled {
+  transform: translate(-50%, -50%) scale(0);
+}
+
+/* Spark lines */
+
+.ratingStarLine {
+  position: absolute;
+
+  display: block;
+
+  width: 2px;
+  height: 10px;
+
+  background: #ff0;
+
+  opacity: 0;
+}
+
+/* Top right line */
+
+.ratingStarLine:nth-of-type(2) {
+  right: 8px;
+  bottom: 22px;
+
+  transform: rotate(45deg);
+  transform-origin: bottom;
+}
+
+/* Top left line */
+
+.ratingStarLine:nth-of-type(3) {
+  left: 7px;
+  bottom: 22px;
+
+  transform: rotate(-45deg);
+  transform-origin: bottom;
+}
+
+/* Bottom line */
+
+.ratingStarLine:nth-of-type(4) {
+  left: calc(50% - 1px);
+  top: 24px;
+
+  transform: rotate(0deg);
+}
+
+/* Animations */
+
+.selected .ratingStarLine:nth-of-type(2) {
+  animation: topLinesAnim 0.4s 0.3s linear;
+}
+
+.selected .ratingStarLine:nth-of-type(3) {
+  animation: topLinesAnim2 0.4s 0.3s linear;
+}
+
+.selected .ratingStarLine:nth-of-type(4) {
+  animation: bottomLineAnim 0.4s 0.3s linear;
+}
+
+/* Star scale */
+
+@keyframes scaleAnim {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0);
+  }
+}
+
+/* Top right spark */
+
+@keyframes topLinesAnim {
+  from {
+    transform: rotate(45deg);
+    opacity: 1;
+  }
+
+  to {
+    transform: rotate(45deg) scaleY(1.2) translateY(-5px);
+    opacity: 0;
+  }
+}
+
+/* Top left spark */
+
+@keyframes topLinesAnim2 {
+  from {
+    transform: rotate(-45deg);
+    opacity: 1;
+  }
+
+  to {
+    transform: rotate(-45deg) scaleY(1.2) translateY(-5px);
+    opacity: 0;
+  }
+}
+
+/* Bottom spark */
+
+@keyframes bottomLineAnim {
+  from {
+    transform: rotate(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: rotate(0) scaleY(1.2) translateY(5px);
+    opacity: 0;
+  }
+}
+
+
+
+/* Review textarea */
+
+.reviewText {
+  width: min(100%, 520px);
+  margin-top: 10px;
+  position: relative;
+}
+
+.reviewText textarea {
+  width: 100%;
+  min-height: 140px;
+
+  padding: 14px;
+
+  resize: vertical;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+
+  outline: none;
+
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.6;
+
+  backdrop-filter: blur(12px);
+
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.reviewText textarea::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.reviewText textarea:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.reviewText textarea:focus {
+  border-color: rgba(255, 255, 0, 0.55);
+
+  background: rgba(255, 255, 255, 0.06);
+
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 0, 0.08),
+    0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.reviewText textarea::-webkit-scrollbar {
+  width: 5px;
+}
+
+.reviewText textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.reviewText textarea::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.2);
+}

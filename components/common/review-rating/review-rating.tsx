@@ -15,7 +15,7 @@ const RATINGS = [
   { value: 5, label: "Excellent" },
 ]
 
-export default function Rating( ) {
+export default function Rating() {
   const [rating, setRating] = useState<number | null>(null)
   const [label, setLabel] = useState<string>("click on a star to rate")
   const [reviewText, setReviewText] = useState<string>("")
@@ -31,10 +31,10 @@ export default function Rating( ) {
       setUser(JSON.parse(userData))
     }
   }, [])
- 
+
 
   const handleReview = async () => {
-    if (!user || !user?.id) {
+    if (!user || !user?.id || !user?.profile_id) {
       toast.error("Please login to submit a review")
       return
     }
@@ -115,17 +115,15 @@ export default function Rating( ) {
                     />
 
                     <div
-                      className={`${styles.starLineBox} ${
-                        isSelected ? styles.selected : ""
-                      }`}
+                      className={`${styles.starLineBox} ${isSelected ? styles.selected : ""
+                        }`}
                     >
                       {/* Main star */}
                       <span className={styles.ratingStar}>
                         {/* Inner star */}
                         <span
-                          className={`${styles.innerStar} ${
-                            isFilled ? styles.filled : ""
-                          }`}
+                          className={`${styles.innerStar} ${isFilled ? styles.filled : ""
+                            }`}
                         />
                       </span>
 
@@ -166,7 +164,7 @@ export default function Rating( ) {
           </span>
         </div>
 
-        <div className="mt-4 flex items-center justify-end gap-2"> 
+        <div className="mt-4 flex items-center justify-end gap-2">
           <Button
             disabled={submitting}
             onClick={handleReview}

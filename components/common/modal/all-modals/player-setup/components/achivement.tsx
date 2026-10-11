@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import { Award, Calendar, AlignLeft, ImageIcon, Upload, X } from "lucide-react"
+import { useRef } from "react"
+import { Calendar, AlignLeft, ImageIcon, Upload, X, Trophy } from "lucide-react"
 import { TPlayerProfilePayload } from "../type"
 
 export default function AchievementDetailsForm({
@@ -11,41 +11,31 @@ export default function AchievementDetailsForm({
   payload: TPlayerProfilePayload
   setPayload: React.Dispatch<React.SetStateAction<TPlayerProfilePayload>>
 }) {
-  const [title, setTitle] = useState(payload?.achievements?.title || "")
-  const [dateEarned, setDateEarned] = useState(
-    payload?.achievements?.dateEarned || ""
-  )
-  const [description, setDescription] = useState(
-    payload?.achievements?.description || ""
-  )
-  const [image, setImage] = useState<File | null>(
-    payload?.achievements?.uploadedAssets?.file || null
-  )
-  const [preview, setPreview] = useState<string>(
-    payload?.achievements?.uploadedAssets?.preview || ""
-  )
-
-  // keep a ref of the latest blob url so we only ever revoke a url we created
   const blobUrlRef = useRef<string>("")
+  const achievements = payload?.achievements || {
+    title: "",
+    description: "",
+    dateEarned: "",
+    uploadedAssets: { id: "", name: "", type: "image", file: undefined, preview: "" },
+  }
 
-  // sync text fields (no blob concerns here, safe to run on every change)
-  useEffect(() => {
+  const image = achievements.uploadedAssets?.file
+  const preview = achievements.uploadedAssets?.preview || ""
+
+  const updateAchievement = (fields: Partial<typeof achievements>) => {
     setPayload((prev) => ({
       ...prev,
       achievements: {
         ...prev.achievements,
-        title,
-        description,
-        dateEarned,
+        ...fields,
       },
     }))
-  }, [title, description, dateEarned])
+  }
 
   const handleImage = (list: FileList | null) => {
     const file = list?.[0]
     if (!file) return
 
-    // revoke the previous blob (if we created one) before making a new one
     if (blobUrlRef.current) {
       URL.revokeObjectURL(blobUrlRef.current)
     }
@@ -53,22 +43,15 @@ export default function AchievementDetailsForm({
     const newPreview = URL.createObjectURL(file)
     blobUrlRef.current = newPreview
 
-    setImage(file)
-    setPreview(newPreview)
-
-    setPayload((prev) => ({
-      ...prev,
-      achievements: {
-        ...prev.achievements,
-        uploadedAssets: {
-          ...prev.achievements.uploadedAssets,
-          name: file.name,
-          type: "image",
-          file,
-          preview: newPreview,
-        },
+    updateAchievement({
+      uploadedAssets: {
+        id: crypto.randomUUID(),
+        name: file.name,
+        type: "image",
+        file,
+        preview: newPreview,
       },
-    }))
+    })
   }
 
   const removeImage = () => {
@@ -77,57 +60,80 @@ export default function AchievementDetailsForm({
       blobUrlRef.current = ""
     }
 
-    setImage(null)
-    setPreview("")
-
-    setPayload((prev) => ({
-      ...prev,
-      achievements: {
-        ...prev.achievements,
-        uploadedAssets: {
-          id: "",
-          name: "",
-          type: "image",
-          file: undefined,
-          preview: "",
-        },
+    updateAchievement({
+      uploadedAssets: {
+        id: "",
+        name: "",
+        type: "image",
+        file: undefined,
+        preview: "",
       },
-    }))
+    })
   }
 
- 
   return (
-    <div className="relative overflow-hidden rounded-[24px] border border-white/8 bg-linear-to-b from-[#12151C] to-[#0A0C10] p-7 text-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.6)]">
-      <div className="pointer-events-none absolute -top-24 -left-16 h-56 w-56 rounded-full bg-brand/8 blur-[100px]" />
-
-      <div className="relative flex items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-brand/20 to-brand/5 text-brand ring-1 ring-brand/20">
-          <Award size={18} strokeWidth={2} />
+    <div className="rounded-2xl border border-white/10 bg-[#181E2B] p-5 space-y-5 shadow-sm">
+      <div className="flex items-center gap-2.5 pb-2 border-b border-white/5">
+        <div className="flex size-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-300">
+          <Trophy className="size-4" />
         </div>
         <div>
-          <h3 className="text-[15px] font-semibold tracking-tight text-white">
-            Achievement details
-          </h3>
-          <p className="text-[12.5px] text-white/40">
-            Tell us what you accomplished
+          <h3 className="text-sm font-bold text-white">Athletic Honors & Awards</h3>
+          <p className="text-[11px] text-white/50">
+            Document tournament medals, MVPs, team championships, or federation badges
           </p>
         </div>
       </div>
 
-      {/* Achievement image */}
-      <div className="relative mt-6">
-        <label className="text-[13px] font-medium text-white/70">
-          Achievement image
+      {/* Title & Date */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-white/90">
+            Achievement Title <span className="text-brand">*</span>
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. Ontario Cup MVP & Top Scorer 2024"
+            value={achievements.title}
+            onChange={(e) => updateAchievement({ title: e.target.value })}
+            className="h-11 w-full rounded-xl border border-white/10 bg-[#222A3B] px-3.5 text-xs text-white placeholder:text-white/40 hover:border-white/20 focus:border-brand focus:ring-1 focus:ring-brand/30 focus:outline-none transition-all"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-white/90">
+            Date Earned
+          </label>
+          <div className="relative">
+            <Calendar
+              size={14}
+              className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-brand/80"
+            />
+            <input
+              type="date"
+              value={achievements.dateEarned || ""}
+              onChange={(e) => updateAchievement({ dateEarned: e.target.value })}
+              className="h-11 w-full rounded-xl border border-white/10 bg-[#222A3B] pr-3 pl-9 text-xs text-white scheme-dark placeholder:text-white/40 hover:border-white/20 focus:border-brand focus:outline-none transition-all"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Certificate / Image Proof */}
+      <div className="space-y-1.5">
+        <label className="text-xs font-semibold text-white/90">
+          Award Certificate or Medal Photo <span className="text-white/40">(Optional)</span>
         </label>
 
         {!preview ? (
-          <label className="mt-2 flex h-32 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 bg-white/2 transition-colors duration-150 hover:border-brand/30 hover:bg-white/[0.035]">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/4 text-brand ring-1 ring-white/6">
-              <ImageIcon size={16} strokeWidth={1.75} />
+          <label className="flex h-24 w-full cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-white/15 bg-[#141A26] transition-colors hover:border-brand/40">
+            <div className="flex size-7 items-center justify-center rounded-full bg-brand/15 text-brand">
+              <ImageIcon size={14} />
             </div>
-            <span className="text-[12.5px] text-white/45">
-              Click to upload a photo of your badge, medal or certificate
+            <span className="text-xs font-semibold text-white/80">
+              Upload photo of badge, medal, or award certificate
             </span>
+            <span className="text-[10px] text-white/50">PNG, JPG or WEBP</span>
             <input
               type="file"
               accept="image/png,image/jpeg,image/webp"
@@ -136,22 +142,22 @@ export default function AchievementDetailsForm({
             />
           </label>
         ) : (
-          <div className="mt-2 flex items-center gap-3 rounded-xl border border-white/6 bg-white/2 p-2.5">
+          <div className="flex items-center gap-3.5 rounded-xl border border-white/10 bg-[#222A3B] p-3">
             <img
               src={preview}
-              alt="Achievement preview"
-              className="h-16 w-16 shrink-0 rounded-lg object-cover ring-1 ring-white/8"
+              alt="Achievement proof"
+              className="size-14 shrink-0 rounded-lg object-cover ring-1 ring-white/10"
             />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[13px] font-medium text-white/85">
-                {image?.name}
+              <p className="truncate text-xs font-bold text-white">
+                {achievements.uploadedAssets?.name || "Award Photo"}
               </p>
-              <p className="text-[11px] text-white/35">
-                {image ? (image.size / (1024 * 1024)).toFixed(1) : 0} MB
+              <p className="text-[10px] text-white/50">
+                {image ? `${(image.size / (1024 * 1024)).toFixed(1)} MB` : "Attached photo"}
               </p>
-              <label className="mt-1 inline-flex cursor-pointer items-center gap-1 text-[11.5px] font-medium text-brand hover:underline">
-                <Upload size={11} />
-                Replace
+              <label className="mt-1 inline-flex cursor-pointer items-center gap-1 text-[11px] font-semibold text-brand hover:underline">
+                <Upload size={10} />
+                <span>Replace file</span>
                 <input
                   type="file"
                   accept="image/png,image/jpeg,image/webp"
@@ -163,7 +169,7 @@ export default function AchievementDetailsForm({
             <button
               type="button"
               onClick={removeImage}
-              className="shrink-0 self-start rounded-lg p-1.5 text-white/30 transition hover:bg-white/8 hover:text-white"
+              className="rounded-lg p-1.5 text-white/40 transition hover:bg-white/10 hover:text-white"
               aria-label="Remove image"
             >
               <X size={14} />
@@ -172,59 +178,28 @@ export default function AchievementDetailsForm({
         )}
       </div>
 
-      <div className="relative mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div>
-          <label className="text-[13px] font-medium text-white/70">
-            Achievement title
-          </label>
-          <input
-            type="text"
-            placeholder="e.g. Employee of the Year"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="mt-2 h-11 w-full rounded-xl border border-white/8 bg-white/2 px-3.5 text-[13.5px] text-white transition-colors duration-150 outline-none placeholder:text-white/25 focus:border-brand/40 focus:bg-white/[0.035]"
-          />
-        </div>
-
-        <div>
-          <label className="text-[13px] font-medium text-white/70">
-            Date earned
-          </label>
-          <div className="relative mt-2">
-            <Calendar
-              size={15}
-              className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-white/30"
-            />
-            <input
-              type="date"
-              value={dateEarned}
-              onChange={(e) => setDateEarned(e.target.value)}
-              className="h-11 w-full rounded-xl border border-white/8 bg-white/2 pr-3.5 pl-10 text-[13.5px] text-white scheme-dark transition-colors duration-150 outline-none focus:border-brand/40 focus:bg-white/[0.035]"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="relative mt-4">
+      {/* Description */}
+      <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-          <label className="text-[13px] font-medium text-white/70">
-            Description <span className="text-white/30">(optional)</span>
+          <label className="text-xs font-semibold text-white/90">
+            Description <span className="text-white/40">(Optional)</span>
           </label>
-          <span className="text-[11px] text-white/25">
-            {description.length}/240
+          <span className="text-[10px] text-white/50">
+            {(achievements.description || "").length}/240
           </span>
         </div>
-        <div className="relative mt-2">
+        <div className="relative">
           <AlignLeft
-            size={15}
-            className="pointer-events-none absolute top-3.5 left-3.5 text-white/30"
+            size={14}
+            className="pointer-events-none absolute top-3 left-3 text-white/40"
           />
           <textarea
-            placeholder="Briefly describe the significance..."
+            placeholder="Briefly describe the competition context, division, or coach feedback..."
             maxLength={240}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="min-h-23 w-full resize-none rounded-xl border border-white/8 bg-white/2 py-3 pr-3.5 pl-10 text-[13.5px] leading-relaxed text-white transition-colors duration-150 outline-none placeholder:text-white/25 focus:border-brand/40 focus:bg-white/[0.035]"
+            rows={2}
+            value={achievements.description || ""}
+            onChange={(e) => updateAchievement({ description: e.target.value })}
+            className="w-full resize-none rounded-xl border border-white/10 bg-[#222A3B] py-2.5 pr-3 pl-9 text-xs leading-relaxed text-white placeholder:text-white/40 hover:border-white/20 focus:border-brand focus:outline-none transition-all"
           />
         </div>
       </div>

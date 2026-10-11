@@ -1,8 +1,8 @@
 "use server"
 
-import api from "@/lib/api-fetcher" 
+import api from "@/lib/api-fetcher"
 import { TApiError } from "@/types"
-import axios from "axios" 
+import axios from "axios"
 
 export async function getPublicClubData(club_id: string) {
   try {
@@ -19,4 +19,3 @@ export async function getPublicClubData(club_id: string) {
     }
   }
 }
- 

@@ -1,15 +1,14 @@
 "use client"
+
 import UiInput from "@/components/common/ui-input"
-import { motion } from "framer-motion"
-import { ChevronDownIcon, ImagePlus, Sparkles } from "lucide-react"
+import { ChevronDownIcon, Calendar as CalendarIcon, UserRound, Trophy, MapPin } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Field, FieldLabel } from "@/components/ui/field"
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
@@ -35,246 +34,230 @@ export default function CoreIdentity({
   setPayload: React.Dispatch<React.SetStateAction<TPlayerProfilePayload>>
 }) {
   const [sportsOptions, setSportsOptions] = useState<SportOption[]>([])
+
   useEffect(() => {
     const init = async () => {
-      const [sports] = await Promise.all([getSportOptions()])
-      if (sports && "success" in sports && sports.success && sports.data)
+      const sports = await getSportOptions()
+      if (sports && "success" in sports && sports.success && sports.data) {
         setSportsOptions(sports.data.data)
+      }
     }
     init()
   }, [])
 
+  const updateField = (key: keyof TPlayerProfilePayload, value: any) => {
+    setPayload((prev) => ({
+      ...prev,
+      [key]: value,
+    }))
+  }
+
   return (
-    <div>
-      <h3 className="my-4 text-[20px] leading-[120%] font-semibold text-white">
-        Core Identity
-      </h3>
+    <div className="space-y-5">
+      {/* 1. Personal Identity */}
+      <div className="rounded-2xl border border-white/10 bg-[#181E2B] p-5 space-y-4 shadow-sm">
+        <div className="flex items-center gap-2.5 pb-2 border-b border-white/5">
+          <div className="flex size-7 items-center justify-center rounded-lg bg-brand/15 text-brand">
+            <UserRound className="size-4" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-white">Personal Identity</h3>
+            <p className="text-[11px] text-white/50">Core athlete name and contact information</p>
+          </div>
+        </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <UiInput
-          label="First Name"
-          placeholder="Enter First Name"
-          className={controlClassName}
-          value={payload.firstName || ""}
-          onChange={(e) => {
-            setPayload((prev) => ({
-              ...prev,
-              firstName: e.target.value,
-            }))
-          }}
-        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <UiInput
+            label="First Name"
+            placeholder="e.g. Leo"
+            className={controlClassName}
+            value={payload.firstName || ""}
+            onChange={(e) => updateField("firstName", e.target.value)}
+          />
 
-        <UiInput
-          label="Last Name"
-          placeholder="Enter Last Name"
-          className={controlClassName}
-          value={payload.lastName || ""}
-          onChange={(e) => {
-            setPayload((prev) => ({
-              ...prev,
-              lastName: e.target.value,
-            }))
-          }}
-        />
+          <UiInput
+            label="Last Name"
+            placeholder="e.g. Messi"
+            className={controlClassName}
+            value={payload.lastName || ""}
+            onChange={(e) => updateField("lastName", e.target.value)}
+          />
 
-        {/* set mail */}
-        <UiInput
-          label="Email Address"
-          type="email"
-          placeholder="example@email.com"
-          className={controlClassName}
-          value={payload.email || ""}
-          onChange={(e) => {
-            setPayload((prev) => ({
-              ...prev,
-              email: e.target.value,
-            }))
-          }}
-        />
+          <UiInput
+            label="Email Address"
+            type="email"
+            placeholder="player@academy.com"
+            className={controlClassName}
+            value={payload.email || ""}
+            onChange={(e) => updateField("email", e.target.value)}
+          />
 
-        {/* Date of Birth */}
-        <FieldGroup className="flex-row">
-          <Field>
-            <FieldLabel htmlFor="date-picker-optional" className="text-white">
-              Date of Birth
+          {/* Date of Birth */}
+          <Field className="space-y-1">
+            <FieldLabel htmlFor="date-picker-optional" className="text-xs font-medium text-white/90">
+              Date of Birth <span className="text-brand">*</span>
             </FieldLabel>
             <Popover>
-              <PopoverTrigger
-                asChild
-                className="border-white/20! bg-[#2B2E36]/20"
-              >
+              <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   id="date-picker-optional"
-                  className="w-32 flex-row-reverse justify-between py-5! font-normal text-white"
+                  className="h-11 w-full justify-between rounded-xl border border-white/10 bg-[#222A3B] px-3 font-normal text-white hover:border-brand/40 hover:bg-[#2A344A] hover:text-white transition-colors"
                 >
-                  <ChevronDownIcon />
-                  {payload.dateOfBirth ? moment(payload.dateOfBirth).format("MMM Do YY") : "Select date"}
-                 
+                  <span className="flex items-center gap-2 text-xs">
+                    <CalendarIcon className="size-3.5 text-brand/80" />
+                    {payload.dateOfBirth
+                      ? moment(payload.dateOfBirth).format("MMM Do, YYYY")
+                      : <span className="text-white/40">Select Date</span>}
+                  </span>
+                  <ChevronDownIcon className="size-3.5 text-white/50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent
-                className="w-auto overflow-hidden p-0"
-                align="start"
-              >
+              <PopoverContent className="w-auto overflow-hidden p-0 border-white/10 bg-[#1E2536] text-white shadow-xl" align="start">
                 <Calendar
                   mode="single"
-                  selected={
-                    payload.dateOfBirth
-                      ? new Date(payload.dateOfBirth)
-                      : undefined
-                  }
+                  selected={payload.dateOfBirth ? new Date(payload.dateOfBirth) : undefined}
                   captionLayout="dropdown"
-                  //   defaultMonth={dateOfBirth}
                   onSelect={(date) => {
-                    setPayload((prev) => ({
-                      ...prev,
-                      dateOfBirth: moment(date).format("YYYY/MM/DD"),
-                    }))
+                    if (date) {
+                      updateField("dateOfBirth", moment(date).format("YYYY/MM/DD"))
+                    }
                   }}
                 />
               </PopoverContent>
             </Popover>
           </Field>
-        </FieldGroup>
 
-        <SelectField
-          label="Select Gender"
-          placeholder="Select Gender"
-          options={[
-            { value: "male", label: "Male" },
-            { value: "female", label: "Female" },
-            { value: "other", label: "Other" },
-          ]}
-          triggerClassName={triggerClassName}
-          value={payload.gender || ""}
-          onValueChange={(value) =>
-            setPayload((prev) => ({
-              ...prev,
-              gender: value,
-            }))
-          }
-        />
+          <SelectField
+            label="Gender"
+            placeholder="Select Gender"
+            options={[
+              { value: "male", label: "Male" },
+              { value: "female", label: "Female" },
+              { value: "other", label: "Other" },
+            ]}
+            triggerClassName={triggerClassName}
+            value={payload.gender || ""}
+            onValueChange={(value) => updateField("gender", value)}
+          />
 
-        {/* sport selection */}
-        <div className="">
-          <label className="mb-2 block text-sm font-medium text-white">
-            Sport Selection
-          </label>
-          <Select
-            value={String(payload.sport) || ""}
-            onValueChange={(value) =>
-              setPayload((prev) => ({
-                ...prev,
-                sport: value,
-              }))
-            }
-          >
-            <SelectTrigger className="w-full border-white/10! py-5.5 text-white data-placeholder:text-white/50">
-              <SelectValue
-                placeholder="Sport Selection"
-                className="text-white"
-              />
-            </SelectTrigger>
-            <SelectContent position="popper">
-              <SelectGroup>
-                {sportsOptions.map((sport , i) => (
-                  <SelectItem
-                    key={i}
-                    value={String(sport.id)}
-                    className="hover:bg-brand!"
-                  >
-                    {sport.name}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <UiInput
+            label="Nationality"
+            placeholder="e.g. Canadian"
+            className={controlClassName}
+            value={payload.nationality || ""}
+            onChange={(e) => updateField("nationality", e.target.value)}
+          />
+        </div>
+      </div>
+
+      {/* 2. Sporting Credentials */}
+      <div className="rounded-2xl border border-white/10 bg-[#181E2B] p-5 space-y-4 shadow-sm">
+        <div className="flex items-center gap-2.5 pb-2 border-b border-white/5">
+          <div className="flex size-7 items-center justify-center rounded-lg bg-brand/15 text-brand">
+            <Trophy className="size-4" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-white">Athletic Profile</h3>
+            <p className="text-[11px] text-white/50">Sport specialization, team affiliation and match kit</p>
+          </div>
         </div>
 
-        {/* joursy number */}
-        <UiInput
-          label="Jersey Number"
-          placeholder="e.g. 10"
-          className={controlClassName}
-          value={payload.jerseyNumber || ""}
-          onChange={(e) => {
-            setPayload((prev) => ({
-              ...prev,
-              jerseyNumber: e.target.value,
-            }))
-          }}
-          type="number"
-        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* Sport selection */}
+          <div className="space-y-1">
+            <label className="block text-xs font-medium text-white/90">
+              Sport Selection <span className="text-brand">*</span>
+            </label>
+            <Select
+              value={String(payload.sport || "")}
+              onValueChange={(value) => updateField("sport", value)}
+            >
+              <SelectTrigger className="h-11 w-full rounded-xl border border-white/10 bg-[#222A3B] px-3.5 text-xs text-white data-placeholder:text-white/40 hover:border-brand/40 transition-colors">
+                <SelectValue placeholder="Select Sport" />
+              </SelectTrigger>
+              <SelectContent position="popper" className="border-white/10 bg-[#1E2536] text-white shadow-xl">
+                <SelectGroup>
+                  {sportsOptions.map((sport, i) => (
+                    <SelectItem
+                      key={sport.id || i}
+                      value={String(sport.id)}
+                      className="text-xs hover:bg-brand hover:text-black focus:bg-brand focus:text-black"
+                    >
+                      {sport.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
 
-        {/* dominent foot */}
-        <SelectField
-          label="Dominant Foot"
-          placeholder="Select"
-          options={[
-            { value: "right", label: "Right" },
-            { value: "left", label: "Left" },
-          ]}
-          triggerClassName={triggerClassName}
-          value={payload.dominantFoot || ""}
-          onValueChange={(value) =>
-            setPayload((prev) => ({
-              ...prev,
-              dominantFoot: value,
-            }))
-          }
-        />
+          <UiInput
+            label="Jersey Number"
+            placeholder="e.g. 10"
+            className={controlClassName}
+            value={payload.jerseyNumber || ""}
+            onChange={(e) => updateField("jerseyNumber", e.target.value)}
+            type="number"
+          />
 
-        {/* club / team */}
-        <UiInput
-          label="Club / Team"
-          placeholder="e.g. Toronto United"
-          className={controlClassName}
-          value={payload.clubTeam || ""}
-          onChange={(e) => {
-            setPayload((prev) => ({
-              ...prev,
-              clubTeam: e.target.value,
-            }))
-          }}
-        />
+          <SelectField
+            label="Dominant Foot"
+            placeholder="Select Dominant Foot"
+            options={[
+              { value: "right", label: "Right Foot" },
+              { value: "left", label: "Left Foot" },
+              { value: "both", label: "Both (Ambidextrous)" },
+            ]}
+            triggerClassName={triggerClassName}
+            value={payload.dominantFoot || ""}
+            onValueChange={(value) => updateField("dominantFoot", value)}
+          />
 
-        {/* nationality */}
-        <UiInput
-          label="Nationality"
-          placeholder="Canada / USA ..."
-          className={controlClassName}
-          value={payload.nationality || ""}
-          onChange={(e) => {
-            setPayload((prev) => ({
-              ...prev,
-              nationality: e.target.value,
-            }))
-          }}
-        />
+          <UiInput
+            label="Club / Team"
+            placeholder="e.g. Toronto United FC"
+            className={controlClassName}
+            value={payload.clubTeam || ""}
+            onChange={(e) => updateField("clubTeam", e.target.value)}
+          />
+        </div>
       </div>
-      <div className="mt-2 w-full">
-        <p className="text-[14px]! text-white">Country & City</p>
-        <CountryCitySelector
-          initialCountry={payload.country}
-          initialCity={payload.city}
-          initialProvince={payload.province}
-          onSelect={(data) => {
-            setPayload((prev) => ({
-              ...prev,
-              country: data.country_name,
-              city: data.city_name,
-              province: data.province_name,
-            }))
-          }}
-        />
+
+      {/* 3. Geographic Location */}
+      <div className="rounded-2xl border border-white/10 bg-[#181E2B] p-5 space-y-3 shadow-sm">
+        <div className="flex items-center gap-2.5 pb-2 border-b border-white/5">
+          <div className="flex size-7 items-center justify-center rounded-lg bg-brand/15 text-brand">
+            <MapPin className="size-4" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-white">Geographic Location</h3>
+            <p className="text-[11px] text-white/50">Country, province/state, and city for scouting filters</p>
+          </div>
+        </div>
+
+        <div className="pt-1">
+          <CountryCitySelector
+            initialCountry={payload.country}
+            initialCity={payload.city}
+            initialProvince={payload.province}
+            onSelect={(data) => {
+              setPayload((prev) => ({
+                ...prev,
+                country: data.country_name,
+                city: data.city_name,
+                province: data.province_name,
+              }))
+            }}
+          />
+        </div>
       </div>
     </div>
   )
 }
 
 const controlClassName =
-  "h-11 rounded-xl border border-white/10 bg-[#0F1117] px-3 text-sm text-white placeholder:text-white/50 focus-visible:border-brand focus-visible:ring-0"
+  "h-11 rounded-xl border border-white/10 bg-[#222A3B] px-3.5 text-xs text-white placeholder:text-white/40 hover:border-white/20 focus-visible:border-brand focus-visible:ring-1 focus-visible:ring-brand/30 transition-colors"
 
 const triggerClassName =
-  "h-11 w-full rounded-xl border-white/10 bg-[#0F1117] px-3 text-sm text-white data-placeholder:text-white/50 py-5! "
+  "h-11 w-full rounded-xl border-white/10 bg-[#222A3B] px-3.5 text-xs text-white data-placeholder:text-white/40 hover:border-white/20 focus:border-brand transition-colors"

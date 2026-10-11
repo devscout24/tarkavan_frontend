@@ -14,7 +14,7 @@ import CommonBtn from "@/components/common/common-btn"
 import { Star } from "lucide-react"
 import CredentialsCard from "@/components/custom/coach-profile/credentials-card"
 import ProgramCard from "@/app/(dashboards)/components/program-card"
-import moment from "moment" 
+import moment from "moment"
 
 export default function Page() {
   const params = useParams()
@@ -144,12 +144,12 @@ export default function Page() {
                     <Star className="h-6 w-6 fill-brand text-brand" />
                   </div>
                   <div
-                  onClick={()=> {
-                    router.push(`?add=feedback`)
-                  }}
-                  className="rounded-xl bg-brand/10 p-3 ml-2 cursor-pointer  "> 
+                    onClick={() => {
+                      router.push(`?add=feedback`)
+                    }}
+                    className="rounded-xl bg-brand/10 p-3 ml-2 cursor-pointer  ">
                     Add Feedback
-                  </div> 
+                  </div>
                 </div>
               </div>
 

@@ -1,47 +1,60 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { useEffect, useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { useParams, useSearchParams } from "next/navigation"
+import { toast } from "sonner"
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Save,
+  User,
+  Compass,
+  Activity,
+  Trophy,
+} from "lucide-react"
+
 import PlayerSetupHeader from "./components/player-setup-header"
 import CoreIdentity from "./components/core-identity"
 import { UploadAvatar } from "./components/profile-img"
-import CommonBtn from "@/components/common/common-btn"
 import PositionSelection from "./components/position-selection"
 import SeasonStats from "./components/season-stats"
 import StrengthsDesign from "./components/top-strength"
 import BioSetup from "./components/bio-setup"
-import { useEffect, useState } from "react"
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-} from "@/components/animate-ui/primitives/animate/tabs"
-import { IoHandRightOutline } from "react-icons/io5"
 import Media from "./components/media"
 import AchievementDetailsForm from "./components/achivement"
+import CommonBtn from "@/components/common/common-btn"
+import useModal from "../../useModal"
+
 import { TPlayerProfilePayload } from "./type"
+import { INITIAL_PLAYER_PAYLOAD, SETUP_STEPS } from "./constants"
 import {
   addChild,
   addPlayer,
   convertToFormData,
   updatePlayer,
 } from "../player-add-modal/action"
-import { toast } from "sonner"
-import useModal from "../../useModal"
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from "next/navigation"
 import { updateChildProfile } from "@/app/(dashboards)/parent/action"
 import { validatePlayerProfilePayload } from "@/lib/player-validate"
 
+const STEP_ICONS = [User, Compass, Activity, Trophy]
+
 export default function PLayerSetup() {
-  const [activeTab, setActiveTab] = useState<"information" | "media">(
-    "information"
-  )
+  const [currentStepIndex, setCurrentStepIndex] = useState<number>(0)
   const [user, setUser] = useState<any>(null)
-  const source = useSearchParams().get("source")
+  const [loading, setLoading] = useState<boolean>(false)
+  const [payload, setPayload] = useState<TPlayerProfilePayload>(INITIAL_PLAYER_PAYLOAD)
+
+  const searchParams = useSearchParams()
+  const source = searchParams.get("source")
+  const isUpdatePlayer = searchParams.get("update") === "player"
+  const isUpdateChild = searchParams.get("update") === "child"
+  const isUpdate = isUpdatePlayer || isUpdateChild
+
+  const params = useParams()
+  const edit_child_id = params.id
+  const child_id = params.child_id
   const { close } = useModal()
 
   useEffect(() => {
@@ -51,232 +64,13 @@ export default function PLayerSetup() {
     }
   }, [])
 
-  const searchParams = useSearchParams()
-  const isUpdatePlayer = searchParams.get("update") === "player"
-  const isUpdateChild = searchParams.get("update") === "child"
-  const params = useParams()
-  const edit_child_id = params.id
-  const child_id = params.child_id
-  const initialPayload: TPlayerProfilePayload = {
-    // Core Identity
-    firstName: "",
-    lastName: "",
-    dateOfBirth: "",
-    gender: "",
-    nationality: "",
-    email: "",
-    sport: "",
-    jerseyNumber: "",
-    dominantFoot: "",
-    clubTeam: "",
-    country: "",
-    city: "",
-    province: "",
-
-    profilePhoto: null,
-    profilePhotoPreview: "",
-    profilePhotoNames: [],
-
-    // Position
-    primaryPosition: "",
-    secondaryPosition: "",
-
-    // Biography
-    biography: "",
-
-    // Season Stats
-    seasonStats: {
-      activeTab: "outfield",
-      values: {
-        gamesPlayed: "",
-        goals: "",
-        assists: "",
-        yellowCards: "",
-        redCards: "",
-        cleanSheets: "",
-        totalSaves: "",
-      },
-    },
-
-    // Strengths
-    strengths: {
-      activeCategoryId: "",
-      selectedByCategory: {
-        technical: "",
-        tactical: "",
-        mental: "",
-        physical: "",
-        attacking: "",
-        defending: "",
-        aerial: "",
-      },
-    },
-
-    // Highlights
-    highlights: {
-      showcaseValue: "",
-      selectedShowcaseSource: null,
-
-      facebook_link: "",
-      whatsapp_link: "",
-      twitter_link: "",
-
-      uploadedItems: [],
-    },
-
-    // Achievement
-    achievements: {
-      title: "",
-      description: "",
-      dateEarned: "",
-
-      uploadedAssets: {
-        id: "",
-        name: "",
-        type: "image",
-        file: undefined,
-      },
-    },
-
-    // Privacy
-    privacySettings: {
-      visibility: "public",
-    },
-  }
-  const [payload, setPayload] = useState<TPlayerProfilePayload>(initialPayload)
-
   const handleClose = () => {
-    close("player", ["source", "update", "id", "child_id", "porogress"])
-    close("update", ["source", "update", "id", "child_id", "porogress"])
-    close("source", ["source", "update", "id", "child_id", "porogress"])
+    close("player", ["source", "update", "id", "child_id", "porogress", "progress"])
+    close("update", ["source", "update", "id", "child_id", "porogress", "progress"])
+    close("source", ["source", "update", "id", "child_id", "porogress", "progress"])
   }
 
-  const [loading, setLoading] = useState<boolean>(false)
-  const handleAddPlayer = async () => {
-    if (validatePlayerProfilePayload(payload) === false) return
-
-    setLoading(true)
-    if (user.role === "player") {
-      try {
-        const res = await addPlayer(payload)
-        if (res.status) {
-          const user = JSON.parse(localStorage.getItem("go_elite_user") || "{}")
-          user.status = "approve"
-          user.profile_id = res.data.id
-          localStorage.setItem("go_elite_user", JSON.stringify(user))
-          window.localStorage.removeItem("go_elitr_player_setup_progress")
-          setLoading(false)
-          handleClose()
-          setPayload(initialPayload)
-          toast.success(res.message || "Player profile added successfully")
-          // remove all parameters from the URL
-          const url = new URL(window.location.href)
-          url.search = ""
-          window.history.replaceState({}, document.title, url.toString())
-          return
-        } else {
-          toast.error(res.message)
-          setLoading(false)
-          return
-        }
-      } catch (error) {
-        setLoading(false)
-        toast.error("Failed to add player")
-        console.error("Error adding player:", error)
-        return
-      }
-    }
-
-    if (user.role === "parent") {
-      try {
-        const res = await addChild(payload)
-        if (res.status) {
-          const user = JSON.parse(localStorage.getItem("go_elite_user") || "{}")
-          user.status = "approve"
-          user.profile_id = res.data.id
-          localStorage.setItem("go_elite_user", JSON.stringify(user))
-          window.localStorage.removeItem("go_elitr_player_setup_progress")
-          setLoading(false)
-          handleClose()
-          setPayload(initialPayload)
-          toast.success(res.message || "Child profile added successfully")
-          // remove all parameters from the URL
-          const url = new URL(window.location.href)
-          url.search = ""
-          window.history.replaceState({}, document.title, url.toString())
-          window.dispatchEvent(new CustomEvent("child_added"))
-          return
-        } else {
-          toast.error(res.message)
-          setLoading(false)
-          return
-        }
-      } catch (error) {
-        setLoading(false)
-        toast.error("Failed to add player")
-        console.error("Error adding player:", error)
-        return
-      }
-    }
-  }
-
-  const hanldeUpdate = async () => {
-    setLoading(true)
-    try {
-      if (user?.role === "player") {
-        try {
-          const res = await updatePlayer(payload)
-
-          if (res.status) {
-            setLoading(false)
-            toast.success(res.message || "Updated success")
-            window.dispatchEvent(new CustomEvent("player_profile_updated"))
-            handleClose()
-            setPayload(initialPayload)
-            window.localStorage.removeItem("go_elitr_player_setup_progress")
-          } else {
-            setLoading(false)
-            toast.error(res?.message || "Something went wrong")
-          }
-        } catch (error) {
-          setLoading(false)
-          toast.error("Failed to add player")
-          console.error("Error saving player profile:", error)
-        }
-      }
-
-      if (isUpdateChild && user?.role === "parent") {
-        try {
-          const formData = await convertToFormData(payload)
-          const res = await updateChildProfile({
-            data: formData,
-            child_id: String(edit_child_id || child_id),
-          })
-
-          if (res?.status) {
-            setLoading(false)
-            toast.success("Child profile updated successfully")
-            window.dispatchEvent(new CustomEvent("player_profile_updated"))
-            window.localStorage.removeItem("go_elitr_player_setup_progress")
-            handleClose()
-            setPayload(initialPayload)
-          } else {
-            setLoading(false)
-            toast.error(res?.message || "Something went wrong")
-          }
-        } catch (error) {
-          setLoading(false)
-          toast.error("Failed to add player")
-          console.error("Error saving player profile:", error)
-        }
-      }
-    } catch (err) {
-      console.error(err)
-      setLoading(false)
-    }
-  }
-
-  const handleSaveProgress = async () => {
+  const handleSaveProgress = () => {
     if (!user?.email) {
       toast.error("User not found. Please log in again.")
       return
@@ -291,109 +85,299 @@ export default function PLayerSetup() {
   }
 
   useEffect(() => {
-    if (!source) {
-      return
-    }
+    if (!source) return
 
-    if (source == "progress") {
-      const savedProgress = window.localStorage.getItem(
-        `go_elit_player_progress_${user?.email}`
-      )
-      console.log("Saved progress:", savedProgress)
-      if (savedProgress) {
-        setPayload(JSON.parse(savedProgress))
-      } 
-    }
-
-    if (source === "edit") {
-      const savedProgress = window.localStorage.getItem(
-        `go_elit_player_edit_data_${user?.email}`
-      )
-      if (savedProgress) {
-        setPayload(JSON.parse(savedProgress))
-      }
-    }
-
-    if (source !== "progress" && source !== "edit") {
-      setPayload(initialPayload)
+    if (source === "progress") {
+      const saved = window.localStorage.getItem(`go_elit_player_progress_${user?.email}`)
+      if (saved) setPayload(JSON.parse(saved))
+    } else if (source === "edit") {
+      const saved = window.localStorage.getItem(`go_elit_player_edit_data_${user?.email}`)
+      if (saved) setPayload(JSON.parse(saved))
+    } else {
+      setPayload(INITIAL_PLAYER_PAYLOAD)
     }
   }, [user, source])
 
+  const validateWithStepJump = (): boolean => {
+    if (
+      !payload.firstName ||
+      !payload.lastName ||
+      !payload.dateOfBirth ||
+      !payload.gender ||
+      !payload.nationality ||
+      !payload.email ||
+      !payload.sport ||
+      !payload.jerseyNumber ||
+      !payload.dominantFoot ||
+      !payload.clubTeam ||
+      !payload.country ||
+      !payload.province
+    ) {
+      setCurrentStepIndex(0)
+      return validatePlayerProfilePayload(payload)
+    }
+
+    if (!payload.primaryPosition || !payload.secondaryPosition) {
+      setCurrentStepIndex(1)
+      return validatePlayerProfilePayload(payload)
+    }
+
+    if (!payload.achievements?.title) {
+      setCurrentStepIndex(3)
+      return validatePlayerProfilePayload(payload)
+    }
+
+    return true
+  }
+
+  const handleSubmit = async () => {
+    if (!validateWithStepJump()) return
+
+    setLoading(true)
+    try {
+      let res: any
+      const isParent = user?.role === "parent"
+
+      if (isUpdate) {
+        if (isUpdateChild && isParent) {
+          const formData = await convertToFormData(payload)
+          res = await updateChildProfile({
+            data: formData,
+            child_id: String(edit_child_id || child_id),
+          })
+        } else {
+          res = await updatePlayer(payload)
+        }
+      } else {
+        res = isParent ? await addChild(payload) : await addPlayer(payload)
+      }
+
+      if (res?.status || res?.success) {
+        if (!isUpdate) {
+          const storedUser = JSON.parse(localStorage.getItem("go_elite_user") || "{}")
+          storedUser.status = "approve"
+          if (res?.data?.id) storedUser.profile_id = res.data.id
+          localStorage.setItem("go_elite_user", JSON.stringify(storedUser))
+        }
+
+        window.localStorage.removeItem("go_elitr_player_setup_progress")
+        if (user?.email) {
+          window.localStorage.removeItem(`go_elit_player_progress_${user.email}`)
+        }
+
+        window.dispatchEvent(
+          new CustomEvent(
+            isUpdate
+              ? "player_profile_updated"
+              : isParent
+              ? "child_added"
+              : "player_profile_updated"
+          )
+        )
+
+        toast.success(
+          res?.message ||
+            (isUpdate
+              ? "Profile updated successfully"
+              : isParent
+              ? "Child profile added successfully"
+              : "Player profile added successfully")
+        )
+
+        handleClose()
+        setPayload(INITIAL_PLAYER_PAYLOAD)
+
+        const url = new URL(window.location.href)
+        url.search = ""
+        window.history.replaceState({}, document.title, url.toString())
+      } else {
+        toast.error(res?.message || "Failed to submit player profile")
+      }
+    } catch (error) {
+      console.error("Error submitting player setup:", error)
+      toast.error("Failed to process request. Please try again.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const isStepComplete = (index: number): boolean => {
+    switch (index) {
+      case 0:
+        return Boolean(
+          payload.firstName &&
+            payload.lastName &&
+            payload.dateOfBirth &&
+            payload.gender &&
+            payload.sport &&
+            payload.country
+        )
+      case 1:
+        return Boolean(payload.primaryPosition && payload.secondaryPosition)
+      case 2:
+        return Boolean(
+          payload.seasonStats.values.gamesPlayed ||
+            payload.seasonStats.values.goals
+        )
+      case 3:
+        return Boolean(payload.achievements?.title)
+      default:
+        return false
+    }
+  }
+
+  const currentStep = SETUP_STEPS[currentStepIndex]
+  const progressPercent = ((currentStepIndex + 1) / SETUP_STEPS.length) * 100
+
   return (
-    <div className="relative rounded-3xl border border-white/10 bg-[#090B10]">
-      <div className="bg-[#161B22]!">
-        <PlayerSetupHeader />
-        <Tabs
-          value={activeTab}
-          onValueChange={(value: string) =>
-            setActiveTab(value as "information" | "media")
-          }
-          className="w-full"
-        >
-          <TabsList className="grid h-auto w-full grid-cols-2 rounded-xl bg-white p-0.5">
-            <TabsTrigger
-              value="information"
-              className="flex h-6 cursor-pointer items-center justify-center gap-2 rounded-lg border-0 bg-transparent text-[14px] leading-[150%] font-semibold text-[#111308] shadow-none transition-colors duration-200 outline-none focus-visible:border-0 focus-visible:ring-0 focus-visible:outline-none data-[state=active]:bg-[#C6F57A] data-[state=active]:text-[#111308]"
-            >
-              <span>Information</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="media"
-              className="flex h-6 cursor-pointer items-center justify-center gap-2 rounded-lg border-0 bg-transparent text-[14px] leading-[150%] font-semibold text-[#111308] shadow-none transition-colors duration-200 outline-none focus-visible:border-0 focus-visible:ring-0 focus-visible:outline-none data-[state=active]:bg-[#C6F57A] data-[state=active]:text-[#111308]"
-            >
-              <span>Media/Achivement</span>
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-      <div className="no-scrollbar h-[70dvh] overflow-y-scroll px-4 py-2 pb-20">
-        {activeTab === "information" && (
-          <>
-            <UploadAvatar payload={payload} setPayload={setPayload} />
-            <CoreIdentity payload={payload} setPayload={setPayload} />
-            <PositionSelection payload={payload} setPayload={setPayload} />
-            <SeasonStats payload={payload} setPayload={setPayload} />
-            <StrengthsDesign payload={payload} setPayload={setPayload} />
-            <BioSetup payload={payload} setPayload={setPayload} />
-          </>
-        )}
-        {activeTab === "media" && (
-          <>
-            <Media payload={payload} setPayload={setPayload} />
-            <AchievementDetailsForm payload={payload} setPayload={setPayload} />
-          </>
-        )}
+    <div className="relative rounded-3xl border border-white/12 bg-[#121620] text-white shadow-[0_25px_70px_rgba(0,0,0,0.5)] overflow-hidden">
+      {/* Header */}
+      <PlayerSetupHeader
+        isUpdate={isUpdate}
+        currentStep={currentStepIndex + 1}
+        totalSteps={SETUP_STEPS.length}
+        onClose={handleClose}
+      />
+
+      {/* Stepper Track */}
+      <div className="border-b border-white/10 bg-[#161C28] px-4 py-3 sm:px-6">
+        <div className="flex items-center justify-between gap-1.5 sm:gap-2">
+          {SETUP_STEPS.map((step, idx) => {
+            const isActive = currentStepIndex === idx
+            const completed = isStepComplete(idx)
+            const Icon = STEP_ICONS[idx] || User
+
+            return (
+              <button
+                key={step.id}
+                type="button"
+                onClick={() => setCurrentStepIndex(idx)}
+                className={`flex-1 flex items-center justify-center sm:justify-start gap-2 rounded-xl px-3 py-2 text-xs transition-all duration-200 ${
+                  isActive
+                    ? "bg-brand text-black font-bold shadow-md shadow-brand/20 scale-[1.01]"
+                    : completed
+                    ? "bg-[#1E2536] text-emerald-400 hover:bg-[#252E42] font-semibold border border-white/5"
+                    : "bg-[#1E2536]/50 text-white/60 hover:bg-[#1E2536] hover:text-white border border-transparent"
+                }`}
+              >
+                <div
+                  className={`flex size-5 shrink-0 items-center justify-center rounded-lg text-[11px] font-bold ${
+                    isActive
+                      ? "bg-black text-brand"
+                      : completed
+                      ? "bg-emerald-500/20 text-emerald-400"
+                      : "bg-white/10 text-white/70"
+                  }`}
+                >
+                  {completed && !isActive ? (
+                    <Check className="size-3 stroke-[3]" />
+                  ) : (
+                    <Icon className="size-3" />
+                  )}
+                </div>
+
+                <span className="hidden sm:inline truncate">{step.shortLabel}</span>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Dynamic Progress Line */}
+        <div className="mt-2.5 h-1 w-full overflow-hidden rounded-full bg-white/10">
+          <div
+            className="h-full bg-linear-to-r from-brand to-emerald-400 transition-all duration-300"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 flex w-full justify-between border-t border-brand/20 bg-[#090B10] px-5 py-2">
-        <CommonBtn
-          size={"lg"}
-          variant={"default"}
-          text="Save progress"
+      {/* Content Area */}
+      <div className="no-scrollbar max-h-[64vh] overflow-y-auto px-4 py-5 pb-24 sm:px-6">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentStep.id}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-5"
+          >
+            {currentStep.id === "identity" && (
+              <>
+                <UploadAvatar payload={payload} setPayload={setPayload} />
+                <CoreIdentity payload={payload} setPayload={setPayload} />
+                <BioSetup payload={payload} setPayload={setPayload} />
+              </>
+            )}
+
+            {currentStep.id === "position_skills" && (
+              <>
+                <PositionSelection payload={payload} setPayload={setPayload} />
+                <StrengthsDesign payload={payload} setPayload={setPayload} />
+              </>
+            )}
+
+            {currentStep.id === "stats" && (
+              <SeasonStats payload={payload} setPayload={setPayload} />
+            )}
+
+            {currentStep.id === "media_awards" && (
+              <>
+                <Media payload={payload} setPayload={setPayload} />
+                <AchievementDetailsForm payload={payload} setPayload={setPayload} />
+              </>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Sticky Bottom Actions Bar */}
+      <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between border-t border-white/10 bg-[#161C28]/95 px-6 py-3.5 backdrop-blur-md">
+        <button
+          type="button"
           onClick={handleSaveProgress}
-          className="w-fit rounded-lg border border-white/10 px-10"
-        />
-        {isUpdatePlayer || isUpdateChild ? (
-          <CommonBtn
-            size={"lg"}
-            variant={"default"}
-            text="Update"
-            onClick={hanldeUpdate}
-            disabled={loading}
-            isLoading={loading}
-            className="w-fit rounded-lg border border-white/10 bg-brand px-10 text-primary hover:bg-brand"
-          />
-        ) : (
-          <CommonBtn
-            size={"lg"}
-            variant={"default"}
-            text="Done"
-            onClick={handleAddPlayer}
-            disabled={loading}
-            isLoading={loading}
-            className="w-fit rounded-lg border border-white/10 bg-brand px-10 text-primary hover:bg-brand"
-          />
-        )}
+          className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#1E2536] px-4 py-2.5 text-xs font-semibold text-white/80 transition-all hover:border-white/20 hover:bg-[#252E42] hover:text-white"
+        >
+          <Save className="size-3.5 text-brand" />
+          <span className="hidden sm:inline">Save Draft</span>
+          <span className="sm:hidden">Draft</span>
+        </button>
+
+        <div className="flex items-center gap-2.5">
+          {currentStepIndex > 0 && (
+            <button
+              type="button"
+              onClick={() => setCurrentStepIndex((prev) => Math.max(0, prev - 1))}
+              className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#1E2536] px-4 py-2.5 text-xs font-semibold text-white transition-all hover:border-white/20 hover:bg-[#252E42]"
+            >
+              <ArrowLeft className="size-3.5" />
+              <span>Back</span>
+            </button>
+          )}
+
+          {currentStepIndex < SETUP_STEPS.length - 1 && (
+            <button
+              type="button"
+              onClick={() => setCurrentStepIndex((prev) => Math.min(SETUP_STEPS.length - 1, prev + 1))}
+              className="flex items-center gap-2 rounded-xl border border-brand/30 bg-brand/15 px-5 py-2.5 text-xs font-bold text-brand transition-all hover:bg-brand hover:text-black hover:shadow-md hover:shadow-brand/20 active:scale-95"
+            >
+              <span>Next</span>
+              <ArrowRight className="size-3.5" />
+            </button>
+          )}
+
+          {(currentStepIndex === SETUP_STEPS.length - 1 || isUpdate) && (
+            <CommonBtn
+              size="default"
+              variant="default"
+              text={isUpdate ? "Update Profile" : "Complete Profile"}
+              onClick={handleSubmit}
+              disabled={loading}
+              isLoading={loading}
+              className="rounded-xl  border-0 bg-brand px-6 w-40 py-2.5 text-xs font-bold text-black shadow-md shadow-brand/25 transition-transform hover:bg-brand hover:scale-102 active:scale-98"
+            />
+          )}
+        </div>
       </div>
     </div>
   )

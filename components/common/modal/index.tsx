@@ -1,4 +1,4 @@
-import PlayerAddModal from "./all-modals/player-add-modal"
+ 
 import RecruitmentForm from "./all-modals/recruite-modal"
 import TeamAddModal from "./all-modals/team-add-modal"
 import useModal from "./useModal"
@@ -33,18 +33,14 @@ export default function Modals() {
         openId="player"
         className="max-w-full overflow-hidden! border border-brand/50 p-0! lg:max-w-[62%]! 2xl:max-w-[56%]!"
       >
-        <ScrollArea className="max-h-[90vh]">
-          <PLayerSetup />
-        </ScrollArea>
+        <PLayerSetup />
       </Modal>
       <Modal
         modalId="update"
         openId="child"
         className="max-w-full overflow-hidden! border border-brand/50 p-0! lg:max-w-[62%]! 2xl:max-w-[56%]!"
       >
-        <ScrollArea className="max-h-[90vh]">
-          <PLayerSetup />
-        </ScrollArea>
+        <PLayerSetup />
       </Modal>
       <Modal
         modalId="add-new"
@@ -162,7 +158,7 @@ export default function Modals() {
         openId="feedback"
         className=" w-full max-w-[30vw] overflow-x-hidden overflow-y-auto rounded-2xl border border-brand/30   bg-primary p-0 shadow-2xl    "
       >
-          <Rating/> 
+        <Rating />
       </Modal>
     </>
   )

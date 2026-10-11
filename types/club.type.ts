@@ -111,13 +111,13 @@ export type TClubProfile = {
   sports_name: string | null
   program: TClubProgramItem[]
   privacy_settings:
-    | "public"
-    | "private"
-    | "players"
-    | "coach_and_players"
-    | "players_and_teams"
-    | "coach_and_team"
-    | "only_player"
+  | "public"
+  | "private"
+  | "players"
+  | "coach_and_players"
+  | "players_and_teams"
+  | "coach_and_team"
+  | "only_player"
   club_logo_url: string | null
   organization_types: TOrganizationType[]
 }
@@ -336,11 +336,11 @@ export type TClubBookingData = {
 
 
 export type TBookingTimes = {
-    id: number
-    booking_time_id: number
-    booking_date: string
-    booking_type: string
-    time: string | null
-    start_time: string
-    end_time: string
-  }
+  id: number
+  booking_time_id: number
+  booking_date: string
+  booking_type: string
+  time: string | null
+  start_time: string
+  end_time: string
+}

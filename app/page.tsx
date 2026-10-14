@@ -21,7 +21,7 @@ export default function Page() {
     const getData = async () => {
       try {
         const res = await getLandingPageData()
-
+         console.log(res)
         if (
           res &&
           typeof res === "object" &&

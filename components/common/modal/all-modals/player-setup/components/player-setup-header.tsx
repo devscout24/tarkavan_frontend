@@ -62,11 +62,10 @@ export default function PlayerSetupHeader({
                 Step {currentStep} of {totalSteps}
               </span>
             </div>
-          )}
-
- 
+          )} 
         </div>
       </div>
     </motion.header>
   )
 }
+

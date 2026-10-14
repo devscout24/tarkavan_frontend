@@ -83,7 +83,7 @@ export default function Counter({ data }: { data?: TLandingStats | null }) {
   { value: data?.active_athletes || 0, suffix: "+", desc: "Active Athletes" },
   { value: data?.certified_coaches || 0, suffix: "+", desc: "Certified Coaches" },
   { value: data?.teams || 0, suffix: "+", desc: "Teams" },
-  { value: data?.session_booked || 0, suffix: "+", desc: "Sessions Booked" },
+  // { value: data?.session_booked || 0, suffix: "+", desc: "Sessions Booked" },
 ]
 
   return (
